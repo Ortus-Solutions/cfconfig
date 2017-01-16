@@ -5,7 +5,8 @@
 * to/from a specific engine's format, you'll need to create one of my subclasses
 */
 component accessors="true"{
-			property name="trustedCache" type="string";
+	
+	property name="trustedCache" type="string";
 	property name="UDFTypes" type="string";
 	property name="nullSupport" type="boolean";
 	property name="templateCharset" type="string";
