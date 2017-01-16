@@ -1,0 +1,33 @@
+{
+    "name":"CF Config",
+    "version":"0.1.0",
+    "author":"Brad Wood",
+    "location":"https://github.com/bdw429s/cfconfig#v.0.1.0",
+    "packageDirectory":"",
+    "homepage":"https://github.com/bdw429s/cfconfig",
+    "documentation":"",
+    "slug":"cfconfig",
+    "shortDescription":"A library to read/write/store CF engine configs",
+    "description":"",
+    "type":"modules",
+    "keywords":"ColdFusion,Lucee,Railo,CFML,config",
+    "private":false,
+    "projectURL":"https://github.com/bdw429s/cfconfig",
+    "dependencies":{
+        
+    },
+    "devDependencies":{
+        
+    },
+    "installPaths":{
+        
+    },
+    "scripts":{
+        
+    },
+    "ignore":[
+        "**/.*",
+        "test",
+        "tests"
+    ]
+}
