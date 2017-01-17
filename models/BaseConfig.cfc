@@ -132,7 +132,7 @@ component accessors=true {
 			dsn,
 			host,
 			metaCacheTimeout,
-			password,
+			password, // Unencrypted
 			port,
 			storage,
 			username,
@@ -158,7 +158,7 @@ component accessors=true {
 		if( !isNull( username ) ) { ds.username = username; };
 		if( !isNull( validate ) ) { ds.validate = validate; };
 		
-		var thisDatasources = getDataSources();
+		var thisDatasources = getDataSources() ?: {};
 		thisDatasources[ arguments.name ] = ds; 
 		setDatasources( thisDatasources );
 		return this;
@@ -167,7 +167,32 @@ component accessors=true {
 	/**
 	* Add a single mail server to the config
 	*/
-	function addMailServer() { throw 'addMailServer() not implemented'; }
+	function addMailServer(
+		idle,
+		life,
+		password, // Unencrypted
+		port,
+		smtp,
+		ssl,
+		tls,
+		username
+	) {
+			
+		var mailServer = {};
+		if( !isNull( idle ) ) { mailServer.idle = idle; };
+		if( !isNull( life ) ) { mailServer.life = life; };
+		if( !isNull( password ) ) { mailServer.password = password; };
+		if( !isNull( port ) ) { mailServer.port = port; };
+		if( !isNull( smtp ) ) { mailServer.smtp = smtp; };
+		if( !isNull( ssl ) ) { mailServer.ssl = ssl; };
+		if( !isNull( tls ) ) { mailServer.tls = tls; };
+		if( !isNull( username ) ) { mailServer.username = username; };
+		
+		var thisMailServers = getMailServers() ?: [];
+		thisMailServers.append( mailServer ); 
+		setMailServers( thisMailServers );
+		return this;
+	}
 	
 	/**
 	* Add a single CF mapping to the config
@@ -192,7 +217,7 @@ component accessors=true {
 		if( !isNull( primary ) ) { mapping.primary = primary; };
 		if( !isNull( readOnly ) ) { mapping.readOnly = readOnly; };
 		
-		var thisCFMappings = getCFMappings();
+		var thisCFMappings = getCFMappings() ?: {};
 		thisCFMappings[ arguments.virtual ] = mapping; 
 		setCFMappings( thisCFMappings );
 		return this;		
@@ -207,11 +232,6 @@ component accessors=true {
 	* Add a single custom tag to the config
 	*/
 	function addCustomTagPath() { throw 'addCustomTagPath() not implemented'; }
-	
-	/**
-	* Add a single user to the config
-	*/
-	function addAdminUser() { throw 'addAdminUser() not implemented'; }
 	
 	
 	/**

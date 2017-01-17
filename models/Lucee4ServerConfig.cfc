@@ -119,8 +119,16 @@ component accessors=true extends='BaseConfig' {
 		if( !isNull( config[ 'session-type' ] ) ) { setSessionType( config[ 'session-type' ] ) };
 	}
 	
-	private function readMail( mail ) {
-	//	dump(mail); abort;
+	private function readMail( mailServers ) {
+		var passwordManager = getLuceePasswordManager();
+		for( var mailServer in mailServers.XMLChildren ) {
+			var params = {}.append( mailServer.XMLAttributes );
+			// Decrypt mail server password 
+			if( !isNull( params.password ) ) {  
+				params.password = passwordManager.decryptDataSource( replaceNoCase( params.password, 'encrypted:', '' ) );
+			}
+			addMailServer( argumentCollection = params );
+		}
 	}
 	
 	private function readMappings( mappings ) {
@@ -236,7 +244,7 @@ component accessors=true extends='BaseConfig' {
 			}
 			
 			// Populate XML node
-			DSXMLNode.XMLAttributes[ 'name' ] = DSName;;
+			DSXMLNode.XMLAttributes[ 'name' ] = DSName;
 			if( !isNull( DSStruct.database ) ) { DSXMLNode.XMLAttributes[ 'database' ] = DSStruct.database; }
 			if( !isNull( DSStruct.allow ) ) { DSXMLNode.XMLAttributes[ 'allow' ] = DSStruct.allow; }
 			if( !isNull( DSStruct.blob ) ) { DSXMLNode.XMLAttributes[ 'blob' ] = DSStruct.blob; }
@@ -301,6 +309,40 @@ component accessors=true extends='BaseConfig' {
 	}
 	
 	private function writeMail( thisConfig ) {
+		var passwordManager = getLuceePasswordManager();
+		// Get all mail servers
+		// TODO: Add tag if it doesn't exist
+		var mailServers = xmlSearch( thisConfig, '/cfLuceeConfiguration/mail' )[ 1 ];
+		
+		for( var mailServer in getMailServers() ?: [] ) {
+			// Search to see if this datasource already exists
+			var mailServerXMLSearch = xmlSearch( thisConfig, "/cfLuceeConfiguration/mail/server[translate(@smtp,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( mailServer.smtp )#']" );
+			// mail server already exists
+			if( mailServerXMLSearch.len() ) {
+				mailServerXMLNode = mailServerXMLSearch[ 1 ];
+				// Wipe out old attributes for this mail server
+				structClear( mailServerXMLNode.XMLAttributes );
+			// Create new data-source tag
+			} else {
+				var mailServerXMLNode = xmlElemnew(thisConfig,"server");				
+			}
+
+			// Populate XML node
+			if( !isNull( mailServer.idle ) ) { mailServerXMLNode.XMLAttributes[ 'idle' ] = mailServer.idle; }
+			if( !isNull( mailServer.life ) ) { mailServerXMLNode.XMLAttributes[ 'life' ] = mailServer.life; }
+			if( !isNull( mailServer.port ) ) { mailServerXMLNode.XMLAttributes[ 'port' ] = mailServer.port; }
+			if( !isNull( mailServer.smtp ) ) { mailServerXMLNode.XMLAttributes[ 'smtp' ] = mailServer.smtp; }
+			if( !isNull( mailServer.ssl ) ) { mailServerXMLNode.XMLAttributes[ 'ssl' ] = mailServer.ssl; }
+			if( !isNull( mailServer.tls ) ) { mailServerXMLNode.XMLAttributes[ 'tls' ] = mailServer.tls; }
+			if( !isNull( mailServer.username ) ) { mailServerXMLNode.XMLAttributes[ 'username' ] = mailServer.username; }
+			// Encrypt password again as we write it.
+			if( !isNull( mailServer.password ) ) { mailServerXMLNode.XMLAttributes[ 'password' ] = 'encrypted:' & passwordManager.encryptDataSource( mailServer.password ); }
+			
+			// Insert into doc if this was new.
+			if( !mailServerXMLSearch.len() ) {
+				mailServers.XMLChildren.append( mailServerXMLNode );
+			}			
+		}
 	}
 	
 	private function writeMappings( thisConfig ) {
