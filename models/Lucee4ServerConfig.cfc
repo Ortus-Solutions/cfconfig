@@ -137,6 +137,9 @@ component accessors=true extends='BaseConfig' {
 	private function readAuth( config ) {
 		if( !isNull( config.XmlAttributes.hspw ) ) { setHspw( config.XmlAttributes.hspw ) };
 		if( !isNull( config.XmlAttributes.salt ) ) { setAdminSalt( config.XmlAttributes.salt ) };
+		if( !isNull( config.XmlAttributes[ 'default-hspw' ] ) ) { setDefaultHspw( config.XmlAttributes[ 'default-hspw' ] ) };
+		
+		
 	}
 	
 
@@ -316,6 +319,9 @@ component accessors=true extends='BaseConfig' {
 		var config = thisConfig.XMLRoot.XMLAttributes;
 		if( !isNull( getHspw() ) ) { config[ 'hspw' ] = getHspw() };
 		if( !isNull( getAdminSalt() ) ) { config[ 'salt' ] = getAdminSalt() };
+		if( !isNull( getDefaultHspw() ) ) { config[ 'default-hspw' ] = getDefaultHspw() };
+		
+		
 	}
 	
 	/**

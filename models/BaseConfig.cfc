@@ -72,7 +72,7 @@ component accessors=true {
 	property name='adminPassword' type='string' _isCFConfig=true;
 	property name='hspw' type='string' _isCFConfig=true;
 	property name='adminSalt' type='string' _isCFConfig=true;
-	property name='defaultPassword' type='string' _isCFConfig=true;
+	property name='defaultHspw' type='string' _isCFConfig=true;
 	
 	// Not a setting-- this is the config file to read/write from/to
 	// For adobe, it's <installDir>/cfusion
