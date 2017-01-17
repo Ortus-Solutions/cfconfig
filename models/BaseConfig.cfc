@@ -69,10 +69,20 @@ component accessors=true {
 	property name='debuggingDumpEnabled' type='boolean' _isCFConfig=true;
 	property name='debuggingTimerEnabled' type='boolean' _isCFConfig=true;
 	property name='debuggingImplicitVariableAccessEnabled' type='boolean' _isCFConfig=true;
+	// Plain text admin password
 	property name='adminPassword' type='string' _isCFConfig=true;
+	// Plain text default password for new Lucee web context
+	property name='adminPasswordDefault' type='string' _isCFConfig=true;
+	// hashed salted password for Lucee
 	property name='hspw' type='string' _isCFConfig=true;
+	// hashed password for Lucee/Railo
+	property name='pw' type='string' _isCFConfig=true;
+	// Salt for admin password in Lucee
 	property name='adminSalt' type='string' _isCFConfig=true;
+	// hashed salted default password for new Lucee web context
 	property name='defaultHspw' type='string' _isCFConfig=true;
+	// hashed default password for new Lucee/Railo web context
+	property name='defaultPw' type='string' _isCFConfig=true;
 	
 	// Not a setting-- this is the config file to read/write from/to
 	// For adobe, it's <installDir>/cfusion
