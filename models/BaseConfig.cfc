@@ -12,8 +12,8 @@ component accessors=true {
 	property name='templateCharset' type='string' _isCFConfig=true;
 	property name='dotNotation' type='string' _isCFConfig=true;
 	property name='suppressWhitespaceBeforecfargument' type='string' _isCFConfig=true;
-	property name='locale' type='string' _isCFConfig=true;
-	property name='timeZone' type='string' _isCFConfig=true;
+	property name='thisLocale' type='string' _isCFConfig=true;
+	property name='thisTimeZone' type='string' _isCFConfig=true;
 	property name='timeServer' type='string' _isCFConfig=true;
 	property name='useTimeServer' type='boolean' _isCFConfig=true;
 	property name='templateCharset' type='string' _isCFConfig=true;

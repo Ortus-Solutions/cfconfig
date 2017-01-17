@@ -59,6 +59,9 @@ component accessors=true extends='BaseConfig' {
 		var java = xmlSearch( thisConfig, '/cfLuceeConfiguration/java' );
 		if( java.len() ){ readJava( java[ 1 ] ); }
 		
+		var regional = xmlSearch( thisConfig, '/cfLuceeConfiguration/regional' );
+		if( regional.len() ){ readRegional( regional[ 1 ] ); }
+		
 		var datasources = xmlSearch( thisConfig, '/cfLuceeConfiguration/data-sources' );
 		if( datasources.len() ){ readDatasources( datasources[ 1 ] ); }
 		
@@ -100,6 +103,15 @@ component accessors=true extends='BaseConfig' {
 	private function readJava( java ) {
 		var config = java.XMLAttributes;
 		if( !isNull( config[ 'inspect-template' ] ) ) { setInspectTemplate( config[ 'inspect-template' ] ); }
+	}
+	
+	private function readRegional( regional ) {
+		var config = regional.XMLAttributes;
+		
+		if( !isNull( config[ 'locale' ] ) ) { setThisLocale( config[ 'locale' ] ); }
+		if( !isNull( config[ 'timeserver' ] ) ) { setTimeServer( config[ 'timeserver' ] ); }
+		if( !isNull( config[ 'timezone' ] ) ) { setThisTimeZone( config[ 'timezone' ] ); }
+		if( !isNull( config[ 'use-timeserver' ] ) ) { setUseTimeServer( config[ 'use-timeserver' ] ); }
 	}
 	
 	private function readDatasources( datasources ) {
@@ -245,6 +257,7 @@ component accessors=true extends='BaseConfig' {
 		writeCompiler( thisConfig );
 		writeCharset( thisConfig );
 		writeJava( thisConfig );
+		writeRegional( thisConfig );
 		
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true )
@@ -303,6 +316,26 @@ component accessors=true extends='BaseConfig' {
 
 		if( !javaSearch.len() ) {
 			thisConfig.XMLRoot.XMLChildren.append( java );
+		}
+	}
+	
+	private function writeRegional( thisConfig ) {
+		var regionalSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/regional' );
+		if( regionalSearch.len() ) {
+			var regional = regionalSearch[1];
+		} else {
+			var regional = xmlElemnew( thisConfig, 'regional' );			
+		}
+		
+		var config = regional.XMLAttributes;
+		
+		if( !isNull( getThisLocale() ) ) { config[ 'locale' ] = getThisLocale(); }
+		if( !isNull( getTimeServer() ) ) { config[ 'timeserver' ] = getTimeServer(); }
+		if( !isNull( getThisTimeZone() ) ) { config[ 'timezone' ] = getThisTimeZone(); }
+		if( !isNull( getUseTimeServer() ) ) { config[ 'use-timeserver' ] = getUseTimeServer(); }
+
+		if( !regionalSearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( regional );
 		}
 	}
 	

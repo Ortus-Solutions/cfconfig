@@ -164,7 +164,7 @@ Path placeholders:
 	<scope applicationtimeout="1,0,0,0" cascade-to-resultset="true" cascading="standard" cgi-readonly="true" client-directory-max-size="10mb" clientmanagement="false" clientstorage="cookie" clienttimeout="90,0,0,0" local-mode="classic" merge-url-form="false" session-type="cfml" sessionmanagement="true" sessionstorage="memory" sessiontimeout="0,0,30,0" setclientcookies="true" setdomaincookies="false"/>
 		
 	<mail spool-enable="yes" spool-interval="5" timeout="30">
-	</mail>
+	<server idle="10000" life="60000" password="encrypted:90609ed597245d4c82ce592d261c06a5c38f03cea1961efba30285fbbc33bfc1" port="587" smtp="smptout.secureserver.net" ssl="false" tls="false" username="brad@bradwood.com"/></mail>
 	
 	<mappings>
 	<!--
@@ -227,7 +227,7 @@ Path placeholders:
 		timeserver: [example: swisstime.ethz.ch] default:local time
 			dns of a ntp time server
 	-->
-	<regional timeserver="pool.ntp.org"/>
+	<regional locale="en_US" timeserver="pool.ntp.org" timezone="America/Chicago" use-timeserver="true"/>
 	
 	<!--
 	orm configuration:
@@ -263,7 +263,7 @@ Path placeholders:
 			current:		search only in current directory
 			curr2root:	search the App... from current directory up to root. 
 	-->
-	<application allow-url-requesttimeout="true" listener-mode="curr2root" listener-type="mixed" requesttimeout="0,0,5,0" script-protect="cgi,form"/>
+	<application allow-url-requesttimeout="true" listener-mode="curr2root" listener-type="mixed" requesttimeout="0,0,5,0" script-protect="cgi,form" type-checking="true"/>
 	
 	<update location="http://stable.lucee.org" type="manual"/>
 	<!--
@@ -349,4 +349,4 @@ for every argument defined lucee tries to call a matching setter method
 		<logger appender="resource" appender-arguments="path:{lucee-config}/logs/datasource.log" layout="classic" name="datasource"/>
 	</logging>
 	
-<datasource/><queue enable="false"/></cfLuceeConfiguration>
+<datasource/><queue enable="false"/><compiler dot-notation-upper-case="true" full-null-support="false" suppress-ws-before-arg="true"/><charset template-charset="windows-1252"/><java inspect-template="always"/></cfLuceeConfiguration>
