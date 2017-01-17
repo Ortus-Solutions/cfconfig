@@ -76,8 +76,13 @@ component accessors=true extends='BaseConfig' {
 	}
 	
 	private function readDatasources( datasources ) {
+		var passwordManager = getLuceePasswordManager();
 		for( var ds in datasources.XMLChildren ) {
 			var params = {}.append( ds.XMLAttributes );
+			// Decrypt datasource password 
+			if( !isNull( params.password ) ) {  
+				params.password = passwordManager.decryptDataSource( replaceNoCase( params.password, 'encrypted:', '' ) );
+			}
 			addDatasource( argumentCollection = params );
 		}
 	}
@@ -115,6 +120,7 @@ component accessors=true extends='BaseConfig' {
 	}
 	
 	private function readMail( mail ) {
+	//	dump(mail); abort;
 	}
 	
 	private function readMappings( mappings ) {
@@ -210,6 +216,7 @@ component accessors=true extends='BaseConfig' {
 
 	
 	private function writeDatasources( thisConfig ) {
+		var passwordManager = getLuceePasswordManager();
 		// Get all datasources
 		// TODO: Add tag if it doesn't exist
 		var datasources = xmlSearch( thisConfig, '/cfLuceeConfiguration/data-sources' )[ 1 ];
@@ -240,7 +247,8 @@ component accessors=true extends='BaseConfig' {
 			if( !isNull( DSStruct.connectionTimeout ) ) { DSXMLNode.XMLAttributes[ 'connectionTimeout' ] = DSStruct.connectionTimeout; }
 			if( !isNull( DSStruct.custom ) ) { DSXMLNode.XMLAttributes[ 'custom' ] = DSStruct.custom; }
 			if( !isNull( DSStruct.dsn ) ) { DSXMLNode.XMLAttributes[ 'dsn' ] = DSStruct.dsn; }
-			if( !isNull( DSStruct.password ) ) { DSXMLNode.XMLAttributes[ 'password' ] = DSStruct.password; }
+			// Encrypt password again as we write it.
+			if( !isNull( DSStruct.password ) ) { DSXMLNode.XMLAttributes[ 'password' ] = 'encrypted:' & passwordManager.encryptDataSource( DSStruct.password ); }
 			if( !isNull( DSStruct.host ) ) { DSXMLNode.XMLAttributes[ 'host' ] = DSStruct.host; }
 			if( !isNull( DSStruct.metaCacheTimeout ) ) { DSXMLNode.XMLAttributes[ 'metaCacheTimeout' ] = DSStruct.metaCacheTimeout; }
 			if( !isNull( DSStruct.port ) ) { DSXMLNode.XMLAttributes[ 'port' ] = DSStruct.port; }
