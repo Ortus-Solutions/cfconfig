@@ -1,0 +1,5 @@
+﻿*
+!/.gitignore
+!*/
+!lucee-server.xml
+!lucee-web.xml.cfm
