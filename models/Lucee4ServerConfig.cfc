@@ -49,6 +49,16 @@ component accessors=true extends='BaseConfig' {
 		var thisConfig = XMLParse( thisConfigRaw );
 		
 		//dump( thisConfig );abort;
+		
+		var compiler = xmlSearch( thisConfig, '/cfLuceeConfiguration/compiler' );
+		if( compiler.len() ){ readCompiler( compiler[ 1 ] ); }
+		
+		var charset = xmlSearch( thisConfig, '/cfLuceeConfiguration/charset' );
+		if( charset.len() ){ readCharset( charset[ 1 ] ); }
+		
+		var java = xmlSearch( thisConfig, '/cfLuceeConfiguration/java' );
+		if( java.len() ){ readJava( java[ 1 ] ); }
+		
 		var datasources = xmlSearch( thisConfig, '/cfLuceeConfiguration/data-sources' );
 		if( datasources.len() ){ readDatasources( datasources[ 1 ] ); }
 		
@@ -75,6 +85,23 @@ component accessors=true extends='BaseConfig' {
 		return this;
 	}
 	
+	private function readCompiler( compiler ) {
+		var config = compiler.XMLAttributes;
+		if( !isNull( config[ 'dot-notation-upper-case' ] ) ) { setDotNotation( config[ 'dot-notation-upper-case' ] ); }
+		if( !isNull( config[ 'full-null-support' ] ) ) { setNullSupport( config[ 'full-null-support' ] ); }
+		if( !isNull( config[ 'suppress-ws-before-arg' ] ) ) { setSuppressWhitespaceBeforecfargument( config[ 'suppress-ws-before-arg' ] ); }
+	}
+	
+	private function readCharset( charset ) {
+		var config = charset.XMLAttributes;
+		if( !isNull( config[ 'template-charset' ] ) ) { setTemplateCharset( config[ 'template-charset' ] ); }
+	}
+	
+	private function readJava( java ) {
+		var config = java.XMLAttributes;
+		if( !isNull( config[ 'inspect-template' ] ) ) { setInspectTemplate( config[ 'inspect-template' ] ); }
+	}
+	
 	private function readDatasources( datasources ) {
 		var passwordManager = getLuceePasswordManager();
 		for( var ds in datasources.XMLChildren ) {
@@ -90,11 +117,12 @@ component accessors=true extends='BaseConfig' {
 	private function readApplication( thisApplication ) {
 		var config = thisApplication.XMLAttributes;
 		
-		if( !isNull( config.requesttimeout ) ) { setRequestTimeout( config.requesttimeout ) };	
-		if( !isNull( config[ 'allow-url-requesttimeout' ] ) ) { setRequestTimeoutInURL( config[ 'allow-url-requesttimeout' ] ) };
-		if( !isNull( config[ 'script-protect' ] ) ) { setScriptProtect( config[ 'script-protect' ] ) };
-		if( !isNull( config[ 'listener-type' ] ) ) { setApplicationListener( config[ 'listener-type' ] ) };
-		if( !isNull( config[ 'listener-mode' ] ) ) { setApplicationMode( config[ 'listener-mode' ] ) };
+		if( !isNull( config.requesttimeout ) ) { setRequestTimeout( config.requesttimeout ); }
+		if( !isNull( config[ 'allow-url-requesttimeout' ] ) ) { setRequestTimeoutInURL( config[ 'allow-url-requesttimeout' ] ); }
+		if( !isNull( config[ 'script-protect' ] ) ) { setScriptProtect( config[ 'script-protect' ] ); }
+		if( !isNull( config[ 'listener-type' ] ) ) { setApplicationListener( config[ 'listener-type' ] ); }
+		if( !isNull( config[ 'listener-mode' ] ) ) { setApplicationMode( config[ 'listener-mode' ] ); }
+		if( !isNull( config[ 'type-checking' ] ) ) { setUDFTypeChecking( config[ 'type-checking' ] ); }
 	}
 	
 	private function readScope( scope ) {
@@ -214,6 +242,9 @@ component accessors=true extends='BaseConfig' {
 		writeCustomTags( thisConfig );
 		writeDebugging( thisConfig );
 		writeAuth( thisConfig );
+		writeCompiler( thisConfig );
+		writeCharset( thisConfig );
+		writeJava( thisConfig );
 		
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true )
@@ -222,6 +253,58 @@ component accessors=true extends='BaseConfig' {
 		return this;
 	}
 
+	private function writeCompiler( thisConfig ) {
+		var compilerSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/compiler' );
+		if( compilerSearch.len() ) {
+			var compiler = compilerSearch[1];
+		} else {
+			var compiler = xmlElemnew( thisConfig, 'compiler' );			
+		}
+		
+		var config = compiler.XMLAttributes;
+		
+		if( !isNull( getDotNotation() ) ) { config[ 'dot-notation-upper-case' ] = getDotNotation(); }
+		if( !isNull( getNullSupport() ) ) { config[ 'full-null-support' ] = getNullSupport(); }
+		if( !isNull( getSuppressWhitespaceBeforecfargument() ) ) { config[ 'suppress-ws-before-arg' ] = getSuppressWhitespaceBeforecfargument(); }
+
+		if( !compilerSearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( compiler );
+		}
+	}
+
+	private function writeCharset( thisConfig ) {
+		var charsetSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/charset' );
+		if( charsetSearch.len() ) {
+			var charset = charsetSearch[1];
+		} else {
+			var charset = xmlElemnew( thisConfig, 'charset' );			
+		}
+		
+		var config = charset.XMLAttributes;
+		
+		if( !isNull( getTemplateCharset() ) ) { config[ 'template-charset' ] = getTemplateCharset(); }
+
+		if( !charsetSearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( charset );
+		}
+	}
+
+	private function writeJava( thisConfig ) {
+		var javaSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/java' );
+		if( javaSearch.len() ) {
+			var java = javaSearch[1];
+		} else {
+			var java = xmlElemnew( thisConfig, 'java' );			
+		}
+		
+		var config = java.XMLAttributes;
+		
+		if( !isNull( getInspectTemplate() ) ) { config[ 'inspect-template' ] = getInspectTemplate(); }
+
+		if( !javaSearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( java );
+		}
+	}
 	
 	private function writeDatasources( thisConfig ) {
 		var passwordManager = getLuceePasswordManager();
@@ -281,6 +364,7 @@ component accessors=true extends='BaseConfig' {
 		if( !isNull( getRequestTimeout() ) ) { config[ 'script-protect' ] = getScriptProtect(); }
 		if( !isNull( getRequestTimeout() ) ) { config[ 'listener-type' ] = getApplicationListener(); }
 		if( !isNull( getRequestTimeout() ) ) { config[ 'listener-mode' ] = getApplicationMode(); }
+		if( !isNull( getUDFTypeChecking() ) ) { config[ 'type-checking' ] = getUDFTypeChecking(); }
 	}
 	
 	private function writeScope( thisConfig ) {

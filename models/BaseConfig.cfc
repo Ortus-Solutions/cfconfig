@@ -6,8 +6,8 @@
 */
 component accessors=true {
 	
-	property name='trustedCache' type='string' _isCFConfig=true;
-	property name='UDFTypes' type='string' _isCFConfig=true;
+	property name='inspectTemplate' type='string' _isCFConfig=true;
+	property name='UDFTypeChecking' type='string' _isCFConfig=true;
 	property name='nullSupport' type='boolean' _isCFConfig=true;
 	property name='templateCharset' type='string' _isCFConfig=true;
 	property name='dotNotation' type='string' _isCFConfig=true;
