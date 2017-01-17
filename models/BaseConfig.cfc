@@ -5,37 +5,65 @@
 * to/from a specific engine's format, you'll need to create one of my subclasses
 */
 component accessors=true {
-	
+	// One of the strings "never", "once", "always"
 	property name='inspectTemplate' type='string' _isCFConfig=true;
-	property name='UDFTypeChecking' type='string' _isCFConfig=true;
+	// True/false
+	property name='UDFTypeChecking' type='boolean' _isCFConfig=true;
+	// true/false
 	property name='nullSupport' type='boolean' _isCFConfig=true;
-	property name='templateCharset' type='string' _isCFConfig=true;
-	property name='dotNotation' type='string' _isCFConfig=true;
+	// true/false
+	property name='dotNotation' type='boolean' _isCFConfig=true;
+	// true/false
 	property name='suppressWhitespaceBeforecfargument' type='string' _isCFConfig=true;
+	// Ex: en_US
 	property name='thisLocale' type='string' _isCFConfig=true;
+	// Ex: 	America/Chicago
 	property name='thisTimeZone' type='string' _isCFConfig=true;
+	// Ex: 	pool.ntp.org
 	property name='timeServer' type='string' _isCFConfig=true;
+	// true/false
 	property name='useTimeServer' type='boolean' _isCFConfig=true;
+	// Ex: windows-1252 (Lucee: Default character used to read templates (*.cfm and *.cfc files))
 	property name='templateCharset' type='string' _isCFConfig=true;
+	// Ex: UTF-8 (Lucee: Default character set for output streams, form-, url-, and cgi scope variables and reading/writing the header)
 	property name='webCharset' type='string' _isCFConfig=true;
+	// Ex: windows-1252 (Default character set for reading from/writing to various resources)
 	property name='resourceCharset' type='string' _isCFConfig=true;
+	// One of the strings "standard", "small", "strict"
 	property name='scopeCascading' type='string' _isCFConfig=true;
+	// True/false
 	property name='searchResultsets' type='boolean' _isCFConfig=true;
+	// One of the strings "cfml", "j2ee"
 	property name='sessionType' type='string' _isCFConfig=true;
+	// True/false
 	property name='mergeURLAndForm' type='boolean' _isCFConfig=true;
+	// True/false
 	property name='sessionMangement' type='boolean' _isCFConfig=true;
+	// True/false
 	property name='clientManagement' type='boolean' _isCFConfig=true;
+	// True/false
 	property name='domainCookies' type='boolean' _isCFConfig=true;
+	// True/false
 	property name='clientCookies' type='boolean' _isCFConfig=true;
+	// One of the strings "classic", "modern"
 	property name='localScopeMode' type='string' _isCFConfig=true;
+	// True/false
 	property name='CGIReadOnly' type='string' _isCFConfig=true;
+	// Timespan Ex: 0,5,30,0
 	property name='sessionTimeout' type='string' _isCFConfig=true;
+	// Timespan Ex: 0,5,30,0
 	property name='applicationTimeout' type='string' _isCFConfig=true;
+	// One of the strings "none", "mixed", "modern", "classic"
 	property name='applicationListener' type='string' _isCFConfig=true;
+	// One of the strings "curr2root", "curr", "root", "currorroot"
 	property name='applicationMode' type='string' _isCFConfig=true;
+	// Timespan Ex: 0,5,30,0
 	property name='clientTimeout' type='string' _isCFConfig=true;
+	// One of the strings "memory", "file", "cookie", <cache-name>, <datasource-name>
 	property name='sessionStorage' type='string' _isCFConfig=true;
+	// One of the strings "memory", "file", "cookie", <cache-name>, <datasource-name>
 	property name='clientStorage' type='string' _isCFConfig=true;
+	
 	property name='scriptProtect' type='string' _isCFConfig=true;
 	property name='requestTimeout' type='string' _isCFConfig=true;
 	property name='requestTimeoutInURL' type='string' _isCFConfig=true;

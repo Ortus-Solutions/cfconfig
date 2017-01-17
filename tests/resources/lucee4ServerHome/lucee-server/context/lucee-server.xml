@@ -161,7 +161,7 @@ Path placeholders:
 		client-max-age
 			the max age of the client scope in days
 	-->
-	<scope applicationtimeout="1,0,0,0" cascade-to-resultset="true" cascading="standard" cgi-readonly="true" client-directory-max-size="10mb" clientmanagement="false" clientstorage="cookie" clienttimeout="90,0,0,0" local-mode="classic" merge-url-form="false" session-type="cfml" sessionmanagement="true" sessionstorage="memory" sessiontimeout="0,0,30,0" setclientcookies="true" setdomaincookies="false"/>
+	<scope applicationtimeout="1,0,0,0" cascade-to-resultset="true" cascading="standard" cgi-readonly="true" client-directory-max-size="10mb" clientmanagement="false" clientstorage="cookie" clienttimeout="90,0,0,0" local-mode="modern" merge-url-form="false" session-type="cfml" sessionmanagement="true" sessionstorage="memory" sessiontimeout="0,0,30,0" setclientcookies="true" setdomaincookies="false"/>
 		
 	<mail spool-enable="yes" spool-interval="5" timeout="30">
 	<server idle="10000" life="60000" password="encrypted:90609ed597245d4c82ce592d261c06a5c38f03cea1961efba30285fbbc33bfc1" port="587" smtp="smptout.secureserver.net" ssl="false" tls="false" username="brad@bradwood.com"/></mail>
@@ -349,4 +349,4 @@ for every argument defined lucee tries to call a matching setter method
 		<logger appender="resource" appender-arguments="path:{lucee-config}/logs/datasource.log" layout="classic" name="datasource"/>
 	</logging>
 	
-<datasource/><queue enable="false"/><compiler dot-notation-upper-case="true" full-null-support="false" suppress-ws-before-arg="true"/><charset template-charset="windows-1252"/><java inspect-template="always"/></cfLuceeConfiguration>
+<datasource/><queue enable="false"/><compiler dot-notation-upper-case="true" full-null-support="true" suppress-ws-before-arg="true"/><charset resource-charset="windows-1252" template-charset="windows-1252" web-charset="UTF-8"/><java inspect-template="once"/><setting allow-compression="false" buffer-output="true" cfml-writer="regular" content-length="" suppress-content="false"/></cfLuceeConfiguration>

@@ -98,6 +98,8 @@ component accessors=true extends='BaseConfig' {
 	private function readCharset( charset ) {
 		var config = charset.XMLAttributes;
 		if( !isNull( config[ 'template-charset' ] ) ) { setTemplateCharset( config[ 'template-charset' ] ); }
+		if( !isNull( config[ 'web-charset' ] ) ) { setWebCharset( config[ 'web-charset' ] ); }
+		if( !isNull( config[ 'resource-charset' ] ) ) { setResourceCharset( config[ 'resource-charset' ] ); }
 	}
 	
 	private function readJava( java ) {
@@ -296,7 +298,9 @@ component accessors=true extends='BaseConfig' {
 		var config = charset.XMLAttributes;
 		
 		if( !isNull( getTemplateCharset() ) ) { config[ 'template-charset' ] = getTemplateCharset(); }
-
+		if( !isNull( getWebCharset() ) ) { config[ 'web-charset' ] = getWebCharset(); }
+		if( !isNull( getResourceCharset() ) ) { config[ 'resource-charset' ] = getResourceCharset(); }
+		
 		if( !charsetSearch.len() ) {
 			thisConfig.XMLRoot.XMLChildren.append( charset );
 		}
