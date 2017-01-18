@@ -4,10 +4,10 @@ This is a library for reading, writing, and storing configuration for all CF eng
 
 ## Main Features
 
-1. Generic JSON storage of CF engine settings
+1. Generic JSON storage of any CF engine's settings
 2. Engine-specific mappings for all major engines to convert their config to and from the generic JSON format
 
-This does not use RDS and doesn't need the server to be running.  It just needs access to the installation folder for a server to locate it's config files. 
+This does not use RDS and doesn't need the server to be running.  It just needs access to the installation folder for a server to locate its config files. 
 
 ## Possible Uses
 
@@ -21,9 +21,10 @@ Uses for this library include but are not limited to:
 
 ## Completeness
 
-This project is a word in progress.  I'm starting with the most common engines and the most common config settings so it's possible you may find an engine
-or config setting that's not supported.  Please submit pull requests for these.  It's not hard, it's just tedious to do all the copy/paste.  
-If you don't have time for a pull reqyest, please enter a ticket so we can track remaining features.  
+This project is a work in progress.  I'm starting with the most common engines and the most common config settings so it's possible you may find an engine
+or config setting that's not supported yet.  Please submit pull requests for these.  It's not hard, it's just tedious to do all the copy/paste.  I'd *love* collaborate on this project
+
+If you don't have time for a pull request, please enter a ticket so we can track remaining features.  
 
 Major features left to develop
 * Adobe CF9
@@ -39,15 +40,15 @@ Here are the main components in the project
 
 ### BaseConfig
 
-I represent the configuration of a CF engine.  I am agnostic and don't contain any particular behavior for a specific engine.  
-Not all the data I store applies to every engine though.  I am capable of reading and writing to a standard JSON format, but if you want to read or write to/from a specific engine's format, you'll need to create one of my subclasses
+This class represents the configuration of a CF engine.  It is agnostic and doesn't contain any particular behavior for a specific engine.  
+Not all the data it stores applies to every engine though.  It is capable of reading and writing to a standard JSON format, but if you want to read or write to/from a specific engine's format, you'll need to create one of the engine-specific subclasses
 
 ### Engine-specific mappers
 
 * **Lucee4ServerConfig** - Lucee 4.x server context
 * **Lucee4WebConfig** - Lucee 4.x web context
 * **Lucee5ServerConfig** - Lucee 5.x server context
-* **Lucee5WebConfig** - Lucee 4.x web context
+* **Lucee5WebConfig** - Lucee 5.x web context
 
 ## Usage
 
@@ -57,9 +58,9 @@ Each of the components above supports these public methods:
 * `read( CFHomePath )` - Extract the config from the files found in the server home.  You can override `CFHomePath` here too.
 * `write( CFHomePath )` - Write the config out to the files in the server home whether or not they already exist.  You can override `CFHomePath` here too.
 * `getMemento()` - Return all configuration in as a raw CFML data structure.  Useful for passing config values to another instance.
-* `setMemento()` - Accept configuration as a raw CFML data structure.  Useful for accepting another instances data.
+* `setMemento()` - Accept configuration as a raw CFML data structure.  Useful for accepting another instance's data.
 
-Create an instance of the component that corresponds to the server that you'd like to read or write config settings from, or the `BaseConfig` class if you want to deal with JSON-based config.
+Create an instance of the component that corresponds to the server that you'd like to read or write config settings from, or the `BaseConfig` class if you want to deal with the generic JSON-based config.
 
 **Create a new JSON configuration file programmatically**
 ```
@@ -99,7 +100,7 @@ new models.Lucee4WebConfig()
 ## Notes
 
 The `BaseConfig` will read/write to a JSON file called `.CFConfig.json` by default in the home directory you specify.  You can alternatively specify a full path
-to a JSON to change the name. 
+to a JSON file to change the name. 
 
 The Lucee 4 and Lucee 5 *web* components expect the `CFHomePath` to be the folder containing the `lucee-web.xml.cfm` file.  
 An example would be:
