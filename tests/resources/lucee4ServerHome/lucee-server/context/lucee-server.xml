@@ -349,4 +349,4 @@ for every argument defined lucee tries to call a matching setter method
 		<logger appender="resource" appender-arguments="path:{lucee-config}/logs/datasource.log" layout="classic" name="datasource"/>
 	</logging>
 	
-<datasource/><queue enable="false"/><compiler dot-notation-upper-case="true" full-null-support="true" suppress-ws-before-arg="true"/><charset resource-charset="windows-1252" template-charset="windows-1252" web-charset="UTF-8"/><java inspect-template="once"/><setting allow-compression="false" buffer-output="true" cfml-writer="regular" content-length="" suppress-content="false"/></cfLuceeConfiguration>
+<datasource/><queue enable="false"/><compiler dot-notation-upper-case="true" full-null-support="true" suppress-ws-before-arg="true"/><charset resource-charset="windows-1252" template-charset="windows-1252" web-charset="UTF-8"/><java inspect-template="once"/><setting allow-compression="true" buffer-output="true" cfml-writer="regular" content-length="" suppress-content="true"/></cfLuceeConfiguration>

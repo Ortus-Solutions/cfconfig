@@ -63,40 +63,52 @@ component accessors=true {
 	property name='sessionStorage' type='string' _isCFConfig=true;
 	// One of the strings "memory", "file", "cookie", <cache-name>, <datasource-name>
 	property name='clientStorage' type='string' _isCFConfig=true;
-	
+	// "none", "all" or a comma-delimited list with some combination of "cgi", "cookie", "form", "url".
 	property name='scriptProtect' type='string' _isCFConfig=true;
+	// Timespan Ex: 0,5,30,0
 	property name='requestTimeout' type='string' _isCFConfig=true;
-	property name='requestTimeoutInURL' type='string' _isCFConfig=true;
+	// True/false
+	property name='requestTimeoutInURL' type='boolean' _isCFConfig=true;
+	// One of the strings "regular", "white-space", "white-space-pref"
 	property name='whitespaceManagement' type='string' _isCFConfig=true;
+	// True/false
 	property name='compression' type='boolean' _isCFConfig=true;
+	// True/false
 	property name='supressContentForCFCRemoting' type='boolean' _isCFConfig=true;
-	property name='bufferTagBodyOutput' type='boolean' _isCFConfig=true;
-	property name='generalErrorTemplate' type='string' _isCFConfig=true;
-	property name='missingErrorTemplate' type='string' _isCFConfig=true;
-	property name='errorStatusCode' type='string' _isCFConfig=true;
-	property name='caches' type='array' _isCFConfig=true;
+	// True/false
+	property name='bufferTagBodyOutput' type='boolean' _isCFConfig=true;		
+	// Key is datasource name, value is struct of properties
 	property name='datasources' type='struct' _isCFConfig=true;
+	// Array of structs of properties.  Mail servers are uniquely identified by host
 	property name='mailServers' type='array' _isCFConfig=true;
+	// Key is virtual path, value is struct of properties
 	property name='CFMappings' type='struct' _isCFConfig=true;
-	property name='restMappings' type='array' _isCFConfig=true;
-	property name='componentBase' type='string' _isCFConfig=true;
-	property name='componentAutoImport' type='string' _isCFConfig=true;
-	property name='componentSearchLocal' type='boolean' _isCFConfig=true;
-	property name='componentImplicitNotation' type='boolean' _isCFConfig=true;
-	property name='customTagSearchSubdirectories' type='boolean' _isCFConfig=true;
-	property name='customTagSearchLocal' type='boolean' _isCFConfig=true;
-	property name='customTagExtensions' type='string' _isCFConfig=true;
-	property name='customTagPaths' type='array' _isCFConfig=true;
-	property name='cfxTags' type='string' _isCFConfig=true;
-	property name='debuggingEnabled' type='boolean' _isCFConfig=true;
-	property name='debuggingDBEnabled' type='string' _isCFConfig=true;
-	property name='debuggingExceptionsEnabled' type='boolean' _isCFConfig=true;
-	property name='debuggingDBActivityEnabled' type='boolean' _isCFConfig=true;
-	property name='debuggingQueryUsageEnabled' type='boolean' _isCFConfig=true;
-	property name='debuggingTracingEnabled' type='boolean' _isCFConfig=true;
-	property name='debuggingDumpEnabled' type='boolean' _isCFConfig=true;
-	property name='debuggingTimerEnabled' type='boolean' _isCFConfig=true;
-	property name='debuggingImplicitVariableAccessEnabled' type='boolean' _isCFConfig=true;
+	
+	// TODO: 
+	//property name='caches' type='array' _isCFConfig=true;
+	//property name='generalErrorTemplate' type='string' _isCFConfig=true;
+	//property name='missingErrorTemplate' type='string' _isCFConfig=true;
+	//property name='errorStatusCode' type='string' _isCFConfig=true;	
+	//property name='restMappings' type='array' _isCFConfig=true;
+	//property name='componentBase' type='string' _isCFConfig=true;
+	//property name='componentAutoImport' type='string' _isCFConfig=true;
+	//property name='componentSearchLocal' type='boolean' _isCFConfig=true;
+	//property name='componentImplicitNotation' type='boolean' _isCFConfig=true;
+	//property name='customTagSearchSubdirectories' type='boolean' _isCFConfig=true;
+	//property name='customTagSearchLocal' type='boolean' _isCFConfig=true;
+	//property name='customTagExtensions' type='string' _isCFConfig=true;
+	//property name='customTagPaths' type='array' _isCFConfig=true;
+	//property name='cfxTags' type='string' _isCFConfig=true;
+	//property name='debuggingEnabled' type='boolean' _isCFConfig=true;
+	//property name='debuggingDBEnabled' type='string' _isCFConfig=true;
+	//property name='debuggingExceptionsEnabled' type='boolean' _isCFConfig=true;
+	//property name='debuggingDBActivityEnabled' type='boolean' _isCFConfig=true;
+	//property name='debuggingQueryUsageEnabled' type='boolean' _isCFConfig=true;
+	//property name='debuggingTracingEnabled' type='boolean' _isCFConfig=true;
+	//property name='debuggingDumpEnabled' type='boolean' _isCFConfig=true;
+	//property name='debuggingTimerEnabled' type='boolean' _isCFConfig=true;
+	//property name='debuggingImplicitVariableAccessEnabled' type='boolean' _isCFConfig=true;
+	
 	// Plain text admin password
 	property name='adminPassword' type='string' _isCFConfig=true;
 	// Plain text default password for new Lucee web context

@@ -83,6 +83,9 @@ component accessors=true extends='BaseConfig' {
 		var debugging = xmlSearch( thisConfig, '/cfLuceeConfiguration/debugging' );
 		if( debugging.len() ){ readDebugging( debugging[ 1 ] ); }
 		
+		var setting = xmlSearch( thisConfig, '/cfLuceeConfiguration/setting' );
+		if( setting.len() ){ readSetting( setting[ 1 ] ); }
+		
 		readAuth( thisConfig.XMLRoot );
 		
 		return this;
@@ -217,8 +220,16 @@ component accessors=true extends='BaseConfig' {
 			if( isNull( getAdminSalt() ) ){
 				setAdminSalt( createUUID() );
 			}
-		}
-		
+		}		
+	}
+	
+	private function readSetting( settings ) {
+		var config = settings.XMLAttributes;
+				
+		if( !isNull( config[ 'allow-compression' ] ) ) { setCompression( config[ 'allow-compression' ] ); }
+		if( !isNull( config[ 'cfml-writer' ] ) ) { setWhitespaceManagement( config[ 'cfml-writer' ] ); }
+		if( !isNull( config[ 'buffer-output' ] ) ) { setBufferTagBodyOutput( config[ 'buffer-output' ] ); }
+		if( !isNull( config[ 'suppress-content' ] ) ) { setSupressContentForCFCRemoting( config[ 'suppress-content' ] ); }			
 	}
 	
 
@@ -260,6 +271,7 @@ component accessors=true extends='BaseConfig' {
 		writeCharset( thisConfig );
 		writeJava( thisConfig );
 		writeRegional( thisConfig );
+		writeSetting( thisConfig );
 		
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true )
@@ -568,6 +580,26 @@ component accessors=true extends='BaseConfig' {
 		}
 		
 		if( !isNull( getAdminSalt() ) ) { config[ 'salt' ] = getAdminSalt(); }
+	}
+	
+	private function writeSetting( thisConfig ) {
+		var settingSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/setting' );
+		if( settingSearch.len() ) {
+			var setting = settingSearch[1];
+		} else {
+			var setting = xmlElemnew( thisConfig, 'setting' );			
+		}
+		
+		var config = setting.XMLAttributes;
+		
+		if( !isNull( getCompression() ) ) { config[ 'allow-compression' ] = getCompression(); }
+		if( !isNull( getWhitespaceManagement() ) ) { config[ 'cfml-writer' ] = getWhitespaceManagement(); }
+		if( !isNull( getBufferTagBodyOutput() ) ) { config[ 'buffer-output' ] = getBufferTagBodyOutput(); }
+		if( !isNull( getSupressContentForCFCRemoting() ) ) { config[ 'suppress-content' ] = getSupressContentForCFCRemoting(); }
+
+		if( !settingSearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( setting );
+		}
 	}
 	
 	/**
