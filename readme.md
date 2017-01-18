@@ -32,7 +32,7 @@ Major features left to develop
 * Adobe CF11 (Everything)
 * Adobe C2016 (Everything)
 * Railo 4.x (Everything-- probably can heavily re-use from Lucee 4.x)
-* Lucee x caches, custom tags, debugging, REST mappings, error settings, component settings
+* Lucee 4.x/5.x caches, custom tags, debugging, REST mappings, error settings, component settings
 
 ## Component Overview
 
