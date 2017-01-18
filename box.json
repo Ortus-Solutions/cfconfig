@@ -1,8 +1,8 @@
 {
     "name":"CF Config",
-    "version":"0.1.0",
+    "version":"0.1.0-alpha",
     "author":"Brad Wood",
-    "location":"https://github.com/bdw429s/cfconfig#v.0.1.0",
+    "location":"https://github.com/bdw429s/cfconfig#master",
     "packageDirectory":"",
     "homepage":"https://github.com/bdw429s/cfconfig",
     "documentation":"",
