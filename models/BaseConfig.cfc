@@ -84,7 +84,8 @@ component accessors=true {
 	// Key is virtual path, value is struct of properties
 	property name='CFMappings' type='struct' _isCFConfig=true;
 	
-	// TODO: 
+	// TODO:
+	//property name='externalizeStrings' type='string' _isCFConfig=true;
 	//property name='caches' type='array' _isCFConfig=true;
 	//property name='generalErrorTemplate' type='string' _isCFConfig=true;
 	//property name='missingErrorTemplate' type='string' _isCFConfig=true;
@@ -239,7 +240,7 @@ component accessors=true {
 	*/
 	function addCFMapping(
 			required string virtual,
-			required string physical,
+			physical,
 			archive,
 			inspectTemplate,
 			listenerMode,
@@ -249,7 +250,7 @@ component accessors=true {
 		) {
 		
 		var mapping = {};
-		mapping.physical = physical;;
+		if( !isNull( physical ) ) { mapping.physical = physical; };
 		if( !isNull( archive ) ) { mapping.archive = archive; };
 		if( !isNull( inspectTemplate ) ) { mapping.inspectTemplate = inspectTemplate; };
 		if( !isNull( listenerMode ) ) { mapping.listenerMode = listenerMode; };

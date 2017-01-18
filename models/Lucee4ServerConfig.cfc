@@ -183,7 +183,7 @@ component accessors=true extends='BaseConfig' {
 	}
 	
 	private function readMappings( mappings ) {
-		var ignores = [ '/lucee-server/' , '/lucee/' ];
+		var ignores = [ '/lucee-server/' , '/lucee/', '/lucee/doc', '/lucee/admin' ];
 		
 		for( var mapping in mappings.XMLChildren ) {
 			var params = {}.append( mapping.XMLAttributes );
@@ -191,7 +191,6 @@ component accessors=true extends='BaseConfig' {
 			if( ignores.findNoCase( params.virtual ) ) {
 				continue;
 			} 
-				
 			addCFMapping( argumentCollection = params );
 		}
 	}

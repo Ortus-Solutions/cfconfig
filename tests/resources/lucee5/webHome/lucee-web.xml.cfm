@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?><cfLuceeConfiguration hspw="08a6eccd951e859d6bf946190ad07f9edb6f1d058901042cf63d1ce5b635027d" salt="4F02A6ED-C6D2-4129-9B8CBC3A470C05E8" version="4.5"><cfabort/>
+<?xml version="1.0" encoding="UTF-8"?><cfLuceeConfiguration salt="D158F98B-A686-4960-BDC5ED276E7B8329" version="5.1">
 
 <!-- 
 Path placeholders:
-	{lucee-web}: path to the lucee web directory typical "{web-root}/WEB-INF/lucee"
-	{lucee-server}: path to the lucee server directory typical where the lucee.jar is located
+	{lucee-web}: path to the Lucee web directory typical "{web-root}/WEB-INF/lucee"
+	{lucee-server}: path to the Lucee server directory typical where the Lucee.jar is located
 	{lucee-config}: same as {lucee-server} in server context and same as {lucee-web} in web context}
 	{temp-directory}: path to the temp directory of the current user of the system
 	{home-directory}: path to the home directory of the current user of the system
 	{web-root-directory}: path to the web root
-	{system-directory}: path to the system directory
+	{system-directory}: path to thesystem directory
 	{web-context-hash}: hash of the web context
 -->
 	
@@ -39,7 +39,7 @@ Path placeholders:
 		lock-timeout   - 	define how long a request wait for a lock
 	 	-->
     	<resource-provider arguments="case-sensitive:true;lock-timeout:1000;" class="lucee.commons.io.res.type.ram.RamResourceProvider" scheme="ram"/>
-    <resource-provider arguments="lock-timeout:10000;" class="lucee.commons.io.res.type.s3.S3ResourceProvider" scheme="s3"/></resources>
+    </resources>
     
     <remote-clients directory="{lucee-web}remote-client/"/>
 	
@@ -75,12 +75,6 @@ Path placeholders:
 	<mail>
 	</mail>
 	
-	<!--
-	define path to search directory
-		directory: path
-		engine-class: class that implement the Search Engine. Class must be subclass of lucee.runtime.search.SearchEngine
-	-->	
-	<search directory="{lucee-web}/search/" engine-class="lucee.runtime.search.lucene.LuceneSearchEngine"/>
 	
 	<!--
 	define path to scedule task directory
@@ -143,14 +137,14 @@ Path placeholders:
 		timeserver: [example: swisstime.ethz.ch] default:local time
 			dns of a ntp time server
 	-->
-	<regional locale="en_US" timeserver="pool.ntp.org" timezone="America/Chicago" use-timeserver="true"/>
+	<regional/>
 	
 	<!--
 		enable and disable debugging
 	 -->
 	<debugging template="/lucee/templates/debugging/debugging.cfm"/>
 		
-	<application cache-directory="{lucee-web}/cache/" cache-directory-max-size="100mb" type-checking="true"/>
+	<application cache-directory="{lucee-web}/cache/" cache-directory-max-size="100mb"/>
 		
 		
 		
@@ -212,4 +206,4 @@ for every argument defined lucee tries to call a matching setter method
 		<logger appender="resource" appender-arguments="path:{lucee-config}/logs/application.log" layout="classic" level="info" name="application"/>
 		<logger appender="resource" appender-arguments="path:{lucee-config}/logs/exception.log" layout="classic" level="info" name="exception"/>	
 	</logging>		
-<datasource/><java inspect-template="once"/><compiler dot-notation-upper-case="true" full-null-support="true" suppress-ws-before-arg="true"/><charset template-charset="windows-1252"/></cfLuceeConfiguration>
+<datasource/><rest/><gateways/><orm/><search/></cfLuceeConfiguration>
