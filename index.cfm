@@ -1,22 +1,22 @@
 <cfscript>
 
-	Lucee4ServerConfig = new models.Lucee4ServerConfig()
-		.setCFHomePath( expandPath( '/tests/resources/lucee4ServerHome/lucee-server' ) )
+	Lucee4WebConfig = new models.Lucee4WebConfig()
+		.setCFHomePath( expandPath( '/tests/resources/lucee4WebHome/' ) )
 		.read();
 		
-	writeDump(Lucee4ServerConfig.getMemento() );
-	Lucee4ServerConfig.write( expandPath( '/lucee-server-new.xml' ) );
+	writeDump(Lucee4WebConfig.getMemento() );
+	Lucee4WebConfig.write( expandPath( '/lucee-web-new.xml' ) );
 	
 	baseConfig = new models.baseConfig()
-		.setMemento( Lucee4ServerConfig.getMemento() )
+		.setMemento( Lucee4WebConfig.getMemento() )
 		.write( expandPath( '/' ) );
 		
 	baseConfig2 = new models.baseConfig()
 		.read( expandPath( '/.CFConfig.json' ) );
 	
-	Lucee4ServerConfig2 = new models.Lucee4ServerConfig()
+	Lucee4WebConfig2 = new models.Lucee4WebConfig()
 		.setMemento( baseConfig2.getMemento() )		
-		.write( expandPath( '/lucee-server-new2.xml' ) );
+		.write( expandPath( '/lucee-web-new2.xml' ) );
 	
 	
 </cfscript>

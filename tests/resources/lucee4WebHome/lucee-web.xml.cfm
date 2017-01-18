@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><cfLuceeConfiguration salt="8E9293EC-1E1D-4124-9B96961B5B7A6C4D" version="4.5">
+<?xml version="1.0" encoding="UTF-8"?><cfLuceeConfiguration hspw="ffbcc797147f19db94ffb9a37a1930ea11baae337e0fa72fb43ec1e73b74c47a" salt="8E9293EC-1E1D-4124-9B96961B5B7A6C4D" version="4.5"><cfabort/>
 
 <!-- 
 Path placeholders:
@@ -21,7 +21,7 @@ Path placeholders:
 		suppress-whitespace	-	supress white space in response
 		show-version - show lucee version uin response header
 	 -->
-	<setting/>
+	<setting allow-compression="false" buffer-output="false" cfml-writer="white-space" content-length="" suppress-content="false"/>
 
 <!--	definition of all database used inside your application. 										-->
 <!--	above you can find some definition of jdbc drivers (all this drivers are included at lucee) 	-->
@@ -31,7 +31,7 @@ Path placeholders:
 <!--	or ask your database distributor 																-->
 
 	<data-sources>
-	</data-sources>
+	<data-source allow="511" blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionTimeout="1" custom="useUnicode=true&amp;characterEncoding=UTF-8&amp;useLegacyDatetimeCode=true" database="test" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" metaCacheTimeout="60000" name="test" port="3306" storage="false" username="root" validate="false"/></data-sources>
 	
 	<resources>
     	<!--
@@ -70,10 +70,10 @@ Path placeholders:
 		client-directory:path to directory where client scope values are stored
 		client-directory-max-size: max size of the client scope directory
 	-->
-	<scope client-directory="{lucee-web}/client-scope/" client-directory-max-size="100mb"/>
+	<scope applicationtimeout="1,0,1,0" cascade-to-resultset="true" cascading="standard" cgi-readonly="false" client-directory="{lucee-web}/client-scope/" client-directory-max-size="100mb" clientmanagement="true" clientstorage="cookie" clienttimeout="90,0,1,0" local-mode="classic" merge-url-form="false" session-type="cfml" sessionmanagement="true" sessionstorage="memory" sessiontimeout="0,0,30,0" setclientcookies="true" setdomaincookies="false"/>
 		
 	<mail>
-	</mail>
+	<server idle="10000" life="60000" password="encrypted:48d717fd46090a83d13aca6de0ec195cf564b0f44777bdc9" port="123" smtp="test" ssl="false" tls="false" username="test"/></mail>
 	
 	<!--
 	define path to search directory
@@ -110,7 +110,7 @@ Path placeholders:
 			for example when you define physical you can partiquel overwrite the archive.
 		-->
 		<mapping archive="{lucee-web}/context/lucee-context.lar" physical="{lucee-web}/context/" primary="physical" readonly="yes" toplevel="yes" trusted="true" virtual="/lucee/"/>
-	</mappings>	
+	<mapping inspect-template="" physical="C:/" primary="physical" toplevel="true" virtual="/baz"/></mappings>	
 	
 	<custom-tag>
 		<mapping physical="{lucee-web}/customtags/" trusted="yes"/>
@@ -143,14 +143,14 @@ Path placeholders:
 		timeserver: [example: swisstime.ethz.ch] default:local time
 			dns of a ntp time server
 	-->
-	<regional/>
+	<regional locale="en_US" timeserver="pool.ntp.org" timezone="America�Chicago" use-timeserver="true"/>
 	
 	<!--
 		enable and disable debugging
 	 -->
 	<debugging template="/lucee/templates/debugging/debugging.cfm"/>
 		
-	<application cache-directory="{lucee-web}/cache/" cache-directory-max-size="100mb"/>
+	<application cache-directory="{lucee-web}/cache/" cache-directory-max-size="100mb" listener-mode="curr2root" listener-type="mixed" type-checking="true"/>
 		
 		
 		
@@ -212,4 +212,4 @@ for every argument defined lucee tries to call a matching setter method
 		<logger appender="resource" appender-arguments="path:{lucee-config}/logs/application.log" layout="classic" level="info" name="application"/>
 		<logger appender="resource" appender-arguments="path:{lucee-config}/logs/exception.log" layout="classic" level="info" name="exception"/>	
 	</logging>		
-<datasource/></cfLuceeConfiguration>
+<datasource/><java inspect-template="once"/><compiler dot-notation-upper-case="true" full-null-support="false" suppress-ws-before-arg="true"/><charset resource-charset="windows-1252" template-charset="windows-1252" web-charset="UTF-8"/></cfLuceeConfiguration>

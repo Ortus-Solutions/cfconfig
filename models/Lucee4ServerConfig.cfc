@@ -6,6 +6,7 @@ component accessors=true extends='BaseConfig' {
 	
 	property name='configFileTemplate' type='string';
 	property name='configFileName' type='string';
+	property name='configRelativePathWithinServerHome' type='string';
 	property name='luceePasswordManager';
 	
 	
@@ -16,8 +17,13 @@ component accessors=true extends='BaseConfig' {
 		// Used when writing out a Lucee server context config file from the generic config
 		setConfigFileTemplate( expandPath( '/resources/lucee4/lucee-server-base.xml' ) );
 		
+		// Ex: lucee-server/context/lucee-server.xml
+		
 		// This is the file name used by this config file
 		setConfigFileName( 'lucee-server.xml' );
+		// This is where said config file is stored inside the server home
+		setConfigRelativePathWithinServerHome( '/context/' );
+		
 		setLuceePasswordManager( new LuceePasswordManager() );
 		
 		super.init();
@@ -603,19 +609,19 @@ component accessors=true extends='BaseConfig' {
 	}
 	
 	/**
-	* I find the actual Lucee 4.x server context config file
+	* I find the actual Lucee 4.x context config file
 	*/
 	function locateConfigFile(){
 		var thisCFHomePath = getCFHomePath();
 		var thisConfigFileName = getConfigFileName();
 		
-		// If the path ends with .xml, just use it
-		if( right( thisCFHomePath, 4 ) == '.xml' ) {
+		// If the path ends with the same extension as the config file name, just use it
+		if( right( thisCFHomePath, 4 ) == right( thisConfigFileName, 4 ) ) {
 			return thisCFHomePath;
 		}
 		
 		// This is where the file _should_ be.
-		return thisCFHomePath & '/context/' & thisConfigFileName;		
+		return thisCFHomePath & getConfigRelativePathWithinServerHome() & thisConfigFileName;		
 	}
 
 }
