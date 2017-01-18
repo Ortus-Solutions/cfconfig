@@ -155,7 +155,7 @@ component accessors=true extends='BaseConfig' {
 		if( !isNull( config[ 'cascade-to-resultset' ] ) ) { setSearchResultsets( config[ 'cascade-to-resultset' ] ) };
 		if( !isNull( config.cascading ) ) { setScopeCascading( config.cascading ) };
 		if( !isNull( config.clienttimeout ) ) { setClientTimeout( config.clienttimeout ) };
-		if( !isNull( config[ 'client-max-age' ] ) ) { setClientTimeout( '#config.client-max-age#,0,0,0' ) };
+		if( !isNull( config[ 'client-max-age' ] ) ) { setClientTimeout( '#config[ 'client-max-age' ]#,0,0,0' ) };
 		if( !isNull( config.clientmanagement ) ) { setClientManagement( config.clientmanagement ) };
 		if( !isNull( config[ 'merge-url-form' ] ) ) { setMergeURLAndForm( config[ 'merge-url-form' ] ) };
 		if( !isNull( config[ 'cgi-readonly' ] ) ) { setCGIReadOnly( config[ 'cgi-readonly' ] ) };
