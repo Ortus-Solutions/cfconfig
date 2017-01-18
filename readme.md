@@ -25,6 +25,14 @@ This project is a word in progress.  I'm starting with the most common engines a
 or config setting that's not supported.  Please submit pull requests for these.  It's not hard, it's just tedious to do all the copy/paste.  
 If you don't have time for a pull reqyest, please enter a ticket so we can track remaining features.  
 
+Major features left to develop
+* Adobe CF9
+* Adobe CF10
+* Adobe CF11
+* Adobe C2016
+* Railo 4.x (Probably can heavily re-use from Lucee 4.x)
+* Lucee x caches, custom tags, debugging, REST mappings, error settings, component settings
+
 ## Component Overview
 
 Here are the main components in the project
@@ -104,4 +112,3 @@ An example would be:
 ```
 /opt/lucee/lib/lucee-server/
 ```
-
