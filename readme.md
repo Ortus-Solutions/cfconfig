@@ -27,11 +27,11 @@ or config setting that's not supported yet.  Please submit pull requests for the
 If you don't have time for a pull request, please enter a ticket so we can track remaining features.  
 
 Major features left to develop
-* Adobe CF9
-* Adobe CF10
-* Adobe CF11
-* Adobe C2016
-* Railo 4.x (Probably can heavily re-use from Lucee 4.x)
+* Adobe CF9 (Everything)
+* Adobe CF10 (Everything)
+* Adobe CF11 (Everything)
+* Adobe C2016 (Everything)
+* Railo 4.x (Everything-- probably can heavily re-use from Lucee 4.x)
 * Lucee x caches, custom tags, debugging, REST mappings, error settings, component settings
 
 ## Component Overview
