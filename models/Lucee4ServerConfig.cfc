@@ -30,9 +30,9 @@ component accessors=true extends='BaseConfig' {
 	}
 	
 	/**
-	* I read in config from a base JSON format
+	* I read in config
 	*
-	* @CFHomePath The JSON file to read from
+	* @CFHomePath The server home directory
 	*/
 	function read( string CFHomePath ){
 		// Override what's set if a path is passed in
@@ -99,7 +99,7 @@ component accessors=true extends='BaseConfig' {
 	
 	private function readCompiler( compiler ) {
 		var config = compiler.XMLAttributes;
-		if( !isNull( config[ 'dot-notation-upper-case' ] ) ) { setDotNotation( config[ 'dot-notation-upper-case' ] ); }
+		if( !isNull( config[ 'dot-notation-upper-case' ] ) ) { setDotNotationUpperCase( config[ 'dot-notation-upper-case' ] ); }
 		if( !isNull( config[ 'full-null-support' ] ) ) { setNullSupport( config[ 'full-null-support' ] ); }
 		if( !isNull( config[ 'suppress-ws-before-arg' ] ) ) { setSuppressWhitespaceBeforecfargument( config[ 'suppress-ws-before-arg' ] ); }
 	}
@@ -140,7 +140,10 @@ component accessors=true extends='BaseConfig' {
 	private function readApplication( thisApplication ) {
 		var config = thisApplication.XMLAttributes;
 		
-		if( !isNull( config.requesttimeout ) ) { setRequestTimeout( config.requesttimeout ); }
+		if( !isNull( config.requesttimeout ) ) {
+			setRequestTimeout( config.requesttimeout );
+			setRequestTimeoutEnabled( true );
+		}
 		if( !isNull( config[ 'allow-url-requesttimeout' ] ) ) { setRequestTimeoutInURL( config[ 'allow-url-requesttimeout' ] ); }
 		if( !isNull( config[ 'script-protect' ] ) ) { setScriptProtect( config[ 'script-protect' ] ); }
 		if( !isNull( config[ 'listener-type' ] ) ) { setApplicationListener( config[ 'listener-type' ] ); }
@@ -239,9 +242,9 @@ component accessors=true extends='BaseConfig' {
 	
 
 	/**
-	* I write out config from a base JSON format
+	* I write out config
 	*
-	* @CFHomePath The JSON file to write to
+	* @CFHomePath The server home directory
 	*/
 	function write( string CFHomePath ){
 		setCFHomePath( arguments.CFHomePath ?: getCFHomePath() );
@@ -295,7 +298,7 @@ component accessors=true extends='BaseConfig' {
 		
 		var config = compiler.XMLAttributes;
 		
-		if( !isNull( getDotNotation() ) ) { config[ 'dot-notation-upper-case' ] = getDotNotation(); }
+		if( !isNull( getDotNotationUpperCase() ) ) { config[ 'dot-notation-upper-case' ] = getDotNotationUpperCase(); }
 		if( !isNull( getNullSupport() ) ) { config[ 'full-null-support' ] = getNullSupport(); }
 		if( !isNull( getSuppressWhitespaceBeforecfargument() ) ) { config[ 'suppress-ws-before-arg' ] = getSuppressWhitespaceBeforecfargument(); }
 
@@ -414,10 +417,11 @@ component accessors=true extends='BaseConfig' {
 		var config = thisApplication.XMLAttributes;
 		
 		if( !isNull( getRequestTimeout() ) ) { config[ 'requesttimeout' ] = getRequestTimeout(); }
-		if( !isNull( getRequestTimeout() ) ) { config[ 'allow-url-requesttimeout' ] = getRequestTimeoutInURL(); }
-		if( !isNull( getRequestTimeout() ) ) { config[ 'script-protect' ] = getScriptProtect(); }
-		if( !isNull( getRequestTimeout() ) ) { config[ 'listener-type' ] = getApplicationListener(); }
-		if( !isNull( getRequestTimeout() ) ) { config[ 'listener-mode' ] = getApplicationMode(); }
+		if( !isNull( getRequestTimeoutInURL() ) ) { config[ 'allow-url-requesttimeout' ] = getRequestTimeoutInURL(); }
+		if( !isNull( getScriptProtect() ) ) { config[ 'script-protect' ] = getScriptProtect(); }
+		if( !isNull( getApplicationListener() ) ) { config[ 'listener-type' ] = getApplicationListener(); }
+		// Swap Adobe-only setting of 'curr2driveroot' with 'curr2root'
+		if( !isNull( getApplicationMode() ) ) { config[ 'listener-mode' ] = ( getApplicationMode() == 'curr2driveroot' ? 'curr2root' : getApplicationMode() ); }
 		if( !isNull( getUDFTypeChecking() ) ) { config[ 'type-checking' ] = getUDFTypeChecking(); }
 	}
 	

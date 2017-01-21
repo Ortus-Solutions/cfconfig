@@ -7,14 +7,25 @@
 component accessors=true {
 	// One of the strings "never", "once", "always"
 	property name='inspectTemplate' type='string' _isCFConfig=true;
+	// Number of templates to cache
+	property name='templateCacheSize' type='numeric' _isCFConfig=true;
+	// True/false
+	property name='componentCacheEnabled' type='boolean' _isCFConfig=true;
+	// True/false
+	property name='saveClassFiles' type='boolean' _isCFConfig=true;	
 	// True/false
 	property name='UDFTypeChecking' type='boolean' _isCFConfig=true;
 	// true/false
 	property name='nullSupport' type='boolean' _isCFConfig=true;
 	// true/false
-	property name='dotNotation' type='boolean' _isCFConfig=true;
+	property name='dotNotationUpperCase' type='boolean' _isCFConfig=true;
 	// true/false
 	property name='suppressWhitespaceBeforecfargument' type='string' _isCFConfig=true;
+	// One of the strings "standard", "small", "strict"
+	property name='scopeCascading' type='string' _isCFConfig=true;
+	// True/false
+	property name='searchResultsets' type='boolean' _isCFConfig=true;
+	
 	// Ex: en_US
 	property name='thisLocale' type='string' _isCFConfig=true;
 	// Ex: 	America/Chicago
@@ -23,16 +34,14 @@ component accessors=true {
 	property name='timeServer' type='string' _isCFConfig=true;
 	// true/false
 	property name='useTimeServer' type='boolean' _isCFConfig=true;
+	
 	// Ex: windows-1252 (Lucee: Default character used to read templates (*.cfm and *.cfc files))
 	property name='templateCharset' type='string' _isCFConfig=true;
 	// Ex: UTF-8 (Lucee: Default character set for output streams, form-, url-, and cgi scope variables and reading/writing the header)
 	property name='webCharset' type='string' _isCFConfig=true;
 	// Ex: windows-1252 (Default character set for reading from/writing to various resources)
 	property name='resourceCharset' type='string' _isCFConfig=true;
-	// One of the strings "standard", "small", "strict"
-	property name='scopeCascading' type='string' _isCFConfig=true;
-	// True/false
-	property name='searchResultsets' type='boolean' _isCFConfig=true;
+	
 	// One of the strings "cfml", "j2ee"
 	property name='sessionType' type='string' _isCFConfig=true;
 	// True/false
@@ -53,21 +62,36 @@ component accessors=true {
 	property name='sessionTimeout' type='string' _isCFConfig=true;
 	// Timespan Ex: 0,5,30,0
 	property name='applicationTimeout' type='string' _isCFConfig=true;
+	
 	// One of the strings "none", "mixed", "modern", "classic"
 	property name='applicationListener' type='string' _isCFConfig=true;
-	// One of the strings "curr2root", "curr", "root", "currorroot"
+	/* One of the strings 
+	* "curr2root" - Current dir to web root (Lucee and Adobe [option 2])
+	* "curr" - Current dir only (Lucee only)
+	* "root" - Only in web root (Lucee only)
+	* "currorroot" -  Current dir or web root (Lucee and Adobe [option 3])
+	* "curr2driveroot" - Current dir to drive root (Adobe only [option 1])
+	*/
 	property name='applicationMode' type='string' _isCFConfig=true;
+	
 	// Timespan Ex: 0,5,30,0
 	property name='clientTimeout' type='string' _isCFConfig=true;
 	// One of the strings "memory", "file", "cookie", <cache-name>, <datasource-name>
 	property name='sessionStorage' type='string' _isCFConfig=true;
 	// One of the strings "memory", "file", "cookie", <cache-name>, <datasource-name>
 	property name='clientStorage' type='string' _isCFConfig=true;
-	// "none", "all" or a comma-delimited list with some combination of "cgi", "cookie", "form", "url".
-	property name='scriptProtect' type='string' _isCFConfig=true;
 	// Timespan Ex: 0,5,30,0
 	property name='requestTimeout' type='string' _isCFConfig=true;
 	// True/false
+	property name='requestTimeoutEnabled' type='boolean' _isCFConfig=true;
+	
+	// "none", "all" or a comma-delimited list with some combination of "cgi", "cookie", "form", "url".
+	property name='scriptProtect' type='string' _isCFConfig=true;
+	// True/false
+	property name='perAppSettingsEnabled' type='boolean' _isCFConfig=true;
+	// True/false
+	property name='useUUIDForCFToken' type='boolean' _isCFConfig=true;
+	// True/false	
 	property name='requestTimeoutInURL' type='boolean' _isCFConfig=true;
 	// One of the strings "regular", "white-space", "white-space-pref"
 	property name='whitespaceManagement' type='string' _isCFConfig=true;
@@ -83,13 +107,71 @@ component accessors=true {
 	property name='mailServers' type='array' _isCFConfig=true;
 	// Key is virtual path, value is struct of properties
 	property name='CFMappings' type='struct' _isCFConfig=true;
+	// True/false
+	property name='errorStatusCode' type='boolean' _isCFConfig=true;
+	// True/false
+	property name='disableInternalCFJavaComponents' type='boolean' _isCFConfig=true;
+	
+	// True/false
+	property name='secureJSON' type='boolean' _isCFConfig=true;
+	// A string representing the JSON prefx like "//"
+	property name='secureJSONPrefix' type='string' _isCFConfig=true;
+	
+	// Number of KB for buffer size (1024)
+	property name='maxOutputBufferSize' type='numeric' _isCFConfig=true;
+	
+	// True/false
+	property name='inMemoryFileSystemEnabled' type='boolean' _isCFConfig=true;
+	// Number of MB for in memory file system
+	property name='inMemoryFileSystemLimit' type='numeric' _isCFConfig=true;
+	// Number of MB for in memory application file system
+	property name='inMemoryFileSystemAppLimit' type='numeric' _isCFConfig=true;
+	
+	// True/false
+	property name='watchConfigFilesForChangesEnabled' type='boolean' _isCFConfig=true;
+	// Number of seconds
+	property name='watchConfigFilesForChangesInterval' type='numeric' _isCFConfig=true;
+	// List of file extensions. Ex: "xml,properties"
+	property name='watchConfigFilesForChangesExtensions' type='string' _isCFConfig=true;
+	
+	// True/false
+	property name='allowExtraAttributesInAttrColl' type='boolean' _isCFConfig=true;
+	// True/false
+	property name='disallowUnamedAppScope' type='boolean' _isCFConfig=true;
+	// True/false
+	property name='allowApplicationVarsInServletContext' type='boolean' _isCFConfig=true;
+	// Number of minutes
+	property name='CFaaSGeneratedFilesExpiryTime' type='numeric' _isCFConfig=true;
+	// Absolute path to store index files for ORM search.
+	property name='ORMSearchIndexDirectory' type='string' _isCFConfig=true;
+	// default path (relative to the web root) to the directory containing the cfform.js file. 
+	property name='CFFormScriptDirectory' type='string' _isCFConfig=true;
+	// Your Google maps API key
+	property name='googleMapKey' type='string' _isCFConfig=true;
+	
+	// True/false
+	property name='serverCFCEenabled' type='boolean' _isCFConfig=true;
+	// Specify the absolute path to a CFC having onServerStart() method, like "c:\server.cfc". Or specify a dot delimited CFC path under webroot, like "a.b.server". By default, ColdFusion will look for server.cfc under webroot.
+	property name='serverCFC' type='string' _isCFConfig=true;
+
+	// file extensions as a comma separated list which gets compiled when used in the CFInclude tag * for all.
+	property name='compileExtForCFInclude' type='string' _isCFConfig=true;
+	
+	property name='generalErrorTemplate' type='string' _isCFConfig=true;
+	property name='missingErrorTemplate' type='string' _isCFConfig=true;
+	
+	// Maximum number of parameters in a POST request sent to the server.
+	property name='postParametersLimit' type='numeric' _isCFConfig=true;
+	// Limits the amount of data in MB that can be posted to the server in a single request.
+	property name='postSizeLimit' type='numeric' _isCFConfig=true;
+	// Requests smaller than the specified limit in MB are not handled by the throttle.
+	property name='throttleThreshold' type='numeric' _isCFConfig=true;
+	// Limits total memory size in MB for the throttle
+	property name='totalThrottleMemory' type='numeric' _isCFConfig=true;
 	
 	// TODO:
 	//property name='externalizeStrings' type='string' _isCFConfig=true;
 	//property name='caches' type='array' _isCFConfig=true;
-	//property name='generalErrorTemplate' type='string' _isCFConfig=true;
-	//property name='missingErrorTemplate' type='string' _isCFConfig=true;
-	//property name='errorStatusCode' type='string' _isCFConfig=true;	
 	//property name='restMappings' type='array' _isCFConfig=true;
 	//property name='componentBase' type='string' _isCFConfig=true;
 	//property name='componentAutoImport' type='string' _isCFConfig=true;
