@@ -56,7 +56,7 @@ component accessors='true'  {
 	// http://www.lucee.nl/post.cfm/cf-function-generate3deskey
 	private function _generate3DesKey( string fromString ) {
 		if( !structKeyExists( arguments, 'fromString' ) ){
-			return generateSecretKey( arguments.fromString );
+			return generateSecretKey( 'DESEDE' );
 		}
 		var secretKeySpec = createObject( 'java', 'javax.crypto.spec.SecretKeySpec' ).init( arguments.fromString.getBytes(), 'DESEDE' );
 		return toBase64( secretKeySpec.getEncoded() );
