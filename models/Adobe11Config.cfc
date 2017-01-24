@@ -15,8 +15,9 @@ component accessors=true extends='BaseConfig' {
 
 	property name='mailConfigPath' type='string';
 	property name='mailConfigTemplate' type='string';
-	
-	
+
+	property name='datasourceConfigPath' type='string';
+	property name='datasourceConfigTemplate' type='string';
 
 
 	property name='seedPropertiesPath' type='string';
@@ -37,6 +38,9 @@ component accessors=true extends='BaseConfig' {
 		
 		setMailConfigTemplate( expandPath( '/resources/adobe11/neo-mail.xml' ) );		
 		setMailConfigPath( '/lib/neo-mail.xml' );
+		
+		setDatasourceConfigTemplate( expandPath( '/resources/adobe11/neo-datasource.xml' ) );
+		setDatasourceConfigPath( '/lib/neo-datasource.xml' );
 		
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setAdobePasswordManager( new AdobePasswordManager() );
@@ -61,6 +65,7 @@ component accessors=true extends='BaseConfig' {
 		readClientStore();
 		readWatch();
 		readMail();
+		readDatasource();
 			
 		return this;
 	}
@@ -105,7 +110,9 @@ component accessors=true extends='BaseConfig' {
 			setInspectTemplate( 'always' );
 		}
 		setSaveClassFiles(  thisConfig[ 11 ].saveClassFiles  );
-		setComponentCacheEnabled( thisConfig[ 11 ].componentCacheEnabled	);
+		setComponentCacheEnabled( thisConfig[ 11 ].componentCacheEnabled );
+		
+		setMailDefaultEncoding( thisConfig[ 12 ].defaultMailCharset );
 		
 		setCFFormScriptDirectory( thisConfig[ 14 ].CFFormScriptSrc );
 		
@@ -192,6 +199,17 @@ component accessors=true extends='BaseConfig' {
 			SSL= thisConfig.useSSL,
 			TSL = thisConfig.useTLS		
 		);	
+	}
+	
+	private function readDatasource() {
+		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDatasourceConfigPath(), '/' ) );
+		var datasources = thisConfig[ 1 ];
+		
+		for( var datasource in datasources ) {
+			dump(datasource);
+			dump(datasources[ datasource ]);
+		}
 	}
 
 	/**
