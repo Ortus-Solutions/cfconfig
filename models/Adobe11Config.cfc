@@ -13,7 +13,14 @@ component accessors=true extends='BaseConfig' {
 	property name='watchConfigPath' type='string';
 	property name='watchConfigTemplate' type='string';
 
+	property name='mailConfigPath' type='string';
+	property name='mailConfigTemplate' type='string';
+	
+	
 
+
+	property name='seedPropertiesPath' type='string';
+	property name='AdobePasswordManager';
 	
 	/**
 	* Constructor
@@ -27,6 +34,12 @@ component accessors=true extends='BaseConfig' {
 		
 		setWatchConfigTemplate( expandPath( '/resources/adobe11/neo-watch.xml' ) );		
 		setWatchConfigPath( '/lib/neo-watch.xml' );
+		
+		setMailConfigTemplate( expandPath( '/resources/adobe11/neo-mail.xml' ) );		
+		setMailConfigPath( '/lib/neo-mail.xml' );
+		
+		setSeedPropertiesPath( '/lib/seed.properties' );
+		setAdobePasswordManager( new AdobePasswordManager() );
 		
 		super.init();
 	}
@@ -47,6 +60,7 @@ component accessors=true extends='BaseConfig' {
 		readRuntime();
 		readClientStore();
 		readWatch();
+		readMail();
 			
 		return this;
 	}
@@ -56,10 +70,26 @@ component accessors=true extends='BaseConfig' {
 		
 		fileWrite( expandPath( '/newConfig.json' ), formatJSON( thisConfig ) );
 		
+		setSessionMangement( thisConfig[ 7 ].session.enable );
+		setSessionTimeout( thisConfig[ 7 ].session.timeout );
+		setSessionMaximumTimeout( thisConfig[ 7 ].session.maximum_timeout );
+		setSessionType( thisConfig[ 7 ].session.usej2eesession ? 'j2ee' : 'j2ee' );
+		
+		setApplicationMangement( thisConfig[ 7 ].application.enable );
+		setApplicationTimeout( thisConfig[ 7 ].application.timeout );
+		setApplicationMaximumTimeout( thisConfig[ 7 ].application.maximum_timeout );
+		
 		// Stored as 0/1
 		setErrorStatusCode( ( thisConfig[ 8 ].EnableHTTPStatus == 1 ) );
-		setMissingErrorTemplate( ( thisConfig[ 8 ].missing_template ) );
-		setGeneralErrorTemplate( ( thisConfig[ 8 ].site_wide ) );
+		setMissingErrorTemplate( thisConfig[ 8 ].missing_template );
+		setGeneralErrorTemplate( thisConfig[ 8 ].site_wide );
+		
+		var ignoreList = '/CFIDE,/gateway';
+		for( var thisMapping in thisConfig[ 9 ] ) {
+			if( !listFindNoCase( ignoreList, thisMapping ) ){
+				addCFMapping( thisMapping, thisConfig[ 9 ][ thisMapping ] );
+			}
+		}		
 		
 		setRequestTimeoutEnabled( thisConfig[ 10 ].timeoutRequests );
 		setRequestTimeout( '0,0,0,#thisConfig[ 10 ].timeoutRequestTimeLimit#' );
@@ -103,6 +133,10 @@ component accessors=true extends='BaseConfig' {
 		setServerCFCEenabled( thisConfig[ 16 ].enableServerCFC );
 		setServerCFC( thisConfig[ 16 ].serverCFC );
 		setCompileExtForCFInclude( thisConfig[ 16 ].compileextforinclude );
+		setSessionCookieTimeout( thisConfig[ 16 ].sessionCookieTimeout );
+		setSessionCookieHTTPOnly( thisConfig[ 16 ].httpOnlySessionCookie );
+		setSessionCookieSecure( thisConfig[ 16 ].secureSessionCookie );
+		setSessionCookieDisableUpdate( thisConfig[ 16 ].internalCookiesDisableUpdate );
 		
 		// Map Adobe values to shared Lucee settings
 		switch( thisConfig[ 16 ].applicationCFCSearchLimit ) {
@@ -118,16 +152,14 @@ component accessors=true extends='BaseConfig' {
 				
 		setThrottleThreshold( thisConfig[ 18 ][ 'throttle-threshold' ] );
 		setTotalThrottleMemory( thisConfig[ 18 ][ 'total-throttle-memory' ] );
-				
-		dump( thisConfig );//abort;
+		
+	//	dump( thisConfig );
 	}
 	
 	private function readClientStore() {
 		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getClientStoreConfigPath(), '/' ) );
 				
 		setUseUUIDForCFToken( thisConfig[ 2 ].uuidToken );
-				
-	//	dump( thisConfig );abort;
 	}
 	
 	private function readWatch() {
@@ -136,6 +168,30 @@ component accessors=true extends='BaseConfig' {
 		setWatchConfigFilesForChangesEnabled( thisConfig[ 'watch.watchEnabled' ] );
 		setWatchConfigFilesForChangesInterval( thisConfig[ 'watch.interval' ] );
 		setWatchConfigFilesForChangesExtensions( thisConfig[ 'watch.extensions' ] );
+	}
+	
+	private function readMail() {
+		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getMailConfigPath(), '/' ) );
+		
+		setMailSpoolEnable( thisConfig.spoolEnable );
+		setMailSpoolInterval( thisConfig.schedule );
+		setMailConnectionTimeout( thisConfig.timeout );
+		setMailDownloadUndeliveredAttachments( thisConfig.allowDownload );
+		setMailSignMesssage( thisConfig.sign );
+		setMailSignKeystore( thisConfig.keystore );
+		setMailSignKeystorePassword( passwordManager.decryptMailServer( thisConfig.keystorepassword ) );
+		setMailSignKeyAlias( thisConfig.keyAlias );
+		setMailSignKeyPassword( passwordManager.decryptMailServer( thisConfig.keypassword ) );
+		
+		addMailServer(
+			smtp = thisConfig.server,
+			username = thisConfig.username,
+			password = passwordManager.decryptMailServer( thisConfig.password ),
+			port = thisConfig.port,
+			SSL= thisConfig.useSSL,
+			TSL = thisConfig.useTLS		
+		);	
 	}
 
 	/**
@@ -182,6 +238,10 @@ component accessors=true extends='BaseConfig' {
 		if( !isXML( thisConfigRaw ) ) {
 			throw "Config file doesn't contain XML [#configFilePath#]";
 		}
+		
+		// Work around Lucee bug:
+		// https://luceeserver.atlassian.net/browse/LDEV-1167
+		thisConfigRaw = reReplaceNoCase( thisConfigRaw, '\s*type=["'']coldfusion\.server\.ConfigMap["'']', '', 'all' );
 		
 		wddx action='wddx2cfml' input=thisConfigRaw output='local.thisConfig';
 		return local.thisConfig;		

@@ -175,11 +175,23 @@ component accessors=true extends='BaseConfig' {
 	
 	private function readMail( mailServers ) {
 		var passwordManager = getLuceePasswordManager();
+		
+		/* TODO:
+		mailDefaultEncoding
+		mailSpoolEnable
+		mailConnectionTimeout*/
+		
 		for( var mailServer in mailServers.XMLChildren ) {
 			var params = {}.append( mailServer.XMLAttributes );
 			// Decrypt mail server password 
 			if( !isNull( params.password ) ) {  
 				params.password = passwordManager.decryptDataSource( replaceNoCase( params.password, 'encrypted:', '' ) );
+			} 
+			if( !isNull( params.life ) ) {  
+				params.lifeTimeout = params.life
+			} 
+			if( !isNull( params.idle ) ) {  
+				params.idleTimeout = params.idle
 			}
 			addMailServer( argumentCollection = params );
 		}
@@ -470,8 +482,8 @@ component accessors=true extends='BaseConfig' {
 			}
 
 			// Populate XML node
-			if( !isNull( mailServer.idle ) ) { mailServerXMLNode.XMLAttributes[ 'idle' ] = mailServer.idle; }
-			if( !isNull( mailServer.life ) ) { mailServerXMLNode.XMLAttributes[ 'life' ] = mailServer.life; }
+			if( !isNull( mailServer.idleTimeout ) ) { mailServerXMLNode.XMLAttributes[ 'idle' ] = mailServer.idleTimeout; }
+			if( !isNull( mailServer.lifeTimeout ) ) { mailServerXMLNode.XMLAttributes[ 'life' ] = mailServer.lifeTimeout; }
 			if( !isNull( mailServer.port ) ) { mailServerXMLNode.XMLAttributes[ 'port' ] = mailServer.port; }
 			if( !isNull( mailServer.smtp ) ) { mailServerXMLNode.XMLAttributes[ 'smtp' ] = mailServer.smtp; }
 			if( !isNull( mailServer.ssl ) ) { mailServerXMLNode.XMLAttributes[ 'ssl' ] = mailServer.ssl; }

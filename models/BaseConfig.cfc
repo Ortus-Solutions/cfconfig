@@ -47,6 +47,8 @@ component accessors=true {
 	// True/false
 	property name='mergeURLAndForm' type='boolean' _isCFConfig=true;
 	// True/false
+	property name='applicationMangement' type='boolean' _isCFConfig=true;
+	// True/false
 	property name='sessionMangement' type='boolean' _isCFConfig=true;
 	// True/false
 	property name='clientManagement' type='boolean' _isCFConfig=true;
@@ -54,6 +56,16 @@ component accessors=true {
 	property name='domainCookies' type='boolean' _isCFConfig=true;
 	// True/false
 	property name='clientCookies' type='boolean' _isCFConfig=true;
+		
+	// Number of seconds
+	property name='sessionCookieTimeout' type='numeric' _isCFConfig=true;
+	// True/false
+	property name='sessionCookieHTTPOnly' type='boolean' _isCFConfig=true;
+	// True/false
+	property name='sessionCookieSecure' type='boolean' _isCFConfig=true;
+	// True/false
+	property name='sessionCookieDisableUpdate' type='boolean' _isCFConfig=true;
+	
 	// One of the strings "classic", "modern"
 	property name='localScopeMode' type='string' _isCFConfig=true;
 	// True/false
@@ -62,6 +74,10 @@ component accessors=true {
 	property name='sessionTimeout' type='string' _isCFConfig=true;
 	// Timespan Ex: 0,5,30,0
 	property name='applicationTimeout' type='string' _isCFConfig=true;
+	// Timespan Ex: 0,5,30,0
+	property name='sessionMaximumTimeout' type='string' _isCFConfig=true;
+	// Timespan Ex: 0,5,30,0
+	property name='applicationMaximumTimeout' type='string' _isCFConfig=true;
 	
 	// One of the strings "none", "mixed", "modern", "classic"
 	property name='applicationListener' type='string' _isCFConfig=true;
@@ -103,8 +119,32 @@ component accessors=true {
 	property name='bufferTagBodyOutput' type='boolean' _isCFConfig=true;		
 	// Key is datasource name, value is struct of properties
 	property name='datasources' type='struct' _isCFConfig=true;
+	
 	// Array of structs of properties.  Mail servers are uniquely identified by host
 	property name='mailServers' type='array' _isCFConfig=true;
+	// Encoding to use for mail. Ex: UTF-8
+	property name='mailDefaultEncoding' type='string' _isCFConfig=true;
+	// True/false enable mail spooling
+	property name='mailSpoolEnable' type='boolean' _isCFConfig=true;
+	// Number of seconds for interval
+	property name='mailSpoolInterval' type='numeric' _isCFConfig=true;
+	// Number of seconds to wait for mail server response
+	property name='mailConnectionTimeout' type='numeric' _isCFConfig=true;
+	// True/false to allow downloading attachments for undelivered emails
+	property name='mailDownloadUndeliveredAttachments' type='numeric' _isCFConfig=true;
+	// Sign messages with cert
+	property name='mailSignMesssage' type='boolean' _isCFConfig=true;
+	// Path to keystore
+	property name='mailSignKeystore' type='string' _isCFConfig=true;
+	// Password to the keystore
+	property name='mailSignKeystorePassword' type='string' _isCFConfig=true;
+	// Alias of the key with which the certificcate and private key is stored in keystore. The supported type is JKS (java key store) and pkcs12.
+	property name='mailSignKeyAlias' type='string' _isCFConfig=true;
+	// Password with which the private key is stored.
+	property name='mailSignKeyPassword' type='string' _isCFConfig=true;
+	
+	
+	
 	// Key is virtual path, value is struct of properties
 	property name='CFMappings' type='struct' _isCFConfig=true;
 	// True/false
@@ -289,21 +329,30 @@ component accessors=true {
 	
 	/**
 	* Add a single mail server to the config
+	* 
+	* @idleTimout Idle timeout in seconds
+	* @lifeTimeout Overall timeout in seconds
+	* @password Plain text password for mail server
+	* @port Port for mail server
+	* @smtp Host address of mail server
+	* @ssl True/False to use SSL for connection
+	* @tls True/False to use TLS for connection
+	* @username Username for mail server
 	*/
 	function addMailServer(
-		idle,
-		life,
-		password, // Unencrypted
-		port,
-		smtp,
-		ssl,
-		tls,
-		username
+		numeric idleTimeout,
+		numeric lifeTimeout,
+		string password,
+		numeric port,
+		string smtp,
+		boolean SSL,
+		boolean TLS,
+		string username		
 	) {
 			
 		var mailServer = {};
-		if( !isNull( idle ) ) { mailServer.idle = idle; };
-		if( !isNull( life ) ) { mailServer.life = life; };
+		if( !isNull( idleTimeout ) ) { mailServer.idleTimeout = idleTimeout; };
+		if( !isNull( lifeTimeout ) ) { mailServer.lifeTimeout = lifeTimeout; };
 		if( !isNull( password ) ) { mailServer.password = password; };
 		if( !isNull( port ) ) { mailServer.port = port; };
 		if( !isNull( smtp ) ) { mailServer.smtp = smtp; };
@@ -319,16 +368,25 @@ component accessors=true {
 	
 	/**
 	* Add a single CF mapping to the config
+	*
+	* @virtual The virtual path such as /foo
+	* @physical The physical path that the mapping points to
+	* @archive Path to the Lucee/Railo archive
+	* @inspectTemplate String containing one of "never", "once", "always", "" (inherit)
+	* @listenerMode 
+	* @listenerType 
+	* @primary Strings containing one of "physical", "archive"
+	* @readOnly True/false
 	*/
 	function addCFMapping(
 			required string virtual,
-			physical,
-			archive,
-			inspectTemplate,
-			listenerMode,
-			listenerType,
-			primary,
-			readOnly
+			string physical,
+			string archive,
+			string inspectTemplate,
+			string listenerMode,
+			string listenerType,
+			string primary,
+			boolean readOnly
 		) {
 		
 		var mapping = {};
