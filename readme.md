@@ -29,7 +29,7 @@ If you don't have time for a pull request, please enter a ticket so we can track
 Major features left to develop
 * **Adobe CF9** - Everything
 * **Adobe CF10** - Everything
-* **Adobe CF11** - Everything
+* **Adobe CF11** - In progress...
 * **Adobe C2016** - Everything
 * **Railo 4.x** - Everything-- probably can heavily re-use from Lucee 4.x
 * **Lucee 4.x/5.x** - caches, custom tags, debugging, REST mappings, error settings, component settings
