@@ -38,18 +38,19 @@ component accessors='true'  {
     }
 
     public string function decryptDataSource( required string pass ) {
-		return encryptDataSource( pass );
+    	if( !len( pass ) ) { return ''; }
+    	var secretKey = _generate3DesKey( seed );
+		return decrypt( pass, secretKey, getAlgorithm(), "Base64");
     }	
 
 	// Same as data source for now
     public string function encryptMailServer( required string pass ) {
-		return decryptDataSource( pass );
+		return encryptDataSource( pass );
     }
 
 	// Same as data source for now
     public string function decryptMailServer( required string pass ) {
-    	var secretKey = _generate3DesKey( seed );
-		return decrypt( pass, secretKey, getAlgorithm(), "Base64");
+		return decryptDataSource( pass );
     }
 
 	// **************************************************************************************************************

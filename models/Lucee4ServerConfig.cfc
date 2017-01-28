@@ -380,7 +380,7 @@ component accessors=true extends='BaseConfig' {
 		// Get all datasources
 		// TODO: Add tag if it doesn't exist
 		var datasources = xmlSearch( thisConfig, '/cfLuceeConfiguration/data-sources' )[ 1 ];
-		
+
 		for( var DSName in getDatasources() ?: {} ) {
 			DSStruct = getDatasources()[ dsName ];
 			// Search to see if this datasource already exists
@@ -400,13 +400,20 @@ component accessors=true extends='BaseConfig' {
 			if( !isNull( DSStruct.database ) ) { DSXMLNode.XMLAttributes[ 'database' ] = DSStruct.database; }
 			if( !isNull( DSStruct.allow ) ) { DSXMLNode.XMLAttributes[ 'allow' ] = DSStruct.allow; }
 			if( !isNull( DSStruct.blob ) ) { DSXMLNode.XMLAttributes[ 'blob' ] = DSStruct.blob; }
-			if( !isNull( DSStruct.class ) ) { DSXMLNode.XMLAttributes[ 'class' ] = DSStruct.class; }
-			if( !isNull( DSStruct.dbdriver ) ) { DSXMLNode.XMLAttributes[ 'dbdriver' ] = DSStruct.dbdriver; }
+			if( !isNull( DSStruct.class ) ) {
+				DSXMLNode.XMLAttributes[ 'class' ] = translateDatasourceClassToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.class );
+			 }
+			if( !isNull( DSStruct.dbdriver ) ) {
+				DSXMLNode.XMLAttributes[ 'dbdriver' ] = translateDatasourceDriverToLucee( DSStruct.dbdriver );
+			}
 			if( !isNull( DSStruct.clob ) ) { DSXMLNode.XMLAttributes[ 'clob' ] = DSStruct.clob; }
 			if( !isNull( DSStruct.connectionLimit ) ) { DSXMLNode.XMLAttributes[ 'connectionLimit' ] = DSStruct.connectionLimit; }
 			if( !isNull( DSStruct.connectionTimeout ) ) { DSXMLNode.XMLAttributes[ 'connectionTimeout' ] = DSStruct.connectionTimeout; }
 			if( !isNull( DSStruct.custom ) ) { DSXMLNode.XMLAttributes[ 'custom' ] = DSStruct.custom; }
-			if( !isNull( DSStruct.dsn ) ) { DSXMLNode.XMLAttributes[ 'dsn' ] = DSStruct.dsn; }
+			if( !isNull( DSStruct.dsn ) ) {
+				DSXMLNode.XMLAttributes[ 'dsn' ] = translateDatasourceURLToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.dsn );
+			}
+						
 			// Encrypt password again as we write it.
 			if( !isNull( DSStruct.password ) ) { DSXMLNode.XMLAttributes[ 'password' ] = 'encrypted:' & passwordManager.encryptDataSource( DSStruct.password ); }
 			if( !isNull( DSStruct.host ) ) { DSXMLNode.XMLAttributes[ 'host' ] = DSStruct.host; }
@@ -639,4 +646,47 @@ component accessors=true extends='BaseConfig' {
 		return thisCFHomePath & getConfigRelativePathWithinServerHome() & thisConfigFileName;		
 	}
 
+	private function translateDatasourceDriverToLucee( required string driverName ) {
+		
+		if( listFindNoCase( 'MSSQL,PostgreSQL,Oracle,MySQL,DB2Firebird,H2,H2Server,HSQLDB,ODBC,Sybase', arguments.driverName ) ) {
+			return arguments.driverName;
+		} else {
+			// Adobe stores arbitrary text here
+			return 'Other';
+		}
+		
+	}
+	
+	private function translateDatasourceClassToLucee( required string driverName, required string className ) {
+		
+		switch( driverName ) {
+			case 'MSSQL' :
+				return 'com.microsoft.jdbc.sqlserver.SQLServerDriver';
+			case 'Oracle' :
+				return 'oracle.jdbc.driver.OracleDriver';
+			case 'MySQL' :
+				return 'org.gjt.mm.mysql.Driver';
+			default :
+				return arguments.className;
+		}
+	
+	}
+	
+	private function translateDatasourceURLToLucee( required string driverName, required string JDBCUrl ) {
+		
+		switch( driverName ) {
+			case 'MySQL' :
+				return 'jdbc:mysql://{host}:{port}/{database}';
+			case 'Oracle' :
+				return 'jdbc:oracle:{drivertype}:@{host}:{port}:{database}';
+			case 'PostgreSql' :
+				return 'jdbc:postgresql://{host}:{port}/{database}';
+			case 'MSSQL' :
+				return 'jdbc:sqlserver://{host}:{port}';
+			default :
+				return arguments.JDBCUrl;
+		}
+	
+	}
+	
 }

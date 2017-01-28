@@ -280,26 +280,50 @@ component accessors=true {
   
 	/**
 	* Add a single datasource to the config
+	* @name Name of datasource
+	* @allow Bitmask of allowed operations
+	* @blob Enable blob?
+	* @class Java class of driver
+	* @clob Enable clob?
+	* @connectionLimit Max number of connections. -1 means unlimimted
+	* @connectionTimeout Connectiontimeout in minutes
+	* @custom Extra JDBC URL query string without leading &
+	* @database name of database
+	* @dbdriver Type of database driver
+	*  - MSSQL -- SQL Server driver
+	*  - MSSQL2 -- jTDS driver
+	*  - PostgreSql
+	*  - Oracle
+	*  - Other -- Custom JDBC URL
+	*  - MySQL
+	* @dsn JDBC URL (jdbc:mysql://{host}:{port}/{database})
+	* @host name of host
+	* @metaCacheTimeout Not sure-- Lucee had this in the XML
+	* @password Unencrypted password
+	* @port Port to connect on
+	* @storage True/False use this datasource as client/session storage (Lucee)
+	* @username Username to connect with
+	* @validate Validate this datasource connectin every time it's used?
 	*/
 	function addDatasource(
 			required string name,
-			allow,
-			blob,	
-			class,
-			clob,
-			connectionLimit,
-			connectionTimeout,
-			custom,
-			database,
-			dbdriver,
-			dsn,
-			host,
-			metaCacheTimeout,
-			password, // Unencrypted
-			port,
-			storage,
-			username,
-			validate
+			string allow,
+			boolean blob,
+			string class,
+			boolean clob,
+			numeric connectionLimit,
+			numeric connectionTimeout,
+			string custom,
+			string database,
+			string dbdriver,
+			string dsn,
+			string host,
+			numeric metaCacheTimeout,
+			string password, // Unencrypted
+			string port,
+			boolean storage,
+			string username,
+			boolean validate
 		) {
 			
 		var ds = {};

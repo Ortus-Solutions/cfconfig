@@ -207,8 +207,32 @@ component accessors=true extends='BaseConfig' {
 		var datasources = thisConfig[ 1 ];
 		
 		for( var datasource in datasources ) {
-			dump(datasource);
-			dump(datasources[ datasource ]);
+			// For brevity
+			var ds = datasources[ datasource ];
+			
+			addDatasource(
+				name = datasource,
+				// TODO:  Turn ds.alter, ds.create, ds.drop, ds.grant, etc, etc into bitmask
+				//allow = '',
+				// Invert logic
+				blob = !ds.disable_blob,	
+				class = ds.class,
+				// Invert logic
+				clob = !ds.disable_clob,
+				// If the field doesn't exist, it's unlimited
+				connectionLimit = ds.urlmap.maxConnections ?: -1,
+				// Convert from seconds to minutes
+				connectionTimeout = round( ds.timeout / 60 ),
+				database = ds.urlmap.database,
+				// Normalize names
+				dbdriver = translateDatasourceDriverToGeneric( ds.driver ),
+				dsn = ds.url,
+				host = ds.urlmap.host,
+				password = passwordManager.decryptDataSource( ds.password ),
+				port = ds.urlmap.port,
+				username = ds.username,
+				validate = ds.validateConnection
+			);
 		}
 	}
 
@@ -263,6 +287,153 @@ component accessors=true extends='BaseConfig' {
 		
 		wddx action='wddx2cfml' input=thisConfigRaw output='local.thisConfig';
 		return local.thisConfig;		
+	}
+
+	private function getDefaultDatasourceStruct() {
+		return {
+		    "disable":false,
+		    "disable_autogenkeys":false,
+		    "revoke":true,
+		    "validationQuery":"",
+		    "drop":true,
+		    // "url":"jdbc:mysql://localhost:3306/test?tinyInt1isBit=false&",
+		    "url":"",
+		    "update":true,
+		    "password":"",
+		    "DRIVER":"",
+		    "NAME":"",
+		    "blob_buffer":64000,
+		    "disable_blob":true,
+		    "timeout":1200,
+		    "validateConnection":false,
+		    "CLASS":"",
+		    "grant":true,
+		    "buffer":64000,
+		    "username":"",
+		    "login_timeout":30,
+		    "description":"",
+		    "urlmap":{
+		        "defaultpassword":"",
+		        "pageTimeout":"",
+		        "SID":"",
+		        "spyLogFile":"",
+		        "CONNECTIONPROPS":{
+		            "HOST":"",
+		            "DATABASE":"",
+		            "PORT":"0"
+		        },
+		        "host":"",
+		        "_logintimeout":30,
+		        "defaultusername":"",
+		        "maxBufferSize":"",
+		        "databaseFile":"",
+		        "TimeStampAsString":"no",
+		        "systemDatabaseFile":"",
+		        "datasource":"",
+		        "_port":0,
+		        "args":"",
+		        "supportLinks":"true",
+		        "UseTrustedConnection":"false",
+		        "applicationintent":"",
+		        "sendStringParametersAsUnicode":"false",
+		        "database":"test",
+		        "informixServer":"",
+		        "port":"0",
+		        "MaxPooledStatements":"100",
+		        "useSpyLog":false,
+		        "isnewdb":"false",
+		        "qTimeout":"0",
+		        "selectMethod":"direct"
+		    },
+		    "insert":true,
+		    "create":true,
+		    "ISJ2EE":false,
+		    "storedproc":true,
+		    "interval":420,
+		    "alter":true,
+		    "delete":true,
+		    "select":true,
+		    "disable_clob":true,
+		    "pooling":true,
+		    "clientinfo":{
+		        "ClientHostName":false,
+		        "ApplicationNamePrefix":"",
+		        "ApplicationName":false,
+		        "ClientUser":false
+		    }
+		};
+	}
+	
+	private function translateDatasourceDriverToGeneric( required string driverName ) {
+		
+		switch( driverName ) {
+			case 'MSSQLServer' :
+				return 'MSSQL';
+			case 'PostgreSQL' :
+				return 'PostgreSql';
+			case 'Oracle' :
+				return 'Oracle';
+			case 'MySQL5' :
+				return 'MySQL';
+			case 'DB2' :
+				return 'DB2';
+			case 'Sybase' :
+				return 'Sybase';
+			case 'Apache Derby Client' :
+				return 'Apache Derby Client';
+			case 'Apache Derby Embedded' :
+				return 'Apache Derby Embedded';
+			case 'MySQL_DD' :
+				return 'MySQL_DD';
+			case 'jndi' :
+				return 'jndi';
+			default :
+				return arguments.driverName;
+		}
+	
+	}
+	
+	private function translateDatasourceDriverToAdobe( required string driverName ) {
+		
+		switch( driverName ) {
+			case 'MSSQL' :
+				return 'MSSQLServer';
+			case 'PostgreSQL' :
+				return 'PostgreSql';
+			case 'Oracle' :
+				return 'Oracle';
+			case 'MySQL' :
+				return 'MySQL5';
+			case 'DB2' :
+				return 'DB2';
+			case 'Sybase' :
+				return 'Sybase';
+			// These all just fall through to default "other"
+			case 'ODBC' :
+			case 'HSQLDB' :
+			case 'H2Server' :
+			case 'H2' :
+			case 'Firebird' :
+			case 'MSSQL2' : // jTDS driver
+			default :
+				return arguments.driverName;
+		}
+	
+	}
+	
+	private function translateDatasourceClassToAdobe( required string driverName, required string className ) {
+		
+		switch( driverName ) {
+			case 'MSSQLServer' :
+				return 'macromedia.jdbc.MacromediaDriver';
+			case 'Oracle' :
+				return 'macromedia.jdbc.MacromediaDriver';
+			case 'MySQL5' :
+				return 'com.mysql.jdbc.Driver';
+			default :
+				return arguments.className;
+		}
+	
 	}
 	
 }
