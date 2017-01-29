@@ -265,8 +265,8 @@ component accessors=true extends='BaseConfig' {
 		writeRuntime();
 		writeClientStore();
 		writeWatch();
-		//writeMail();
-		//writeDatasource();
+		writeMail();
+		writeDatasource();
 		writeAuth();
 		
 		return this;
@@ -298,8 +298,10 @@ component accessors=true extends='BaseConfig' {
 		if( !isNull( getGeneralErrorTemplate() ) ) { thisConfig[ 8 ].site_wide = getGeneralErrorTemplate(); }
 		
 		for( var virtual in getCFmappings() ?: {} ) {
-			var physical = getCFmappings()[ virtual ][ 'physical' ];
-			thisConfig[ 9 ][ virtual ] = physical;
+			if( !isNull( getCFmappings()[ virtual ][ 'physical' ] ) && len( getCFmappings()[ virtual ][ 'physical' ] ) ) {
+				var physical = getCFmappings()[ virtual ][ 'physical' ];
+				thisConfig[ 9 ][ virtual ] = physical;	
+			}
 		}
 		
 		if( !isNull( getRequestTimeoutEnabled() ) ) { thisConfig[ 10 ].timeoutRequests = getRequestTimeoutEnabled(); }
@@ -313,91 +315,98 @@ component accessors=true extends='BaseConfig' {
 		if( !isNull( getPostParametersLimit() ) ) { thisConfig[ 10 ].postParametersLimit = getPostParametersLimit(); }
 		if( !isNull( getPostSizeLimit() ) ) { thisConfig[ 10 ].postSizeLimit = getPostSizeLimit(); }
 		
+		if( !isNull( getTemplateCacheSize() ) ) { thisConfig[ 11 ].templateCacheSize = getTemplateCacheSize(); }
+		if( !isNull( getSaveClassFiles() ) ) { thisConfig[ 11 ].saveClassFiles = getSaveClassFiles(); }
+		if( !isNull( getComponentCacheEnabled() ) ) { thisConfig[ 11 ].componentCacheEnabled = getComponentCacheEnabled(); }
 		
-		
-		
-		
-		
-		
-		
-		
-		/*		
-		
-		
-		
-		
-		
-				
-		setTemplateCacheSize( thisConfig[ 11 ].templateCacheSize );
-		if( thisConfig[ 11 ].trustedCacheEnabled ) {
-			setInspectTemplate( 'never' );
-		} else if ( thisConfig[ 11 ].inRequestTemplateCacheEnabled ?: false ) {
-			setInspectTemplate( 'once' );
-		} else {
-			setInspectTemplate( 'always' );
+		if( !isNull( getInspectTemplate() ) ) {
+			
+			switch( getInspectTemplate() ) {
+				case 'never' :
+					thisConfig[ 11 ].trustedCacheEnabled = false;
+					thisConfig[ 11 ].inRequestTemplateCacheEnabled = false;
+					break;
+				case 'once' :
+					thisConfig[ 11 ].trustedCacheEnabled = false;
+					thisConfig[ 11 ].inRequestTemplateCacheEnabled = true;
+					break;
+				case 'always' :
+					thisConfig[ 11 ].trustedCacheEnabled = true;
+					thisConfig[ 11 ].inRequestTemplateCacheEnabled = true;
+			}
+			
 		}
-		setSaveClassFiles(  thisConfig[ 11 ].saveClassFiles  );
-		setComponentCacheEnabled( thisConfig[ 11 ].componentCacheEnabled );
 		
-		setMailDefaultEncoding( thisConfig[ 12 ].defaultMailCharset );
+		if( !isNull( getMailDefaultEncoding() ) ) { thisConfig[ 12 ].defaultMailCharset = getMailDefaultEncoding(); }
+				
+		if( !isNull( getCFFormScriptDirectory() ) ) { thisConfig[ 14 ].CFFormScriptSrc = getCFFormScriptDirectory(); }
 		
-		setCFFormScriptDirectory( thisConfig[ 14 ].CFFormScriptSrc );
+		if( !isNull( getScriptProtect() ) ) {
 		
-		// Adobe doesn't do "all" or "none" like Lucee, just the list.  Empty string if nothing.
-		setScriptProtect( thisConfig[ 15 ] );
+			// Adobe doesn't do "all" or "none" like Lucee, just the list.  Empty string if nothing.	
+			switch( getScriptProtect() ) {
+				case 'all' :
+					thisConfig[ 15 ] = 'FORM,URL,COOKIE,CGI';
+					break;
+				case 'none' :
+					thisConfig[ 15 ] = '';
+					break;
+				default :
+					thisConfig[ 15 ] = getScriptProtect();
+			}
+			
+		}
 		
-		setPerAppSettingsEnabled( thisConfig[ 16 ].isPerAppSettingsEnabled );				
+		
+		if( !isNull( getPerAppSettingsEnabled() ) ) { thisConfig[ 16 ].isPerAppSettingsEnabled = getPerAppSettingsEnabled(); }
 		// Adobe stores the inverse of Lucee
-		setUDFTypeChecking( !thisConfig[ 16 ].cfcTypeCheckEnabled );
-		setDisableInternalCFJavaComponents( thisConfig[ 16 ].disableServiceFactory );
+		if( !isNull( getUDFTypeChecking() ) ) { thisConfig[ 16 ].cfcTypeCheckEnabled = !getUDFTypeChecking(); }
+		if( !isNull( getDisableInternalCFJavaComponents() ) ) { thisConfig[ 16 ].disableServiceFactory = getDisableInternalCFJavaComponents(); }
 		// Lucee and Adobe store opposite value
-		setDotNotationUpperCase( !thisConfig[ 16 ].preserveCaseForSerialize );
-		setSecureJSON( thisConfig[ 16 ].secureJSON );
-		setSecureJSONPrefix( thisConfig[ 16 ].secureJSONPrefix );
-		setMaxOutputBufferSize( thisConfig[ 16 ].maxOutputBufferSize );
-		setInMemoryFileSystemEnabled( thisConfig[ 16 ].enableInMemoryFileSystem );
-		setInMemoryFileSystemLimit( thisConfig[ 16 ].inMemoryFileSystemLimit );
-		setInMemoryFileSystemAppLimit( thisConfig[ 16 ].inMemoryFileSystemAppLimit );
-		setAllowExtraAttributesInAttrColl( thisConfig[ 16 ].allowExtraAttributesInAttrColl );
-		setDisallowUnamedAppScope( thisConfig[ 16 ].dumpunnamedappscope );
-		setAllowApplicationVarsInServletContext( thisConfig[ 16 ].allowappvarincontext );
-		setCFaaSGeneratedFilesExpiryTime( thisConfig[ 16 ].CFaaSGeneratedFilesExpiryTime );
-		setORMSearchIndexDirectory( thisConfig[ 16 ].ORMSearchIndexDirectory );
-		setGoogleMapKey( thisConfig[ 16 ].googleMapKey );
-		setServerCFCEenabled( thisConfig[ 16 ].enableServerCFC );
-		setServerCFC( thisConfig[ 16 ].serverCFC );
-		setCompileExtForCFInclude( thisConfig[ 16 ].compileextforinclude );
-		setSessionCookieTimeout( thisConfig[ 16 ].sessionCookieTimeout );
-		setSessionCookieHTTPOnly( thisConfig[ 16 ].httpOnlySessionCookie );
-		setSessionCookieSecure( thisConfig[ 16 ].secureSessionCookie );
-		setSessionCookieDisableUpdate( thisConfig[ 16 ].internalCookiesDisableUpdate );
+		if( !isNull( getDotNotationUpperCase() ) ) { thisConfig[ 16 ].preserveCaseForSerialize = getDotNotationUpperCase(); }
+		if( !isNull( getSecureJSON() ) ) { thisConfig[ 16 ].secureJSON = getSecureJSON(); }
+		if( !isNull( getSecureJSONPrefix() ) ) { thisConfig[ 16 ].secureJSONPrefix = getSecureJSONPrefix(); }
+		if( !isNull( getMaxOutputBufferSize() ) ) { thisConfig[ 16 ].maxOutputBufferSize = getMaxOutputBufferSize(); }
+		if( !isNull( getInMemoryFileSystemEnabled() ) ) { thisConfig[ 16 ].enableInMemoryFileSystem = getInMemoryFileSystemEnabled(); }
+		if( !isNull( getInMemoryFileSystemLimit() ) ) { thisConfig[ 16 ].inMemoryFileSystemLimit = getInMemoryFileSystemLimit(); }
+		if( !isNull( getInMemoryFileSystemAppLimit() ) ) { thisConfig[ 16 ].inMemoryFileSystemAppLimit = getInMemoryFileSystemAppLimit(); }
+		if( !isNull( getAllowExtraAttributesInAttrColl() ) ) { thisConfig[ 16 ].allowExtraAttributesInAttrColl = getAllowExtraAttributesInAttrColl(); }
+		if( !isNull( getDisallowUnamedAppScope() ) ) { thisConfig[ 16 ].dumpunnamedappscope = getDisallowUnamedAppScope(); }
+		if( !isNull( getAllowApplicationVarsInServletContext() ) ) { thisConfig[ 16 ].allowappvarincontext = getAllowApplicationVarsInServletContext(); }
+		if( !isNull( getCFaaSGeneratedFilesExpiryTime() ) ) { thisConfig[ 16 ].CFaaSGeneratedFilesExpiryTime = getCFaaSGeneratedFilesExpiryTime(); }
+		if( !isNull( getORMSearchIndexDirectory() ) ) { thisConfig[ 16 ].ORMSearchIndexDirectory = getORMSearchIndexDirectory(); }
+		if( !isNull( getGoogleMapKey() ) ) { thisConfig[ 16 ].googleMapKey = getGoogleMapKey(); }
+		if( !isNull( getServerCFCEenabled() ) ) { thisConfig[ 16 ].enableServerCFC = getServerCFCEenabled(); }
+		if( !isNull( getServerCFC() ) ) { thisConfig[ 16 ].serverCFC = getServerCFC(); }
+		if( !isNull( getCompileExtForCFInclude() ) ) { thisConfig[ 16 ].compileextforinclude = getCompileExtForCFInclude(); }
+		if( !isNull( getSessionCookieTimeout() ) ) { thisConfig[ 16 ].sessionCookieTimeout = getSessionCookieTimeout(); }
+		if( !isNull( getSessionCookieHTTPOnly() ) ) { thisConfig[ 16 ].httpOnlySessionCookie = getSessionCookieHTTPOnly(); }
+		if( !isNull( getSessionCookieSecure() ) ) { thisConfig[ 16 ].secureSessionCookie = getSessionCookieSecure(); }
+		if( !isNull( getSessionCookieDisableUpdate() ) ) { thisConfig[ 16 ].internalCookiesDisableUpdate = getSessionCookieDisableUpdate(); }
 		
-		// Map Adobe values to shared Lucee settings
-		switch( thisConfig[ 16 ].applicationCFCSearchLimit ) {
-			case '1' :
-				setApplicationMode( 'curr2driveroot' );
-				break;
-			case '2' :
-				setApplicationMode( 'curr2root' );
-				break;
-			case '3' :
-				setApplicationMode( 'currorroot' );
-		}
+		if( !isNull( getApplicationMode() ) ) {
+			
+			// See comments in BaseConfig class for descriptions
+			switch( getApplicationMode() ) {
+				case 'curr2driveroot' :
+				// Next best match for "current only"
+				case 'curr' :
+					thisConfig[ 16 ].applicationCFCSearchLimit = 1;
+					break;
+				case 'curr2root' :
+					thisConfig[ 16 ].applicationCFCSearchLimit = 2;
+					break;
+				case 'currorroot' :
+				// Next best match for "root only"
+				case 'root' :
+					thisConfig[ 16 ].applicationCFCSearchLimit = 3;
+			}
 				
-		setThrottleThreshold( thisConfig[ 18 ][ 'throttle-threshold' ] );
-		setTotalThrottleMemory( thisConfig[ 18 ][ 'total-throttle-memory' ] );
-		
-		
-		*/
-		
-		
-		
-		
-		
-		
-		
-		
-		
+		}
+						
+		if( !isNull( getSessionCookieDisableUpdate() ) ) { thisConfig[ 18 ][ 'throttle-threshold' ] = getThrottleThreshold(); }
+		if( !isNull( getTotalThrottleMemory() ) ) { thisConfig[ 18 ][ 'total-throttle-memory' ] = getTotalThrottleMemory(); }
+
 		writeWDDXConfigFile( thisConfig, configFilePath );
 		
 	}
@@ -436,8 +445,102 @@ component accessors=true extends='BaseConfig' {
 		writeWDDXConfigFile( thisConfig, configFilePath );
 	
 	}
+	
+	private function writeMail() {
+		var configFilePath = getCFHomePath().listAppend( getMailConfigPath(), '/' );
+		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getMailConfigTemplate() );
+		}
+				
+		if( !isNull( getMailSpoolEnable() ) ) { thisConfig.spoolEnable = getMailSpoolEnable(); }
+		if( !isNull( getMailSpoolInterval() ) ) { thisConfig.schedule = getMailSpoolInterval(); }
+		if( !isNull( getMailConnectionTimeout() ) ) { thisConfig.timeout = getMailConnectionTimeout(); }
+		if( !isNull( getMailDownloadUndeliveredAttachments() ) ) { thisConfig.allowDownload = getMailDownloadUndeliveredAttachments(); }
+		if( !isNull( getMailSignMesssage() ) ) { thisConfig.sign = getMailSignMesssage(); }
+		if( !isNull( getMailSignKeystore() ) ) { thisConfig.keystore = getMailSignKeystore(); }
+		if( !isNull( getMailSignKeystorePassword() ) ) { thisConfig.keystorepassword = passwordManager.encryptMailServer( getMailSignKeystorePassword() ); }
+		if( !isNull( getMailSignKeyAlias() ) ) { thisConfig.keyAlias = getMailSignKeyAlias(); }
+		if( !isNull( getMailSignKeyPassword() ) ) { thisConfig.keypassword = passwordManager.encryptMailServer( getMailSignKeyPassword() ); }
+		
+		// Adobe can only store 1 mail server, so ignore any others.
+		if( !isNull( getMailServers() ) && arrayLen( getMailServers() ) ) {
+			var mailServer = getMailServers()[ 1 ];
+			
+			if( !isNull( mailServer.smtp ) ) { thisConfig.server = mailServer.smtp; }
+			if( !isNull( mailServer.username ) ) { thisConfig.username = mailServer.username; }
+			if( !isNull( mailServer.password ) ) { thisConfig.password = passwordManager.encryptMailServer( mailServer.password ); }
+			if( !isNull( mailServer.port ) ) { thisConfig.port = mailServer.port; }
+			if( !isNull(  mailServer.SSL ) ) { thisConfig.useSSL =  mailServer.SSL; }
+			if( !isNull( mailServer.TSL ) ) { thisConfig.useTLS = mailServer.TSL; }
+		}		
+		
+		writeWDDXConfigFile( thisConfig, configFilePath );	
+	}
 
-	function writeAuth() {		
+	private function writeDatasource() {
+		
+		if( isNull( getDatasources() ) || !structCount( getDatasources() ) ) {
+			return;
+		}
+		
+		var configFilePath = getCFHomePath().listAppend( getDatasourceConfigPath(), '/' );
+		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getDatasourceConfigTemplate() );
+		}
+		
+		var datasources = getDatasources();
+		
+		for( var datasource in datasources ) {
+			// For brevity
+			var incomingDS = datasources[ datasource ];
+			thisConfig[ 1 ][ datasource ] = thisConfig[ 1 ][ datasource ] ?: {};
+			var savingDS = thisConfig[ 1 ][ datasource ];
+			
+	
+			// Invert logic
+			if( !isNull( incomingDS.blob ) ) { savingDS.disable_blob = !incomingDS.blob; }
+			if( !isNull( incomingDS.class ) ) { savingDS.class = translateDatasourceClassToAdobe( translateDatasourceDriverToAdobe( incomingDS.dbdriver ), incomingDS.class ); }
+			// Invert logic
+			if( !isNull( incomingDS.clob ) ) { savingDS.disable_clob = !incomingDS.clob; }
+			
+			if( !isNull( incomingDS.connectionLimit ) ) {
+				// If the field is "-1" (unlimited) then remove it entirely from the config
+				if( incomingDS.connectionLimit == -1 ) {
+					structDelete( savingDS.urlmap, 'maxConnections' );
+				} else {
+					savingDS.urlmap.maxConnections = incomingDS.connectionLimit;
+				}
+			}
+			
+			// Convert from minutes to seconds
+			if( !isNull( incomingDS.connectionTimeout ) ) { savingDS.timeout = incomingDS.connectionTimeout * 60; }
+			if( !isNull( incomingDS.database ) ) { savingDS.urlmap.database = incomingDS.database; }
+			// Normalize names
+			if( !isNull( incomingDS.dbdriver ) ) { savingDS.driver = translateDatasourceDriverToAdobe( incomingDS.dbdriver ); }
+			if( !isNull( incomingDS.dsn ) ) { savingDS.url = incomingDS.dsn; }
+			if( !isNull( incomingDS.host ) ) { savingDS.urlmap.host = incomingDS.host; }
+			if( !isNull( incomingDS.password ) ) { savingDS.password = passwordManager.encryptDataSource( incomingDS.password ); }
+			if( !isNull( incomingDS.port ) ) { savingDS.urlmap.port = incomingDS.port; }
+			if( !isNull( incomingDS.username ) ) { savingDS.username = incomingDS.username; }
+			if( !isNull( incomingDS.validate ) ) { savingDS.validateConnection = incomingDS.validate; }
+		}
+		
+		writeWDDXConfigFile( thisConfig, configFilePath );	
+	}
+
+	private function writeAuth() {		
 		var configFilePath = getCFHomePath().listAppend( getPasswordPropertiesPath(), '/' );
 		
 		var propertyFile = new propertyFile();
@@ -470,17 +573,6 @@ component accessors=true extends='BaseConfig' {
 
 
 
-
-
-
-
-
-
-
-
-
-
-	
 	private function readWDDXConfigFile( required string configFilePath ) {
 		if( !fileExists( configFilePath ) ) {
 			throw "The config file doesn't exist [#configFilePath#]";
