@@ -234,6 +234,8 @@ component accessors=true {
 	
 	// Plain text admin password
 	property name='adminPassword' type='string' _isCFConfig=true;
+	// Plain text admin RDS password
+	property name='adminRDSPassword' type='string' _isCFConfig=true;
 	// Plain text default password for new Lucee web context
 	property name='adminPasswordDefault' type='string' _isCFConfig=true;
 	// hashed salted password for Lucee
@@ -246,6 +248,15 @@ component accessors=true {
 	property name='defaultHspw' type='string' _isCFConfig=true;
 	// hashed default password for new Lucee/Railo web context
 	property name='defaultPw' type='string' _isCFConfig=true;
+	
+	
+	// TODO: Figure out what hashing algorithms each version of ACF use, and share the 
+	// same setting so the hashes passwords are as portable as possible
+	
+	// hashed admin password for Adobe CF11
+	property name='ACF11Password' type='string' _isCFConfig=true;
+	// hashed RDS password for Adobe CF11
+	property name='ACF11RDSPassword' type='string' _isCFConfig=true;
 	
 	// Not a setting-- this is the config file to read/write from/to
 	// For adobe, it's <installDir>/cfusion
@@ -682,6 +693,5 @@ component accessors=true {
 		arrayPrePend(local.parent.inheritanceTrail, local.parent.name);
 		return local.parent;
 	}
-
 
 }

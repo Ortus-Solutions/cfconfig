@@ -512,7 +512,7 @@ component accessors=true extends='BaseConfig' {
 		var mappings = xmlSearch( thisConfig, '/cfLuceeConfiguration/mappings' )[ 1 ];
 		
 		for( var virtual in getCFmappings() ?: {} ) {
-			mappingStruct = getCFmappings()[ virtual ];
+			var mappingStruct = getCFmappings()[ virtual ];
 			// Search to see if this datasource already exists
 			var mappingXMLSearch = xmlSearch( thisConfig, "/cfLuceeConfiguration/mappings/mapping[translate(@virtual,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( virtual )#']" );
 			// mapping already exists

@@ -21,6 +21,7 @@ component accessors=true extends='BaseConfig' {
 
 
 	property name='seedPropertiesPath' type='string';
+	property name='passwordPropertiesPath' type='string';
 	property name='AdobePasswordManager';
 	
 	/**
@@ -43,6 +44,8 @@ component accessors=true extends='BaseConfig' {
 		setDatasourceConfigPath( '/lib/neo-datasource.xml' );
 		
 		setSeedPropertiesPath( '/lib/seed.properties' );
+		setPasswordPropertiesPath( '/lib/password.properties' );
+		
 		setAdobePasswordManager( new AdobePasswordManager() );
 		
 		super.init();
@@ -66,19 +69,18 @@ component accessors=true extends='BaseConfig' {
 		readWatch();
 		readMail();
 		readDatasource();
+		readAuth();
 			
 		return this;
 	}
 	
 	private function readRuntime() {
 		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getRuntimeConfigPath(), '/' ) );
-		
-		fileWrite( expandPath( '/newConfig.json' ), formatJSON( thisConfig ) );
-		
+				
 		setSessionMangement( thisConfig[ 7 ].session.enable );
 		setSessionTimeout( thisConfig[ 7 ].session.timeout );
 		setSessionMaximumTimeout( thisConfig[ 7 ].session.maximum_timeout );
-		setSessionType( thisConfig[ 7 ].session.usej2eesession ? 'j2ee' : 'j2ee' );
+		setSessionType( thisConfig[ 7 ].session.usej2eesession ? 'j2ee' : 'cfml' );
 		
 		setApplicationMangement( thisConfig[ 7 ].application.enable );
 		setApplicationTimeout( thisConfig[ 7 ].application.timeout );
@@ -97,6 +99,7 @@ component accessors=true extends='BaseConfig' {
 		}		
 		
 		setRequestTimeoutEnabled( thisConfig[ 10 ].timeoutRequests );
+		// Convert from seconds to timespan
 		setRequestTimeout( '0,0,0,#thisConfig[ 10 ].timeoutRequestTimeLimit#' );
 		setPostParametersLimit( thisConfig[ 10 ].postParametersLimit );
 		setPostSizeLimit( thisConfig[ 10 ].postSizeLimit );
@@ -160,7 +163,6 @@ component accessors=true extends='BaseConfig' {
 		setThrottleThreshold( thisConfig[ 18 ][ 'throttle-threshold' ] );
 		setTotalThrottleMemory( thisConfig[ 18 ][ 'total-throttle-memory' ] );
 		
-	//	dump( thisConfig );
 	}
 	
 	private function readClientStore() {
@@ -236,6 +238,17 @@ component accessors=true extends='BaseConfig' {
 		}
 	}
 
+	function readAuth() {
+		var propertyFile = new propertyFile().load( getCFHomePath().listAppend( getPasswordPropertiesPath(), '/' ) );
+		if( !propertyFile.encrypted ) {
+			setAdminPassword( propertyFile.password );
+			setAdminRDSPassword( propertyFile.rdspassword );	
+		} else {
+			setACF11Password( propertyFile.password );
+			setACF11RDSPassword( propertyFile.rdspassword );
+		}
+	}
+
 	/**
 	* I write out config from a base JSON format
 	*
@@ -249,29 +262,226 @@ component accessors=true extends='BaseConfig' {
 			throw 'No CF home specified to write to';
 		}
 		
-		var configFilePath = locateConfigFile();
-		
-		// If the target config file exists, read it in
-		if( fileExists( configFilePath ) ) {
-			var thisConfigRaw = fileRead( configFilePath );
-		// Otherwise, start from an empty base template
-		} else {
-			var configFileTemplate = getConfigFileTemplate();
-			var thisConfigRaw = fileRead( configFileTemplate );			
-		}
-		
-		var thisConfig = XMLParse( thisConfigRaw );
-		
-		writeDatasources( thisConfig );
-		
-		// Ensure the parent directories exist
-		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true )
-		fileWrite( configFilePath, toString( thisConfig ) );
+		writeRuntime();
+		writeClientStore();
+		writeWatch();
+		//writeMail();
+		//writeDatasource();
+		writeAuth();
 		
 		return this;
 	}
 	
-	private function readWDDXConfigFile( configFilePath ) {
+	private function writeRuntime() {		
+		var configFilePath = getCFHomePath().listAppend( getRuntimeConfigPath(), '/' );
+		
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getRuntimeConfigTemplate() );
+		}
+				
+		if( !isNull( getSessionMangement() ) ) { thisConfig[ 7 ].session.enable = getSessionMangement(); }
+		if( !isNull( getSessionTimeout() ) ) { thisConfig[ 7 ].session.timeout = getSessionTimeout(); }
+		if( !isNull( getSessionMaximumTimeout() ) ) { thisConfig[ 7 ].session.maximum_timeout = getSessionMaximumTimeout(); }
+		if( !isNull( getSessionType() ) ) { thisConfig[ 7 ].session.usej2eesession = ( getSessionType() == 'j2ee' ); }
+
+		if( !isNull( getApplicationMangement() ) ) { thisConfig[ 7 ].application.enable = getApplicationMangement(); }
+		if( !isNull( getApplicationTimeout() ) ) { thisConfig[ 7 ].application.timeout = getApplicationTimeout(); }
+		if( !isNull( getApplicationMaximumTimeout() ) ) { thisConfig[ 7 ].application.maximum_timeout = getApplicationMaximumTimeout(); }
+		
+		// Convert from boolean back to 1/0
+		if( !isNull( getErrorStatusCode() ) ) { thisConfig[ 8 ].EnableHTTPStatus = ( getErrorStatusCode() ? 1 : 0 ); }
+		if( !isNull( getMissingErrorTemplate() ) ) { thisConfig[ 8 ].missing_template = getMissingErrorTemplate(); }
+		if( !isNull( getGeneralErrorTemplate() ) ) { thisConfig[ 8 ].site_wide = getGeneralErrorTemplate(); }
+		
+		for( var virtual in getCFmappings() ?: {} ) {
+			var physical = getCFmappings()[ virtual ][ 'physical' ];
+			thisConfig[ 9 ][ virtual ] = physical;
+		}
+		
+		if( !isNull( getRequestTimeoutEnabled() ) ) { thisConfig[ 10 ].timeoutRequests = getRequestTimeoutEnabled(); }
+		if( !isNull( getRequestTimeout() ) ) {
+			// Convert from timepsan to seconds
+			var rt = getRequestTimeout();
+			var ts = createTimespan( rt.listGetAt( 1 ), rt.listGetAt( 2 ), rt.listGetAt( 3 ), rt.listGetAt( 4 ) );
+			// timespan of "1" is one day.  Multiple to get seconds
+			thisConfig[ 10 ].timeoutRequestTimeLimit = round( ts*24*60*60 );
+		}
+		if( !isNull( getPostParametersLimit() ) ) { thisConfig[ 10 ].postParametersLimit = getPostParametersLimit(); }
+		if( !isNull( getPostSizeLimit() ) ) { thisConfig[ 10 ].postSizeLimit = getPostSizeLimit(); }
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		/*		
+		
+		
+		
+		
+		
+				
+		setTemplateCacheSize( thisConfig[ 11 ].templateCacheSize );
+		if( thisConfig[ 11 ].trustedCacheEnabled ) {
+			setInspectTemplate( 'never' );
+		} else if ( thisConfig[ 11 ].inRequestTemplateCacheEnabled ?: false ) {
+			setInspectTemplate( 'once' );
+		} else {
+			setInspectTemplate( 'always' );
+		}
+		setSaveClassFiles(  thisConfig[ 11 ].saveClassFiles  );
+		setComponentCacheEnabled( thisConfig[ 11 ].componentCacheEnabled );
+		
+		setMailDefaultEncoding( thisConfig[ 12 ].defaultMailCharset );
+		
+		setCFFormScriptDirectory( thisConfig[ 14 ].CFFormScriptSrc );
+		
+		// Adobe doesn't do "all" or "none" like Lucee, just the list.  Empty string if nothing.
+		setScriptProtect( thisConfig[ 15 ] );
+		
+		setPerAppSettingsEnabled( thisConfig[ 16 ].isPerAppSettingsEnabled );				
+		// Adobe stores the inverse of Lucee
+		setUDFTypeChecking( !thisConfig[ 16 ].cfcTypeCheckEnabled );
+		setDisableInternalCFJavaComponents( thisConfig[ 16 ].disableServiceFactory );
+		// Lucee and Adobe store opposite value
+		setDotNotationUpperCase( !thisConfig[ 16 ].preserveCaseForSerialize );
+		setSecureJSON( thisConfig[ 16 ].secureJSON );
+		setSecureJSONPrefix( thisConfig[ 16 ].secureJSONPrefix );
+		setMaxOutputBufferSize( thisConfig[ 16 ].maxOutputBufferSize );
+		setInMemoryFileSystemEnabled( thisConfig[ 16 ].enableInMemoryFileSystem );
+		setInMemoryFileSystemLimit( thisConfig[ 16 ].inMemoryFileSystemLimit );
+		setInMemoryFileSystemAppLimit( thisConfig[ 16 ].inMemoryFileSystemAppLimit );
+		setAllowExtraAttributesInAttrColl( thisConfig[ 16 ].allowExtraAttributesInAttrColl );
+		setDisallowUnamedAppScope( thisConfig[ 16 ].dumpunnamedappscope );
+		setAllowApplicationVarsInServletContext( thisConfig[ 16 ].allowappvarincontext );
+		setCFaaSGeneratedFilesExpiryTime( thisConfig[ 16 ].CFaaSGeneratedFilesExpiryTime );
+		setORMSearchIndexDirectory( thisConfig[ 16 ].ORMSearchIndexDirectory );
+		setGoogleMapKey( thisConfig[ 16 ].googleMapKey );
+		setServerCFCEenabled( thisConfig[ 16 ].enableServerCFC );
+		setServerCFC( thisConfig[ 16 ].serverCFC );
+		setCompileExtForCFInclude( thisConfig[ 16 ].compileextforinclude );
+		setSessionCookieTimeout( thisConfig[ 16 ].sessionCookieTimeout );
+		setSessionCookieHTTPOnly( thisConfig[ 16 ].httpOnlySessionCookie );
+		setSessionCookieSecure( thisConfig[ 16 ].secureSessionCookie );
+		setSessionCookieDisableUpdate( thisConfig[ 16 ].internalCookiesDisableUpdate );
+		
+		// Map Adobe values to shared Lucee settings
+		switch( thisConfig[ 16 ].applicationCFCSearchLimit ) {
+			case '1' :
+				setApplicationMode( 'curr2driveroot' );
+				break;
+			case '2' :
+				setApplicationMode( 'curr2root' );
+				break;
+			case '3' :
+				setApplicationMode( 'currorroot' );
+		}
+				
+		setThrottleThreshold( thisConfig[ 18 ][ 'throttle-threshold' ] );
+		setTotalThrottleMemory( thisConfig[ 18 ][ 'total-throttle-memory' ] );
+		
+		
+		*/
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		writeWDDXConfigFile( thisConfig, configFilePath );
+		
+	}
+	
+	private function writeClientStore() {
+		var configFilePath = getCFHomePath().listAppend( getClientStoreConfigPath(), '/' );
+		
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getClientStoreConfigTemplate() );
+		}
+				
+		if( !isNull( getUseUUIDForCFToken() ) ) { thisConfig[ 2 ].uuidToken = getUseUUIDForCFToken(); }
+
+		writeWDDXConfigFile( thisConfig, configFilePath );
+	}
+	
+	private function writeWatch() {
+		var configFilePath = getCFHomePath().listAppend( getWatchConfigPath(), '/' );
+		
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getWatchConfigTemplate() );
+		}
+				
+		if( !isNull( getWatchConfigFilesForChangesEnabled() ) ) { thisConfig[ 'watch.watchEnabled' ] = getWatchConfigFilesForChangesEnabled(); }
+		if( !isNull( getWatchConfigFilesForChangesInterval() ) ) { thisConfig[ 'watch.interval' ] = getWatchConfigFilesForChangesInterval(); }
+		if( !isNull( getWatchConfigFilesForChangesExtensions() ) ) { thisConfig[ 'watch.extensions' ] = getWatchConfigFilesForChangesExtensions(); }
+		
+		writeWDDXConfigFile( thisConfig, configFilePath );
+	
+	}
+
+	function writeAuth() {		
+		var configFilePath = getCFHomePath().listAppend( getPasswordPropertiesPath(), '/' );
+		
+		var propertyFile = new propertyFile();
+		
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			propertyFile.load( configFilePath );
+		}
+		
+		if( !isNull( getAdminPassword() ) ) {
+			propertyFile[ 'password' ] = getAdminPassword();
+			propertyFile[ 'encrypted' ] = 'false';
+			
+			if( !isNull( getAdminRDSPassword() ) ) { propertyFile[ 'rdspassword' ] = getAdminRDSPassword(); }
+			
+		} else if( !isNull( getACF11Password() ) ) {
+			propertyFile[ 'password' ] = getACF11Password();
+			propertyFile[ 'encrypted' ] = 'true';
+			
+			if( !isNull( getACF11RDSPassword() ) ) { propertyFile[ 'rdspassword' ] = getACF11RDSPassword(); }
+		}
+		
+		propertyFile.store();
+	
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	private function readWDDXConfigFile( required string configFilePath ) {
 		if( !fileExists( configFilePath ) ) {
 			throw "The config file doesn't exist [#configFilePath#]";
 		}
@@ -287,6 +497,17 @@ component accessors=true extends='BaseConfig' {
 		
 		wddx action='wddx2cfml' input=thisConfigRaw output='local.thisConfig';
 		return local.thisConfig;		
+	}
+	
+	private function writeWDDXConfigFile( required any data, required string configFilePath ) {
+		
+		// Ensure the parent directories exist		
+		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true )
+		
+		wddx action='cfml2wddx' input=data output='local.thisConfigRaw';
+		
+		fileWrite( configFilePath, thisConfigRaw );
+		
 	}
 
 	private function getDefaultDatasourceStruct() {
