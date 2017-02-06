@@ -21,5 +21,9 @@
         "**/.*",
         "test",
         "tests"
-    ]
+    ],
+    "installPaths":{
+        "lucee-password-util":"modules\\lucee-password-util",
+        "adobe-password-util":"modules\\adobe-password-util"
+    }
 }
