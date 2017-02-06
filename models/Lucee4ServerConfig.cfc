@@ -7,7 +7,7 @@ component accessors=true extends='BaseConfig' {
 	property name='configFileTemplate' type='string';
 	property name='configFileName' type='string';
 	property name='configRelativePathWithinServerHome' type='string';
-	property name='luceePasswordManager';
+	property name='luceePasswordManager' type='PasswordManager@lucee-password-util';
 	
 	
 	/**
@@ -23,9 +23,7 @@ component accessors=true extends='BaseConfig' {
 		setConfigFileName( 'lucee-server.xml' );
 		// This is where said config file is stored inside the server home
 		setConfigRelativePathWithinServerHome( '/context/' );
-		
-		setLuceePasswordManager( new LuceePasswordManager() );
-		
+				
 		super.init();
 	}
 	

@@ -22,8 +22,7 @@ component accessors=true extends='BaseConfig' {
 
 	property name='seedPropertiesPath' type='string';
 	property name='passwordPropertiesPath' type='string';
-	property name='AdobePasswordManager';
-	
+		
 	/**
 	* Constructor
 	*/
@@ -46,9 +45,12 @@ component accessors=true extends='BaseConfig' {
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setPasswordPropertiesPath( '/lib/password.properties' );
 		
-		setAdobePasswordManager( new AdobePasswordManager() );
-		
 		super.init();
+	}
+	
+	// This is not a singleton since it holds state regarding the encryption seeds, so create it fresh each time as a transient.
+	private function getAdobePasswordManager() {
+		return wirebox.getInstance( 'PasswordManager@adobe-password-util' );
 	}
 	
 	/**
@@ -239,7 +241,7 @@ component accessors=true extends='BaseConfig' {
 	}
 
 	function readAuth() {
-		var propertyFile = new propertyFile().load( getCFHomePath().listAppend( getPasswordPropertiesPath(), '/' ) );
+		var propertyFile = wirebox.getInstance( 'propertyFile@propertyFile' ).load( getCFHomePath().listAppend( getPasswordPropertiesPath(), '/' ) );
 		if( !propertyFile.encrypted ) {
 			setAdminPassword( propertyFile.password );
 			setAdminRDSPassword( propertyFile.rdspassword );	
@@ -543,7 +545,7 @@ component accessors=true extends='BaseConfig' {
 	private function writeAuth() {		
 		var configFilePath = getCFHomePath().listAppend( getPasswordPropertiesPath(), '/' );
 		
-		var propertyFile = new propertyFile();
+		var propertyFile = wirebox.getInstance( 'propertyFile@propertyFile' );
 		
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {

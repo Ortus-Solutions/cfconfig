@@ -5,6 +5,27 @@
 * to/from a specific engine's format, you'll need to create one of my subclasses
 */
 component accessors=true {
+	
+	// ----------------------------------------------------------------------------------------
+	// Depdendency Injections
+	// ----------------------------------------------------------------------------------------
+
+	property name='wirebox' type='wirebox';
+	
+	// ----------------------------------------------------------------------------------------
+	// Properties for the internal workings
+	// ----------------------------------------------------------------------------------------
+	
+	// The config file to read/write from/to
+	// - For adobe, it's <installDir>/cfusion
+	// - For Railo/Lucee, it's the server context or web context folder
+	// - For generic JSON config, it's just the folder you want to read/write from
+	property name='CFHomePath' type='string';
+	
+	// ----------------------------------------------------------------------------------------
+	// CF Config properties that map to the CF engines
+	// ----------------------------------------------------------------------------------------
+	
 	// One of the strings "never", "once", "always"
 	property name='inspectTemplate' type='string' _isCFConfig=true;
 	// Number of templates to cache
@@ -257,12 +278,6 @@ component accessors=true {
 	property name='ACF11Password' type='string' _isCFConfig=true;
 	// hashed RDS password for Adobe CF11
 	property name='ACF11RDSPassword' type='string' _isCFConfig=true;
-	
-	// Not a setting-- this is the config file to read/write from/to
-	// For adobe, it's <installDir>/cfusion
-	// For Railo/Lucee, it's the server context or web context folder
-	// For generic JSON config, it's just the folder you want to read/write from
-	property name='CFHomePath' type='string';
 	
 	/**
 	* Constructor
