@@ -8,7 +8,7 @@ Path placeholders:
 	{system-directory}: path to thesystem directory
 	{web-context-hash}: hash of the web context
 
---><cfLuceeConfiguration default-hspw="eb93137093b23f3230657d1f8cad7bfe0c00975805fb017f608448bbda3f33a0" hspw="eb93137093b23f3230657d1f8cad7bfe0c00975805fb017f608448bbda3f33a0" salt="4BD328D9-9471-49FE-BFCC96C8C1949BEC" version="4.5"><cfabort/>
+--><cfLuceeConfiguration default-hspw="eb93137093b23f3230657d1f8cad7bfe0c00975805fb017f608448bbda3f33a0" hspw="6ff0c995b4fc466e0e029b1a45996452859be4751ce09d1af9e4a5510813776e" salt="4BD328D9-9471-49FE-BFCC96C8C1949BEC" version="4.5"><cfabort/>
 
 	<!--
 	system:
@@ -35,7 +35,7 @@ Path placeholders:
 <!--	 - http://sourceforge.net 																		-->
 <!--	or ask your database distributor 																-->
 	<data-sources psq="false">
-	<data-source allow="511" blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="-1" connectionTimeout="1" custom="useUnicode=true&amp;characterEncoding=UTF-8&amp;useLegacyDatetimeCode=true" database="test" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" metaCacheTimeout="60000" name="MySQLDB" password="encrypted:4890463034cf944d7682451e1b8e6aafc88722525eaf3a925669f29fafb47509" port="3306" storage="false" username="root" validate="false"/><data-source allow="511" blob="false" class="net.sourceforge.jtds.jdbc.Driver" clob="false" connectionLimit="-1" connectionTimeout="1" custom="" database="test" dbdriver="MSSQL2" dsn="jdbc:jtds:sqlserver://{host}:{port}/{database}" host="localhost" metaCacheTimeout="60000" name="SQLServeRDB" password="encrypted:76ee285b64d5baa1001a9fa464393298de9594580fbd74e52546a64743a09490" port="1433" storage="false" username="sa" validate="false"/></data-sources>
+	<data-source blob="false" class="org.postgresql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" database="Database" dbdriver="PostgreSql" dsn="jdbc:postgresql://{host}:{port}/{database}" host="Server" name="postgres" password="encrypted:15b0fd6e578c186342e2f0883d9339eb44c471fb19c7bb458c4eb03d0b06d1a4" port="5432" username="User name" validate="false"/><data-source blob="false" class="com.microsoft.jdbc.sqlserver.SQLServerDriver" clob="false" connectionLimit="-1" connectionTimeout="20" database="test" dbdriver="MSSQL" dsn="jdbc:sqlserver://{host}:{port}" host="localhost" name="sqlserver" password="encrypted:4e16c5fd5a902af32a71536a9284c4ffa74339f9f8d9aae5850b0e258854649b" port="1433" username="user" validate="false"/><data-source blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" database="" dbdriver="Other" dsn="jdbc:mysql://localhost:3306/test?tinyInt1isBit=false&amp;" host="" name="other" password="encrypted:1164395466e47f25ecdb2c2118d651b189fad36eba14aa95585dd9b921c2768d" port="" username="User name" validate="false"/><data-source blob="false" class="oracle.jdbc.driver.OracleDriver" clob="false" connectionLimit="-1" connectionTimeout="20" database="" dbdriver="Oracle" dsn="jdbc:oracle:{drivertype}:@{host}:{port}:{database}" host="Server" name="oracle" password="encrypted:1b4da3d757f74842445f5ef8970eddf17c76d455570ebe65adcacedaebd08d05" port="1521" username="User name" validate="false"/><data-source blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="87" connectionTimeout="3" database="test" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" name="test" password="encrypted:42c5c941f7131725c16c62b61145126a695af88d0cbf4540717e57624fe5669a" port="3306" username="test" validate="false"/><data-source blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" database="test" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" name="thisisforreal" password="encrypted:37cd259e1ca3fd840c153c8dd3ecfbff" port="3306" username="root" validate="false"/></data-sources>
 
 	<!--
 		deploy-directory - directory where java classes will be deployed
@@ -161,10 +161,10 @@ Path placeholders:
 		client-max-age
 			the max age of the client scope in days
 	-->
-	<scope applicationtimeout="1,0,0,0" cascade-to-resultset="true" cascading="standard" cgi-readonly="false" client-directory-max-size="10mb" clientmanagement="false" clientstorage="cookie" clienttimeout="90,0,0,0" local-mode="classic" merge-url-form="false" session-type="cfml" sessionmanagement="true" sessionstorage="memory" sessiontimeout="0,0,30,0" setclientcookies="true" setdomaincookies="false"/>
+	<scope applicationtimeout="2,0,0,0" cascade-to-resultset="true" cascading="standard" cgi-readonly="false" client-directory-max-size="10mb" clientmanagement="false" clientstorage="cookie" clienttimeout="90,0,0,0" local-mode="classic" merge-url-form="false" session-type="j2ee" sessionmanagement="true" sessionstorage="memory" sessiontimeout="0,0,20,0" setclientcookies="true" setdomaincookies="false"/>
 		
 	<mail spool-enable="yes" spool-interval="5" timeout="30">
-	<server idle="10000" life="60000" password="encrypted:90609ed597245d4c82ce592d261c06a5c38f03cea1961efba30285fbbc33bfc1" port="587" smtp="smptout.secureserver.net" ssl="false" tls="false" username="brad@bradwood.com"/></mail>
+	<server idle="10000" life="60000" password="encrypted:90609ed597245d4c82ce592d261c06a5c38f03cea1961efba30285fbbc33bfc1" port="587" smtp="smptout.secureserver.net" ssl="false" tls="false" username="brad@bradwood.com"/><server password="encrypted:753973249d802b1889b5308f6c355a2b9dd52332d08f25f69ef931cb5761532e" port="25" smtp="tests" ssl="false" username="user"/></mail>
 	
 	<mappings>
 	<!--
@@ -263,7 +263,7 @@ Path placeholders:
 			current:		search only in current directory
 			curr2root:	search the App... from current directory up to root. 
 	-->
-	<application allow-url-requesttimeout="true" listener-mode="curr2root" listener-type="classic" requesttimeout="0,0,5,0" script-protect="none" type-checking="true"/>
+	<application allow-url-requesttimeout="true" listener-mode="curr2root" listener-type="classic" requesttimeout="0,0,0,60" script-protect="FORM,URL,COOKIE,CGI" type-checking="false"/>
 	
 	<update location="http://stable.lucee.org" type="manual"/>
 	<!--
@@ -349,4 +349,4 @@ for every argument defined lucee tries to call a matching setter method
 		<logger appender="resource" appender-arguments="path:{lucee-config}/logs/datasource.log" layout="classic" name="datasource"/>
 	</logging>
 	
-<datasource/><queue enable="false"/><compiler dot-notation-upper-case="false" full-null-support="false" suppress-ws-before-arg="true"/><charset resource-charset="windows-1252" template-charset="windows-1252" web-charset="UTF-8"/><java inspect-template="once"/><setting allow-compression="true" buffer-output="true" cfml-writer="regular" content-length="" suppress-content="true"/></cfLuceeConfiguration>
+<datasource/><queue enable="false"/><compiler dot-notation-upper-case="true" full-null-support="false" suppress-ws-before-arg="true"/><charset resource-charset="windows-1252" template-charset="windows-1252" web-charset="UTF-8"/><java inspect-template="once"/><setting allow-compression="true" buffer-output="true" cfml-writer="regular" content-length="" suppress-content="true"/></cfLuceeConfiguration>

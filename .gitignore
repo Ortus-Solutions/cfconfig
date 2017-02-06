@@ -64,3 +64,4 @@ $RECYCLE.BIN/
 *.xml
 .project
 .settings/org.eclipse.core.resources.prefs
+/modules

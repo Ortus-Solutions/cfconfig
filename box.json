@@ -1,29 +1,21 @@
 {
-    "name":"CF Config",
-    "version":"0.1.0-alpha",
+    "name":"CF Config Services",
+    "version":"0.5.0-alpha",
     "author":"Brad Wood",
     "location":"https://github.com/bdw429s/cfconfig#master",
-    "packageDirectory":"",
     "homepage":"https://github.com/bdw429s/cfconfig",
-    "documentation":"",
-    "slug":"cfconfig",
-    "shortDescription":"A library to read/write/store CF engine configs",
-    "description":"",
+    "slug":"cfconfig-services",
+    "shortDescription":"A library to read/write/store CF engine configs.  This project is just the service layer, not the CLI component.",
     "type":"modules",
     "keywords":"ColdFusion,Lucee,Railo,CFML,config",
-    "private":false,
     "projectURL":"https://github.com/bdw429s/cfconfig",
     "dependencies":{
-        
-    },
-    "devDependencies":{
-        
-    },
-    "installPaths":{
-        
+        "lucee-password-util":"^1.0.0",
+        "adobe-password-util":"^1.0.0"
     },
     "scripts":{
-        
+        "postVersion":"package set location='bdw429s/cfconfig#v`package version`'",
+        "postPublish":"!git push --follow-tags"
     },
     "ignore":[
         "**/.*",
