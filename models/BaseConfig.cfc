@@ -10,7 +10,7 @@ component accessors=true {
 	// Depdendency Injections
 	// ----------------------------------------------------------------------------------------
 
-	property name='wirebox' type='wirebox';
+	property name='wirebox' inject='wirebox';
 	
 	// ----------------------------------------------------------------------------------------
 	// Properties for the internal workings

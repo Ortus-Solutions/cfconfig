@@ -27,19 +27,19 @@ component accessors=true extends='BaseConfig' {
 	* Constructor
 	*/
 	function init() {
-		setRuntimeConfigTemplate( expandPath( '/resources/adobe11/neo-runtime.xml' ) );		
+		setRuntimeConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-runtime.xml' ) );		
 		setRuntimeConfigPath( '/lib/neo-runtime.xml' );
 		
-		setClientStoreConfigTemplate( expandPath( '/resources/adobe11/neo-clientstore.xml' ) );		
+		setClientStoreConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-clientstore.xml' ) );		
 		setClientStoreConfigPath( '/lib/neo-clientstore.xml' );
 		
-		setWatchConfigTemplate( expandPath( '/resources/adobe11/neo-watch.xml' ) );		
+		setWatchConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-watch.xml' ) );		
 		setWatchConfigPath( '/lib/neo-watch.xml' );
 		
-		setMailConfigTemplate( expandPath( '/resources/adobe11/neo-mail.xml' ) );		
+		setMailConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-mail.xml' ) );		
 		setMailConfigPath( '/lib/neo-mail.xml' );
 		
-		setDatasourceConfigTemplate( expandPath( '/resources/adobe11/neo-datasource.xml' ) );
+		setDatasourceConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-datasource.xml' ) );
 		setDatasourceConfigPath( '/lib/neo-datasource.xml' );
 		
 		setSeedPropertiesPath( '/lib/seed.properties' );
@@ -263,6 +263,8 @@ component accessors=true extends='BaseConfig' {
 		if( !len( thisCFHomePath ) ) {
 			throw 'No CF home specified to write to';
 		}
+		
+		ensureSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
 		
 		writeRuntime();
 		writeClientStore();
@@ -507,7 +509,7 @@ component accessors=true extends='BaseConfig' {
 		for( var datasource in datasources ) {
 			// For brevity
 			var incomingDS = datasources[ datasource ];
-			thisConfig[ 1 ][ datasource ] = thisConfig[ 1 ][ datasource ] ?: {};
+			thisConfig[ 1 ][ datasource ] = thisConfig[ 1 ][ datasource ] ?: getDefaultDatasourceStruct();
 			var savingDS = thisConfig[ 1 ][ datasource ];
 			
 	
@@ -565,7 +567,7 @@ component accessors=true extends='BaseConfig' {
 			if( !isNull( getACF11RDSPassword() ) ) { propertyFile[ 'rdspassword' ] = getACF11RDSPassword(); }
 		}
 		
-		propertyFile.store();
+		propertyFile.store( configFilePath );
 	
 	}
 
@@ -573,7 +575,15 @@ component accessors=true extends='BaseConfig' {
 
 
 
-
+	private function ensureSeedProperties( required string seedPropertiesPath ) {
+		if( !fileExists( seedPropertiesPath ) ) {
+			wirebox.getInstance( 'propertyFile@propertyFile' )
+				.set( 'seed', left( createUUID(), 24 ) )
+				.set( 'algorithm', 'DESede' )
+				.store( seedPropertiesPath );
+		}
+		
+	}
 
 	private function readWDDXConfigFile( required string configFilePath ) {
 		if( !fileExists( configFilePath ) ) {

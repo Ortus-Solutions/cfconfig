@@ -11,7 +11,8 @@
     "projectURL":"https://github.com/bdw429s/cfconfig",
     "dependencies":{
         "lucee-password-util":"^1.0.0",
-        "adobe-password-util":"^1.0.0"
+        "adobe-password-util":"^1.0.0",
+        "propertyFile":"^1.0.7"
     },
     "scripts":{
         "postVersion":"package set location='bdw429s/cfconfig#v`package version`'",
@@ -26,7 +27,8 @@
         "lucee-password-util":"modules\\lucee-password-util",
         "adobe-password-util":"modules\\adobe-password-util",
         "coldbox":"coldbox",
-        "testbox":"testbox"
+        "testbox":"testbox",
+        "propertyFile":"modules\\propertyFile"
     },
     "devDependencies":{
         "coldbox":"^4.3.0+188",

@@ -7,7 +7,7 @@ component accessors=true extends='BaseConfig' {
 	property name='configFileTemplate' type='string';
 	property name='configFileName' type='string';
 	property name='configRelativePathWithinServerHome' type='string';
-	property name='luceePasswordManager' type='PasswordManager@lucee-password-util';
+	property name='luceePasswordManager' inject='PasswordManager@lucee-password-util';
 	
 	
 	/**
@@ -15,7 +15,7 @@ component accessors=true extends='BaseConfig' {
 	*/
 	function init() {
 		// Used when writing out a Lucee server context config file from the generic config
-		setConfigFileTemplate( expandPath( '/resources/lucee4/lucee-server-base.xml' ) );
+		setConfigFileTemplate( expandPath( '/cfconfig-services/resources/lucee4/lucee-server-base.xml' ) );
 		
 		// Ex: lucee-server/context/lucee-server.xml
 		
