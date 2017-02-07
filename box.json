@@ -1,8 +1,8 @@
 {
     "name":"CF Config Services",
-    "version":"0.5.0-alpha",
+    "version":"0.5.1-alpha",
     "author":"Brad Wood",
-    "location":"https://github.com/bdw429s/cfconfig#master",
+    "location":"bdw429s/cfconfig#v0.5.1-alpha",
     "homepage":"https://github.com/bdw429s/cfconfig",
     "slug":"cfconfig-services",
     "shortDescription":"A library to read/write/store CF engine configs.  This project is just the service layer, not the CLI component.",
@@ -24,6 +24,12 @@
     ],
     "installPaths":{
         "lucee-password-util":"modules\\lucee-password-util",
-        "adobe-password-util":"modules\\adobe-password-util"
+        "adobe-password-util":"modules\\adobe-password-util",
+        "coldbox":"coldbox",
+        "testbox":"testbox"
+    },
+    "devDependencies":{
+        "coldbox":"^4.3.0+188",
+        "testbox":"^2.4.0+80"
     }
 }
