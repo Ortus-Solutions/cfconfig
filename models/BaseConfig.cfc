@@ -270,6 +270,11 @@ component accessors=true {
 	// hashed default password for new Lucee/Railo web context
 	property name='defaultPw' type='string' _isCFConfig=true;
 	
+	// License key (only used for Adobe)
+	property name='license' type='string' _isCFConfig=true;
+	// Previous license key (required for an upgrade license key)
+	property name='previousLicense' type='string' _isCFConfig=true;
+	
 	
 	// TODO: Figure out what hashing algorithms each version of ACF use, and share the 
 	// same setting so the hashes passwords are as portable as possible

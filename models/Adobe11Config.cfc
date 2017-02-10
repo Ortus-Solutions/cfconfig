@@ -19,9 +19,12 @@ component accessors=true extends='BaseConfig' {
 	property name='datasourceConfigPath' type='string';
 	property name='datasourceConfigTemplate' type='string';
 
-
+	// I'm basically always writing all properties in these two files, so not bothering with a template.
 	property name='seedPropertiesPath' type='string';
 	property name='passwordPropertiesPath' type='string';
+	
+	property name='licensePropertiesPath' type='string';
+	property name='licensePropertiesTemplate' type='string';
 		
 	/**
 	* Constructor
@@ -44,6 +47,9 @@ component accessors=true extends='BaseConfig' {
 		
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setPasswordPropertiesPath( '/lib/password.properties' );
+				
+		setLicensePropertiesTemplate( expandPath( '/cfconfig-services/resources/adobe11/license.properties' ) );
+		setLicensePropertiesPath( '/lib/license.properties' );
 		
 		super.init();
 	}
@@ -72,6 +78,7 @@ component accessors=true extends='BaseConfig' {
 		readMail();
 		readDatasource();
 		readAuth();
+		readLicense();
 			
 		return this;
 	}
@@ -251,6 +258,15 @@ component accessors=true extends='BaseConfig' {
 		}
 	}
 
+
+	function readLicense() {
+		var propertyFile = wirebox.getInstance( 'propertyFile@propertyFile' ).load( getCFHomePath().listAppend( getLicensePropertiesPath(), '/' ) );
+		
+		if( len( propertyFile.get( 'sn', '' ) ) ) { setLicense( propertyFile.get( 'sn', '' ) ); }
+		if( len( propertyFile.get( 'previous_sn', '' ) ) ) { setPreviousLicense( propertyFile.get( 'previous_sn', '' ) ); }
+	}
+		
+
 	/**
 	* I write out config from a base JSON format
 	*
@@ -272,6 +288,7 @@ component accessors=true extends='BaseConfig' {
 		writeMail();
 		writeDatasource();
 		writeAuth();
+		writeLicense();
 		
 		return this;
 	}
@@ -571,9 +588,24 @@ component accessors=true extends='BaseConfig' {
 	
 	}
 
-
-
-
+	private function writeLicense() {		
+		var configFilePath = getCFHomePath().listAppend( getLicensePropertiesPath(), '/' );
+		
+		var propertyFile = wirebox.getInstance( 'propertyFile@propertyFile' );
+		
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			propertyFile.load( configFilePath );
+		// Else read the template
+		} else {
+			propertyFile.load( getLicensePropertiesTemplate() );			
+		}
+		
+		if( !isNull( getLicense() ) ) { propertyFile[ 'sn' ] = getLicense(); }
+		if( !isNull( getPreviousLicense() ) ) { propertyFile[ 'previous_sn' ] = getPreviousLicense(); }			
+		
+		propertyFile.store( configFilePath );
+	}
 
 	private function ensureSeedProperties( required string seedPropertiesPath ) {
 		if( !fileExists( seedPropertiesPath ) ) {
