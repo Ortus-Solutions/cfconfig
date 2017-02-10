@@ -6,7 +6,7 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			
 			it( "can read config", function() {
 				
-				var Adobe11Config = getInstance( 'Adobe11Config@cfconfig-services' )
+				var Adobe11Config = getInstance( 'Adobe11@cfconfig-services' )
 					.read( expandPath( '/tests/resources/adobe11/ServerHome/WEB-INF/cfusion' ) );
 				
 				expect( Adobe11Config.getMemento() ).toBeStruct();				
@@ -14,7 +14,7 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			
 			it( "can write config", function() {
 				
-				var Adobe11Config = getInstance( 'Adobe11Config@cfconfig-services' )
+				var Adobe11Config = getInstance( 'Adobe11@cfconfig-services' )
 					.read( expandPath( '/tests/resources/Adobe11/ServerHome/WEB-INF/cfusion' ) )
 					.write( expandPath( '/tests/resources/tmp' ) );
 					

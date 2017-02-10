@@ -6,7 +6,7 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			
 			it( "can read config", function() {
 				
-				var Lucee4ServerConfig = getInstance( 'Lucee4ServerConfig@cfconfig-services' )
+				var Lucee4ServerConfig = getInstance( 'Lucee4Server@cfconfig-services' )
 					.read( expandPath( '/tests/resources/lucee4/ServerHome/Lucee-Server' ) );
 				
 				expect( Lucee4ServerConfig.getMemento() ).toBeStruct();				
@@ -14,7 +14,7 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			
 			it( "can write config", function() {
 				
-				var Lucee4ServerConfig = getInstance( 'Lucee4ServerConfig@cfconfig-services' )
+				var Lucee4ServerConfig = getInstance( 'Lucee4Server@cfconfig-services' )
 					.read( expandPath( '/tests/resources/lucee4/ServerHome/Lucee-Server' ) )
 					.write( expandPath( '/tests/resources/tmp' ) );
 					

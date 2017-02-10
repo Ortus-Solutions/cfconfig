@@ -1,8 +1,8 @@
 /**
-* I represent the behavior of reading and writing CF engine config in the format compatible with a Lucee 4.x server context
+* I represent shared behavior for all Lucee providers.  The concrete providers can override my methods and proeprties as neccessary.
 * I extend the BaseConfig class, which represents the data itself.
 */
-component accessors=true extends='BaseConfig' {
+component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	property name='configFileTemplate' type='string';
 	property name='configFileName' type='string';
@@ -14,6 +14,8 @@ component accessors=true extends='BaseConfig' {
 	* Constructor
 	*/
 	function init() {
+		super.init();
+		
 		// Used when writing out a Lucee server context config file from the generic config
 		setConfigFileTemplate( expandPath( '/cfconfig-services/resources/lucee4/lucee-server-base.xml' ) );
 		
@@ -23,8 +25,11 @@ component accessors=true extends='BaseConfig' {
 		setConfigFileName( 'lucee-server.xml' );
 		// This is where said config file is stored inside the server home
 		setConfigRelativePathWithinServerHome( '/context/' );
-				
-		super.init();
+
+		setEngine( 'luceeServer' );
+		setVersion( '4' );
+		
+		return this;
 	}
 	
 	/**

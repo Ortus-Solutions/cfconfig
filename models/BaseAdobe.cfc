@@ -1,8 +1,8 @@
 /**
-* I represent the behavior of reading and writing CF engine config in the format compatible with an Adobe 11.x server
+* I represent shared behavior for all Adobe providers.  The concrete providers can override my methods and proeprties as neccessary.
 * I extend the BaseConfig class, which represents the data itself.
 */
-component accessors=true extends='BaseConfig' {
+component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	property name='runtimeConfigPath' type='string';
 	property name='runtimeConfigTemplate' type='string';
@@ -29,29 +29,21 @@ component accessors=true extends='BaseConfig' {
 	/**
 	* Constructor
 	*/
-	function init() {
-		setRuntimeConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-runtime.xml' ) );		
-		setRuntimeConfigPath( '/lib/neo-runtime.xml' );
-		
-		setClientStoreConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-clientstore.xml' ) );		
+	function init() {		
+		super.init();
+				
+		setRuntimeConfigPath( '/lib/neo-runtime.xml' );		
 		setClientStoreConfigPath( '/lib/neo-clientstore.xml' );
-		
-		setWatchConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-watch.xml' ) );		
 		setWatchConfigPath( '/lib/neo-watch.xml' );
-		
-		setMailConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-mail.xml' ) );		
 		setMailConfigPath( '/lib/neo-mail.xml' );
-		
-		setDatasourceConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-datasource.xml' ) );
 		setDatasourceConfigPath( '/lib/neo-datasource.xml' );
-		
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setPasswordPropertiesPath( '/lib/password.properties' );
-				
-		setLicensePropertiesTemplate( expandPath( '/cfconfig-services/resources/adobe11/license.properties' ) );
 		setLicensePropertiesPath( '/lib/license.properties' );
+
+		setEngine( 'adobe' );
 		
-		super.init();
+		return this;
 	}
 	
 	// This is not a singleton since it holds state regarding the encryption seeds, so create it fresh each time as a transient.

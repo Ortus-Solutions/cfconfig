@@ -3,6 +3,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/tests" {
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
+		structDelete( application, getColdboxAppKey() );
 		super.beforeAll();
 		//ApplicationStop();
 		if( directoryExists( '/tests/resources/tmp' ) ) {

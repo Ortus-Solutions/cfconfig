@@ -22,6 +22,11 @@ component accessors=true {
 	// - For generic JSON config, it's just the folder you want to read/write from
 	property name='CFHomePath' type='string';
 	
+	// The name of the engine this config provider can handle. "adobe", "lucee", or "railo"
+	property name='engine' type='string';
+	// A semver range that covers the version of the engine that are covered.
+	property name='version' type='string';
+	
 	// ----------------------------------------------------------------------------------------
 	// CF Config properties that map to the CF engines
 	// ----------------------------------------------------------------------------------------
@@ -290,8 +295,10 @@ component accessors=true {
 	function init() {
 		// This will need to be set before you can read/write
 		setCFHomePath( '' );
+		setEngine( 'JSON' );
+		setEngine( '*' );
 	}
-		
+	
 	/**
 	* Custom setter to clean up paths
 	*/	
