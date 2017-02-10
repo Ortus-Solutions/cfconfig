@@ -1,8 +1,8 @@
 {
     "name":"CFConfig Services",
-    "version":"0.5.3-alpha",
+    "version":"0.5.4-alpha",
     "author":"Brad Wood",
-    "location":"bdw429s/cfconfig#v0.5.3-alpha",
+    "location":"bdw429s/cfconfig#v0.5.4-alpha",
     "homepage":"https://github.com/bdw429s/cfconfig",
     "slug":"cfconfig-services",
     "shortDescription":"A library to read/write/store CF engine configs.  This project is just the service layer, not the CLI component.",
