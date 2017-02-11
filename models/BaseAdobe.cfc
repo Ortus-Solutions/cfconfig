@@ -645,7 +645,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true )
 		
 		wddx action='cfml2wddx' input=data output='local.thisConfigRaw';
-		thisConfigRaw.replaceNoCase( '<struct>', '<struct type="coldfusion.server.ConfigMap">', 'all' );
+		thisConfigRaw = thisConfigRaw.replaceNoCase( '<struct>', '<struct type="coldfusion.server.ConfigMap">', 'all' );
 		
 		fileWrite( configFilePath, thisConfigRaw );
 		
