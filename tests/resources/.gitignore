@@ -3,4 +3,8 @@
 !*/
 !lucee-server.xml
 !lucee-web.xml.cfm
+!**/lib/neo-*.xml
+!**/lib/seed.properties
+!**/lib/license.properties
+!**/lib/password.properties
 !.CFConfig.json
