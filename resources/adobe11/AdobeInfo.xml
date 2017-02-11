@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest version="1.0">
+    <!-- AdobeInfo required for legal tracking in APIAS. -->
+    <versioninfo>
+        <build AdobeIPNumber="0000862" name="A0000862_ColdFusion 9" />
+    </versioninfo>
+</manifest>
