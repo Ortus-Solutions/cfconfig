@@ -194,14 +194,17 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( thisConfig.keyAlias ) ) { setMailSignKeyAlias( thisConfig.keyAlias ); }
 		if( !isNull( thisConfig.keypassword ) ) { setMailSignKeyPassword( passwordManager.decryptMailServer( thisConfig.keypassword ) ); }
 		
-		addMailServer(
-			smtp = thisConfig.server,
-			username = thisConfig.username,
-			password = passwordManager.decryptMailServer( thisConfig.password ),
-			port = thisConfig.port,
-			SSL= thisConfig.useSSL,
-			TSL = thisConfig.useTLS		
-		);	
+		if( !isNull( thisConfig.server ) && thisConfig.server.len() ) {
+			addMailServer(
+				smtp = thisConfig.server,
+				username = thisConfig.username ?: '',
+				password = ( thisConfig.password.len() ? passwordManager.decryptMailServer( thisConfig.password ) : '' ),
+				port = thisConfig.port ?: '',
+				SSL= thisConfig.useSSL ?: false,
+				TSL = thisConfig.useTLS ?: false		
+			);
+			
+		}
 	}
 	
 	private function readDatasource() {
