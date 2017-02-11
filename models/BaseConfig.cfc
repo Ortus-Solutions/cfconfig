@@ -11,6 +11,7 @@ component accessors=true {
 	// ----------------------------------------------------------------------------------------
 
 	property name='wirebox' inject='wirebox';
+	property name='Util' inject='Util@cfconfig-services';
 	
 	// ----------------------------------------------------------------------------------------
 	// Properties for the internal workings
@@ -22,9 +23,9 @@ component accessors=true {
 	// - For generic JSON config, it's just the folder you want to read/write from
 	property name='CFHomePath' type='string';
 	
-	// The name of the engine this config provider can handle. "adobe", "lucee", or "railo"
-	property name='engine' type='string';
-	// A semver range that covers the version of the engine that are covered.
+	// The name of the format this config provider can handle. "adobe", "lucee", or "railo"
+	property name='format' type='string';
+	// A semver range that covers the version of the formats that are covered.
 	property name='version' type='string';
 	
 	// ----------------------------------------------------------------------------------------
@@ -295,8 +296,6 @@ component accessors=true {
 	function init() {
 		// This will need to be set before you can read/write
 		setCFHomePath( '' );
-		setEngine( 'JSON' );
-		setEngine( '*' );
 	}
 	
 	/**
@@ -476,67 +475,6 @@ component accessors=true {
 	*/
 	function addCustomTagPath() { throw 'addCustomTagPath() not implemented'; }
 	
-	
-	/**
-	* I read in config from a base JSON format
-	*
-	* @CFHomePath The JSON file to read from
-	*/
-	function read( string CFHomePath ){
-		// Override what's set if a path is passed in
-		setCFHomePath( arguments.CFHomePath ?: getCFHomePath() );
-		var thisCFHomePath = getCFHomePath();
-		
-		if( !len( thisCFHomePath ) ) {
-			throw 'No CF home specified to read from';
-		}
-		
-		// If the path doesn't end with .json, assume it's just the directory
-		if( right( thisCFHomePath, 5 ) != '.json' ) {
-			thisCFHomePath = thisCFHomePath.listAppend( '.CFConfig.json', '/' );
-		}		
-		
-		if( !fileExists( thisCFHomePath ) ) {
-			throw "CF home doesn't exist [#thisCFHomePath#]";
-		}
-		
-		var thisConfigRaw = fileRead( thisCFHomePath );
-		
-		if( !isJSON( thisConfigRaw ) ) {
-			throw "Config file doesn't contain JSON [#thisCFHomePath#]";
-		}
-		
-		var thisConfig = deserializeJSON( thisConfigRaw );
-		setMemento( thisConfig );
-		return this;
-	}
-
-	/**
-	* I write out config from a base JSON format
-	*
-	* @CFHomePath The JSON file to write to
-	*/
-	function write( string CFHomePath ){
-		// Override what's set if a path is passed in
-		setCFHomePath( arguments.CFHomePath ?: getCFHomePath() );
-		var thisCFHomePath = getCFHomePath();
-		
-		if( !len( thisCFHomePath ) ) {
-			throw 'No CF home specified to write to';
-		}
-		
-		// If the path doesn't end with .json, assume it's just the directory
-		if( right( thisCFHomePath, 5 ) != '.json' ) {
-			thisCFHomePath = thisCFHomePath.listAppend( '.CFConfig.json', '/' );
-		}
-		
-		var thisConfigRaw = serializeJSON( getMemento() );
-		// Ensure the parent directories exist
-		directoryCreate( path=getDirectoryFromPath( thisCFHomePath ), createPath=true, ignoreExists=true )
-		fileWrite( thisCFHomePath, formatJson( thisConfigRaw ) );
-		return this;
-	}
-
 	/**
 	* Get a struct representation of the config settings
 	*/
@@ -556,7 +494,7 @@ component accessors=true {
 	* Get a formatted string JSON representation of the config settings
 	*/
 	function toString(){
-		return formatJson( getMemento() );
+		return getUtil().formatJson( getMemento() );
 	}
 
 	/**
@@ -580,7 +518,7 @@ component accessors=true {
 	* Gnerate array of config property names
 	*/
 	private function generateConfigProperties(){
-		variables.md = variables.md ?: getInheritedMetaData( this );
+		variables.md = variables.md ?: getUtil().getInheritedMetaData( this );
 		var configProperties = [];
 		for( var prop in md.properties ) {
 			if( prop._isCFConfig ?: false ) {
@@ -588,137 +526,6 @@ component accessors=true {
 			}
 		}
 		return configProperties;
-	}
-
-	/**
-	 * Pretty JSON
-	 * @json.hint A string containing JSON, or a complex value that can be serialized to JSON
- 	 **/
-	public function formatJson( json ) {
-		
-		// Overload this method to accept a struct or array
-		if( !isSimpleValue( arguments.json ) ) {
-			arguments.json = serializeJSON( arguments.json );
-		}
-		
-		var retval = createObject('java','java.lang.StringBuilder').init('');
-		var str = json;
-	    var pos = 0;
-	    var strLen = str.length();
-		var indentStr = '    ';
-	    var newLine = chr( 13 ) & chr( 10 );
-		var char = '';
-		var inQuote = false;
-		var isEscaped = false;
-
-		for (var i=0; i<strLen; i++) {
-			char = str.substring(i,i+1);
-			
-			if( isEscaped ) {
-				isEscaped = false;
-				retval.append( char );
-				continue;
-			}
-			
-			if( char == '\' ) {
-				isEscaped = true;
-				retval.append( char );
-				continue;
-			}
-			
-			if( char == '"' ) {
-				if( inQuote ) {
-					inQuote = false;
-				} else {
-					inQuote = true;					
-				}
-				retval.append( char );
-				continue;
-			}
-			
-			if( inQuote ) {
-				retval.append( char );
-				continue;
-			}	
-			
-			
-			if (char == '}' || char == ']') {
-				retval.append( newLine );
-				pos = pos - 1;
-				for (var j=0; j<pos; j++) {
-					retval.append( indentStr );
-				}
-			}
-			retval.append( char );
-			if (char == '{' || char == '[' || char == ',') {
-				retval.append( newLine );
-				if (char == '{' || char == '[') {
-					pos = pos + 1;
-				}
-				for (var k=0; k<pos; k++) {
-					retval.append( indentStr );
-				}
-			}
-		}
-		return retval.toString();
-	}
-
-	/**
-	* Returns a single-level metadata struct that includes all items inhereited from extending classes.
-	*/
-	function getInheritedMetaData( thisComponent, md={} ) {
-
-		// First time through, get metaData of thisComponent.
-		if( structIsEmpty( md ) ) {
-			if( isObject( thisComponent ) ) {
-				md = getMetaData(thisComponent);
-			} else {
-				md = getComponentMetaData(thisComponent);
-			}
-		}
-
-		// If it has a parent, stop and calculate it first
-
-		if( structKeyExists( md, 'extends' ) AND md.type eq 'component' ) {
-			local.parent = getInheritedMetaData( thisComponent=thisComponent, md=md.extends );
-		// If we're at the end of the line, it's time to start working backwards so start with an empty struct to hold our condensesd metadata.
-		} else {
-			local.parent = {};
-			local.parent.inheritancetrail = [];
-		}
-
-		// Override ourselves into parent
-		for( local.key in md ) {
-			// Functions and properties are an array of structs keyed on name, so I can treat them the same
-			if( listFindNoCase("functions,properties",local.key) ) {
-				if( !structKeyExists(local.parent, local.key) ) {
-					local.parent[local.key] = [];
-				}
-				// For each function/property in me...
-				for( local.item in md[local.key] ) {
-					local.parentItemCounter = 0;
-					local.foundInParent = false;
-					// ...Look for an item of the same name in my parent...
-					for( local.parentItem in local.parent[local.key] ) {
-						local.parentItemCounter++;
-						// ...And override it
-						if( compareNoCase(local.item.name,local.parentItem.name) eq 0 ) {
-							local.parent[local.key][local.parentItemCounter] = local.item;
-							local.foundInParent = true;
-							break;
-						}
-					}
-					// ...Or add it
-					if( not local.foundInParent ) {
-						arrayAppend(local.parent[local.key], local.item);
-					}
-				}
-			} else if( !listFindNoCase("extends,implements", local.key) ) {
-				local.parent[local.key] = md[local.key];
-			}
-		}
-		arrayPrePend(local.parent.inheritanceTrail, local.parent.name);
-		return local.parent;
 	}
 
 }

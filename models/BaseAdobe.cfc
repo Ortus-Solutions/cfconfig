@@ -41,7 +41,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setPasswordPropertiesPath( '/lib/password.properties' );
 		setLicensePropertiesPath( '/lib/license.properties' );
 
-		setEngine( 'adobe' );
+		setFormat( 'adobe' );
 		
 		return this;
 	}
@@ -184,15 +184,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
 		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getMailConfigPath(), '/' ) );
 		
-		setMailSpoolEnable( thisConfig.spoolEnable );
-		setMailSpoolInterval( thisConfig.schedule );
-		setMailConnectionTimeout( thisConfig.timeout );
-		setMailDownloadUndeliveredAttachments( thisConfig.allowDownload );
-		setMailSignMesssage( thisConfig.sign );
-		setMailSignKeystore( thisConfig.keystore );
-		setMailSignKeystorePassword( passwordManager.decryptMailServer( thisConfig.keystorepassword ) );
-		setMailSignKeyAlias( thisConfig.keyAlias );
-		setMailSignKeyPassword( passwordManager.decryptMailServer( thisConfig.keypassword ) );
+		if( !isNull( thisConfig.spoolEnable ) ) { setMailSpoolEnable( thisConfig.spoolEnable ); }
+		if( !isNull( thisConfig.schedule ) ) { setMailSpoolInterval( thisConfig.schedule ); }
+		if( !isNull( thisConfig.timeout ) ) { setMailConnectionTimeout( thisConfig.timeout ); }
+		if( !isNull( thisConfig.allowDownload ) ) { setMailDownloadUndeliveredAttachments( thisConfig.allowDownload ); }
+		if( !isNull( thisConfig.sign ) ) { setMailSignMesssage( thisConfig.sign ); }
+		if( !isNull( thisConfig.keystore ) ) { setMailSignKeystore( thisConfig.keystore ); }
+		if( !isNull( thisConfig.keystorepassword ) ) { setMailSignKeystorePassword( passwordManager.decryptMailServer( thisConfig.keystorepassword ) ); }
+		if( !isNull( thisConfig.keyAlias ) ) { setMailSignKeyAlias( thisConfig.keyAlias ); }
+		if( !isNull( thisConfig.keypassword ) ) { setMailSignKeyPassword( passwordManager.decryptMailServer( thisConfig.keypassword ) ); }
 		
 		addMailServer(
 			smtp = thisConfig.server,
@@ -240,8 +240,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	function readAuth() {
+		if( !fileExists( getCFHomePath().listAppend( getPasswordPropertiesPath(), '/' ) ) ) {
+			return;
+		}
 		var propertyFile = wirebox.getInstance( 'propertyFile@propertyFile' ).load( getCFHomePath().listAppend( getPasswordPropertiesPath(), '/' ) );
-		if( !propertyFile.encrypted ) {
+		
+		if( !propertyFile.get( 'encrypted', false ) ) {
 			setAdminPassword( propertyFile.password );
 			setAdminRDSPassword( propertyFile.rdspassword );	
 		} else {
@@ -252,6 +256,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 
 	function readLicense() {
+		if( !fileExists( getCFHomePath().listAppend( getLicensePropertiesPath(), '/' ) ) ) {
+			return;
+		}
 		var propertyFile = wirebox.getInstance( 'propertyFile@propertyFile' ).load( getCFHomePath().listAppend( getLicensePropertiesPath(), '/' ) );
 		
 		if( len( propertyFile.get( 'sn', '' ) ) ) { setLicense( propertyFile.get( 'sn', '' ) ); }
@@ -490,7 +497,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( mailServer.password ) ) { thisConfig.password = passwordManager.encryptMailServer( mailServer.password ); }
 			if( !isNull( mailServer.port ) ) { thisConfig.port = mailServer.port; }
 			if( !isNull(  mailServer.SSL ) ) { thisConfig.useSSL =  mailServer.SSL; }
-			if( !isNull( mailServer.TSL ) ) { thisConfig.useTLS = mailServer.TSL; }
+			if( !isNull( mailServer.TLS ) ) { thisConfig.useTLS = mailServer.TLS; }
 		}		
 		
 		writeWDDXConfigFile( thisConfig, configFilePath );	
@@ -569,14 +576,17 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			
 			if( !isNull( getAdminRDSPassword() ) ) { propertyFile[ 'rdspassword' ] = getAdminRDSPassword(); }
 			
+			propertyFile.store( configFilePath );
+			
 		} else if( !isNull( getACF11Password() ) ) {
 			propertyFile[ 'password' ] = getACF11Password();
 			propertyFile[ 'encrypted' ] = 'true';
 			
 			if( !isNull( getACF11RDSPassword() ) ) { propertyFile[ 'rdspassword' ] = getACF11RDSPassword(); }
+			
+			propertyFile.store( configFilePath );
 		}
 		
-		propertyFile.store( configFilePath );
 	
 	}
 

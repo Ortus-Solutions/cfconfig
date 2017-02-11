@@ -7,7 +7,7 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			describe( "can read config", function(){
 			
 				it( "via setter", function() {
-					var JSONConfig = getInstance( 'BaseConfig@cfconfig-services' )
+					var JSONConfig = getInstance( 'JSONConfig@cfconfig-services' )
 						.setCFHomePath( expandPath( '/tests/resources/.CFConfig.json' ) )
 						.read();
 					
@@ -15,14 +15,14 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				});
 				
 				it( "from specific config file", function() {
-					var JSONConfig = getInstance( 'BaseConfig@cfconfig-services' )
+					var JSONConfig = getInstance( 'JSONConfig@cfconfig-services' )
 						.read( expandPath( '/tests/resources/.CFConfig.json' ) );
 					
 					expect( JSONConfig.getMemento() ).toBeStruct();				
 				});
 				
 				it( "from the default config file", function() {
-					var JSONConfig = getInstance( 'BaseConfig@cfconfig-services' )
+					var JSONConfig = getInstance( 'JSONConfig@cfconfig-services' )
 						.read( expandPath( '/tests/resources' ) );
 					
 					expect( JSONConfig.getMemento() ).toBeStruct();				
@@ -33,7 +33,7 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			describe( "can write config", function(){
 				
 				it( "from scratch", function() {
-					var JSONConfig = getInstance( 'BaseConfig@cfconfig-services' )
+					var JSONConfig = getInstance( 'JSONConfig@cfconfig-services' )
 						.setInspectTemplate( 'once' )
 						.setSaveClassFiles( true )
 						.setAdminPassword( 'foo' )
@@ -43,7 +43,7 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				});
 				
 				it( "from existing", function() {
-					var JSONConfig = getInstance( 'BaseConfig@cfconfig-services' )
+					var JSONConfig = getInstance( 'JSONConfig@cfconfig-services' )
 						.read( expandPath( '/tests/resources/.CFConfig.json' ) )
 						.write( expandPath( '/tests/resources/tmp/.CFConfig.json' ) );
 					
@@ -55,10 +55,10 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			describe( "can import memento", function(){
 				
 				it( "from another config object", function() {
-					var JSONConfig1 = getInstance( 'BaseConfig@cfconfig-services' )
+					var JSONConfig1 = getInstance( 'JSONConfig@cfconfig-services' )
 						.read( expandPath( '/tests/resources/.CFConfig.json' ) );
 						
-					var JSONConfig2 = getInstance( 'BaseConfig@cfconfig-services' )
+					var JSONConfig2 = getInstance( 'JSONConfig@cfconfig-services' )
 						.setMemento( JSONConfig1.getMemento() );
 						
 					expect( JSONConfig2.getMemento() ).toBeStruct();					
