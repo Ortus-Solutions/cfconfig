@@ -16,8 +16,9 @@
         "semver":"^1.0.0"
     },
     "scripts":{
-        "postVersion":"package set location='bdw429s/cfconfig#v`package version`'",
-        "postPublish":"!git push --follow-tags"
+		"postVersion":"package set location='bdw429s/cfconfig#v`package version`'",
+		"onRelease":"publish",
+		"postPublish":"!git push --follow-tags"
     },
     "ignore":[
         "**/.*",
