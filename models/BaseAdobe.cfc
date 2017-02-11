@@ -641,11 +641,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeWDDXConfigFile( required any data, required string configFilePath ) {
-		
 		// Ensure the parent directories exist		
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true )
 		
 		wddx action='cfml2wddx' input=data output='local.thisConfigRaw';
+		thisConfigRaw.replaceNoCase( '<struct>', '<struct type="coldfusion.server.ConfigMap">', 'all' );
 		
 		fileWrite( configFilePath, thisConfigRaw );
 		
