@@ -13,17 +13,20 @@
         "lucee-password-util":"^1.0.0",
         "adobe-password-util":"^1.0.0",
         "propertyFile":"^1.0.7",
-        "semver":"^1.0.0"
+        "semver":"^1.0.0",
+        "cfconfig-services":"folder:C:\\Users\\Brad.development\\Documents\\GitHub\\cfconfig"
     },
     "scripts":{
         "postVersion":"package set location='bdw429s/cfconfig#v`package version`'",
         "onRelease":"publish",
-        "postPublish":"!git push --follow-tags"
+        "postPublish":"!git push --follow-tags",
+        "install":"install ID=C:\\Users\\Brad.development\\Documents\\GitHub\\cfconfig directory=\"D:\\.Command Box\\cfml\\modules\\commandbox-cfconfig\" --force"
     },
     "ignore":[
         "**/.*",
         "test",
-        "tests"
+        "tests",
+        "modules"
     ],
     "installPaths":{
         "lucee-password-util":"modules\\lucee-password-util",
@@ -31,7 +34,8 @@
         "coldbox":"coldbox",
         "testbox":"testbox",
         "propertyFile":"modules\\propertyFile",
-        "semver":"modules\\semver"
+        "semver":"modules\\semver",
+        "cfconfig-services":"D:\\.Command Box\\cfml\\modules\\commandbox-cfconfig\\cfconfig-services"
     },
     "devDependencies":{
         "coldbox":"^4.3.0+188",
