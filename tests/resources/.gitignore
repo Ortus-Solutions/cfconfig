@@ -7,4 +7,5 @@
 !**/lib/seed.properties
 !**/lib/license.properties
 !**/lib/password.properties
+!**/bin/cf-init.sh
 !.CFConfig.json
