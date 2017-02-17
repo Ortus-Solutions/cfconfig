@@ -199,7 +199,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				smtp = thisConfig.server,
 				username = thisConfig.username ?: '',
 				password = ( thisConfig.password.len() ? passwordManager.decryptMailServer( thisConfig.password ) : '' ),
-				port = thisConfig.port ?: '',
+				port = val( thisConfig.port ) ?: '0',
 				SSL= thisConfig.useSSL ?: false,
 				TSL = thisConfig.useTLS ?: false		
 			);
@@ -306,7 +306,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var thisConfig = readWDDXConfigFile( getRuntimeConfigTemplate() );
 		}
 				
-		if( !isNull( getSessionMangement() ) ) { thisConfig[ 7 ].session.enable = getSessionMangement(); }
+		if( !isNull( getSessionMangement() ) ) { thisConfig[ 7 ].session.enable = ( getSessionMangement() ? true : false ); }
 		if( !isNull( getSessionTimeout() ) ) { thisConfig[ 7 ].session.timeout = getSessionTimeout(); }
 		if( !isNull( getSessionMaximumTimeout() ) ) { thisConfig[ 7 ].session.maximum_timeout = getSessionMaximumTimeout(); }
 		if( !isNull( getSessionType() ) ) { thisConfig[ 7 ].session.usej2eesession = ( getSessionType() == 'j2ee' ); }
@@ -386,7 +386,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getUDFTypeChecking() ) ) { thisConfig[ 16 ].cfcTypeCheckEnabled = !getUDFTypeChecking(); }
 		if( !isNull( getDisableInternalCFJavaComponents() ) ) { thisConfig[ 16 ].disableServiceFactory = getDisableInternalCFJavaComponents(); }
 		// Lucee and Adobe store opposite value
-		if( !isNull( getDotNotationUpperCase() ) ) { thisConfig[ 16 ].preserveCaseForSerialize = getDotNotationUpperCase(); }
+		if( !isNull( getDotNotationUpperCase() ) ) { thisConfig[ 16 ].preserveCaseForSerialize = ( getDotNotationUpperCase() ? true : false ); }
 		if( !isNull( getSecureJSON() ) ) { thisConfig[ 16 ].secureJSON = getSecureJSON(); }
 		if( !isNull( getSecureJSONPrefix() ) ) { thisConfig[ 16 ].secureJSONPrefix = getSecureJSONPrefix(); }
 		if( !isNull( getMaxOutputBufferSize() ) ) { thisConfig[ 16 ].maxOutputBufferSize = getMaxOutputBufferSize(); }
@@ -410,19 +410,20 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getApplicationMode() ) ) {
 			
 			// See comments in BaseConfig class for descriptions
+			// This needs to be a string in the WDDX!
 			switch( getApplicationMode() ) {
 				case 'curr2driveroot' :
 				// Next best match for "current only"
 				case 'curr' :
-					thisConfig[ 16 ].applicationCFCSearchLimit = 1;
+					thisConfig[ 16 ].applicationCFCSearchLimit = '1';
 					break;
 				case 'curr2root' :
-					thisConfig[ 16 ].applicationCFCSearchLimit = 2;
+					thisConfig[ 16 ].applicationCFCSearchLimit = '2';
 					break;
 				case 'currorroot' :
 				// Next best match for "root only"
 				case 'root' :
-					thisConfig[ 16 ].applicationCFCSearchLimit = 3;
+					thisConfig[ 16 ].applicationCFCSearchLimit = '3';
 			}
 				
 		}
@@ -498,9 +499,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( mailServer.smtp ) ) { thisConfig.server = mailServer.smtp; }
 			if( !isNull( mailServer.username ) ) { thisConfig.username = mailServer.username; }
 			if( !isNull( mailServer.password ) ) { thisConfig.password = passwordManager.encryptMailServer( mailServer.password ); }
-			if( !isNull( mailServer.port ) ) { thisConfig.port = mailServer.port; }
-			if( !isNull(  mailServer.SSL ) ) { thisConfig.useSSL =  mailServer.SSL; }
-			if( !isNull( mailServer.TLS ) ) { thisConfig.useTLS = mailServer.TLS; }
+			if( !isNull( mailServer.port ) ) { thisConfig.port = val( mailServer.port ); }
+			if( !isNull(  mailServer.SSL ) ) { thisConfig.useSSL = ( mailServer.SSL ? true : false ); }
+			if( !isNull( mailServer.TLS ) ) { thisConfig.useTLS = ( mailServer.TLS ? true : false ); }
 		}		
 		
 		writeWDDXConfigFile( thisConfig, configFilePath );	
@@ -647,7 +648,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		wddx action='cfml2wddx' input=data output='local.thisConfigRaw';
 		thisConfigRaw = thisConfigRaw.replaceNoCase( '<struct>', '<struct type="coldfusion.server.ConfigMap">', 'all' );
 		
-		fileWrite( configFilePath, thisConfigRaw );
+		var xlt = '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+			<xsl:output method="xml" encoding="utf-8" indent="yes" xslt:indent-amount="2" xmlns:xslt="http://xml.apache.org/xslt" />
+			<xsl:strip-space elements="*"/>
+			<xsl:template match="node() | @*"><xsl:copy><xsl:apply-templates select="node() | @*" /></xsl:copy></xsl:template>
+			</xsl:stylesheet>';
+		
+		fileWrite( configFilePath, toString( XmlTransform( thisConfigRaw, xlt) ) );
 		
 	}
 
