@@ -119,8 +119,8 @@ An example would be:
 /opt/lucee/lib/lucee-server/
 ```
 
-The Adobe components expect the `CFHomePath` to be the `lib` folder containing the `/neo-runtime.xml` file.  
+The Adobe components expect the `CFHomePath` to be the `cfusion` folder that contains the `lib/neo-runtime.xml` file.  
 An example would be:
 ```
-C:/ColdFusion11/cfusion/lib/
+C:/ColdFusion11/cfusion/
 ```
