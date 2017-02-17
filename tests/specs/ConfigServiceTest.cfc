@@ -138,6 +138,56 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			});
 		
 		});
+		
+		describe( "ConfigService guess format functionality", function(){
+			
+			it( "can recognize a Lucee server context", function() {
+				var results = configService.guessFormat( '/tests/resources/lucee4/ServerHome/Lucee-Server' );
+				expect( results.format ).toBe( 'luceeServer' );
+			});
+			
+			it( "can recognize a Lucee web context", function() {
+				var results = configService.guessFormat( '/tests/resources/lucee4/WebHome' );
+				expect( results.format ).toBe( 'luceeWeb' );
+			});
+			
+			it( "can recognize Lucee 4 server context", function() {
+				var results = configService.guessFormat( '/tests/resources/lucee4/ServerHome/Lucee-Server' );
+				expect( results.version ).toBe( '4' );
+			});
+			
+			it( "can recognize Lucee 5 server context", function() {
+				var results = configService.guessFormat( '/tests/resources/lucee5/ServerHome/Lucee-Server' );
+				expect( results.version ).toBe( '5' );
+			});
+			
+			it( "can recognize Lucee 4 web context", function() {
+				var results = configService.guessFormat( '/tests/resources/lucee4/WebHome' );
+				expect( results.version ).toBe( '4' );
+			});
+			
+			it( "can recognize Lucee 5 web context", function() {
+				var results = configService.guessFormat( '/tests/resources/lucee5/WebHome' );
+				expect( results.version ).toBe( '5' );
+			});
+			
+			it( "can recognize an Adobe server", function() {
+				var results = configService.guessFormat( '/tests/resources/Adobe11/ServerHome/WEB-INF/cfusion' );
+				expect( results.format ).toBe( 'adobe' );
+			});
+			
+			it( "can recognize Adobe 11", function() {
+				var results = configService.guessFormat( '/tests/resources/Adobe11/ServerHome/WEB-INF/cfusion' );
+				expect( results.version ).toBe( '11' );
+			});
+			
+			it( "can recognize Adobe 2016", function() {
+				var results = configService.guessFormat( '/tests/resources/Adobe2016/ServerHome/WEB-INF/cfusion' );
+				expect( results.version ).toBe( '2016' );
+			});
+			
+		});
+			
 	}
 
 }
