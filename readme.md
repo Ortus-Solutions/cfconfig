@@ -30,7 +30,7 @@ Major features left to develop
 * **Adobe CF9** - Everything
 * **Adobe CF10** - Everything
 * **Adobe CF11** - In progress...
-* **Adobe C2016** - Everything
+* **Adobe C2016** - In progress...
 * **Railo 4.x** - Everything-- probably can heavily re-use from Lucee 4.x
 * **Lucee 4.x/5.x** - caches, custom tags, debugging, REST mappings, error settings, component settings
 
@@ -45,14 +45,15 @@ Not all the data it stores applies to every engine though.  It is capable of rea
 
 ### Engine-specific mappers
 
-* **Lucee4ServerConfig** - Lucee 4.x server context
-* **Lucee4WebConfig** - Lucee 4.x web context
-* **Lucee5ServerConfig** - Lucee 5.x server context
-* **Lucee5WebConfig** - Lucee 5.x web context
-* **Adobe9Config** - Coming soon
-* **Adobe10Config** - Coming soon
-* **Adobe11Config** - Coming soon
-* **Adobe2016Config** - Coming soon
+* **JSONConfig** - Engine-agnostic JSON format
+* **Lucee4Server** - Lucee 4.x server context
+* **Lucee4Web** - Lucee 4.x web context
+* **Lucee5Server** - Lucee 5.x server context
+* **Lucee5Web** - Lucee 5.x web context
+* **Adobe9** - Coming soon
+* **Adobe10** - Coming soon
+* **Adobe11** - Adobe ColdFusion 11
+* **Adobe2016** - Adobe Coldfusion 2016
 
 ## Usage
 
