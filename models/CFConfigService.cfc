@@ -135,7 +135,7 @@ component accessors=true singleton {
 			if( isXML( rawConfig ) ) {
 				var XMLConfig = XMLParse( rawConfig );
 				if( isDefined( 'XMLConfig.XMLRoot.XMLAttributes.version' ) ) {
-					// This is the loader version, not the core version, but it's the same.  
+					// This is the loader version, not the core version, but the "major" number will be the same.  
 					return val( listFirst( XMLConfig.XMLRoot.XMLAttributes.version, '.' ) );
 				}
 			}
