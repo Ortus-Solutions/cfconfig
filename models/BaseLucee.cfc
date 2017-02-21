@@ -383,6 +383,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// Get all datasources
 		// TODO: Add tag if it doesn't exist
 		var datasources = xmlSearch( thisConfig, '/cfLuceeConfiguration/data-sources' )[ 1 ];
+		datasources.XMLChildren = [];
 
 		for( var DSName in getDatasources() ?: {} ) {
 			DSStruct = getDatasources()[ dsName ];
@@ -477,6 +478,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// Get all mail servers
 		// TODO: Add tag if it doesn't exist
 		var mailServers = xmlSearch( thisConfig, '/cfLuceeConfiguration/mail' )[ 1 ];
+		mailServers.XMLChildren = [];
 		
 		for( var mailServer in getMailServers() ?: [] ) {
 			// Search to see if this datasource already exists
@@ -513,6 +515,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// Get all mappings
 		// TODO: Add tag if it doesn't exist
 		var mappings = xmlSearch( thisConfig, '/cfLuceeConfiguration/mappings' )[ 1 ];
+		mappings.XMLChildren = [];
 		
 		for( var virtual in getCFmappings() ?: {} ) {
 			var mappingStruct = getCFmappings()[ virtual ];

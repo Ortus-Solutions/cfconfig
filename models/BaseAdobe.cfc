@@ -320,6 +320,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getMissingErrorTemplate() ) ) { thisConfig[ 8 ].missing_template = getMissingErrorTemplate(); }
 		if( !isNull( getGeneralErrorTemplate() ) ) { thisConfig[ 8 ].site_wide = getGeneralErrorTemplate(); }
 		
+		thisConfig[ 9 ] = {};
 		for( var virtual in getCFmappings() ?: {} ) {
 			if( !isNull( getCFmappings()[ virtual ][ 'physical' ] ) && len( getCFmappings()[ virtual ][ 'physical' ] ) ) {
 				var physical = getCFmappings()[ virtual ][ 'physical' ];
@@ -523,6 +524,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		} else {
 			var thisConfig = readWDDXConfigFile( getDatasourceConfigTemplate() );
 		}
+		
+		thisConfig[ 1 ] = {};
 		
 		var datasources = getDatasources();
 		
