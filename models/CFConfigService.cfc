@@ -169,4 +169,86 @@ component accessors=true singleton {
 		 
 	}
 	
+	/**
+	* Diff configs between two locations
+	*
+	* @from server home path, or CFConfig JSON file
+	* @to server home path, or CFConfig JSON file
+	* @fromFormat The format to read from, or "JSON"
+	* @toFormat The format to write to, or "JSON"
+	* @fromVersion The version of the fromFormat to target
+	* @toVersion The version of the toFormat to target
+	*
+	* @returns query
+	*/	
+	query function diff( 
+		required string from,
+		required string to,
+		required string fromFormat,
+		required string toFormat,
+		string fromVersion='0',
+		string toVersion='0'
+	) {
+		
+		 var fromData = determineProvider( fromFormat, fromVersion )
+		 	.read( from )
+		 	.getMemento();
+		 	
+		 var toData = determineProvider( toFormat, toVersion )
+		 	.read( to )
+		 	.getMemento();
+		 
+		 var configProps = wireBox.getInstance( 'BaseConfig@cfconfig-services' ).getConfigProperties();		 
+		 var qryResult = queryNew( 'propertyName,fromValue,toValue,fromOnly,toOnly,bothPopulated,bothEmpty,valuesMatch,valuesDiffer' );
+		 var specialColumns = 'CFMappings,datasources,mailServers,caches,customTags'.listToArray();
+		 
+		 for( var prop in configProps ) {
+		 	// Skip complex values that need a deeper comparison
+		 	if( specialColumns.findNoCase( prop ) ) {
+		 		continue;
+		 	}
+		 	var row = {
+		 		propertyName = prop,
+			 	fromValue = '',
+			 	toValue = '',
+			 	fromOnly = 0,
+			 	toOnly = 0,
+			 	bothPopulated = 0,
+			 	bothEmpty = 0,
+			 	valuesMatch = 0,
+			 	valuesDiffer = 0
+		 	};
+		 	
+		 	// Doesn't exist in either.
+		 	if( isNull( fromData[ prop ] ) && isNull( toData[ prop ] ) ) {
+		 		row.bothEmpty = 1;
+		 	// Exists in both
+		 	} else if( !isNull( fromData[ prop ] ) && !isNull( toData[ prop ] ) ) {
+		 		row.bothPopulated = 1;
+			 	row.fromValue = fromData[ prop ];
+			 	row.toValue = toData[ prop ];
+			 	
+			 	if( row.fromValue.toString() == row.toValue.toString() ) {
+			 		row.valuesMatch = 1;
+			 	} else {
+			 		row.valuesDiffer = 1;
+			 	}
+			// From only
+		 	} else if( !isNull( fromData[ prop ] ) ) {
+		 		row.fromValue = fromData[ prop ];
+		 		row.fromOnly = 1;
+			// To only
+		 	} else if( !isNull( toData[ prop ] ) ) {
+		 		row.toValue = toData[ prop ];
+		 		row.toOnly = 1;	
+		 	}
+		 	
+		 	qryResult.addRow( row );
+		 }
+		 
+		 // TODO: Deal with specialColumns here.
+		 
+		 return qryResult;
+	}
+	
 }

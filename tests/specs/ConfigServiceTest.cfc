@@ -187,6 +187,23 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			});
 			
 		});
+
+		describe( "ConfigService diff functionality", function(){
+			
+			it( "can diff config between two servers", function() {
+				var qryDiff = configService.diff(
+					from		= '/tests/resources/lucee4/ServerHome/Lucee-Server',
+					to			= '/tests/resources/lucee5/ServerHome/Lucee-Server',
+					fromFormat	= 'luceeServer',
+					toFormat	= 'luceeServer',
+					fromVersion	= '4',
+					toVersion	= '5'
+				 );
+				 
+				expect( qryDiff ).toBeQuery();
+			});
+			
+		});
 			
 	}
 
