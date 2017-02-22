@@ -56,7 +56,7 @@ component accessors=true singleton {
 		}
 		
 		// We couldn't find a match
-		throw( message="Sorry, no config provider could be found for [#format#@#version#]", type="cfconfigNoProviderFound" ); 
+		throw( message="Sorry, no config provider could be found for [#format#@#version#].  Please be more specific or check your spelling.", type="cfconfigNoProviderFound" ); 
 		
 	}
 	
