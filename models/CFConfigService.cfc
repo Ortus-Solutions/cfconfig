@@ -228,7 +228,7 @@ component accessors=true singleton {
 			 	row.fromValue = fromData[ prop ];
 			 	row.toValue = toData[ prop ];
 			 	
-			 	if( row.fromValue.toString() == row.toValue.toString() ) {
+			 	if( row.fromValue == row.toValue ) {
 			 		row.valuesMatch = 1;
 			 	} else {
 			 		row.valuesDiffer = 1;
