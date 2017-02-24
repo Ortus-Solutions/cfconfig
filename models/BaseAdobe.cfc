@@ -92,9 +92,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setMissingErrorTemplate( thisConfig[ 8 ].missing_template );
 		setGeneralErrorTemplate( thisConfig[ 8 ].site_wide );
 		
-		var ignoreList = '/CFIDE,/gateway';
+		var ignoredMappings = [ '/CFIDE', '/gateway' ];
 		for( var thisMapping in thisConfig[ 9 ] ) {
-			if( !listFindNoCase( ignoreList, thisMapping ) ){
+			if( !ignoredMappings.findNoCase( thisMapping ) ){
 				addCFMapping( thisMapping, thisConfig[ 9 ][ thisMapping ] );
 			}
 		}		
@@ -320,7 +320,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getMissingErrorTemplate() ) ) { thisConfig[ 8 ].missing_template = getMissingErrorTemplate(); }
 		if( !isNull( getGeneralErrorTemplate() ) ) { thisConfig[ 8 ].site_wide = getGeneralErrorTemplate(); }
 		
-		thisConfig[ 9 ] = {};
+		
+		
+		var ignoredMappings = [ '/CFIDE', '/gateway' ];
+		for( var thisMapping in thisConfig[ 9 ] ) {
+			if( !ignoredMappings.findNoCase( thisMapping ) ) {
+				structDelete( thisConfig[ 9 ], thisMapping );
+			}
+		}
+		
 		for( var virtual in getCFmappings() ?: {} ) {
 			if( !isNull( getCFmappings()[ virtual ][ 'physical' ] ) && len( getCFmappings()[ virtual ][ 'physical' ] ) ) {
 				var physical = getCFmappings()[ virtual ][ 'physical' ];

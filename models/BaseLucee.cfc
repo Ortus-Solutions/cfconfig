@@ -515,7 +515,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var ignores = [ '/lucee-server/' , '/lucee/', '/lucee/doc', '/lucee/admin' ];
 		// Get all mappings
 		// TODO: Add tag if it doesn't exist
-		//var mappings = [].append( xmlSearch( thisConfig, '/cfLuceeConfiguration/mappings' )[ 1 ].XMLChildren, true );
 		var mappings = xmlSearch( thisConfig, '/cfLuceeConfiguration/mappings' )[ 1 ].XMLChildren;
 		var i = 0;
 		while( ++i<= mappings.len() ) {
