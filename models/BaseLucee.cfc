@@ -512,10 +512,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeMappings( thisConfig ) {
+		var ignores = [ '/lucee-server/' , '/lucee/', '/lucee/doc', '/lucee/admin' ];
 		// Get all mappings
 		// TODO: Add tag if it doesn't exist
-		var mappings = xmlSearch( thisConfig, '/cfLuceeConfiguration/mappings' )[ 1 ];
-		mappings.XMLChildren = [];
+		//var mappings = [].append( xmlSearch( thisConfig, '/cfLuceeConfiguration/mappings' )[ 1 ].XMLChildren, true );
+		var mappings = xmlSearch( thisConfig, '/cfLuceeConfiguration/mappings' )[ 1 ].XMLChildren;
+		var i = 0;
+		while( ++i<= mappings.len() ) {
+			var thisMapping = mappings[ i ];
+			if( !ignores.findNoCase( thisMapping.XMLAttributes.virtual ) ) {
+				arrayDeleteAt( mappings, i );
+				i--;
+			}
+		}
 		
 		for( var virtual in getCFmappings() ?: {} ) {
 			var mappingStruct = getCFmappings()[ virtual ];
@@ -543,7 +552,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			
 			// Insert into doc if this was new.
 			if( !mappingXMLSearch.len() ) {
-				mappings.XMLChildren.append( mappingXMLNode );
+				mappings.append( mappingXMLNode );
 			}			
 		}
 	}
