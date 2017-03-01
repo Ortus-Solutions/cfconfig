@@ -233,7 +233,7 @@ component accessors=true singleton {
 			 	row.fromValue = isSimpleValue( fromData[ prop ] ) ? fromData[ prop ] : prop;
 			 	row.toValue = isSimpleValue( toData[ prop ] ) ? toData[ prop ] : prop;
 			 	
-			 	if( serializeJSON( row.fromValue ) == serializeJSON( row.toValue ) ) {
+			 	if( serializeJSON( fromData[ prop ] ) == serializeJSON( toData[ prop ] ) ) {
 			 		row.valuesMatch = 1;
 			 	} else {
 			 		row.valuesDiffer = 1;
