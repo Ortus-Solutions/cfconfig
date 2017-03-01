@@ -190,34 +190,39 @@ component accessors=true singleton {
 		string toVersion='0'
 	) {
 		
-		 var fromData = determineProvider( fromFormat, fromVersion )
-		 	.read( from )
-		 	.getMemento();
-		 	
-		 var toData = determineProvider( toFormat, toVersion )
-		 	.read( to )
-		 	.getMemento();
+		var fromData = determineProvider( fromFormat, fromVersion )
+			.read( from )
+			.getMemento();
+			
+		var toData = determineProvider( toFormat, toVersion )
+			.read( to )
+			.getMemento();
 		 
-		 var configProps = wireBox.getInstance( 'BaseConfig@cfconfig-services' ).getConfigProperties();		 
-		 var qryResult = queryNew( 'propertyName,fromValue,toValue,fromOnly,toOnly,bothPopulated,bothEmpty,valuesMatch,valuesDiffer' );
-		 var specialColumns = 'CFMappings,datasources,mailServers,caches,customTags'.listToArray();
+		var configProps = wireBox.getInstance( 'BaseConfig@cfconfig-services' ).getConfigProperties();		 
+		var qryResult = queryNew( 'propertyName,fromValue,toValue,fromOnly,toOnly,bothPopulated,bothEmpty,valuesMatch,valuesDiffer' );
+		var specialColumns = [ 'CFMappings', 'datasources', 'mailServers', 'caches', 'customTags' ];
+		
+		compareStructs( qryResult, fromData, toData, configProps, specialColumns );
+		
+		return qryResult;
+		 
+	}
+	
+	private function compareStructs( qryResult, fromData, toData, configProps, ignoredKeys, prefix='' ) {
+		var getDefaultRow = function( prop ) { return {
+			propertyName = prop,
+		 	fromValue = '',
+			toValue = '',
+		 	fromOnly = 0,
+		 	toOnly = 0,
+		 	bothPopulated = 0,
+		 	bothEmpty = 0,
+		 	valuesMatch = 0,
+		 	valuesDiffer = 0
+		}; };
 		 
 		 for( var prop in configProps ) {
-		 	// Skip complex values that need a deeper comparison
-		 	if( specialColumns.findNoCase( prop ) ) {
-		 		continue;
-		 	}
-		 	var row = {
-		 		propertyName = prop,
-			 	fromValue = '',
-			 	toValue = '',
-			 	fromOnly = 0,
-			 	toOnly = 0,
-			 	bothPopulated = 0,
-			 	bothEmpty = 0,
-			 	valuesMatch = 0,
-			 	valuesDiffer = 0
-		 	};
+		 	var row = getDefaultRow( prefix & prop );
 		 	
 		 	// Doesn't exist in either.
 		 	if( isNull( fromData[ prop ] ) && isNull( toData[ prop ] ) ) {
@@ -228,7 +233,7 @@ component accessors=true singleton {
 			 	row.fromValue = fromData[ prop ];
 			 	row.toValue = toData[ prop ];
 			 	
-			 	if( row.fromValue == row.toValue ) {
+			 	if( serializeJSON( row.fromValue ) == serializeJSON( row.toValue ) ) {
 			 		row.valuesMatch = 1;
 			 	} else {
 			 		row.valuesDiffer = 1;
@@ -243,12 +248,21 @@ component accessors=true singleton {
 		 		row.toOnly = 1;	
 		 	}
 		 	
-		 	qryResult.addRow( row );
+		 	if( !ignoredKeys.findNoCase( prop ) ) {
+		 		qryResult.addRow( row );
+		 	}
+		 	
+		 	// If this was a struct, compare its sub-members
+		 	if(  (!isNull( toData[ prop ] ) && isStruct( toData[ prop ] ) )
+		 		|| (!isNull( fromData[ prop ] ) && isStruct( fromData[ prop ] ) ) ) {
+		 	
+				var fromValue = fromData[ prop ] ?: {};
+				var toValue = toData[ prop ] ?: {};
+				var combinedProps = {}.append( fromValue ).append( toValue ).keyArray();
+				compareStructs( qryResult, fromValue, toValue, combinedProps, [], prefix & prop & '-' );		
+	 		}
+		 	
 		 }
-		 
-		 // TODO: Deal with specialColumns here.
-		 
-		 return qryResult;
 	}
 	
 }
