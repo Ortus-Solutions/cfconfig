@@ -230,8 +230,8 @@ component accessors=true singleton {
 		 	// Exists in both
 		 	} else if( !isNull( fromData[ prop ] ) && !isNull( toData[ prop ] ) ) {
 		 		row.bothPopulated = 1;
-			 	row.fromValue = fromData[ prop ];
-			 	row.toValue = toData[ prop ];
+			 	row.fromValue = isSimpleValue( fromData[ prop ] ) ? fromData[ prop ] : prop;
+			 	row.toValue = isSimpleValue( toData[ prop ] ) ? toData[ prop ] : prop;
 			 	
 			 	if( serializeJSON( row.fromValue ) == serializeJSON( row.toValue ) ) {
 			 		row.valuesMatch = 1;
@@ -240,11 +240,11 @@ component accessors=true singleton {
 			 	}
 			// From only
 		 	} else if( !isNull( fromData[ prop ] ) ) {
-		 		row.fromValue = fromData[ prop ];
+			 	row.fromValue = isSimpleValue( fromData[ prop ] ) ? fromData[ prop ] : prop;
 		 		row.fromOnly = 1;
 			// To only
 		 	} else if( !isNull( toData[ prop ] ) ) {
-		 		row.toValue = toData[ prop ];
+			 	row.toValue = isSimpleValue( toData[ prop ] ) ? toData[ prop ] : prop;
 		 		row.toOnly = 1;	
 		 	}
 		 	
