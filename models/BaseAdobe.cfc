@@ -3,6 +3,12 @@
 * I extend the BaseConfig class, which represents the data itself.
 */
 component accessors=true extends='cfconfig-services.models.BaseConfig' {
+
+	
+	// ----------------------------------------------------------------------------------------
+	// Depdendency Injections
+	// ----------------------------------------------------------------------------------------
+	property name='DSNUtil' inject='BaseAdobeDSNMapper@cfconfig-services';
 	
 	property name='runtimeConfigPath' type='string';
 	property name='runtimeConfigTemplate' type='string';
@@ -25,7 +31,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	property name='licensePropertiesPath' type='string';
 	property name='licensePropertiesTemplate' type='string';
-		
+
+	
 	/**
 	* Constructor
 	*/
@@ -231,7 +238,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				connectionTimeout = round( ds.timeout / 60 ),
 				database = ds.urlmap.database,
 				// Normalize names
-				dbdriver = translateDatasourceDriverToGeneric( ds.driver ),
+				dbdriver = DSNUtil.translateDatasourceDriverToGeneric( ds.driver ),
 				dsn = ds.url,
 				host = ds.urlmap.host,
 				password = passwordManager.decryptDataSource( ds.password ),
@@ -540,13 +547,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		for( var datasource in datasources ) {
 			// For brevity
 			var incomingDS = datasources[ datasource ];
-			thisConfig[ 1 ][ datasource ] = thisConfig[ 1 ][ datasource ] ?: getDefaultDatasourceStruct();
+			thisConfig[ 1 ][ datasource ] = thisConfig[ 1 ][ datasource ] ?: DSNUtil.getDefaultDatasourceStruct( DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ?: 'Other'  ) );
 			var savingDS = thisConfig[ 1 ][ datasource ];
 			
 	
 			// Invert logic
 			if( !isNull( incomingDS.blob ) ) { savingDS.disable_blob = !incomingDS.blob; }
-			if( !isNull( incomingDS.dbdriver ) ) { savingDS.class = translateDatasourceClassToAdobe( translateDatasourceDriverToAdobe( incomingDS.dbdriver ), incomingDS.class ?: '' ); }
+			if( !isNull( incomingDS.dbdriver ) ) { savingDS.class = DSNUtil.translateDatasourceClassToAdobe( DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ), incomingDS.class ?: '' ); }
 			// Invert logic
 			if( !isNull( incomingDS.clob ) ) { savingDS.disable_clob = !incomingDS.clob; }
 			
@@ -558,12 +565,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					savingDS.urlmap.maxConnections = incomingDS.connectionLimit;
 				}
 			}
-			
+						
 			// Convert from minutes to seconds
 			if( !isNull( incomingDS.connectionTimeout ) ) { savingDS.timeout = incomingDS.connectionTimeout * 60; }
 			if( !isNull( incomingDS.database ) ) { savingDS.urlmap.database = incomingDS.database; }
 			// Normalize names
-			if( !isNull( incomingDS.dbdriver ) ) { savingDS.driver = translateDatasourceDriverToAdobe( incomingDS.dbdriver ); }
+			if( !isNull( incomingDS.dbdriver ) ) { savingDS.driver = DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ); }
 			if( !isNull( incomingDS.dsn ) ) { savingDS.url = incomingDS.dsn; }
 			if( !isNull( incomingDS.host ) ) { savingDS.urlmap.host = incomingDS.host; }
 			if( !isNull( incomingDS.password ) ) { savingDS.password = passwordManager.encryptDataSource( incomingDS.password ); }
@@ -667,153 +674,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		fileWrite( configFilePath, toString( XmlTransform( thisConfigRaw, xlt) ) );
 		
-	}
-
-	private function getDefaultDatasourceStruct() {
-		return {
-		    "disable":false,
-		    "disable_autogenkeys":false,
-		    "revoke":true,
-		    "validationQuery":"",
-		    "drop":true,
-		    // "url":"jdbc:mysql://localhost:3306/test?tinyInt1isBit=false&",
-		    "url":"",
-		    "update":true,
-		    "password":"",
-		    "DRIVER":"",
-		    "NAME":"",
-		    "blob_buffer":64000,
-		    "disable_blob":true,
-		    "timeout":1200,
-		    "validateConnection":false,
-		    "CLASS":"",
-		    "grant":true,
-		    "buffer":64000,
-		    "username":"",
-		    "login_timeout":30,
-		    "description":"",
-		    "urlmap":{
-		        "defaultpassword":"",
-		        "pageTimeout":"",
-		        "SID":"",
-		        "spyLogFile":"",
-		        "CONNECTIONPROPS":{
-		            "HOST":"",
-		            "DATABASE":"",
-		            "PORT":"0"
-		        },
-		        "host":"",
-		        "_logintimeout":30,
-		        "defaultusername":"",
-		        "maxBufferSize":"",
-		        "databaseFile":"",
-		        "TimeStampAsString":"no",
-		        "systemDatabaseFile":"",
-		        "datasource":"",
-		        "_port":0,
-		        "args":"",
-		        "supportLinks":"true",
-		        "UseTrustedConnection":"false",
-		        "applicationintent":"",
-		        "sendStringParametersAsUnicode":"false",
-		        "database":"test",
-		        "informixServer":"",
-		        "port":"0",
-		        "MaxPooledStatements":"100",
-		        "useSpyLog":false,
-		        "isnewdb":"false",
-		        "qTimeout":"0",
-		        "selectMethod":"direct"
-		    },
-		    "insert":true,
-		    "create":true,
-		    "ISJ2EE":false,
-		    "storedproc":true,
-		    "interval":420,
-		    "alter":true,
-		    "delete":true,
-		    "select":true,
-		    "disable_clob":true,
-		    "pooling":true,
-		    "clientinfo":{
-		        "ClientHostName":false,
-		        "ApplicationNamePrefix":"",
-		        "ApplicationName":false,
-		        "ClientUser":false
-		    }
-		};
-	}
-	
-	private function translateDatasourceDriverToGeneric( required string driverName ) {
-		
-		switch( driverName ) {
-			case 'MSSQLServer' :
-				return 'MSSQL';
-			case 'PostgreSQL' :
-				return 'PostgreSql';
-			case 'Oracle' :
-				return 'Oracle';
-			case 'MySQL5' :
-				return 'MySQL';
-			case 'DB2' :
-				return 'DB2';
-			case 'Sybase' :
-				return 'Sybase';
-			case 'Apache Derby Client' :
-				return 'Apache Derby Client';
-			case 'Apache Derby Embedded' :
-				return 'Apache Derby Embedded';
-			case 'MySQL_DD' :
-				return 'MySQL_DD';
-			case 'jndi' :
-				return 'jndi';
-			default :
-				return arguments.driverName;
-		}
-	
-	}
-	
-	private function translateDatasourceDriverToAdobe( required string driverName ) {
-		
-		switch( driverName ) {
-			case 'MSSQL' :
-				return 'MSSQLServer';
-			case 'PostgreSQL' :
-				return 'PostgreSql';
-			case 'Oracle' :
-				return 'Oracle';
-			case 'MySQL' :
-				return 'MySQL5';
-			case 'DB2' :
-				return 'DB2';
-			case 'Sybase' :
-				return 'Sybase';
-			// These all just fall through to default "other"
-			case 'ODBC' :
-			case 'HSQLDB' :
-			case 'H2Server' :
-			case 'H2' :
-			case 'Firebird' :
-			case 'MSSQL2' : // jTDS driver
-			default :
-				return arguments.driverName;
-		}
-	
-	}
-	
-	private function translateDatasourceClassToAdobe( required string driverName, required string className ) {
-		
-		switch( driverName ) {
-			case 'MSSQLServer' :
-				return 'macromedia.jdbc.MacromediaDriver';
-			case 'Oracle' :
-				return 'macromedia.jdbc.MacromediaDriver';
-			case 'MySQL5' :
-				return 'com.mysql.jdbc.Driver';
-			default :
-				return arguments.className;
-		}
-	
 	}
 	
 }
