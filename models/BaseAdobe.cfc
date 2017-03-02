@@ -546,7 +546,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 			// Invert logic
 			if( !isNull( incomingDS.blob ) ) { savingDS.disable_blob = !incomingDS.blob; }
-			if( !isNull( incomingDS.class ) ) { savingDS.class = translateDatasourceClassToAdobe( translateDatasourceDriverToAdobe( incomingDS.dbdriver ), incomingDS.class ); }
+			if( !isNull( incomingDS.dbdriver ) ) { savingDS.class = translateDatasourceClassToAdobe( translateDatasourceDriverToAdobe( incomingDS.dbdriver ), incomingDS.class ?: '' ); }
 			// Invert logic
 			if( !isNull( incomingDS.clob ) ) { savingDS.disable_clob = !incomingDS.clob; }
 			
