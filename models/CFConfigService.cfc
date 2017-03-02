@@ -189,17 +189,21 @@ component accessors=true singleton {
 		string fromVersion='0',
 		string toVersion='0'
 	) {
-		
+		// Get data for from server
 		var fromData = determineProvider( fromFormat, fromVersion )
 			.read( from )
 			.getMemento();
 			
+		// Get data for to server
 		var toData = determineProvider( toFormat, toVersion )
 			.read( to )
 			.getMemento();
 		 
-		var configProps = wireBox.getInstance( 'BaseConfig@cfconfig-services' ).getConfigProperties();		 
+		// List of all top level config props to inspect
+		var configProps = wireBox.getInstance( 'BaseConfig@cfconfig-services' ).getConfigProperties();
+		// An empty query object to hold our results
 		var qryResult = queryNew( 'propertyName,fromValue,toValue,fromOnly,toOnly,bothPopulated,bothEmpty,valuesMatch,valuesDiffer' );
+		// Recurse into these complex properties, but don't add them directly to the query+
 		var specialColumns = [ 'CFMappings', 'datasources', 'mailServers', 'caches', 'customTags' ];
 		
 		compareStructs( qryResult, fromData, toData, configProps, specialColumns );
@@ -208,8 +212,141 @@ component accessors=true singleton {
 		 
 	}
 	
-	private function compareStructs( qryResult, fromData, toData, configProps, ignoredKeys, prefix='' ) {
-		var getDefaultRow = function( prop ) { return {
+	/**
+	* This is used internally by the diff() method to check two structs against each other 
+	* with a specific set of keys. (Some keys might not exist in either struct).  It modifies
+	* The qryResult object by reference and will climb down into nested structs.
+	*
+	* @qryResult A query object to add rows to
+	* @fromData One of the structs to compare
+	* @toData The other struct to compare
+	* @configProps An array of all the struct keys to compare between both structs. Doesn't have to existin either struct
+	* @ignoredKeys A list of keys to recurse into, but not to add to the main query result
+	* @prefix A bit of text to prefix to the key name as we nest.
+	*/	
+	private function compareStructs( 
+		required query qryResult,
+		required struct fromData,
+		required struct toData,
+		required array configProps,
+		required array ignoredKeys,
+		string prefix='' ) {
+			
+		 for( var prop in configProps ) {
+		 	var row = getDefaultRow( prefix & prop );
+		 	
+			compareValues(
+				row,
+				fromData,
+				toData,
+				prop,
+				isSimpleValue( fromData[ prop ] ?: '' ) ? fromData[ prop ] ?: '' : prop,
+				isSimpleValue( toData[ prop ] ?: '' ) ? toData[ prop ] ?: '' : prop
+			);
+		 	
+		 	// All keys are processed (and potentialy recursed into), but ignored ones aren't added to the query
+		 	if( !ignoredKeys.findNoCase( prop ) ) {
+		 		qryResult.addRow( row );
+		 	}
+		 	
+		 	// If this was a struct, compare its sub-members
+		 	if(  (!isNull( toData[ prop ] ) && isStruct( toData[ prop ] ) )
+		 		|| (!isNull( fromData[ prop ] ) && isStruct( fromData[ prop ] ) ) ) {
+		 	
+		 		// Prepare the new from and to structs
+				var fromValue = fromData[ prop ] ?: {};
+				var toValue = toData[ prop ] ?: {};
+				// Get combined list of properties between both structs.
+				// Yes, we're ignoring some mapping/datasource properties if they're not defined in both locations
+				var combinedProps = {}.append( fromValue ).append( toValue ).keyArray();
+				
+				// Call back to myself.  This will add another record to the query for each key in these nested structs
+				compareStructs( qryResult, fromValue, toValue, combinedProps, [], prefix & prop & '-' );		
+	 		}
+	 		
+		 	// If this was an array (datasource), compare its sub-members
+		 	if(  (!isNull( toData[ prop ] ) && isArray( toData[ prop ] ) )
+		 		|| (!isNull( fromData[ prop ] ) && isArray( fromData[ prop ] ) ) ) {
+		 	
+		 		// Prepare the new from and to structs
+				var fromArr = fromData[ prop ] ?: [];
+				var toArr = toData[ prop ] ?: [];
+				
+				// Loop as many times as the longest arrary
+				var i=0;
+				while( ++i <= max( fromArr.len(), toArr.len() ) ) {
+					var fromStruct = fromArr[ i ] ?: {};
+					var toStruct = toArr[ i ] ?: {};
+					
+					// Add a record for the entire mail server
+				 	var row = getDefaultRow( '#prop#-#i#' );
+					compareValues(
+						row,
+						fromArr,
+						toArr,
+						i,
+						( fromStruct.smtp ?: '' ) & ( !isNull( fromStruct.port ) ? ':' : '' ) & ( fromStruct.port ?: '' ),
+						( toStruct.smtp ?: '' ) & ( !isNull( toStruct.port ) ? ':' : '' ) & ( toStruct.port ?: '' )
+					);
+					qryResult.addRow( row );
+					
+										
+					// Get combined list of properties between both structs.
+					// Yes, we're ignoring some mapping/datasource properties if they're not defined in both locations
+					var combinedProps = {}.append( fromStruct ).append( toStruct ).keyArray();
+					
+					// Call back to myself.  This will add another record to the query for each key in these nested structs
+					compareStructs( qryResult, fromStruct, toStruct, combinedProps, [], '#prop#-#i#-' );
+				}
+					
+	 		} // end is array check
+		 	
+		 } // end while loop over properties
+	} // end function
+	
+	// Breaking this our for re-use and to keep function size down
+	private function compareValues( 
+		required struct row,
+		required any fromData,
+		required any toData,
+		required string prop,
+		required string fromName,
+		required string toName
+	 ) {
+		 	
+	 	// Doesn't exist in either.
+	 	if( isNull( fromData[ prop ] ) && isNull( toData[ prop ] ) ) {
+	 		row.bothEmpty = 1;
+	 	// Exists in both
+	 	} else if( !isNull( fromData[ prop ] ) && !isNull( toData[ prop ] ) ) {
+	 		row.bothPopulated = 1;
+	 		// if the value isn't simple, just add the property name instead ( mapping or datasource names)
+		 	row.fromValue = fromName;
+		 	row.toValue = toName;
+		 	
+		 	// TODO: find better way to do deep compare.  serializeJSON may not have the same 
+		 	// result on ACF since structs aren't ordered by default
+		 	if( serializeJSON( fromData[ prop ] ) == serializeJSON( toData[ prop ] ) ) {
+		 		row.valuesMatch = 1;
+		 	} else {
+		 		row.valuesDiffer = 1;
+		 	}
+		// From only
+	 	} else if( !isNull( fromData[ prop ] ) ) {
+	 		// if the value isn't simple, just add the property name instead ( mapping or datasource names)
+		 	row.fromValue = fromName;
+	 		row.fromOnly = 1;
+		// To only
+	 	} else if( !isNull( toData[ prop ] ) ) {
+	 		// if the value isn't simple, just add the property name instead ( mapping or datasource names)
+		 	row.toValue = toName;
+	 		row.toOnly = 1;	
+	 	}
+	}
+
+	// A quick closure to return a fresh struct when we need it.
+	private function getDefaultRow( prop ) {
+		return {
 			propertyName = prop,
 		 	fromValue = '',
 			toValue = '',
@@ -219,50 +356,7 @@ component accessors=true singleton {
 		 	bothEmpty = 0,
 		 	valuesMatch = 0,
 		 	valuesDiffer = 0
-		}; };
-		 
-		 for( var prop in configProps ) {
-		 	var row = getDefaultRow( prefix & prop );
-		 	
-		 	// Doesn't exist in either.
-		 	if( isNull( fromData[ prop ] ) && isNull( toData[ prop ] ) ) {
-		 		row.bothEmpty = 1;
-		 	// Exists in both
-		 	} else if( !isNull( fromData[ prop ] ) && !isNull( toData[ prop ] ) ) {
-		 		row.bothPopulated = 1;
-			 	row.fromValue = isSimpleValue( fromData[ prop ] ) ? fromData[ prop ] : prop;
-			 	row.toValue = isSimpleValue( toData[ prop ] ) ? toData[ prop ] : prop;
-			 	
-			 	if( serializeJSON( fromData[ prop ] ) == serializeJSON( toData[ prop ] ) ) {
-			 		row.valuesMatch = 1;
-			 	} else {
-			 		row.valuesDiffer = 1;
-			 	}
-			// From only
-		 	} else if( !isNull( fromData[ prop ] ) ) {
-			 	row.fromValue = isSimpleValue( fromData[ prop ] ) ? fromData[ prop ] : prop;
-		 		row.fromOnly = 1;
-			// To only
-		 	} else if( !isNull( toData[ prop ] ) ) {
-			 	row.toValue = isSimpleValue( toData[ prop ] ) ? toData[ prop ] : prop;
-		 		row.toOnly = 1;	
-		 	}
-		 	
-		 	if( !ignoredKeys.findNoCase( prop ) ) {
-		 		qryResult.addRow( row );
-		 	}
-		 	
-		 	// If this was a struct, compare its sub-members
-		 	if(  (!isNull( toData[ prop ] ) && isStruct( toData[ prop ] ) )
-		 		|| (!isNull( fromData[ prop ] ) && isStruct( fromData[ prop ] ) ) ) {
-		 	
-				var fromValue = fromData[ prop ] ?: {};
-				var toValue = toData[ prop ] ?: {};
-				var combinedProps = {}.append( fromValue ).append( toValue ).keyArray();
-				compareStructs( qryResult, fromValue, toValue, combinedProps, [], prefix & prop & '-' );		
-	 		}
-		 	
-		 }
+		};
 	}
 	
 }
