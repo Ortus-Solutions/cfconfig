@@ -550,6 +550,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			thisConfig[ 1 ][ datasource ] = thisConfig[ 1 ][ datasource ] ?: DSNUtil.getDefaultDatasourceStruct( DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ?: 'Other'  ) );
 			var savingDS = thisConfig[ 1 ][ datasource ];
 			
+			savingDS.name = datasource;
+			savingDS.url = incomingDS.dsn ?: savingDS.url ?: '';
 	
 			// Invert logic
 			if( !isNull( incomingDS.blob ) ) { savingDS.disable_blob = !incomingDS.blob; }
@@ -568,13 +570,24 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 						
 			// Convert from minutes to seconds
 			if( !isNull( incomingDS.connectionTimeout ) ) { savingDS.timeout = incomingDS.connectionTimeout * 60; }
-			if( !isNull( incomingDS.database ) ) { savingDS.urlmap.database = incomingDS.database; }
+			if( !isNull( incomingDS.database ) ) {
+				savingDS.urlmap.database = incomingDS.database;
+				savingDS.urlmap.connectionprops.database = incomingDS.database;
+				savingDS.url = savingDS.url.replaceNoCase( '{database}', incomingDS.database );
+			}
 			// Normalize names
 			if( !isNull( incomingDS.dbdriver ) ) { savingDS.driver = DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ); }
-			if( !isNull( incomingDS.dsn ) ) { savingDS.url = incomingDS.dsn; }
-			if( !isNull( incomingDS.host ) ) { savingDS.urlmap.host = incomingDS.host; }
+			if( !isNull( incomingDS.host ) ) {
+				savingDS.urlmap.host = incomingDS.host;
+				savingDS.urlmap.connectionprops.host = incomingDS.host;
+				savingDS.url = savingDS.url.replaceNoCase( '{host}', incomingDS.host );
+			}
 			if( !isNull( incomingDS.password ) ) { savingDS.password = passwordManager.encryptDataSource( incomingDS.password ); }
-			if( !isNull( incomingDS.port ) ) { savingDS.urlmap.port = incomingDS.port; }
+			if( !isNull( incomingDS.port ) ) {
+				savingDS.urlmap.port = incomingDS.port;
+				savingDS.urlmap.connectionprops.port = incomingDS.port;
+				savingDS.url = savingDS.url.replaceNoCase( '{port}', incomingDS.port );
+			}
 			if( !isNull( incomingDS.username ) ) { savingDS.username = incomingDS.username; }
 			if( !isNull( incomingDS.validate ) ) { savingDS.validateConnection = incomingDS.validate; }
 		}

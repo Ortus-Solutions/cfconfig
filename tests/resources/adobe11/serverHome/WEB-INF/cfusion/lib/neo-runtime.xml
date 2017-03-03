@@ -65,7 +65,7 @@
       </struct>
       <struct type="coldfusion.server.ConfigMap">
         <var name="EnableHTTPStatus">
-          <string>1</string>
+          <number>1.0</number>
         </var>
         <var name="missing_template">
           <string>/CFIDE/administrator/templates/missing_template_error.cfm</string>
@@ -79,7 +79,7 @@
       </struct>
       <struct type="coldfusion.server.ConfigMap">
         <var name="/CFIDE">
-          <string>/Users/jonclausen/Sites/ortus/commandbox-engines/workbench/ACF11/engine/CFIDE</string>
+          <string>C:\Users\Brad.development\Documents\GitHub\cfconfig\tests\resources\adobe11\serverHome\CFIDE</string>
         </var>
         <var name="/fooi">
           <string>C:\</string>
@@ -223,10 +223,10 @@
         <var name="internalCookiesDisableUpdate">
           <boolean value="true"/>
         </var>
-        <var name="sessionCookieDomain">
+        <var name="ORMSearchIndexDirectory">
           <string/>
         </var>
-        <var name="ORMSearchIndexDirectory">
+        <var name="sessionCookieDomain">
           <string/>
         </var>
         <var name="RmiSSLKeystorePassword">
