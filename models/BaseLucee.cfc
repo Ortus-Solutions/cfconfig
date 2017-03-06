@@ -97,6 +97,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		readAuth( thisConfig.XMLRoot );
 		
+		readConfigChanges( thisConfig.XMLRoot );
+		
 		return this;
 	}
 	
@@ -246,6 +248,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}		
 	}
 	
+	private function readConfigChanges( config ) {
+		if( !isNull( config.XmlAttributes[ 'check-for-changes' ] ) ) {
+			setWatchConfigFilesForChangesEnabled( ( config.XmlAttributes[ 'check-for-changes' ] ? true : false ) );
+			setWatchConfigFilesForChangesInterval( 60 );
+			setWatchConfigFilesForChangesExtensions( 'xml,properties' );
+		}		
+	}
+	
 	private function readSetting( settings ) {
 		var config = settings.XMLAttributes;
 				
@@ -295,6 +305,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeJava( thisConfig );
 		writeRegional( thisConfig );
 		writeSetting( thisConfig );
+		writeConfigChanges( thisConfig );
 		
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true )
@@ -396,7 +407,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				structClear( DSXMLNode.XMLAttributes );
 			// Create new data-source tag
 			} else {
-				var DSXMLNode = xmlElemnew(thisConfig,"data-source");				
+				var DSXMLNode = xmlElemnew(thisConfig,"data-source");
 			}
 			
 			// Populate XML node
@@ -560,6 +571,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeDebugging( thisConfig ) {
+	}
+	
+	private function writeConfigChanges( thisConfig ) {
+		var config = thisConfig.XMLRoot.XMLAttributes;
+		
+		if( !isNull( getWatchConfigFilesForChangesEnabled() ) ) { config[ 'check-for-changes' ] = getWatchConfigFilesForChangesEnabled(); }
+		// Lucee doesn't support watchConfigFilesForChangesInterval or watchConfigFilesForChangesExtensions
+		
 	}
 	
 	private function writeAuth( thisConfig ) {
