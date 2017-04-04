@@ -235,10 +235,31 @@ component accessors=true {
 	property name='throttleThreshold' type='numeric' _isCFConfig=true;
 	// Limits total memory size in MB for the throttle
 	property name='totalThrottleMemory' type='numeric' _isCFConfig=true;
+			
+	// Key is cache connection name, value is struct of properties
+	property name='caches' type='struct' _isCFConfig=true;
+				
+	// name of default Object cache connection
+	property name='cacheDefaultObject' type='string' _isCFConfig=true;
+	// name of default function cache connection
+	property name='cacheDefaultFunction' type='string' _isCFConfig=true;
+	// name of default Template cache connection
+	property name='cacheDefaultTemplate' type='string' _isCFConfig=true;
+	// name of default Query cache connection
+	property name='cacheDefaultQuery' type='string' _isCFConfig=true;
+	// name of default Resource cache connection
+	property name='cacheDefaultResource' type='string' _isCFConfig=true;
+	// name of default Include cache connection
+	property name='cacheDefaultInclude' type='string' _isCFConfig=true;
+	// name of default File cache connection
+	property name='cacheDefaultFile' type='string' _isCFConfig=true;
+	// name of default HTTP cache connection
+	property name='cacheDefaultHTTP' type='string' _isCFConfig=true;
+	// name of default WebService cache connection
+	property name='cacheDefaultWebservice' type='string' _isCFConfig=true;
 	
 	// TODO:
 	//property name='externalizeStrings' type='string' _isCFConfig=true;
-	//property name='caches' type='array' _isCFConfig=true;
 	//property name='restMappings' type='array' _isCFConfig=true;
 	//property name='componentBase' type='string' _isCFConfig=true;
 	//property name='componentAutoImport' type='string' _isCFConfig=true;
@@ -312,8 +333,31 @@ component accessors=true {
 	
 	/**
 	* Add a single cache to the config
+	* 
+	* @name name of the cache to save or update
+	* @class Java class of implementing provider
+	* @readOnly No idea what this does
+	* @storage Is this cache used for session or client scope storage?
+	* @custom A struct of settings that are meaningful to this cache provider.
 	*/
-	function addCache() { throw 'addCache() not implemented'; }
+	function addCache(
+		required string name,
+		string class,
+		boolean readOnly,
+		boolean storage,
+		struct custom
+	) {
+		var cacheConnection = {};
+		if( !isNull( class ) ) { cacheConnection[ 'class' ] = class; };
+		if( !isNull( readOnly ) ) { cacheConnection[ 'readOnly' ] = readOnly; };
+		if( !isNull( storage ) ) { cacheConnection[ 'storage' ] = storage; };
+		if( !isNull( custom ) ) { cacheConnection[ 'custom' ] = custom; };
+		
+		var thisCaches = getCaches() ?: {};
+		thisCaches[ arguments.name ] = cacheConnection; 
+		setCaches( thisCaches );
+		return this;	
+	}
   
 	/**
 	* Add a single datasource to the config
@@ -364,23 +408,23 @@ component accessors=true {
 		) {
 			
 		var ds = {};
-		if( !isNull( database ) ) { ds.database = database; };
-		if( !isNull( allow ) ) { ds.allow = allow; };
-		if( !isNull( blob ) ) { ds.blob = blob; };
-		if( !isNull( class ) ) { ds.class = class; };
-		if( !isNull( dbdriver ) ) { ds.dbdriver = dbdriver; };
-		if( !isNull( clob ) ) { ds.clob = clob; };
-		if( !isNull( connectionLimit ) ) { ds.connectionLimit = connectionLimit; };
-		if( !isNull( connectionTimeout ) ) { ds.connectionTimeout = connectionTimeout; };
-		if( !isNull( custom ) ) { ds.custom = custom; };
-		if( !isNull( dsn ) ) { ds.dsn = dsn; };
-		if( !isNull( password ) ) { ds.password = password; };
-		if( !isNull( host ) ) { ds.host = host; };
-		if( !isNull( metaCacheTimeout ) ) { ds.metaCacheTimeout = metaCacheTimeout; };
-		if( !isNull( port ) ) { ds.port = port; };
-		if( !isNull( storage ) ) { ds.storage = storage; };
-		if( !isNull( username ) ) { ds.username = username; };
-		if( !isNull( validate ) ) { ds.validate = validate; };
+		if( !isNull( database ) ) { ds[ 'database' ] = database; };
+		if( !isNull( allow ) ) { ds[ 'allow' ] = allow; };
+		if( !isNull( blob ) ) { ds[ 'blob' ] = blob; };
+		if( !isNull( class ) ) { ds[ 'class' ] = class; };
+		if( !isNull( dbdriver ) ) { ds[ 'dbdriver' ] = dbdriver; };
+		if( !isNull( clob ) ) { ds[ 'clob' ] = clob; };
+		if( !isNull( connectionLimit ) ) { ds[ 'connectionLimit' ] = connectionLimit; };
+		if( !isNull( connectionTimeout ) ) { ds[ 'connectionTimeout' ] = connectionTimeout; };
+		if( !isNull( custom ) ) { ds[ 'custom' ] = custom; };
+		if( !isNull( dsn ) ) { ds[ 'dsn' ] = dsn; };
+		if( !isNull( password ) ) { ds[ 'password' ] = password; };
+		if( !isNull( host ) ) { ds[ 'host' ] = host; };
+		if( !isNull( metaCacheTimeout ) ) { ds[ 'metaCacheTimeout' ] = metaCacheTimeout; };
+		if( !isNull( port ) ) { ds[ 'port' ] = port; };
+		if( !isNull( storage ) ) { ds[ 'storage' ] = storage; };
+		if( !isNull( username ) ) { ds[ 'username' ] = username; };
+		if( !isNull( validate ) ) { ds[ 'validate' ] = validate; };
 		
 		var thisDatasources = getDataSources() ?: {};
 		thisDatasources[ arguments.name ] = ds; 
@@ -412,14 +456,14 @@ component accessors=true {
 	) {
 			
 		var mailServer = {};
-		if( !isNull( idleTimeout ) ) { mailServer.idleTimeout = idleTimeout; };
-		if( !isNull( lifeTimeout ) ) { mailServer.lifeTimeout = lifeTimeout; };
-		if( !isNull( password ) ) { mailServer.password = password; };
-		if( !isNull( port ) ) { mailServer.port = port; };
-		if( !isNull( smtp ) ) { mailServer.smtp = smtp; };
-		if( !isNull( ssl ) ) { mailServer.ssl = ssl; };
-		if( !isNull( tls ) ) { mailServer.tls = tls; };
-		if( !isNull( username ) ) { mailServer.username = username; };
+		if( !isNull( idleTimeout ) ) { mailServer[ 'idleTimeout' ] = idleTimeout; };
+		if( !isNull( lifeTimeout ) ) { mailServer[ 'lifeTimeout' ] = lifeTimeout; };
+		if( !isNull( password ) ) { mailServer[ 'password' ] = password; };
+		if( !isNull( port ) ) { mailServer[ 'port' ] = port; };
+		if( !isNull( smtp ) ) { mailServer[ 'smtp' ] = smtp; };
+		if( !isNull( ssl ) ) { mailServer[ 'ssl' ] = ssl; };
+		if( !isNull( tls ) ) { mailServer[ 'tls' ] = tls; };
+		if( !isNull( username ) ) { mailServer[ 'username' ] = username; };
 		
 		var thisMailServers = getMailServers() ?: [];
 		thisMailServers.append( mailServer ); 

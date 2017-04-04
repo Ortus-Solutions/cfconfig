@@ -95,6 +95,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var setting = xmlSearch( thisConfig, '/cfLuceeConfiguration/setting' );
 		if( setting.len() ){ readSetting( setting[ 1 ] ); }
 		
+		var thisCache = xmlSearch( thisConfig, '/cfLuceeConfiguration/cache' );
+		if( thisCache.len() ){ readCache( thisCache[ 1 ] ); }
+		
 		readAuth( thisConfig.XMLRoot );
 		
 		readConfigChanges( thisConfig.XMLRoot );
@@ -133,7 +136,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	private function readDatasources( datasources ) {
 		var passwordManager = getLuceePasswordManager();
 		for( var ds in datasources.XMLChildren ) {
-			var params = {}.append( ds.XMLAttributes );
+			var params = structNew().append( ds.XMLAttributes );
 			// Decrypt datasource password 
 			if( !isNull( params.password ) ) {  
 				params.password = passwordManager.decryptDataSource( replaceNoCase( params.password, 'encrypted:', '' ) );
@@ -159,23 +162,23 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	private function readScope( scope ) {
 		var config = scope.XMLAttributes;
 		
-		if( !isNull( config.applicationtimeout ) ) { setApplicationTimeout( config.applicationtimeout ) };
-		if( !isNull( config[ 'cascade-to-resultset' ] ) ) { setSearchResultsets( config[ 'cascade-to-resultset' ] ) };
-		if( !isNull( config.cascading ) ) { setScopeCascading( config.cascading ) };
-		if( !isNull( config.clienttimeout ) ) { setClientTimeout( config.clienttimeout ) };
-		if( !isNull( config[ 'client-max-age' ] ) ) { setClientTimeout( '#config[ 'client-max-age' ]#,0,0,0' ) };
-		if( !isNull( config.clientmanagement ) ) { setClientManagement( config.clientmanagement ) };
-		if( !isNull( config[ 'merge-url-form' ] ) ) { setMergeURLAndForm( config[ 'merge-url-form' ] ) };
-		if( !isNull( config[ 'cgi-readonly' ] ) ) { setCGIReadOnly( config[ 'cgi-readonly' ] ) };
-		if( !isNull( config.requesttimeout ) ) { setRequestTimeout( config.requesttimeout ) };
-		if( !isNull( config.sessionmanagement ) ) { setSessionMangement( config.sessionmanagement ) };
-		if( !isNull( config.sessiontimeout ) ) { setSessionTimeout( config.sessiontimeout ) };
-		if( !isNull( config.setclientcookies ) ) { setClientCookies( config.setclientcookies ) };
-		if( !isNull( config.setdomaincookie ) ) { setDomainCookies( config.setdomaincookie ) };
-		if( !isNull( config.sessionStorage ) ) { setSessionStorage( config.sessionStorage ) };
-		if( !isNull( config.clientStorage ) ) { setClientStorage( config.clientStorage ) };
-		if( !isNull( config[ 'local-mode' ] ) ) { setLocalScopeMode( config[ 'local-mode' ] ) };
-		if( !isNull( config[ 'session-type' ] ) ) { setSessionType( config[ 'session-type' ] ) };
+		if( !isNull( config.applicationtimeout ) ) { setApplicationTimeout( config.applicationtimeout ); };
+		if( !isNull( config[ 'cascade-to-resultset' ] ) ) { setSearchResultsets( config[ 'cascade-to-resultset' ] ); };
+		if( !isNull( config.cascading ) ) { setScopeCascading( config.cascading ); };
+		if( !isNull( config.clienttimeout ) ) { setClientTimeout( config.clienttimeout ); };
+		if( !isNull( config[ 'client-max-age' ] ) ) { setClientTimeout( '#config[ 'client-max-age' ]#,0,0,0' ); };
+		if( !isNull( config.clientmanagement ) ) { setClientManagement( config.clientmanagement ); };
+		if( !isNull( config[ 'merge-url-form' ] ) ) { setMergeURLAndForm( config[ 'merge-url-form' ] ); };
+		if( !isNull( config[ 'cgi-readonly' ] ) ) { setCGIReadOnly( config[ 'cgi-readonly' ] ); };
+		if( !isNull( config.requesttimeout ) ) { setRequestTimeout( config.requesttimeout ); };
+		if( !isNull( config.sessionmanagement ) ) { setSessionMangement( config.sessionmanagement ); };
+		if( !isNull( config.sessiontimeout ) ) { setSessionTimeout( config.sessiontimeout ); };
+		if( !isNull( config.setclientcookies ) ) { setClientCookies( config.setclientcookies ); };
+		if( !isNull( config.setdomaincookie ) ) { setDomainCookies( config.setdomaincookie ); };
+		if( !isNull( config.sessionStorage ) ) { setSessionStorage( config.sessionStorage ); };
+		if( !isNull( config.clientStorage ) ) { setClientStorage( config.clientStorage ); };
+		if( !isNull( config[ 'local-mode' ] ) ) { setLocalScopeMode( config[ 'local-mode' ] ); };
+		if( !isNull( config[ 'session-type' ] ) ) { setSessionType( config[ 'session-type' ] ); };
 	}
 	
 	private function readMail( mailServers ) {
@@ -187,16 +190,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		mailConnectionTimeout*/
 		
 		for( var mailServer in mailServers.XMLChildren ) {
-			var params = {}.append( mailServer.XMLAttributes );
+			var params = structNew().append( mailServer.XMLAttributes );
 			// Decrypt mail server password 
 			if( !isNull( params.password ) ) {  
 				params.password = passwordManager.decryptDataSource( replaceNoCase( params.password, 'encrypted:', '' ) );
 			} 
 			if( !isNull( params.life ) ) {  
-				params.lifeTimeout = params.life
+				params.lifeTimeout = params.life;
 			} 
 			if( !isNull( params.idle ) ) {  
-				params.idleTimeout = params.idle
+				params.idleTimeout = params.idle;
 			}
 			addMailServer( argumentCollection = params );
 		}
@@ -206,7 +209,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var ignores = [ '/lucee-server/' , '/lucee/', '/lucee/doc', '/lucee/admin' ];
 		
 		for( var mapping in mappings.XMLChildren ) {
-			var params = {}.append( mapping.XMLAttributes );
+			var params = structNew().append( mapping.XMLAttributes );
 			
 			if( ignores.findNoCase( params.virtual ) ) {
 				continue;
@@ -265,7 +268,44 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( config[ 'suppress-content' ] ) ) { setSupressContentForCFCRemoting( config[ 'suppress-content' ] ); }			
 	}
 	
-
+	private function readCache( thisCache ) {
+		var config = thisCache.XMLAttributes;
+		
+		if( !isNull( config[ 'default-function' ] ) ) { setCacheDefaultFunction( config[ 'default-function' ] ); }
+		if( !isNull( config[ 'default-object' ] ) ) { setCacheDefaultObject( config[ 'default-object' ] ); }
+		if( !isNull( config[ 'default-template' ] ) ) { setCacheDefaultTemplate( config[ 'default-template' ] ); }
+		if( !isNull( config[ 'default-query' ] ) ) { setCacheDefaultQuery( config[ 'default-query' ] ); }
+		if( !isNull( config[ 'default-resource' ] ) ) { setCacheDefaultResource( config[ 'default-resource' ] ); }
+		if( !isNull( config[ 'default-include' ] ) ) { setCacheDefaultInclude( config[ 'default-include' ] ); }
+		// Only found/used in Lucee 5
+		if( !isNull( config[ 'default-file' ] ) ) { setCacheDefaultFile( config[ 'default-file' ] ); }
+		if( !isNull( config[ 'default-http' ] ) ) { setCacheDefaultHTTP( config[ 'default-http' ] ); }
+		if( !isNull( config[ 'default-webservice' ] ) ) { setCacheDefaultWebservice( config[ 'default-webservice' ] ); }
+		
+		for( var connection in thisCache.XMLChildren ) {
+			var params = structNew().append( connection.XMLAttributes );
+			
+			// Rename read-only to readOnly
+			if( !isNull( params[ 'read-only' ] ) ) { params[ 'readOnly' ] = params[ 'read-only' ]; }
+			
+			// Turn cusom values into struct
+			if( !isNull( params[ 'custom' ] ) ) {
+				var thisCustom = params[ 'custom' ];
+				var thisStruct = {};
+				for( var item in thisCustom.listToArray( '&' ) ) {
+					// Turn foo=bar&baz=bum&poof= into { foo : 'bar', baz : 'bum', poof : '' }
+					// Any "=" or "&" in the key values will be URL encoded. 
+					thisStruct[ URLDecode( listFirst( item, '=' ) ) ] = ( listLen( item, '=' ) ?  URLDecode( listRest( item, '=' ) ) : '' );
+				}
+				// Overwrite original string with struct
+				params[ 'custom' ] = thisStruct;
+			}
+			
+			addCache( argumentCollection = params );
+		}
+					
+	}
+	
 	/**
 	* I write out config
 	*
@@ -306,9 +346,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeRegional( thisConfig );
 		writeSetting( thisConfig );
 		writeConfigChanges( thisConfig );
+		writeCache( thisConfig );
 		
 		// Ensure the parent directories exist
-		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true )
+		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
 		fileWrite( configFilePath, toString( thisConfig ) );
 		
 		return this;
@@ -578,6 +619,69 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		if( !isNull( getWatchConfigFilesForChangesEnabled() ) ) { config[ 'check-for-changes' ] = getWatchConfigFilesForChangesEnabled(); }
 		// Lucee doesn't support watchConfigFilesForChangesInterval or watchConfigFilesForChangesExtensions
+		
+	}
+	
+	private function writeCache( thisConfig ) {
+		// Get all caches connections
+		var cacheConnectionsSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/cache' );
+		if( cacheConnectionsSearch.len() ) {
+			var cacheConnections = cacheConnectionsSearch[ 1 ];			
+		} else {
+			var cacheConnections = xmlElemnew( thisConfig, "cache" );
+		}
+		cacheConnections.XMLChildren = [];
+		
+		if( !isNull( getCacheDefaultObject() ) ) { cacheConnections.XMLAttributes[ 'default-object' ] = getCacheDefaultObject(); }
+		if( !isNull( getCacheDefaultFunction() ) ) { cacheConnections.XMLAttributes[ 'default-function' ] = getCacheDefaultFunction(); }
+		if( !isNull( getCacheDefaultTemplate() ) ) { cacheConnections.XMLAttributes[ 'default-template' ] = getCacheDefaultTemplate(); }
+		if( !isNull( getCacheDefaultQuery() ) ) { cacheConnections.XMLAttributes[ 'default-query' ] = getCacheDefaultQuery(); }
+		if( !isNull( getCacheDefaultResource() ) ) { cacheConnections.XMLAttributes[ 'default-resource' ] = getCacheDefaultResource(); }
+		if( !isNull( getCacheDefaultInclude() ) ) { cacheConnections.XMLAttributes[ 'default-include' ] = getCacheDefaultInclude(); }
+		// Only found/used in Lucee 5
+		if( !isNull( getCacheDefaultFile() ) ) { cacheConnections.XMLAttributes[ 'default-file' ] = getCacheDefaultFile(); }
+		if( !isNull( getCacheDefaultHTTP() ) ) { cacheConnections.XMLAttributes[ 'default-http' ] = getCacheDefaultHTTP(); }
+		if( !isNull( getCacheDefaultWebservice() ) ) { cacheConnections.XMLAttributes[ 'default-webservice' ] = getCacheDefaultWebservice(); }
+		
+		var thisCaches = getCaches() ?: {};
+		for( var cacheName in thisCaches ) {
+			var cacheConnection = thisCaches[ cacheName ];
+			// Search to see if this datasource already exists
+			var cacheConnectionXMLSearch = xmlSearch( thisConfig, "/cfLuceeConfiguration/cache/connection[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( cacheName )#']" );
+			// mail server already exists
+			if( cacheConnectionXMLSearch.len() ) {
+				cacheConnectionXMLNode = cacheConnectionXMLSearch[ 1 ];
+				// Wipe out old attributes for this cache connection
+				structClear( cacheConnectionXMLNode.XMLAttributes );
+			// Create new data-source tag
+			} else {
+				var cacheConnectionXMLNode = xmlElemnew( thisConfig, "connection" );				
+			}
+
+			// Populate XML node
+			cacheConnectionXMLNode.XMLAttributes[ 'name' ] = cacheName;
+			if( !isNull( cacheConnection.class ) ) { cacheConnectionXMLNode.XMLAttributes[ 'class' ] = cacheConnection.class; }
+			if( !isNull( cacheConnection.storage ) ) { cacheConnectionXMLNode.XMLAttributes[ 'storage' ] = cacheConnection.storage; }
+			if( !isNull( cacheConnection.readOnly ) ) { cacheConnectionXMLNode.XMLAttributes[ 'read-only' ] = cacheConnection.readOnly; }
+			if( !isNull( cacheConnection.custom ) && isStruct( cacheConnection.custom ) ) {
+				var customAsString = '';
+				// turn { foo : 'bar', baz : 'bum' } into foo=bar&baz=bum
+				for( var key in cacheConnection.custom ) {
+					customAsString = customAsString.listAppend( '#URLEncode( key )#=#URLEncode( cacheConnection.custom[ key ] )#', '&' );
+				}
+				cacheConnectionXMLNode.XMLAttributes[ 'custom' ] = customAsString;
+			}
+			
+			// Insert into doc if this was new.
+			if( !cacheConnectionXMLSearch.len() ) {
+				cacheConnections.XMLChildren.append( cacheConnectionXMLNode );
+			}			
+		}
+	
+		// Insert into doc if this was new.
+		if( !cacheConnectionsSearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( cacheConnections );
+		}			
 		
 	}
 	
