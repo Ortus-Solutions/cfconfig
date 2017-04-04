@@ -8,6 +8,7 @@ Path placeholders:
 	{system-directory}: path to thesystem directory
 	{web-context-hash}: hash of the web context
 
+--><cfLuceeConfiguration check-for-changes="true" hspw="d47d492c4e911e5075c7af21a5ff5a3e59e3cad737522b9b35fd271fd62c6a60" salt="6F0D351D-705D-4CAA-975ECBDBDA709C27" version="4.5"><cfabort/>
 
 	<!--
 	system:
@@ -34,6 +35,7 @@ Path placeholders:
 <!--	 - http://sourceforge.net 																		-->
 <!--	or ask your database distributor 																-->
 	<data-sources psq="false">
+	<data-source blob="false" class="org.postgresql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" database="Database" dbdriver="PostgreSql" dsn="jdbc:postgresql://{host}:{port}/{database}" host="Server" name="postgres" password="encrypted:21eaab8f8bae27110310bf311e9bf84ba9ba85178e1d690b67126033304c49dd" port="5432" username="User name" validate="false"/><data-source blob="false" class="com.microsoft.jdbc.sqlserver.SQLServerDriver" clob="false" connectionLimit="-1" connectionTimeout="20" database="test" dbdriver="MSSQL" dsn="jdbc:sqlserver://{host}:{port}" host="localhost" name="sqlserver" password="encrypted:6529a15e874b08307d20270bdeee594efad9022d7163b6e3ab5128b2ea3b52fd" port="1433" username="user" validate="false"/><data-source blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" database="" dbdriver="Other" dsn="jdbc:mysql://localhost:3306/test?tinyInt1isBit=false&amp;" host="" name="other" password="encrypted:ce1f31381a6e154784c6a4242825b44e8537061abfab3dbd946893e3d57d231d" port="" username="User name" validate="false"/><data-source blob="false" class="oracle.jdbc.driver.OracleDriver" clob="false" connectionLimit="-1" connectionTimeout="20" database="" dbdriver="Oracle" dsn="jdbc:oracle:{drivertype}:@{host}:{port}:{database}" host="Server" name="oracle" password="encrypted:170587f18c1a3a60676846f5e98e5f7922e16ac45fc06c13e02b6b974abec924" port="1521" username="User name" validate="false"/><data-source blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" database="forgebox" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" name="forgebox" password="encrypted:e2d6b4e819882c72328a5c5c4e955abb" port="3306" username="root" validate="false"/><data-source blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="87" connectionTimeout="3" database="test" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" name="test" password="encrypted:8bd532ab07aea612ad9aa21ca3d8e504de7bc93c9bd0f0b1e8ad93da04f913c9" port="3306" username="test" validate="false"/><data-source blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" database="test" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" name="thisisforreal" password="encrypted:360f215ebc3e85743c7515cd0ca8cc2c" port="3306" username="root" validate="false"/></data-sources>
 
 	<!--
 		deploy-directory - directory where java classes will be deployed
@@ -162,6 +164,7 @@ Path placeholders:
 	<scope applicationtimeout="2,0,0,0" cascade-to-resultset="yes" cascading="standard" client-directory-max-size="10mb" clientmanagement="no" clienttimeout="90,0,0,0" merge-url-form="no" session-type="j2ee" sessionmanagement="true" sessiontimeout="0,0,20,0" setclientcookies="yes" setdomaincookies="no"/>
 		
 	<mail spool-enable="yes" spool-interval="5" timeout="30">
+	<server password="encrypted:3084cfc59852d8090a2a18ce5a325e0feab6fb2f6e4c813623827de6b0e8128f" port="587" smtp="smptout.secureserver.net" ssl="false" username="brad@bradwood.com"/></mail>
 	
 	<mappings>
 	<!--
@@ -346,3 +349,4 @@ for every argument defined lucee tries to call a matching setter method
 		<logger appender="resource" appender-arguments="path:{lucee-config}/logs/datasource.log" layout="classic" name="datasource"/>
 	</logging>
 	
+<datasource/><queue enable="true" max="100" timeout="0"/><compiler dot-notation-upper-case="false"/><charset/><java inspect-template="once"/><setting/><cache default-function="sdf"><connection class="lucee.runtime.cache.eh.EHCache" custom="bootstrapAsynchronously=true&amp;replicatePuts=true&amp;automatic%5FhostName=&amp;bootstrapType=on&amp;maxelementsinmemory=10000&amp;manual%5FrmiUrls=dsf%3Ddfg%26fgdfg%3De4ge&amp;automatic%5FmulticastGroupAddress=230%2E0%2E0%2E1&amp;distributed=off&amp;replicatePutsViaCopy=true&amp;memoryevictionpolicy=LRU&amp;maximumChunkSizeBytes=5000000&amp;timeToIdleSeconds=86400&amp;automatic%5FmulticastGroupPort=4446&amp;listener%5FsocketTimeoutMillis=120000&amp;diskpersistent=true&amp;timeToLiveSeconds=86400&amp;manual%5Faddional=&amp;replicateRemovals=true&amp;replicateUpdatesViaCopy=true&amp;automatic%5Faddional=&amp;overflowtodisk=true&amp;replicateAsynchronously=true&amp;maxelementsondisk=10000000&amp;listener%5FremoteObjectPort=&amp;asynchronousReplicationIntervalMillis=1000&amp;listener%5FhostName=&amp;replicateUpdates=true&amp;manual%5FhostName=&amp;automatic%5FtimeToLive=unrestricted&amp;listener%5Fport=" name="sdf" read-only="false" storage="true"/><connection class="lucee.runtime.cache.ram.RamCache" custom="timeToIdleSeconds=0&amp;timeToLiveSeconds=0" name="test" read-only="false" storage="false"/></cache></cfLuceeConfiguration>
