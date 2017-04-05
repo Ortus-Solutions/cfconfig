@@ -1,4 +1,12 @@
-﻿<cfsetting showDebugOutput="false">
+﻿<!---
+*********************************************************************************
+ Copyright Since 2017 CommandBox by Ortus Solutions, Corp
+ www.ortussolutions.com
+********************************************************************************
+Author: Brad Wood
+
+--->
+<cfsetting showDebugOutput="false">
 <!--- Executes all tests in the 'specs' folder with simple reporter by default --->
 <cfparam name="url.reporter" 		default="simple">
 <cfparam name="url.directory" 		default="tests.specs">

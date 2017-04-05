@@ -1,4 +1,10 @@
 /**
+*********************************************************************************
+* Copyright Since 2017 CommandBox by Ortus Solutions, Corp
+* www.ortussolutions.com
+********************************************************************************
+* @author Brad Wood
+* 
 * I represent the configuration of a CF engine.  I am agnostic and don't contain any particular
 * behavior for a specific engine.  Not all the data I store applies to every engine though.  
 * I am capable of reading and writing to a standard JSON format, but if you want to read or write

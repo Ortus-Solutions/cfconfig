@@ -1,4 +1,10 @@
 /**
+*********************************************************************************
+* Copyright Since 2017 CommandBox by Ortus Solutions, Corp
+* www.ortussolutions.com
+********************************************************************************
+* @author Brad Wood
+* 
 * I represent the behavior of reading and writing CF engine config in the format compatible with a Lucee 5.x web context
 * I extend the BaseConfig class, which represents the data itself.
 */

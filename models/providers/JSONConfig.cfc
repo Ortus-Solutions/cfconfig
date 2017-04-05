@@ -1,4 +1,10 @@
 /**
+*********************************************************************************
+* Copyright Since 2017 CommandBox by Ortus Solutions, Corp
+* www.ortussolutions.com
+********************************************************************************
+* @author Brad Wood
+* 
 * I represent the behavior of reading and writing CF engine config in JSON format
 * I extend the BaseConfig class, which represents the data itself.
 */

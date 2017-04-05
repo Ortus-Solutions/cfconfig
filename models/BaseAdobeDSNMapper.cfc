@@ -1,4 +1,10 @@
 /**
+*********************************************************************************
+* Copyright Since 2017 CommandBox by Ortus Solutions, Corp
+* www.ortussolutions.com
+********************************************************************************
+* @author Brad Wood
+* 
 * This CFC simply breaks out some of the messy code for mapping datasources on Adobe CF. It was getting to be way too much code 
 * in the BaseAdobe CFC. Each provider can still have their own subclass of this CFC where they override bits and peices.
 */
