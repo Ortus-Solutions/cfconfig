@@ -1,4 +1,11 @@
-﻿# CF Config
+```
+   ____ _____ ____             __ _       
+  / ___|  ___/ ___|___  _ __  / _(_) __ _ 
+ | |   | |_ | |   / _ \| '_ \| |_| |/ _` |
+ | |___|  _|| |__| (_) | | | |  _| | (_| |
+  \____|_|   \____\___/|_| |_|_| |_|\__, |
+                                    |___/ 
+```
 
 This is a library for reading, writing, and storing configuration for all CF engines. This is an underlying service layer meant to have other tools built on top of it.
 
