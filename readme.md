@@ -7,6 +7,10 @@
                                     |___/ 
 ```
 
+<img src="https://www.ortussolutions.com/__media/logos/CfConfigLogo300.png" class="img-thumbnail"/>
+
+>Copyright 2017 by Ortus Solutions, Corp - https://www.ortussolutions.com
+
 This is a library for reading, writing, and storing configuration for all CF engines. This is an underlying service layer meant to have other tools built on top of it.
 
 ## Main Features
