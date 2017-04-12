@@ -140,8 +140,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// Adobe stores the inverse of Lucee
 		setUDFTypeChecking( !thisConfig[ 16 ].cfcTypeCheckEnabled );
 		setDisableInternalCFJavaComponents( thisConfig[ 16 ].disableServiceFactory );
+		
+		// This setting CF11+
 		// Lucee and Adobe store opposite value
-		setDotNotationUpperCase( !thisConfig[ 16 ].preserveCaseForSerialize );
+		if( !isNull( thisConfig[ 16 ].preserveCaseForSerialize ) ) { setDotNotationUpperCase( !thisConfig[ 16 ].preserveCaseForSerialize ); }
 		setSecureJSON( thisConfig[ 16 ].secureJSON );
 		setSecureJSONPrefix( thisConfig[ 16 ].secureJSONPrefix );
 		setMaxOutputBufferSize( thisConfig[ 16 ].maxOutputBufferSize );
@@ -150,13 +152,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setInMemoryFileSystemAppLimit( thisConfig[ 16 ].inMemoryFileSystemAppLimit );
 		setAllowExtraAttributesInAttrColl( thisConfig[ 16 ].allowExtraAttributesInAttrColl );
 		setDisallowUnamedAppScope( thisConfig[ 16 ].dumpunnamedappscope );
-		setAllowApplicationVarsInServletContext( thisConfig[ 16 ].allowappvarincontext );
+		
+		// This setting CF11+
+		if( !isNull( thisConfig[ 16 ].allowappvarincontext ) ) { setAllowApplicationVarsInServletContext( thisConfig[ 16 ].allowappvarincontext ); }
+		
 		setCFaaSGeneratedFilesExpiryTime( thisConfig[ 16 ].CFaaSGeneratedFilesExpiryTime );
 		setORMSearchIndexDirectory( thisConfig[ 16 ].ORMSearchIndexDirectory );
 		setGoogleMapKey( thisConfig[ 16 ].googleMapKey );
 		setServerCFCEenabled( thisConfig[ 16 ].enableServerCFC );
 		setServerCFC( thisConfig[ 16 ].serverCFC );
-		setCompileExtForCFInclude( thisConfig[ 16 ].compileextforinclude );
+		
+		// This setting CF11+
+		if( !isNull( thisConfig[ 16 ].compileextforinclude ) ) { setCompileExtForCFInclude( thisConfig[ 16 ].compileextforinclude ); }
+		
 		setSessionCookieTimeout( thisConfig[ 16 ].sessionCookieTimeout );
 		setSessionCookieHTTPOnly( thisConfig[ 16 ].httpOnlySessionCookie );
 		setSessionCookieSecure( thisConfig[ 16 ].secureSessionCookie );

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+    <update autocheck="false" checkinterval="10" checkperiodically="false">
+        <url>
+            http://www.adobe.com/go/coldfusion-updates
+        </url>
+		<defaulturl>http://www.adobe.com/go/coldfusion-updates</defaulturl>
+        <notification>
+            <emaillist/>
+        </notification>
+    </update>
+</settings>
