@@ -661,8 +661,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	private function ensureSeedProperties( required string seedPropertiesPath ) {
 		if( !fileExists( seedPropertiesPath ) ) {
 			wirebox.getInstance( 'propertyFile@propertyFile' )
-				.set( 'seed', left( createUUID(), 24 ) )
-				.set( 'algorithm', 'DESede' )
+				// Take the first 16 alphanumeric characters of a UUID.
+				.set( 'seed', left( replace( createUUID(), '-', '', 'all' ), 16 ) )
+				.set( 'algorithm', 'AES/CBC/PKCS5Padding' )
 				.store( seedPropertiesPath );
 		}
 		
