@@ -1,0 +1,8 @@
+{
+    "app":{
+        "serverConfigDir":"serverHome/",
+        "webConfigDir":"webHome/",
+        "cfengine":"lucee@4"
+    },
+    "name":"cfconfiglucee4"
+}

@@ -1,0 +1,9 @@
+{
+    "app":{
+        "cfengine":"adobe@9",
+        "serverHomeDirectory":"serverHome"
+    },
+    "web":{
+        "host":"adobe9cfconfig.local"
+    }
+}

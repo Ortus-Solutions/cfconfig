@@ -1,0 +1,10 @@
+{
+    "app":{
+        "serverHomeDirectory":"serverHome",
+        "cfengine":"adobe@11"
+    },
+    "name":"cfconfigadobe11",
+    "web":{
+        "host":"cfconfigadobe11.local"
+    }
+}

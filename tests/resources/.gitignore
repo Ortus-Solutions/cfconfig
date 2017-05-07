@@ -9,3 +9,4 @@
 !**/lib/password.properties
 !**/bin/cf-init.sh
 !.CFConfig.json
+!**/server.json
