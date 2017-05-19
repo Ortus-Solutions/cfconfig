@@ -299,6 +299,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setCFHomePath( arguments.CFHomePath ?: getCFHomePath() );
 		var thisCFHomePath = getCFHomePath();
 		
+		// Check to see if this mapping exists so we are compat with older versions of CommandBox
+		if( wirebox.getBinder().mappingExists( 'SystemSettings' ) ) {
+			var systemSettings = wirebox.getInstance( 'SystemSettings' );
+			// Swap out stuff like ${foo}
+			setMemento( systemSettings.expandDeepSystemSettings( getMemento() ) );	
+		}
+		
 		if( !len( thisCFHomePath ) ) {
 			throw 'No CF home specified to write to';
 		}
