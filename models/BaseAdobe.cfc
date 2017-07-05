@@ -339,7 +339,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSessionMaximumTimeout() ) ) { thisConfig[ 7 ].session.maximum_timeout = getSessionMaximumTimeout(); }
 		if( !isNull( getSessionType() ) ) { thisConfig[ 7 ].session.usej2eesession = ( getSessionType() == 'j2ee' ); }
 
-		if( !isNull( getApplicationMangement() ) ) { thisConfig[ 7 ].application.enable = getApplicationMangement(); }
+		if( !isNull( getApplicationMangement() ) ) { thisConfig[ 7 ].application.enable = ( getApplicationMangement() ? true : false ); }
 		if( !isNull( getApplicationTimeout() ) ) { thisConfig[ 7 ].application.timeout = getApplicationTimeout(); }
 		if( !isNull( getApplicationMaximumTimeout() ) ) { thisConfig[ 7 ].application.maximum_timeout = getApplicationMaximumTimeout(); }
 		
@@ -364,7 +364,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			}
 		}
 		
-		if( !isNull( getRequestTimeoutEnabled() ) ) { thisConfig[ 10 ].timeoutRequests = getRequestTimeoutEnabled(); }
+		if( !isNull( getRequestTimeoutEnabled() ) ) { thisConfig[ 10 ].timeoutRequests = ( getRequestTimeoutEnabled() ? true : false ); }
 		if( !isNull( getRequestTimeout() ) ) {
 			// Convert from timepsan to seconds
 			var rt = getRequestTimeout();
@@ -376,8 +376,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getPostSizeLimit() ) ) { thisConfig[ 10 ].postSizeLimit = getPostSizeLimit(); }
 		
 		if( !isNull( getTemplateCacheSize() ) ) { thisConfig[ 11 ].templateCacheSize = getTemplateCacheSize(); }
-		if( !isNull( getSaveClassFiles() ) ) { thisConfig[ 11 ].saveClassFiles = getSaveClassFiles(); }
-		if( !isNull( getComponentCacheEnabled() ) ) { thisConfig[ 11 ].componentCacheEnabled = getComponentCacheEnabled(); }
+		if( !isNull( getSaveClassFiles() ) ) { thisConfig[ 11 ].saveClassFiles = ( getSaveClassFiles() ? true : false ); }
+		if( !isNull( getComponentCacheEnabled() ) ) { thisConfig[ 11 ].componentCacheEnabled = ( getComponentCacheEnabled() ? true : false ); }
 		
 		if( !isNull( getInspectTemplate() ) ) {
 			
@@ -418,31 +418,31 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 		
 		
-		if( !isNull( getPerAppSettingsEnabled() ) ) { thisConfig[ 16 ].isPerAppSettingsEnabled = getPerAppSettingsEnabled(); }
+		if( !isNull( getPerAppSettingsEnabled() ) ) { thisConfig[ 16 ].isPerAppSettingsEnabled = ( getPerAppSettingsEnabled() ? true : false ); }
 		// Adobe stores the inverse of Lucee
-		if( !isNull( getUDFTypeChecking() ) ) { thisConfig[ 16 ].cfcTypeCheckEnabled = !getUDFTypeChecking(); }
-		if( !isNull( getDisableInternalCFJavaComponents() ) ) { thisConfig[ 16 ].disableServiceFactory = getDisableInternalCFJavaComponents(); }
+		if( !isNull( getUDFTypeChecking() ) ) { thisConfig[ 16 ].cfcTypeCheckEnabled = ( getUDFTypeChecking() ? false : true ); }
+		if( !isNull( getDisableInternalCFJavaComponents() ) ) { thisConfig[ 16 ].disableServiceFactory = ( getDisableInternalCFJavaComponents() ? true : false ); }
 		// Lucee and Adobe store opposite value
 		if( !isNull( getDotNotationUpperCase() ) ) { thisConfig[ 16 ].preserveCaseForSerialize = ( getDotNotationUpperCase() ? true : false ); }
-		if( !isNull( getSecureJSON() ) ) { thisConfig[ 16 ].secureJSON = getSecureJSON(); }
+		if( !isNull( getSecureJSON() ) ) { thisConfig[ 16 ].secureJSON = ( getSecureJSON() ? true : false ); }
 		if( !isNull( getSecureJSONPrefix() ) ) { thisConfig[ 16 ].secureJSONPrefix = getSecureJSONPrefix(); }
 		if( !isNull( getMaxOutputBufferSize() ) ) { thisConfig[ 16 ].maxOutputBufferSize = getMaxOutputBufferSize(); }
-		if( !isNull( getInMemoryFileSystemEnabled() ) ) { thisConfig[ 16 ].enableInMemoryFileSystem = getInMemoryFileSystemEnabled(); }
+		if( !isNull( getInMemoryFileSystemEnabled() ) ) { thisConfig[ 16 ].enableInMemoryFileSystem = ( getInMemoryFileSystemEnabled() ? true : false ); }
 		if( !isNull( getInMemoryFileSystemLimit() ) ) { thisConfig[ 16 ].inMemoryFileSystemLimit = getInMemoryFileSystemLimit(); }
 		if( !isNull( getInMemoryFileSystemAppLimit() ) ) { thisConfig[ 16 ].inMemoryFileSystemAppLimit = getInMemoryFileSystemAppLimit(); }
-		if( !isNull( getAllowExtraAttributesInAttrColl() ) ) { thisConfig[ 16 ].allowExtraAttributesInAttrColl = getAllowExtraAttributesInAttrColl(); }
-		if( !isNull( getDisallowUnamedAppScope() ) ) { thisConfig[ 16 ].dumpunnamedappscope = getDisallowUnamedAppScope(); }
-		if( !isNull( getAllowApplicationVarsInServletContext() ) ) { thisConfig[ 16 ].allowappvarincontext = getAllowApplicationVarsInServletContext(); }
+		if( !isNull( getAllowExtraAttributesInAttrColl() ) ) { thisConfig[ 16 ].allowExtraAttributesInAttrColl = ( getAllowExtraAttributesInAttrColl() ? true : false ); }
+		if( !isNull( getDisallowUnamedAppScope() ) ) { thisConfig[ 16 ].dumpunnamedappscope = ( getDisallowUnamedAppScope() ? true : false ); }
+		if( !isNull( getAllowApplicationVarsInServletContext() ) ) { thisConfig[ 16 ].allowappvarincontext = ( getAllowApplicationVarsInServletContext() ? true : false ); }
 		if( !isNull( getCFaaSGeneratedFilesExpiryTime() ) ) { thisConfig[ 16 ].CFaaSGeneratedFilesExpiryTime = getCFaaSGeneratedFilesExpiryTime(); }
 		if( !isNull( getORMSearchIndexDirectory() ) ) { thisConfig[ 16 ].ORMSearchIndexDirectory = getORMSearchIndexDirectory(); }
 		if( !isNull( getGoogleMapKey() ) ) { thisConfig[ 16 ].googleMapKey = getGoogleMapKey(); }
-		if( !isNull( getServerCFCEenabled() ) ) { thisConfig[ 16 ].enableServerCFC = getServerCFCEenabled(); }
+		if( !isNull( getServerCFCEenabled() ) ) { thisConfig[ 16 ].enableServerCFC = ( getServerCFCEenabled() ? true : false ); }
 		if( !isNull( getServerCFC() ) ) { thisConfig[ 16 ].serverCFC = getServerCFC(); }
 		if( !isNull( getCompileExtForCFInclude() ) ) { thisConfig[ 16 ].compileextforinclude = getCompileExtForCFInclude(); }
 		if( !isNull( getSessionCookieTimeout() ) ) { thisConfig[ 16 ].sessionCookieTimeout = getSessionCookieTimeout(); }
-		if( !isNull( getSessionCookieHTTPOnly() ) ) { thisConfig[ 16 ].httpOnlySessionCookie = getSessionCookieHTTPOnly(); }
-		if( !isNull( getSessionCookieSecure() ) ) { thisConfig[ 16 ].secureSessionCookie = getSessionCookieSecure(); }
-		if( !isNull( getSessionCookieDisableUpdate() ) ) { thisConfig[ 16 ].internalCookiesDisableUpdate = getSessionCookieDisableUpdate(); }
+		if( !isNull( getSessionCookieHTTPOnly() ) ) { thisConfig[ 16 ].httpOnlySessionCookie = ( getSessionCookieHTTPOnly() ? true : false ); }
+		if( !isNull( getSessionCookieSecure() ) ) { thisConfig[ 16 ].secureSessionCookie = ( getSessionCookieSecure() ? true : false ); }
+		if( !isNull( getSessionCookieDisableUpdate() ) ) { thisConfig[ 16 ].internalCookiesDisableUpdate = ( getSessionCookieDisableUpdate() ? true : false ); }
 		
 		if( !isNull( getApplicationMode() ) ) {
 			
