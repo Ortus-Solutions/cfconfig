@@ -632,6 +632,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			
 			if( !isNull( getAdminRDSPassword() ) ) { propertyFile[ 'rdspassword' ] = getAdminRDSPassword(); }
 			
+			// CF will get angry if there's no rds password set, so make up one if we have to.
+			if( !propertyFile.exists( 'rdspassword' ) ) {
+				propertyFile[ 'rdspassword' ] = createUUID();
+			}
+			
 			propertyFile.store( configFilePath );
 			
 		} else if( !isNull( getACF11Password() ) ) {
@@ -640,6 +645,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			
 			if( !isNull( getACF11RDSPassword() ) ) { propertyFile[ 'rdspassword' ] = getACF11RDSPassword(); }
 			
+			// CF will get angry if there's no rds password set, so make up one if we have to.
+			if( !propertyFile.exists( 'rdspassword' ) ) {
+				propertyFile[ 'rdspassword' ] = createUUID();
+			}
+						
 			propertyFile.store( configFilePath );
 		}
 		
