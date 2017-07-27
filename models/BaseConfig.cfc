@@ -164,7 +164,7 @@ component accessors=true {
 	// Number of seconds to wait for mail server response
 	property name='mailConnectionTimeout' type='numeric' _isCFConfig=true;
 	// True/false to allow downloading attachments for undelivered emails
-	property name='mailDownloadUndeliveredAttachments' type='numeric' _isCFConfig=true;
+	property name='mailDownloadUndeliveredAttachments' type='boolean' _isCFConfig=true;
 	// Sign messages with cert
 	property name='mailSignMesssage' type='boolean' _isCFConfig=true;
 	// Path to keystore
