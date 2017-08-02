@@ -18,7 +18,7 @@ component accessors=true extends='cfconfig-services.models.BaseLucee' {
 		super.init();
 		
 		// Used when writing out a Lucee server context config file from the generic config
-		setConfigFileTemplate( expandPath( '/resources/lucee5/lucee-server-base.xml' ) );
+		setConfigFileTemplate( expandPath( '/cfconfig-services/resources/lucee5/lucee-server-base.xml' ) );
 		
 		// This is the file name used by this config file
 		setConfigFileName( 'lucee-server.xml' );
