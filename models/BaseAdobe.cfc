@@ -483,7 +483,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var thisConfig = readWDDXConfigFile( getClientStoreConfigTemplate() );
 		}
 				
-		if( !isNull( getUseUUIDForCFToken() ) ) { thisConfig[ 2 ].uuidToken = getUseUUIDForCFToken(); }
+		if( !isNull( getUseUUIDForCFToken() ) ) { thisConfig[ 2 ].uuidToken = ( getUseUUIDForCFToken() ? true : false ); }
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
 	}
