@@ -465,8 +465,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				
 		}
 						
-		if( !isNull( getSessionCookieDisableUpdate() ) ) { thisConfig[ 18 ][ 'throttle-threshold' ] = getThrottleThreshold(); }
-		if( !isNull( getTotalThrottleMemory() ) ) { thisConfig[ 18 ][ 'total-throttle-memory' ] = getTotalThrottleMemory(); }
+		if( !isNull( getSessionCookieDisableUpdate() ) ) { thisConfig[ 18 ][ 'throttle-threshold' ] = getThrottleThreshold()+0; }
+		if( !isNull( getTotalThrottleMemory() ) ) { thisConfig[ 18 ][ 'total-throttle-memory' ] = getTotalThrottleMemory()+0; }
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
 		
