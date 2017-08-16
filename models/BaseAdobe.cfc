@@ -239,8 +239,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			
 			addDatasource(
 				name = datasource,
-				// TODO:  Turn ds.alter, ds.create, ds.drop, ds.grant, etc, etc into bitmask
-				//allow = '',
+				allow = DSNUtil.translatePermissionsToBitMask( ds ),
 				// Invert logic
 				blob = !ds.disable_blob,	
 				class = ds.class,
@@ -258,7 +257,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				password = passwordManager.decryptDataSource( ds.password ),
 				port = ds.urlmap.port,
 				username = ds.username,
-				validate = ds.validateConnection
+				validate = ds.validateConnection,
+				SID = ds.urlmap.SID ?: ''
 			);
 		}
 	}
@@ -611,6 +611,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			}
 			if( !isNull( incomingDS.username ) ) { savingDS.username = incomingDS.username; }
 			if( !isNull( incomingDS.validate ) ) { savingDS.validateConnection = incomingDS.validate; }
+			if( !isNull( incomingDS.SID ) ) {
+				savingDS.urlmap.SID = incomingDS.SID;
+				savingDS.urlmap.connectionprops.SID = incomingDS.SID;
+			}
+			// Important to default to empty string which will default everything to "on".
+			// Defailting to something like 0 would turn everything off!
+			var thisAllow = DSNUtil.translateBitMaskToPermissions( incomingDS.allow ?: '' );
+			// Merge permission flags into ds struct
+			savingDS.append( thisAllow, true );
+			
 		}
 		
 		writeWDDXConfigFile( thisConfig, configFilePath );	

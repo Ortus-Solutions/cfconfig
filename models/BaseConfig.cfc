@@ -391,6 +391,21 @@ component accessors=true {
 	* @storage True/False use this datasource as client/session storage (Lucee)
 	* @username Username to connect with
 	* @validate Validate this datasource connectin every time it's used?
+	* @SID Used for Oracle datasources
+	* 
+	* Allow parameter expects an integer bitmask where the bits in the mask (starting with zero) are:
+	* 0 Select (1)
+	* 1 delete (2)
+	* 2 update (4)
+	* 3 insert (8)
+	* 4 create (16)
+	* 5 grant (32)
+	* 6 revoke (64)
+	* 7 drop (128)
+	* 8 alter (256)
+	* 9 Stored procs (512)
+	*
+	* So a datasource that allows you to select, update, and insert would have a value of 1+4+8, or 13.
 	*/
 	function addDatasource(
 			required string name,
@@ -410,9 +425,9 @@ component accessors=true {
 			string port,
 			boolean storage,
 			string username,
-			boolean validate
+			boolean validate,
+			string SID
 		) {
-			
 		var ds = {};
 		if( !isNull( database ) ) { ds[ 'database' ] = database; };
 		if( !isNull( allow ) ) { ds[ 'allow' ] = allow; };
@@ -431,6 +446,7 @@ component accessors=true {
 		if( !isNull( storage ) ) { ds[ 'storage' ] = storage; };
 		if( !isNull( username ) ) { ds[ 'username' ] = username; };
 		if( !isNull( validate ) ) { ds[ 'validate' ] = validate; };
+		if( !isNull( SID ) ) { ds[ 'SID' ] = SID; };
 		
 		var thisDatasources = getDataSources() ?: {};
 		thisDatasources[ arguments.name ] = ds; 
