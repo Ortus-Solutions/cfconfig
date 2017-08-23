@@ -143,6 +143,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var passwordManager = getLuceePasswordManager();
 		for( var ds in datasources.XMLChildren ) {
 			var params = structNew().append( ds.XMLAttributes );
+			var permissions = translateBitMaskToPermissions( params.allow ?: '' );
+			params.append( permissions ); 
+			
 			// Decrypt datasource password 
 			if( !isNull( params.password ) ) {  
 				params.password = passwordManager.decryptDataSource( replaceNoCase( params.password, 'encrypted:', '' ) );
@@ -467,7 +470,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			// Populate XML node
 			DSXMLNode.XMLAttributes[ 'name' ] = DSName;
 			if( !isNull( DSStruct.database ) ) { DSXMLNode.XMLAttributes[ 'database' ] = DSStruct.database; }
-			if( !isNull( DSStruct.allow ) ) { DSXMLNode.XMLAttributes[ 'allow' ] = DSStruct.allow; }
+			DSXMLNode.XMLAttributes[ 'allow' ] = translatePermissionsToBitMask( DSStruct );
 			if( !isNull( DSStruct.blob ) ) { DSXMLNode.XMLAttributes[ 'blob' ] = DSStruct.blob; }
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'class' ] = translateDatasourceClassToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.class ?: '' );
@@ -837,6 +840,72 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return arguments.JDBCUrl;
 		}
 	
+	}
+	
+	/**
+	* 0 Select 1
+	* 1 delete 2
+	* 2 update 4
+	* 3 insert 8
+	* 4 create 16
+	* 5 grant 32
+	* 6 revoke 64
+	* 7 drop 128
+	* 8 alter 256
+	* 9 Stored procs 512
+	*/
+	private function translatePermissionsToBitMask( required struct ds ) {
+		var bitMask = 0;
+	
+	    if( ds.allowSelect ?: true ) { bitMask = bitMaskSet( bitMask, 1, 0, 1 ); }
+	    if( ds.allowDelete ?: true ) { bitMask = bitMaskSet( bitMask, 1, 1, 1 ); }
+	    if( ds.allowUpdate ?: true ) { bitMask = bitMaskSet( bitMask, 1, 2, 1 ); }
+	    if( ds.allowInsert ?: true ) { bitMask = bitMaskSet( bitMask, 1, 3, 1 ); }
+	    if( ds.allowCreate ?: true ) { bitMask = bitMaskSet( bitMask, 1, 4, 1 ); }
+	    if( ds.allowGrant ?: true ) { bitMask = bitMaskSet( bitMask, 1, 5, 1 ); }
+	    if( ds.allowRevoke ?: true ) { bitMask = bitMaskSet( bitMask, 1, 6, 1 ); }
+	    if( ds.allowDrop ?: true ) { bitMask = bitMaskSet( bitMask, 1, 7, 1 ); }
+	    if( ds.allowAlter ?: true ) { bitMask = bitMaskSet( bitMask, 1, 8, 1 ); }
+	    // Lucee doesn't support stored proc
+	    // if( ds.allowStoredproc ?: true ) { bitMask = bitMaskSet( bitMask, 1, 9, 1 ); }
+	    	
+	    return bitMask;		    
+	}
+	
+	private function translateBitMaskToPermissions( required bitMask ) {
+		// Defaulting to true and then turning off in case a datasource doesn't have anything stored for
+		// "allow", this will give the default behavior.  
+		var ds = {
+			'allowSelect' = true,
+		    'allowDelete' = true,
+		    'allowUpdate' = true,
+		    'allowInsert' = true,
+		    'allowCreate' = true,
+		    'allowGrant' = true,
+		    'allowRevoke' = true,
+		    'allowDrop' = true,
+		    'allowAlter' = true,
+		    'allowStoredproc' = true
+		  };
+		
+		// If there's no setting, just assume it's all "on".
+		if( bitMask == '' ) {
+			return ds;
+		}
+	
+		if( !bitMaskRead( bitMask, 0, 1 ) ) { ds.allowSelect = false; }
+	    if( !bitMaskRead( bitMask, 1, 1 ) ) { ds.allowDelete = false; }
+	    if( !bitMaskRead( bitMask, 2, 1 ) ) { ds.allowUpdate = false; }
+	    if( !bitMaskRead( bitMask, 3, 1 ) ) { ds.allowInsert = false; }
+	    if( !bitMaskRead( bitMask, 4, 1 ) ) { ds.allowCreate = false; }
+	    if( !bitMaskRead( bitMask, 5, 1 ) ) { ds.allowGrant = false; }
+	    if( !bitMaskRead( bitMask, 6, 1 ) ) { ds.allowRevoke = false; }
+	    if( !bitMaskRead( bitMask, 7, 1 ) ) { ds.allowDrop = false; }
+	    if( !bitMaskRead( bitMask, 8, 1 ) ) { ds.allowAlter = false; }
+	    // Lucee doesn't support stored proc
+	    // if( !bitMaskRead( bitMask, 9, 1 ) ) { ds.allowStoredproc = false; }
+	    
+	    return ds;		    
 	}
 	
 }
