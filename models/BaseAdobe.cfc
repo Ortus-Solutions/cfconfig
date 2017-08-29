@@ -413,16 +413,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			
 			switch( getInspectTemplate() ) {
 				case 'never' :
-					thisConfig[ 11 ].trustedCacheEnabled = false;
-					thisConfig[ 11 ].inRequestTemplateCacheEnabled = false;
+					thisConfig[ 11 ].trustedCacheEnabled = true;
+					thisConfig[ 11 ].inRequestTemplateCacheEnabled = true;
 					break;
 				case 'once' :
 					thisConfig[ 11 ].trustedCacheEnabled = false;
 					thisConfig[ 11 ].inRequestTemplateCacheEnabled = true;
 					break;
 				case 'always' :
-					thisConfig[ 11 ].trustedCacheEnabled = true;
-					thisConfig[ 11 ].inRequestTemplateCacheEnabled = true;
+					thisConfig[ 11 ].trustedCacheEnabled = false;
+					thisConfig[ 11 ].inRequestTemplateCacheEnabled = false;
 			}
 			
 		}
