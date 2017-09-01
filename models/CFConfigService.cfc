@@ -238,28 +238,30 @@ component accessors=true singleton {
 		required array configProps,
 		required array ignoredKeys,
 		string prefix='' ) {
-			
+		 var somethingWasDirty = false;
+		 
 		 for( var prop in configProps ) {
 		 	var row = getDefaultRow( prefix & prop );
 		 	
-			compareValues(
-				row,
-				fromData,
-				toData,
-				prop,
-				isSimpleValue( fromData[ prop ] ?: '' ) ? fromData[ prop ] ?: '' : prop,
-				isSimpleValue( toData[ prop ] ?: '' ) ? toData[ prop ] ?: '' : prop
-			);
-		 	
 		 	// All keys are processed (and potentialy recursed into), but ignored ones aren't added to the query
 		 	if( !ignoredKeys.findNoCase( prop ) ) {
-		 		qryResult.addRow( row );
+		 		
+				var tmp = compareValues(
+					row,
+					fromData,
+					toData,
+					prop,
+					isSimpleValue( fromData[ prop ] ?: '' ) ? fromData[ prop ] ?: '' : prop,
+					isSimpleValue( toData[ prop ] ?: '' ) ? toData[ prop ] ?: '' : prop
+				);
+				somethingWasDirty = somethingWasDirty || tmp;
+			 	
 		 	}
 		 	
 		 	// If this was a struct, compare its sub-members
 		 	if(  (!isNull( toData[ prop ] ) && isStruct( toData[ prop ] ) )
 		 		|| (!isNull( fromData[ prop ] ) && isStruct( fromData[ prop ] ) ) ) {
-		 	
+		 			 		
 		 		// Prepare the new from and to structs
 				var fromValue = fromData[ prop ] ?: {};
 				var toValue = toData[ prop ] ?: {};
@@ -268,12 +270,24 @@ component accessors=true singleton {
 				var combinedProps = {}.append( fromValue ).append( toValue ).keyArray();
 				
 				// Call back to myself.  This will add another record to the query for each key in these nested structs
-				compareStructs( qryResult, fromValue, toValue, combinedProps, [], prefix & prop & '-' );		
-	 		}
-	 		
-		 	// If this was an array (datasource), compare its sub-members
-		 	if(  (!isNull( toData[ prop ] ) && isArray( toData[ prop ] ) )
+				var tmp = compareStructs( qryResult, fromValue, toValue, combinedProps, [], prefix & prop & '-' );
+				somethingWasDirty = somethingWasDirty || tmp;
+				
+				if( somethingWasDirty ) {
+					row.valuesMatch = 0;
+					row.valuesDiffer = 1;
+				}
+		 		if( !ignoredKeys.findNoCase( prop ) ) {
+		 			qryResult.addRow( row );
+		 		}
+			
+		 	// If this was an array (datasource), compare its sub-members		
+	 		} else if(  (!isNull( toData[ prop ] ) && isArray( toData[ prop ] ) )
 		 		|| (!isNull( fromData[ prop ] ) && isArray( fromData[ prop ] ) ) ) {
+		 		
+		 		if( !ignoredKeys.findNoCase( prop ) ) {
+		 			qryResult.addRow( row );
+		 		}
 		 	
 		 		// Prepare the new from and to structs
 				var fromArr = fromData[ prop ] ?: [];
@@ -287,7 +301,7 @@ component accessors=true singleton {
 					
 					// Add a record for the entire mail server
 				 	var row = getDefaultRow( '#prop#-#i#' );
-					compareValues(
+					somethingWasDirty = compareValues(
 						row,
 						fromArr,
 						toArr,
@@ -303,12 +317,17 @@ component accessors=true singleton {
 					var combinedProps = {}.append( fromStruct ).append( toStruct ).keyArray();
 					
 					// Call back to myself.  This will add another record to the query for each key in these nested structs
-					compareStructs( qryResult, fromStruct, toStruct, combinedProps, [], '#prop#-#i#-' );
+					var tmp = compareStructs( qryResult, fromStruct, toStruct, combinedProps, [], '#prop#-#i#-' );
+					somethingWasDirty = somethingWasDirty || tmp;
+					
 				}
 					
-	 		} // end is array check
+	 		} else if( !ignoredKeys.findNoCase( prop ) ) {					
+				qryResult.addRow( row );					
+			} // end is array check
 		 	
 		 } // end while loop over properties
+		 return somethingWasDirty;
 	} // end function
 	
 	// Breaking this our for re-use and to keep function size down
@@ -320,10 +339,12 @@ component accessors=true singleton {
 		required string fromName,
 		required string toName
 	 ) {
+	 	var somethingWasDirty = true;
 		 	
 	 	// Doesn't exist in either.
 	 	if( isNull( fromData[ prop ] ) && isNull( toData[ prop ] ) ) {
 	 		row.bothEmpty = 1;
+	 		somethingWasDirty = true;
 	 	// Exists in both
 	 	} else if( !isNull( fromData[ prop ] ) && !isNull( toData[ prop ] ) ) {
 	 		row.bothPopulated = 1;
@@ -331,13 +352,18 @@ component accessors=true singleton {
 		 	row.fromValue = fromName;
 		 	row.toValue = toName;
 		 	
-		 	// TODO: find better way to do deep compare.  serializeJSON may not have the same 
-		 	// result on ACF since structs aren't ordered by default
-		 	if( serializeJSON( fromData[ prop ] ) == serializeJSON( toData[ prop ] ) ) {
-		 		row.valuesMatch = 1;
-		 	} else {
-		 		row.valuesDiffer = 1;
-		 	}
+			if( isSimpleValue( fromData[ prop ] ) && isSimpleValue( toData[ prop ] ) ) {
+			 	if( fromData[ prop ] == toData[ prop ] ) {
+			 		row.valuesMatch = 1;
+	 				somethingWasDirty = false;
+			 	} else {
+			 		row.valuesDiffer = 1;
+			 	}
+			 } else {
+			 	// For complex values, this will be set "for real" after we've recursed into them
+			 	row.valuesMatch = 1;
+ 				somethingWasDirty = false;
+			 }
 		// From only
 	 	} else if( !isNull( fromData[ prop ] ) ) {
 	 		// if the value isn't simple, just add the property name instead ( mapping or datasource names)
@@ -349,6 +375,7 @@ component accessors=true singleton {
 		 	row.toValue = toName;
 	 		row.toOnly = 1;	
 	 	}
+	 	return somethingWasDirty;
 	}
 
 	// A quick closure to return a fresh struct when we need it.
