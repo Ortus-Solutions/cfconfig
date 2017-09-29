@@ -1,0 +1,10 @@
+{
+    "web":{
+        "host":"adobe2018cfconfig.local"
+    },
+    "app":{
+        "serverHomeDirectory":"serverHome",
+        "cfengine":"@ortus/adobe-aether@2018"
+    },
+    "name":"cfconfigadobe2018"
+}

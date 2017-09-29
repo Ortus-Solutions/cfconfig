@@ -3,10 +3,10 @@
   <data>
     <struct type="coldfusion.server.ConfigMap">
       <var name="watch.watchEnabled">
-        <boolean value="false"/>
+        <boolean value="true"/>
       </var>
       <var name="watch.interval">
-        <number>120.0</number>
+        <number>6.0</number>
       </var>
       <var name="watch.extensions">
         <string>xml,properties</string>

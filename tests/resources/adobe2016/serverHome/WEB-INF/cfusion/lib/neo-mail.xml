@@ -2,17 +2,17 @@
   <header/>
   <data>
     <struct type="coldfusion.server.ConfigMap">
-      <var name="undeliverdir">
-        <string>{neo.rootdir}/Mail/Undelivr</string>
-      </var>
       <var name="USETLS">
         <boolean value="false"/>
       </var>
-      <var name="mailsentloggingenable">
-        <boolean value="false"/>
+      <var name="undeliverdir">
+        <string>{neo.rootdir}/Mail/Undelivr</string>
       </var>
       <var name="server">
         <string>smptout.secureserver.net</string>
+      </var>
+      <var name="mailsentloggingenable">
+        <boolean value="false"/>
       </var>
       <var name="spooldir">
         <string>{neo.rootdir}/Mail/Spool</string>
@@ -23,11 +23,11 @@
       <var name="schedule">
         <number>15.0</number>
       </var>
-      <var name="PASSWORD">
-        <string>GNUYZLAVYcjAU/0XoYqqvoBWZ2VCR43iKcgjovxvue4=</string>
-      </var>
       <var name="USESSL">
         <boolean value="false"/>
+      </var>
+      <var name="PASSWORD">
+        <string>2Bl1lj9e0SsvJWlY1rSuwtfTdWhmev5gGhImSlmcjN8=</string>
       </var>
       <var name="port">
         <number>587.0</number>
