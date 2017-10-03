@@ -342,12 +342,14 @@ component accessors=true {
 	* 
 	* @name name of the cache to save or update
 	* @class Java class of implementing provider
+	* @type The type of cache. This is a shortcut for providing the "class" parameter. Values "ram", and "ehcache".
 	* @readOnly No idea what this does
 	* @storage Is this cache used for session or client scope storage?
 	* @custom A struct of settings that are meaningful to this cache provider.
 	*/
 	function addCache(
 		required string name,
+		string type,
 		string class,
 		boolean readOnly,
 		boolean storage,
@@ -355,12 +357,13 @@ component accessors=true {
 	) {
 		var cacheConnection = {};
 		if( !isNull( class ) ) { cacheConnection[ 'class' ] = class; };
+		if( !isNull( type ) ) { cacheConnection[ 'type' ] = type; };
 		if( !isNull( readOnly ) ) { cacheConnection[ 'readOnly' ] = readOnly; };
 		if( !isNull( storage ) ) { cacheConnection[ 'storage' ] = storage; };
 		if( !isNull( custom ) ) { cacheConnection[ 'custom' ] = custom; };
 		
 		var thisCaches = getCaches() ?: {};
-		thisCaches[ arguments.name ] = cacheConnection; 
+		thisCaches[ arguments.name ] = cacheConnection;
 		setCaches( thisCaches );
 		return this;	
 	}

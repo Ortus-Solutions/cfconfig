@@ -310,6 +310,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				params[ 'custom' ] = thisStruct;
 			}
 			
+			// If we have a class and we recognize it, generate the human-readable type
+			if( !isNull( params.class ) && translateCacheClassToType( params.class ).len() ) {
+				params.type = translateCacheClassToType( params.class );
+			}
+			
 			addCache( argumentCollection = params );
 		}
 					
@@ -676,7 +681,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 			// Populate XML node
 			cacheConnectionXMLNode.XMLAttributes[ 'name' ] = cacheName;
-			if( !isNull( cacheConnection.class ) ) { cacheConnectionXMLNode.XMLAttributes[ 'class' ] = cacheConnection.class; }
+			
+			if( !isNull( cacheConnection.class ) ) {
+				cacheConnectionXMLNode.XMLAttributes[ 'class' ] = cacheConnection.class;
+			// If there's no class and we have a type that looks familiar, create the class for them
+			} else if( !isNull( cacheConnection.type ) && translateCacheTypeToClass( cacheConnection.type ).len()  ) {
+				cacheConnectionXMLNode.XMLAttributes[ 'class' ] = translateCacheTypeToClass( cacheConnection.type );
+			}
+			
 			if( !isNull( cacheConnection.storage ) ) { cacheConnectionXMLNode.XMLAttributes[ 'storage' ] = cacheConnection.storage; }
 			if( !isNull( cacheConnection.readOnly ) ) { cacheConnectionXMLNode.XMLAttributes[ 'read-only' ] = cacheConnection.readOnly; }
 			if( !isNull( cacheConnection.custom ) && isStruct( cacheConnection.custom ) ) {
@@ -821,6 +833,32 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return 'org.gjt.mm.mysql.Driver';
 			default :
 				return arguments.className;
+		}
+	
+	}
+	
+	private function translateCacheTypeToClass( required string type ) {
+		
+		switch( type ) {
+			case 'ram' :
+				return 'lucee.runtime.cache.ram.RamCache';
+			case 'ehcache' :
+				return 'org.lucee.extension.cache.eh.EHCache';
+			default :
+				return '';
+		}
+	
+	}
+	
+	private function translateCacheClassToType( required string class ) {
+		
+		switch( class ) {
+			case 'lucee.runtime.cache.ram.RamCache' :
+				return 'RAM';
+			case 'org.lucee.extension.cache.eh.EHCache' :
+				return 'EHCache';
+			default :
+				return '';
 		}
 	
 	}
