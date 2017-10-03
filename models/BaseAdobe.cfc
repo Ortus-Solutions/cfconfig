@@ -219,8 +219,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			addMailServer(
 				smtp = thisConfig.server,
 				username = thisConfig.username ?: '',
-				password = ( thisConfig.password.len() ? passwordManager.decryptMailServer( thisConfig.password ) : '' ),
-				port = val( thisConfig.port ) ?: '0',
+				password = ( ( thisConfig.password ?: '' ).len() ? passwordManager.decryptMailServer( thisConfig.password ) : '' ),
+				port = val( thisConfig.port ?: '0' ),
 				SSL= thisConfig.useSSL ?: false,
 				TSL = thisConfig.useTLS ?: false		
 			);
