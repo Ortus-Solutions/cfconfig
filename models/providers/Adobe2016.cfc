@@ -19,8 +19,9 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setRuntimeConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-runtime.xml' ) );		
 		setClientStoreConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-clientstore.xml' ) );		
 		setWatchConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-watch.xml' ) );		
-		setMailConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-mail.xml' ) );		
+		setMailConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-mail.xml' ) );
 		setDatasourceConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-datasource.xml' ) );
+		setSecurityConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-security.xml' ) );		
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setLicensePropertiesTemplate( expandPath( '/cfconfig-services/resources/adobe2016/license.properties' ) );
 		setVersion( '2016' );

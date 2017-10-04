@@ -290,6 +290,8 @@ component accessors=true {
 	property name='adminPassword' type='string' _isCFConfig=true;
 	// Plain text admin RDS password
 	property name='adminRDSPassword' type='string' _isCFConfig=true;
+	// True/false is RDS enabled?
+	property name='adminRDSEnabled' type='boolean' _isCFConfig=true;
 	// Plain text default password for new Lucee web context
 	property name='adminPasswordDefault' type='string' _isCFConfig=true;
 	// hashed salted password for Lucee
@@ -302,6 +304,32 @@ component accessors=true {
 	property name='defaultHspw' type='string' _isCFConfig=true;
 	// hashed default password for new Lucee/Railo web context
 	property name='defaultPw' type='string' _isCFConfig=true;
+	
+	
+	// Password required for admin
+	property name='adminLoginRequired' type='boolean' _isCFConfig=true;
+	// Password required for RDS
+	property name='adminRDSLoginRequired' type='boolean' _isCFConfig=true;
+	// user ID required for admin login. False means just a password is required
+	property name='adminUserIDRequired' type='boolean' _isCFConfig=true;
+	// user ID required for RDS login. False means just a password is required
+	property name='adminRDSUserIDRequired' type='boolean' _isCFConfig=true;
+	// Default/root admin user ID
+	property name='adminRootUserID' type='string' _isCFConfig=true;
+	// Allow more than one user to be logged into the same userID at once in the admin
+	property name='adminAllowConcurrentLogin' type='boolean' _isCFConfig=true;
+	// Enable sandbox security
+	property name='sandboxEnabled' type='boolean' _isCFConfig=true;
+	// List of allowed IPs for exposed services.  Formatted like 1.2.3.4,5.6.7.*
+	property name='servicesAllowedIPList' type='string' _isCFConfig=true;
+	// List of allowed IPs for admin access.  Formatted like 1.2.3.4,5.6.7.*
+	property name='adminAllowedIPList' type='string' _isCFConfig=true;
+	// Enable secure profile.  Note, fipping this flag doesn't actually change any of the security settings.  It really just tracks the fact that you've enabled it at some point.
+	property name='secureProfileEnabled' type='boolean' _isCFConfig=true;
+	
+	
+	// TODO: adminUsers array (AuthorizedUsers)
+	// TODO: sandboxes (contexts)
 	
 	// License key (only used for Adobe)
 	property name='license' type='string' _isCFConfig=true;

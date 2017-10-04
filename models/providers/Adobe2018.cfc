@@ -21,6 +21,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setWatchConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2018/neo-watch.xml' ) );		
 		setMailConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2018/neo-mail.xml' ) );		
 		setDatasourceConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2018/neo-datasource.xml' ) );
+		setSecurityConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2018/neo-security.xml' ) );
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setLicensePropertiesTemplate( expandPath( '/cfconfig-services/resources/adobe2018/license.properties' ) );
 		setVersion( '2018' );

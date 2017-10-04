@@ -31,6 +31,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	property name='datasourceConfigPath' type='string';
 	property name='datasourceConfigTemplate' type='string';
 
+	property name='securityConfigPath' type='string';
+	property name='securityConfigTemplate' type='string';
+
 	// I'm basically always writing all properties in these two files, so not bothering with a template.
 	property name='seedPropertiesPath' type='string';
 	property name='passwordPropertiesPath' type='string';
@@ -50,6 +53,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setWatchConfigPath( '/lib/neo-watch.xml' );
 		setMailConfigPath( '/lib/neo-mail.xml' );
 		setDatasourceConfigPath( '/lib/neo-datasource.xml' );
+		setSecurityConfigPath( '/lib/neo-security.xml' );
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setPasswordPropertiesPath( '/lib/password.properties' );
 		setLicensePropertiesPath( '/lib/license.properties' );
@@ -84,6 +88,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readDatasource();
 		readAuth();
 		readLicense();
+		readSecurity();
 			
 		return this;
 	}
@@ -191,6 +196,23 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getClientStoreConfigPath(), '/' ) );
 				
 		setUseUUIDForCFToken( thisConfig[ 2 ].uuidToken );
+	}
+	
+	private function readSecurity() {
+		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSecurityConfigPath(), '/' ) );
+		
+		if( !isNull( thisConfig[ 'secureprofile.enabled' ] ) ) { setSecureProfileEnabled( thisConfig[ 'secureprofile.enabled' ] ); }
+		if( !isNull( thisConfig[ 'rds.security.enabled' ] ) ) { setAdminRDSEnabled( thisConfig[ 'rds.security.enabled' ] ); }
+		if( !isNull( thisConfig[ 'admin.userid.root.salt' ] ) ) { setAdminSalt( thisConfig[ 'admin.userid.root.salt' ] ); }
+		if( !isNull( thisConfig[ 'admin.security.enabled' ] ) ) { setAdminLoginRequired( thisConfig[ 'admin.security.enabled' ] ); }
+		if( !isNull( thisConfig[ 'admin.userid.required' ] ) ) { setAdminUserIDRequired( thisConfig[ 'admin.userid.required' ] ); }
+		if( !isNull( thisConfig[ 'admin.userid.root' ] ) ) { setAdminRootUserID( thisConfig[ 'admin.userid.root' ] ); }
+		if( !isNull( thisConfig[ 'allowconcurrentadminlogin' ] ) ) { setAdminAllowConcurrentLogin( thisConfig[ 'allowconcurrentadminlogin' ] ); }
+		if( !isNull( thisConfig[ 'sbs.security.enabled' ] ) ) { setSandboxEnabled( thisConfig[ 'sbs.security.enabled' ] ); }
+		if( !isNull( thisConfig[ 'allowedAdminIPList' ] ) ) { setAdminAllowedIPList( thisConfig[ 'allowedAdminIPList' ] ); }
+		if( !isNull( thisConfig[ 'allowedIPList' ] ) ) { setServicesAllowedIPList( thisConfig[ 'allowedIPList' ] ); }
+		if( !isNull( thisConfig[ 'rds.security.enabled' ] ) ) { setAdminRDSLoginRequired( thisConfig[ 'rds.security.enabled' ] ); }
+		if( !isNull( thisConfig[ 'rds.security.usesinglerdspassword' ] ) ) { setAdminRDSUserIDRequired( thisConfig[ 'rds.security.usesinglerdspassword' ] ); }
 	}
 	
 	private function readWatch() {
@@ -349,6 +371,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeDatasource();
 		writeAuth();
 		writeLicense();
+		writeSecurity();
 		
 		return this;
 	}
@@ -514,6 +537,33 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 				
 		if( !isNull( getUseUUIDForCFToken() ) ) { thisConfig[ 2 ].uuidToken = ( getUseUUIDForCFToken() ? true : false ); }
+
+		writeWDDXConfigFile( thisConfig, configFilePath );
+	}
+	
+	private function writeSecurity() {
+		var configFilePath = getCFHomePath().listAppend( getSecurityConfigPath(), '/' );
+		
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getSecurityConfigTemplate() );
+		}
+				
+		if( !isNull( getSecureProfileEnabled() ) ) { thisConfig[ 'secureprofile.enabled' ] = getSecureProfileEnabled(); }
+		if( !isNull( getAdminRDSEnabled() ) ) { thisConfig[ 'rds.security.enabled' ] = getAdminRDSEnabled(); }
+		if( !isNull( getAdminSalt() ) ) { thisConfig[ 'admin.userid.root.salt' ] = getAdminSalt(); }
+		if( !isNull( getAdminLoginRequired() ) ) { thisConfig[ 'admin.security.enabled' ] = getAdminLoginRequired(); }
+		if( !isNull( getAdminUserIDRequired() ) ) { thisConfig[ 'admin.userid.required' ] = getAdminUserIDRequired(); }
+		if( !isNull( getAdminRootUserID() ) ) { thisConfig[ 'admin.userid.root' ] = getAdminRootUserID(); }
+		if( !isNull( getAdminAllowConcurrentLogin() ) ) { thisConfig[ 'allowconcurrentadminlogin' ] = getAdminAllowConcurrentLogin(); }
+		if( !isNull( getSandboxEnabled() ) ) { thisConfig[ 'sbs.security.enabled' ] = getSandboxEnabled(); }
+		if( !isNull( getAdminAllowedIPList() ) ) { thisConfig[ 'allowedAdminIPList' ] = getAdminAllowedIPList(); }
+		if( !isNull( getServicesAllowedIPList() ) ) { thisConfig[ 'allowedIPList' ] = getServicesAllowedIPList(); }
+		if( !isNull( getAdminRDSLoginRequired() ) ) { thisConfig[ 'rds.security.enabled' ] = getAdminRDSLoginRequired(); }
+		if( !isNull( getAdminRDSUserIDRequired() ) ) { thisConfig[ 'rds.security.usesinglerdspassword' ] = getAdminRDSUserIDRequired(); }
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
 	}
@@ -776,6 +826,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// Work around Lucee bug:
 		// https://luceeserver.atlassian.net/browse/LDEV-1167
 		thisConfigRaw = reReplaceNoCase( thisConfigRaw, '\s*type=["'']coldfusion\.server\.ConfigMap["'']', '', 'all' );
+		thisConfigRaw = reReplaceNoCase( thisConfigRaw, '\s*type=["'']coldfusion\.util\.FastHashtable["'']', '', 'all' );
 		
 		wddx action='wddx2cfml' input=thisConfigRaw output='local.thisConfig';
 		return local.thisConfig;		
