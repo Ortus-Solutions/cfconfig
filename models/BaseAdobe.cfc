@@ -204,8 +204,29 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	private function readClientStore() {
 		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getClientStoreConfigPath(), '/' ) );
+		
+		if( isStruct( thisConfig[ 2 ] ) ) {
+			for( var storageLocationName in thisConfig[ 1 ] ) {
+				var thisStorageLocation = thisConfig[ 1 ][ storageLocationName ];
 				
+				var params = { name : storageLocationName };				
+				if( !isNull( thisStorageLocation.description ) ) { params[ 'description' ] = thisStorageLocation.description; }
+				if( !isNull( thisStorageLocation.disable_globals ) ) { params[ 'disableGlobals' ] = thisStorageLocation.disable_globals; }
+				if( !isNull( thisStorageLocation.purge ) ) { params[ 'purgeEnable' ] = thisStorageLocation.purge; }
+				if( !isNull( thisStorageLocation.timeout ) ) { params[ 'purgeTimeout' ] = thisStorageLocation.timeout; }
+				if( !isNull( thisStorageLocation.type ) ) { params[ 'type' ] = thisStorageLocation.type; }
+				if( !isNull( thisStorageLocation.DSN ) ) { params[ 'DSN' ] = thisStorageLocation.DSN; }
+					
+				addClientStorageLocation( argumentCollection = params );
+			}  
+		}
+		
+		setClientStorage( thisConfig[ 2 ].default );
 		setUseUUIDForCFToken( thisConfig[ 2 ].uuidToken );
+		if( !isNull( thisConfig[ 2 ][ 'PURGE_INTERVAL' ] ) ) {
+			// A colon-delimited list with 2 items representing hours and minutes. Ex: 1:7
+			setClientStoragePurgeInterval( ( thisConfig[ 2 ][ 'PURGE_INTERVAL' ].listFirst( ':' ) * 60 ) + thisConfig[ 2 ][ 'PURGE_INTERVAL' ].listLast( ':' ) );
+		}
 	}
 	
 	private function readSecurity() {
@@ -411,8 +432,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getMissingErrorTemplate() ) ) { thisConfig[ 8 ].missing_template = getMissingErrorTemplate(); }
 		if( !isNull( getGeneralErrorTemplate() ) ) { thisConfig[ 8 ].site_wide = getGeneralErrorTemplate(); }
 		
-		
-		
 		var ignoredMappings = [ '/CFIDE', '/gateway' ];
 		for( var thisMapping in thisConfig[ 9 ] ) {
 			if( !ignoredMappings.findNoCase( thisMapping ) ) {
@@ -556,9 +575,47 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		} else {
 			var thisConfig = readWDDXConfigFile( getClientStoreConfigTemplate() );
 		}
-				
+		
+		if( !isNull( getClientStorage() ) ) {
+			var thisClientStorage = getClientStorage();			
+			
+			// These Lucee values aren't valid on Adobe, so swap to Cookie instead
+			if( listFindNoCase( 'memory,file', thisClientStorage ) ) {
+				thisClientStorage = 'Cookie';
+			}
+			thisConfig[ 2 ].default = thisClientStorage;
+		}
 		if( !isNull( getUseUUIDForCFToken() ) ) { thisConfig[ 2 ].uuidToken = ( getUseUUIDForCFToken() ? true : false ); }
-
+		if( !isNull( getClientStoragePurgeInterval() ) ) {
+			// A colon-delimited list with 2 items representing hours and minutes. Ex: 1:7
+			thisConfig[ 2 ][ 'PURGE_INTERVAL' ] = int( getClientStoragePurgeInterval() / 60 ) & ':' & int( getClientStoragePurgeInterval() % 60 );
+		}
+		
+		// Clear out all storages locations excetor for these special ones that should always be there
+		var ignoredLocations = [ 'Registry', 'Cookie' ];
+		for( var thisLocation in thisConfig[ 1 ] ) {
+			if( !ignoredLocations.findNoCase( thisLocation ) ) {
+				structDelete( thisConfig[ 1 ], thisLocation );
+			}
+		}
+		
+		for( var storageLocation in getClientStorageLocations() ?: {} ) {
+			var thisLocation = getClientStorageLocations()[ storageLocation ];
+			var thisName = thisLocation[ 'name' ];
+			thisConfig[ 1 ][ storageLocation ] = {
+				'name' : thisName,
+				'description' : thisLocation[ 'description' ] ?: '',
+				'disable_globals' : !!( thisLocation[ 'disableGlobals' ] ?: false ),
+				'purge' : !!( thisLocation[ 'purgeEnable' ] ?: false ),
+				'timeout' : ( thisLocation[ 'purgeTimeout' ] ?: 90 )+0,
+				'type' : thisLocation[ 'type' ] ?: ( listFindNoCase( 'Cookie,Registry', thisName ) ? thisName : 'JDBC' )
+			};
+		}
+		
+		if( !isNull( thisLocation[ 'DSN' ] ) ) {
+			thisConfig[ 1 ][ storageLocation ][ 'DSN' ] = thisLocation[ 'DSN' ];
+		}
+		
 		writeWDDXConfigFile( thisConfig, configFilePath );
 	}
 	

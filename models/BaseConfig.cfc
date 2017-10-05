@@ -127,8 +127,16 @@ component accessors=true {
 	property name='clientTimeout' type='string' _isCFConfig=true;
 	// One of the strings "memory", "file", "cookie", <cache-name>, <datasource-name>
 	property name='sessionStorage' type='string' _isCFConfig=true;
-	// One of the strings "memory", "file", "cookie", <cache-name>, <datasource-name>
+	// One of the strings "memory", "file", "cookie", <cache-name>, <datasource-name>, "Registry"
 	property name='clientStorage' type='string' _isCFConfig=true;
+	// Number of minutes between client storage purge.  Not to be less tham 30 minutes.
+	property name='clientStoragePurgeInterval' type='numeric' _isCFConfig=true;
+	// A struct of valid client storage locations including registry, cookie, and any configured datasources. Only used by Adobe.
+	property name='clientStorageLocations' type='struct' _isCFConfig=true;
+	// TODO: Add functions/commands to manage this manually.
+	
+	
+	
 	// Timespan Ex: 0,5,30,0
 	property name='requestTimeout' type='string' _isCFConfig=true;
 	// True/false
@@ -612,6 +620,42 @@ component accessors=true {
 		var thisMailServers = getMailServers() ?: [];
 		thisMailServers.append( mailServer ); 
 		setMailServers( thisMailServers );
+		return this;
+	}
+	
+	/**
+	* Add a single client storage location to the config.  Only used for Adobe engines
+	* 
+	* @name Name of the storage.  "cookie", "registry" or a datasource name
+	* @description The description of the storage
+	* @DSN Name of DSN for JDBC storage locations
+	* @disableGlobals Disable global client variable updates
+	* @purgeEnable Purge data for clients that remain unvisited
+	* @purgeTimeout Number of days before purging data
+	* @type The string "cookie", "registry", or "JDBC"
+	*/
+	function addClientStorageLocation(
+		required string name,
+		string description,
+		string DSN,
+		boolean disableGlobals,
+		boolean purgeEnable,
+		numeric purgeTimeout,
+		string type
+	) {
+			
+		var clientStorageLocation = {};
+		if( !isNull( name ) ) { clientStorageLocation[ 'name' ] = name; };
+		if( !isNull( description ) ) { clientStorageLocation[ 'description' ] = description; };
+		if( !isNull( DSN ) ) { clientStorageLocation[ 'DSN' ] = DSN; };
+		if( !isNull( disableGlobals ) ) { clientStorageLocation[ 'disableGlobals' ] = disableGlobals; };
+		if( !isNull( purgeEnable ) ) { clientStorageLocation[ 'purgeEnable' ] = purgeEnable; };
+		if( !isNull( purgeTimeout ) ) { clientStorageLocation[ 'purgeTimeout' ] = purgeTimeout; };
+		if( !isNull( type ) ) { clientStorageLocation[ 'type' ] = type; };
+		
+		var thisClientStorageLocations = getClientStorageLocations() ?: {};
+		thisClientStorageLocations[ name ] = clientStorageLocation; 
+		setClientStorageLocations( thisClientStorageLocations );
 		return this;
 	}
 	

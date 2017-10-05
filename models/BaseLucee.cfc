@@ -537,8 +537,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSessionTimeout() ) ) { config[ 'sessiontimeout' ] = getSessionTimeout(); }
 		if( !isNull( getClientCookies() ) ) { config[ 'setclientcookies' ] = getClientCookies(); }
 		if( !isNull( getDomainCookies() ) ) { config[ 'setdomaincookie' ] = getDomainCookies(); }
-		if( !isNull( getSessionStorage() ) ) { config[ 'sessionStorage' ] = getSessionStorage(); }
-		if( !isNull( getClientStorage() ) ) { config[ 'clientStorage' ] = getClientStorage(); }
+		if( !isNull( getSessionStorage() ) ) {config[ 'sessionStorage' ] = getSessionStorage(); }
+		if( !isNull( getClientStorage() ) ) {
+			var thisClientStorage = getClientStorage();
+			
+			// This Adobe value isn't valid on Lucee, so swap to memory instead
+			if( thisClientStorage == 'registry' ) {
+				thisClientStorage = 'memory';
+			}
+			config[ 'clientStorage' ] = thisClientStorage;
+		}
 		if( !isNull( getLocalScopeMode() ) ) { config[ 'local-mode' ] = getLocalScopeMode(); }
 		if( !isNull( getSessionType() ) ) { config[ 'session-type' ] = getSessionType(); }
 		structDelete( config, 'client-max-age' );
