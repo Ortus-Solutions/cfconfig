@@ -242,6 +242,24 @@ component accessors=true {
 	// Limits total memory size in MB for the throttle
 	property name='totalThrottleMemory' type='numeric' _isCFConfig=true;
 			
+	
+	// Maximum number of simultaneous Template requests
+	property name='maxTemplateRequests' type='numeric' _isCFConfig=true;
+	// Maximum number of simultaneous Flash Remoting requests
+	property name='maxFlashRemotingeRequests' type='numeric' _isCFConfig=true;
+	// Maximum number of simultaneous Web Service requests
+	property name='maxWebServiceRequests' type='numeric' _isCFConfig=true;
+	// Maximum number of simultaneous CFC function requests
+	property name='maxCFCFunctionRequests' type='numeric' _isCFConfig=true;
+	// Maximum number of simultaneous Report threads
+	property name='maxReportRequests' type='numeric' _isCFConfig=true;
+	// Maximum number of threads available for CFTHREAD
+	property name='maxCFThreads' type='numeric' _isCFConfig=true;
+	// Timeout requests waiting in queue after XX seconds
+	property name='requestQueueTimeout' type='numeric' _isCFConfig=true;
+	// Request Queue Timeout Page
+	property name='requestQueueTimeoutPage' type='string' _isCFConfig=true;
+			
 	// Key is cache connection name, value is struct of properties
 	property name='caches' type='struct' _isCFConfig=true;
 				

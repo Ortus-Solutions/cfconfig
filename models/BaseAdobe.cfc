@@ -190,6 +190,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setThrottleThreshold( thisConfig[ 18 ][ 'throttle-threshold' ] );
 		setTotalThrottleMemory( thisConfig[ 18 ][ 'total-throttle-memory' ] );
 		
+		// Request Tuning
+		setMaxTemplateRequests( thisConfig[ 10 ][ 'requestLimit' ] );
+		setMaxFlashRemotingeRequests( thisConfig[ 10 ][ 'flashRemotingLimit' ] );
+		setMaxWebServiceRequests( thisConfig[ 10 ][ 'webserviceLimit' ] );
+		setMaxCFCFunctionRequests( thisConfig[ 10 ][ 'CFCLimit' ] );
+		setMaxReportRequests( thisConfig[ 17 ][ 'numSimultaneousReports' ] );
+		setMaxCFThreads( thisConfig[ 16 ][ 'cfthreadpool' ] );
+		setRequestQueueTimeout( thisConfig[ 10 ][ 'queueTimeout' ] );
+		setRequestQueueTimeoutPage( thisConfig[ 8 ][ 'queue_timeout' ] ); 
+		
 	}
 	
 	private function readClientStore() {
@@ -521,6 +531,17 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSessionCookieDisableUpdate() ) ) { thisConfig[ 18 ][ 'throttle-threshold' ] = getThrottleThreshold()+0; }
 		if( !isNull( getTotalThrottleMemory() ) ) { thisConfig[ 18 ][ 'total-throttle-memory' ] = getTotalThrottleMemory()+0; }
 
+
+		// Request Tuning
+		if( !isNull( getMaxTemplateRequests() ) ) { thisConfig[ 10 ][ 'requestLimit' ] = getMaxTemplateRequests()+0; }
+		if( !isNull( getMaxFlashRemotingeRequests() ) ) { thisConfig[ 10 ][ 'flashRemotingLimit' ] = getMaxFlashRemotingeRequests()+0; }
+		if( !isNull( getMaxWebServiceRequests() ) ) { thisConfig[ 10 ][ 'webserviceLimit' ] = getMaxWebServiceRequests()+0; }
+		if( !isNull( getMaxCFCFunctionRequests() ) ) { thisConfig[ 10 ][ 'CFCLimit' ] = getMaxCFCFunctionRequests()+0; }
+		if( !isNull( getMaxReportRequests() ) ) { thisConfig[ 17 ][ 'numSimultaneousReports' ] = getMaxReportRequests()+0; }
+		if( !isNull( getMaxCFThreads() ) ) { thisConfig[ 16 ][ 'cfthreadpool' ] = getMaxCFThreads()+0; }
+		if( !isNull( getRequestQueueTimeout() ) ) { thisConfig[ 10 ][ 'queueTimeout' ] = getRequestQueueTimeout()+0; }
+		if( !isNull( getRequestQueueTimeoutPage() ) ) { thisConfig[ 8 ][ 'queue_timeout' ] = getRequestQueueTimeoutPage(); }
+		
 		writeWDDXConfigFile( thisConfig, configFilePath );
 		
 	}
