@@ -150,6 +150,33 @@
             "primary":"physical"
         }
     },
+    "clientStorageLocations":{
+        "Cookie":{
+            "purgeEnable":true,
+            "purgeTimeout":10,
+            "disableGlobals":false,
+            "name":"Cookie",
+            "type":"COOKIE",
+            "description":"Client based text file."
+        },
+        "thisisforreal":{
+            "purgeEnable":false,
+            "purgeTimeout":90,
+            "disableGlobals":false,
+            "name":"thisisforreal",
+            "DSN":"thisisforreal",
+            "type":"JDBC",
+            "description":""
+        },
+        "Registry":{
+            "purgeEnable":true,
+            "purgeTimeout":90,
+            "disableGlobals":false,
+            "name":"Registry",
+            "type":"REGISTRY",
+            "description":"System registry."
+        }
+    },
     "CGIReadOnly":"false",
     "applicationListener":"classic",
     "suppressWhitespaceBeforecfargument":"true",

@@ -233,7 +233,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSecurityConfigPath(), '/' ) );
 		
 		if( !isNull( thisConfig[ 'secureprofile.enabled' ] ) ) { setSecureProfileEnabled( thisConfig[ 'secureprofile.enabled' ] ); }
-		if( !isNull( thisConfig[ 'rds.security.enabled' ] ) ) { setAdminRDSEnabled( thisConfig[ 'rds.security.enabled' ] ); }
+		if( !isNull( thisConfig[ 'rds.enabled' ] ) ) { setAdminRDSEnabled( thisConfig[ 'rds.enabled' ] ); }
 		if( !isNull( thisConfig[ 'admin.userid.root.salt' ] ) ) { setAdminSalt( thisConfig[ 'admin.userid.root.salt' ] ); }
 		if( !isNull( thisConfig[ 'admin.security.enabled' ] ) ) { setAdminLoginRequired( thisConfig[ 'admin.security.enabled' ] ); }
 		if( !isNull( thisConfig[ 'admin.userid.required' ] ) ) { setAdminUserIDRequired( thisConfig[ 'admin.userid.required' ] ); }
@@ -602,6 +602,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		for( var storageLocation in getClientStorageLocations() ?: {} ) {
 			var thisLocation = getClientStorageLocations()[ storageLocation ];
 			var thisName = thisLocation[ 'name' ];
+			// Write out each of the client storage locations
 			thisConfig[ 1 ][ storageLocation ] = {
 				'name' : thisName,
 				'description' : thisLocation[ 'description' ] ?: '',
@@ -610,10 +611,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				'timeout' : ( thisLocation[ 'purgeTimeout' ] ?: 90 )+0,
 				'type' : thisLocation[ 'type' ] ?: ( listFindNoCase( 'Cookie,Registry', thisName ) ? thisName : 'JDBC' )
 			};
-		}
 		
-		if( !isNull( thisLocation[ 'DSN' ] ) ) {
-			thisConfig[ 1 ][ storageLocation ][ 'DSN' ] = thisLocation[ 'DSN' ];
+			// Add in DNS if it exists
+			if( !isNull( thisLocation[ 'DSN' ] ) ) {
+				thisConfig[ 1 ][ storageLocation ][ 'DSN' ] = thisLocation[ 'DSN' ];
+			}
+			
 		}
 		
 		writeWDDXConfigFile( thisConfig, configFilePath );
@@ -631,16 +634,18 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 				
 		if( !isNull( getSecureProfileEnabled() ) ) { thisConfig[ 'secureprofile.enabled' ] = !!getSecureProfileEnabled(); }
-		if( !isNull( getAdminRDSEnabled() ) ) { thisConfig[ 'rds.security.enabled' ] = !!getAdminRDSEnabled(); }
+		// It's a string in the WDDX, not a boolean!
+		if( !isNull( getAdminRDSEnabled() ) ) { thisConfig[ 'rds.enabled' ] = getAdminRDSEnabled()&''; }
 		if( !isNull( getAdminSalt() ) ) { thisConfig[ 'admin.userid.root.salt' ] = getAdminSalt(); }
-		if( !isNull( getAdminLoginRequired() ) ) { thisConfig[ 'admin.security.enabled' ] = getAdminLoginRequired(); }
+		if( !isNull( getAdminLoginRequired() ) ) { thisConfig[ 'admin.security.enabled' ] = !!getAdminLoginRequired(); }
 		if( !isNull( getAdminUserIDRequired() ) ) { thisConfig[ 'admin.userid.required' ] = !!getAdminUserIDRequired(); }
 		if( !isNull( getAdminRootUserID() ) ) { thisConfig[ 'admin.userid.root' ] = getAdminRootUserID(); }
 		if( !isNull( getAdminAllowConcurrentLogin() ) ) { thisConfig[ 'allowconcurrentadminlogin' ] = !!getAdminAllowConcurrentLogin(); }
 		if( !isNull( getSandboxEnabled() ) ) { thisConfig[ 'sbs.security.enabled' ] = !!getSandboxEnabled(); }
 		if( !isNull( getAdminAllowedIPList() ) ) { thisConfig[ 'allowedAdminIPList' ] = getAdminAllowedIPList(); }
 		if( !isNull( getServicesAllowedIPList() ) ) { thisConfig[ 'allowedIPList' ] = getServicesAllowedIPList(); }
-		if( !isNull( getAdminRDSLoginRequired() ) ) { thisConfig[ 'rds.security.enabled' ] = !!getAdminRDSLoginRequired(); }
+		// It's a string in the WDDX, not a boolean!
+		if( !isNull( getAdminRDSLoginRequired() ) ) { thisConfig[ 'rds.security.enabled' ] = getAdminRDSLoginRequired()&''; }
 		if( !isNull( getAdminRDSUserIDRequired() ) ) { thisConfig[ 'rds.security.usesinglerdspassword' ] = !!getAdminRDSUserIDRequired(); }
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
