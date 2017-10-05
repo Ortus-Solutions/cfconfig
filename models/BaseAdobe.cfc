@@ -552,18 +552,18 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var thisConfig = readWDDXConfigFile( getSecurityConfigTemplate() );
 		}
 				
-		if( !isNull( getSecureProfileEnabled() ) ) { thisConfig[ 'secureprofile.enabled' ] = getSecureProfileEnabled(); }
-		if( !isNull( getAdminRDSEnabled() ) ) { thisConfig[ 'rds.security.enabled' ] = getAdminRDSEnabled(); }
+		if( !isNull( getSecureProfileEnabled() ) ) { thisConfig[ 'secureprofile.enabled' ] = !!getSecureProfileEnabled(); }
+		if( !isNull( getAdminRDSEnabled() ) ) { thisConfig[ 'rds.security.enabled' ] = !!getAdminRDSEnabled(); }
 		if( !isNull( getAdminSalt() ) ) { thisConfig[ 'admin.userid.root.salt' ] = getAdminSalt(); }
 		if( !isNull( getAdminLoginRequired() ) ) { thisConfig[ 'admin.security.enabled' ] = getAdminLoginRequired(); }
-		if( !isNull( getAdminUserIDRequired() ) ) { thisConfig[ 'admin.userid.required' ] = getAdminUserIDRequired(); }
+		if( !isNull( getAdminUserIDRequired() ) ) { thisConfig[ 'admin.userid.required' ] = !!getAdminUserIDRequired(); }
 		if( !isNull( getAdminRootUserID() ) ) { thisConfig[ 'admin.userid.root' ] = getAdminRootUserID(); }
-		if( !isNull( getAdminAllowConcurrentLogin() ) ) { thisConfig[ 'allowconcurrentadminlogin' ] = getAdminAllowConcurrentLogin(); }
-		if( !isNull( getSandboxEnabled() ) ) { thisConfig[ 'sbs.security.enabled' ] = getSandboxEnabled(); }
+		if( !isNull( getAdminAllowConcurrentLogin() ) ) { thisConfig[ 'allowconcurrentadminlogin' ] = !!getAdminAllowConcurrentLogin(); }
+		if( !isNull( getSandboxEnabled() ) ) { thisConfig[ 'sbs.security.enabled' ] = !!getSandboxEnabled(); }
 		if( !isNull( getAdminAllowedIPList() ) ) { thisConfig[ 'allowedAdminIPList' ] = getAdminAllowedIPList(); }
 		if( !isNull( getServicesAllowedIPList() ) ) { thisConfig[ 'allowedIPList' ] = getServicesAllowedIPList(); }
-		if( !isNull( getAdminRDSLoginRequired() ) ) { thisConfig[ 'rds.security.enabled' ] = getAdminRDSLoginRequired(); }
-		if( !isNull( getAdminRDSUserIDRequired() ) ) { thisConfig[ 'rds.security.usesinglerdspassword' ] = getAdminRDSUserIDRequired(); }
+		if( !isNull( getAdminRDSLoginRequired() ) ) { thisConfig[ 'rds.security.enabled' ] = !!getAdminRDSLoginRequired(); }
+		if( !isNull( getAdminRDSUserIDRequired() ) ) { thisConfig[ 'rds.security.usesinglerdspassword' ] = !!getAdminRDSUserIDRequired(); }
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
 	}
