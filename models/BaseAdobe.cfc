@@ -99,6 +99,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readRuntime() {
+		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
 		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getRuntimeConfigPath(), '/' ) );
 				
 		setSessionMangement( thisConfig[ 7 ].session.enable );
@@ -114,6 +115,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setErrorStatusCode( ( thisConfig[ 8 ].EnableHTTPStatus == 1 ) );
 		setMissingErrorTemplate( thisConfig[ 8 ].missing_template );
 		setGeneralErrorTemplate( thisConfig[ 8 ].site_wide );
+		setRequestQueueTimeoutPage( thisConfig[ 8 ][ 'queue_timeout' ] );
 		
 		var ignoredMappings = [ '/CFIDE', '/gateway' ];
 		for( var thisMapping in thisConfig[ 9 ] ) {
@@ -127,6 +129,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setRequestTimeout( '0,0,0,#thisConfig[ 10 ].timeoutRequestTimeLimit#' );
 		setPostParametersLimit( thisConfig[ 10 ].postParametersLimit );
 		setPostSizeLimit( thisConfig[ 10 ].postSizeLimit );
+		
+		// Request Tuning
+		setMaxTemplateRequests( thisConfig[ 10 ][ 'requestLimit' ] );
+		setMaxFlashRemotingeRequests( thisConfig[ 10 ][ 'flashRemotingLimit' ] );
+		setMaxWebServiceRequests( thisConfig[ 10 ][ 'webserviceLimit' ] );
+		setMaxCFCFunctionRequests( thisConfig[ 10 ][ 'CFCLimit' ] );
+		setMaxReportRequests( thisConfig[ 17 ][ 'numSimultaneousReports' ] );
+		setMaxCFThreads( thisConfig[ 16 ][ 'cfthreadpool' ] );
+		setRequestQueueTimeout( thisConfig[ 10 ][ 'queueTimeout' ] );
 				
 		setTemplateCacheSize( thisConfig[ 11 ].templateCacheSize );
 		if( thisConfig[ 11 ].trustedCacheEnabled ) {
@@ -163,6 +174,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setAllowExtraAttributesInAttrColl( thisConfig[ 16 ].allowExtraAttributesInAttrColl );
 		setDisallowUnamedAppScope( thisConfig[ 16 ].dumpunnamedappscope );
 		
+		setFlashRemotingEnable( thisConfig[ 16 ].enableFlashRemoting );
+		setFlexDataServicesEnable( thisConfig[ 16 ].enableFlexDataServices );
+		setRMISSLEnable( thisConfig[ 16 ].enableRmiSSL );
+		setRMISSLKeystore( thisConfig[ 16 ].RmiSSLKeystore );
+		if( thisConfig[ 16 ].RmiSSLKeystorePassword.len() ) {
+			setRMISSLKeystorePassword( passwordManager.decryptMailServer( thisConfig[ 16 ].RmiSSLKeystorePassword ) );
+		}
+		
 		// This setting CF11+
 		if( !isNull( thisConfig[ 16 ].allowappvarincontext ) ) { setAllowApplicationVarsInServletContext( thisConfig[ 16 ].allowappvarincontext ); }
 		
@@ -194,16 +213,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				
 		setThrottleThreshold( thisConfig[ 18 ][ 'throttle-threshold' ] );
 		setTotalThrottleMemory( thisConfig[ 18 ][ 'total-throttle-memory' ] );
-		
-		// Request Tuning
-		setMaxTemplateRequests( thisConfig[ 10 ][ 'requestLimit' ] );
-		setMaxFlashRemotingeRequests( thisConfig[ 10 ][ 'flashRemotingLimit' ] );
-		setMaxWebServiceRequests( thisConfig[ 10 ][ 'webserviceLimit' ] );
-		setMaxCFCFunctionRequests( thisConfig[ 10 ][ 'CFCLimit' ] );
-		setMaxReportRequests( thisConfig[ 17 ][ 'numSimultaneousReports' ] );
-		setMaxCFThreads( thisConfig[ 16 ][ 'cfthreadpool' ] );
-		setRequestQueueTimeout( thisConfig[ 10 ][ 'queueTimeout' ] );
-		setRequestQueueTimeoutPage( thisConfig[ 8 ][ 'queue_timeout' ] ); 
 		
 	}
 	
@@ -427,6 +436,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeRuntime() {
+		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
 		var configFilePath = getCFHomePath().listAppend( getRuntimeConfigPath(), '/' );
 		
 		// If the target config file exists, read it in
@@ -450,6 +460,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getErrorStatusCode() ) ) { thisConfig[ 8 ].EnableHTTPStatus = ( getErrorStatusCode() ? 1 : 0 ); }
 		if( !isNull( getMissingErrorTemplate() ) ) { thisConfig[ 8 ].missing_template = getMissingErrorTemplate(); }
 		if( !isNull( getGeneralErrorTemplate() ) ) { thisConfig[ 8 ].site_wide = getGeneralErrorTemplate(); }
+		if( !isNull( getRequestQueueTimeoutPage() ) ) { thisConfig[ 8 ][ 'queue_timeout' ] = getRequestQueueTimeoutPage(); }
 		
 		var ignoredMappings = [ '/CFIDE', '/gateway' ];
 		for( var thisMapping in thisConfig[ 9 ] ) {
@@ -475,6 +486,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 		if( !isNull( getPostParametersLimit() ) ) { thisConfig[ 10 ].postParametersLimit = getPostParametersLimit()+0; }
 		if( !isNull( getPostSizeLimit() ) ) { thisConfig[ 10 ].postSizeLimit = getPostSizeLimit()+0; }
+		
+		// Request Tuning
+		if( !isNull( getMaxTemplateRequests() ) ) { thisConfig[ 10 ][ 'requestLimit' ] = getMaxTemplateRequests()+0; }
+		if( !isNull( getMaxFlashRemotingeRequests() ) ) { thisConfig[ 10 ][ 'flashRemotingLimit' ] = getMaxFlashRemotingeRequests()+0; }
+		if( !isNull( getMaxWebServiceRequests() ) ) { thisConfig[ 10 ][ 'webserviceLimit' ] = getMaxWebServiceRequests()+0; }
+		if( !isNull( getMaxCFCFunctionRequests() ) ) { thisConfig[ 10 ][ 'CFCLimit' ] = getMaxCFCFunctionRequests()+0; }
+		if( !isNull( getMaxReportRequests() ) ) { thisConfig[ 17 ][ 'numSimultaneousReports' ] = getMaxReportRequests()+0; }
+		if( !isNull( getMaxCFThreads() ) ) { thisConfig[ 16 ][ 'cfthreadpool' ] = getMaxCFThreads()+0; }
+		if( !isNull( getRequestQueueTimeout() ) ) { thisConfig[ 10 ][ 'queueTimeout' ] = getRequestQueueTimeout()+0; }
 		
 		if( !isNull( getTemplateCacheSize() ) ) { thisConfig[ 11 ].templateCacheSize = getTemplateCacheSize()+0; }
 		if( !isNull( getSaveClassFiles() ) ) { thisConfig[ 11 ].saveClassFiles = ( getSaveClassFiles() ? true : false ); }
@@ -545,6 +565,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSessionCookieSecure() ) ) { thisConfig[ 16 ].secureSessionCookie = ( getSessionCookieSecure() ? true : false ); }
 		if( !isNull( getSessionCookieDisableUpdate() ) ) { thisConfig[ 16 ].internalCookiesDisableUpdate = ( getSessionCookieDisableUpdate() ? true : false ); }
 		
+		if( !isNull( getFlashRemotingEnable() ) ) { thisConfig[ 16 ].enableFlashRemoting = !!getFlashRemotingEnable(); }
+		if( !isNull( getFlexDataServicesEnable() ) ) { thisConfig[ 16 ].enableFlexDataServices = !!getFlexDataServicesEnable(); }
+		if( !isNull( getRMISSLEnable() ) ) { thisConfig[ 16 ].enableRmiSSL = !!getRMISSLEnable(); }
+		if( !isNull( getRMISSLKeystore() ) ) { thisConfig[ 16 ].RmiSSLKeystore = getRMISSLKeystore(); }
+		if( !isNull( getRMISSLKeystorePassword() ) ) { thisConfig[ 16 ].RmiSSLKeystorePassword = passwordManager.encryptMailServer( getRMISSLKeystorePassword() ); }
+		
+		
 		if( !isNull( getApplicationMode() ) ) {
 			
 			// See comments in BaseConfig class for descriptions
@@ -570,15 +597,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getTotalThrottleMemory() ) ) { thisConfig[ 18 ][ 'total-throttle-memory' ] = getTotalThrottleMemory()+0; }
 
 
-		// Request Tuning
-		if( !isNull( getMaxTemplateRequests() ) ) { thisConfig[ 10 ][ 'requestLimit' ] = getMaxTemplateRequests()+0; }
-		if( !isNull( getMaxFlashRemotingeRequests() ) ) { thisConfig[ 10 ][ 'flashRemotingLimit' ] = getMaxFlashRemotingeRequests()+0; }
-		if( !isNull( getMaxWebServiceRequests() ) ) { thisConfig[ 10 ][ 'webserviceLimit' ] = getMaxWebServiceRequests()+0; }
-		if( !isNull( getMaxCFCFunctionRequests() ) ) { thisConfig[ 10 ][ 'CFCLimit' ] = getMaxCFCFunctionRequests()+0; }
-		if( !isNull( getMaxReportRequests() ) ) { thisConfig[ 17 ][ 'numSimultaneousReports' ] = getMaxReportRequests()+0; }
-		if( !isNull( getMaxCFThreads() ) ) { thisConfig[ 16 ][ 'cfthreadpool' ] = getMaxCFThreads()+0; }
-		if( !isNull( getRequestQueueTimeout() ) ) { thisConfig[ 10 ][ 'queueTimeout' ] = getRequestQueueTimeout()+0; }
-		if( !isNull( getRequestQueueTimeoutPage() ) ) { thisConfig[ 8 ][ 'queue_timeout' ] = getRequestQueueTimeoutPage(); }
 		
 		writeWDDXConfigFile( thisConfig, configFilePath );
 		

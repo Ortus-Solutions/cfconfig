@@ -324,6 +324,16 @@ component accessors=true {
 	property name='debuggingReportExecutionTimes' type='boolean' _isCFConfig=true;
 	
 	
+	// Enable Flash remoting
+	property name='FlashRemotingEnable' type='boolean' _isCFConfig=true;
+	//  Enable Remote Adobe LiveCycle Data Management access
+	property name='flexDataServicesEnable' type='boolean' _isCFConfig=true;
+	// Enable RMI over SSL for Data Management
+	property name='RMISSLEnable' type='boolean' _isCFConfig=true;
+	// RMI SSL Keystore
+	property name='RMISSLKeystore' type='string' _isCFConfig=true;
+	// RMI SSL Keystore Password
+	property name='RMISSLKeystorePassword' type='string' _isCFConfig=true;
 	
 	// Plain text admin password
 	property name='adminPassword' type='string' _isCFConfig=true;

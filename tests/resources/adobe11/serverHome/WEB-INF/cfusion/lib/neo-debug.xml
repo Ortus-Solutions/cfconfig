@@ -21,10 +21,10 @@
         <var name="formvar">
           <boolean value="true"/>
         </var>
-        <var name="urlvar">
+        <var name="sessionvar">
           <boolean value="true"/>
         </var>
-        <var name="sessionvar">
+        <var name="urlvar">
           <boolean value="true"/>
         </var>
         <var name="debug_template">
@@ -78,10 +78,10 @@
         <var name="enabled">
           <boolean value="true"/>
         </var>
-        <var name="sqlquery">
+        <var name="general">
           <boolean value="true"/>
         </var>
-        <var name="general">
+        <var name="sqlquery">
           <boolean value="true"/>
         </var>
         <var name="lockcreate">
@@ -129,11 +129,11 @@
         <var name="USE_WEINRE_ADVANCED_SETTINGS">
           <boolean value="false"/>
         </var>
-        <var name="WEINRE_SERVER_URL">
-          <string>http://debug.phonegap.com</string>
-        </var>
         <var name="LOCAL_WEINRE_READ_TIMEOUT">
           <string>4</string>
+        </var>
+        <var name="WEINRE_SERVER_URL">
+          <string>http://debug.phonegap.com</string>
         </var>
         <var name="LOCAL_WEINRE_DEATH_TIMEOUT">
           <string>120</string>
