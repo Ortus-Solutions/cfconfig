@@ -38,11 +38,11 @@
             <var name="maximum_timeout">
               <string>2,0,0,0</string>
             </var>
-            <var name="timeout">
-              <string>0,0,20,0</string>
-            </var>
             <var name="usej2eesession">
               <boolean value="true"/>
+            </var>
+            <var name="timeout">
+              <string>0,0,20,0</string>
             </var>
             <var name="enable">
               <boolean value="true"/>
@@ -68,13 +68,13 @@
           <number>1.0</number>
         </var>
         <var name="missing_template">
-          <string>/CFIDE/administrator/templates/missing_template_error.cfm</string>
-        </var>
-        <var name="site_wide">
-          <string>/CFIDE/administrator/templates/secure_profile_error.cfm</string>
+          <string/>
         </var>
         <var name="queue_timeout">
-          <string>/CFIDE/administrator/templates/request_timeout_error.htm</string>
+          <string/>
+        </var>
+        <var name="site_wide">
+          <string/>
         </var>
       </struct>
       <struct type="coldfusion.server.ConfigMap">
@@ -92,11 +92,11 @@
         </var>
       </struct>
       <struct type="coldfusion.server.ConfigMap">
-        <var name="timeoutRequests">
-          <boolean value="true"/>
-        </var>
         <var name="slowRequestTimeLimit">
           <number>30.0</number>
+        </var>
+        <var name="timeoutRequests">
+          <boolean value="true"/>
         </var>
         <var name="postParametersLimit">
           <number>100.0</number>
@@ -116,11 +116,11 @@
         <var name="postSizeLimit">
           <number>20.0</number>
         </var>
-        <var name="timeoutRequestTimeLimit">
-          <number>60.0</number>
-        </var>
         <var name="cacheWebServerPath">
           <boolean value="false"/>
+        </var>
+        <var name="timeoutRequestTimeLimit">
+          <number>60.0</number>
         </var>
         <var name="queueTimeout">
           <number>60.0</number>
@@ -176,7 +176,7 @@
       <string>FORM,URL,COOKIE,CGI</string>
       <struct type="coldfusion.server.ConfigMap">
         <var name="sessionCookieTimeout">
-          <number>86400.0</number>
+          <number>9.4608E8</number>
         </var>
         <var name="inMemoryFileSystemLimit">
           <number>100.0</number>
@@ -193,23 +193,23 @@
         <var name="enableFlashRemoting">
           <boolean value="true"/>
         </var>
-        <var name="cfthreadpool">
-          <number>10.0</number>
+        <var name="preserveCaseForSerialize">
+          <boolean value="false"/>
         </var>
         <var name="allowExtraAttributesInAttrColl">
           <boolean value="true"/>
         </var>
-        <var name="preserveCaseForSerialize">
-          <boolean value="true"/>
+        <var name="cfthreadpool">
+          <number>10.0</number>
         </var>
-        <var name="imageExpiryTime">
-          <number>300.0</number>
+        <var name="flexAssemblerIPList">
+          <string/>
         </var>
         <var name="secureJSON">
           <boolean value="false"/>
         </var>
-        <var name="flexAssemblerIPList">
-          <string/>
+        <var name="imageExpiryTime">
+          <number>300.0</number>
         </var>
         <var name="enableServerCFC">
           <boolean value="false"/>
@@ -221,12 +221,12 @@
           <number>30.0</number>
         </var>
         <var name="internalCookiesDisableUpdate">
-          <boolean value="true"/>
-        </var>
-        <var name="ORMSearchIndexDirectory">
-          <string/>
+          <boolean value="false"/>
         </var>
         <var name="sessionCookieDomain">
+          <string/>
+        </var>
+        <var name="ORMSearchIndexDirectory">
           <string/>
         </var>
         <var name="RmiSSLKeystorePassword">
@@ -253,17 +253,17 @@
         <var name="DataServiceId">
           <string>default</string>
         </var>
-        <var name="enableFlexDataServices">
-          <boolean value="false"/>
-        </var>
         <var name="RmiSSLKeystore">
           <string/>
+        </var>
+        <var name="enableFlexDataServices">
+          <boolean value="false"/>
         </var>
         <var name="isPerAppSettingsEnabled">
           <boolean value="true"/>
         </var>
         <var name="disableServiceFactory">
-          <boolean value="true"/>
+          <boolean value="false"/>
         </var>
         <var name="cfcTypeCheckEnabled">
           <boolean value="true"/>
@@ -274,11 +274,11 @@
         <var name="allowappvarincontext">
           <boolean value="false"/>
         </var>
-        <var name="compileextforinclude">
-          <string>*</string>
-        </var>
         <var name="enableRmiSSL">
           <boolean value="false"/>
+        </var>
+        <var name="compileextforinclude">
+          <string>*</string>
         </var>
       </struct>
       <struct type="coldfusion.server.ConfigMap">

@@ -34,6 +34,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	property name='securityConfigPath' type='string';
 	property name='securityConfigTemplate' type='string';
 
+	property name='debugConfigPath' type='string';
+	property name='debugConfigTemplate' type='string';
+
 	// I'm basically always writing all properties in these two files, so not bothering with a template.
 	property name='seedPropertiesPath' type='string';
 	property name='passwordPropertiesPath' type='string';
@@ -54,6 +57,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setMailConfigPath( '/lib/neo-mail.xml' );
 		setDatasourceConfigPath( '/lib/neo-datasource.xml' );
 		setSecurityConfigPath( '/lib/neo-security.xml' );
+		setDebugConfigPath( '/lib/neo-debug.xml' );
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setPasswordPropertiesPath( '/lib/password.properties' );
 		setLicensePropertiesPath( '/lib/license.properties' );
@@ -89,6 +93,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readAuth();
 		readLicense();
 		readSecurity();
+		readDebug();
 			
 		return this;
 	}
@@ -200,6 +205,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setRequestQueueTimeout( thisConfig[ 10 ][ 'queueTimeout' ] );
 		setRequestQueueTimeoutPage( thisConfig[ 8 ][ 'queue_timeout' ] ); 
 		
+	}
+	
+	private function readDebug() {
+		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDebugConfigPath(), '/' ) );
+		
+		setRobustExceptionEnabled( thisConfig[ 1 ].robust_enabled );
+		setAjaxDebugWindowEnabled( thisConfig[ 1 ].ajax_enabled );
+		setDebuggingEnabled( thisConfig[ 1 ].enabled );
+		setDebuggingReportExecutionTimes( thisConfig[ 1 ].template );
+		
+		if( !isNull( thisConfig[ 4 ].remote_inspection_enabled ) ) {
+			setWeinreRemoteInspectionEnabled( thisConfig[ 4 ].remote_inspection_enabled );
+		}
 	}
 	
 	private function readClientStore() {
@@ -403,11 +421,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeAuth();
 		writeLicense();
 		writeSecurity();
+		writeDebug()
 		
 		return this;
 	}
 	
-	private function writeRuntime() {		
+	private function writeRuntime() {
 		var configFilePath = getCFHomePath().listAppend( getRuntimeConfigPath(), '/' );
 		
 		// If the target config file exists, read it in
@@ -563,6 +582,28 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		writeWDDXConfigFile( thisConfig, configFilePath );
 		
+	}
+	
+	private function writeDebug() {		
+		var configFilePath = getCFHomePath().listAppend( getDebugConfigPath(), '/' );
+		
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getDebugConfigTemplate() );
+		}
+
+		if( !isNull( getRobustExceptionEnabled() ) ) { thisConfig[ 1 ][ 'robust_enabled' ] =!! getRobustExceptionEnabled(); }
+		if( !isNull( getAjaxDebugWindowEnabled() ) ) { thisConfig[ 1 ][ 'ajax_enabled' ] = !!getAjaxDebugWindowEnabled(); }
+		if( !isNull( getDebuggingEnabled() ) ) { thisConfig[ 1 ][ 'enabled' ] = !!getDebuggingEnabled(); }
+		if( !isNull( getDebuggingReportExecutionTimes() ) ) { thisConfig[ 1 ][ 'template' ] = !!getDebuggingReportExecutionTimes(); }
+		
+		if( !isNull( getWeinreRemoteInspectionEnabled() ) ) { thisConfig[ 4 ][ 'REMOTE_INSPECTION_ENABLED' ] = !!getWeinreRemoteInspectionEnabled(); }
+		
+		
+		writeWDDXConfigFile( thisConfig, configFilePath );
 	}
 	
 	private function writeClientStore() {

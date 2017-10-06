@@ -23,6 +23,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setMailConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-mail.xml' ) );		
 		setDatasourceConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-datasource.xml' ) );
 		setSecurityConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-security.xml' ) );
+		setDebugConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-debug.xml' ) );
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setLicensePropertiesTemplate( expandPath( '/cfconfig-services/resources/adobe11/license.properties' ) );
 		setVersion( '11' );

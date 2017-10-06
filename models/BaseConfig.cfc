@@ -302,7 +302,6 @@ component accessors=true {
 	//property name='customTagExtensions' type='string' _isCFConfig=true;
 	//property name='customTagPaths' type='array' _isCFConfig=true;
 	//property name='cfxTags' type='string' _isCFConfig=true;
-	//property name='debuggingEnabled' type='boolean' _isCFConfig=true;
 	//property name='debuggingDBEnabled' type='string' _isCFConfig=true;
 	//property name='debuggingExceptionsEnabled' type='boolean' _isCFConfig=true;
 	//property name='debuggingDBActivityEnabled' type='boolean' _isCFConfig=true;
@@ -311,6 +310,20 @@ component accessors=true {
 	//property name='debuggingDumpEnabled' type='boolean' _isCFConfig=true;
 	//property name='debuggingTimerEnabled' type='boolean' _isCFConfig=true;
 	//property name='debuggingImplicitVariableAccessEnabled' type='boolean' _isCFConfig=true;
+	
+	
+	// Enable robust error information (Adobe only)
+	property name='robustExceptionEnabled' type='boolean' _isCFConfig=true;
+	// Enable Ajax debugging window (Adobe only)
+	property name='ajaxDebugWindowEnabled' type='boolean' _isCFConfig=true;
+	// Enable Request Debugging Output 
+	property name='debuggingEnabled' type='boolean' _isCFConfig=true;
+	// Remote DOM Inspection Settings 
+	property name='weinreRemoteInspectionEnabled' type='boolean' _isCFConfig=true;
+	// Report Execution Times
+	property name='debuggingReportExecutionTimes' type='boolean' _isCFConfig=true;
+	
+	
 	
 	// Plain text admin password
 	property name='adminPassword' type='string' _isCFConfig=true;
