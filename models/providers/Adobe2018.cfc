@@ -24,6 +24,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setSecurityConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2018/neo-security.xml' ) );
 		setDebugConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-debug.xml' ) );
 		setSchedulerConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2018/neo-cron.xml' ) );
+		setEventGatewayConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2018/neo-event.xml' ) );
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setLicensePropertiesTemplate( expandPath( '/cfconfig-services/resources/adobe2018/license.properties' ) );
 		setVersion( '2018' );

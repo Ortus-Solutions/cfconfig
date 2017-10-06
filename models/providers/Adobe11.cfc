@@ -25,6 +25,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setSecurityConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-security.xml' ) );
 		setDebugConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-debug.xml' ) );
 		setSchedulerConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-cron.xml' ) );
+		setEventGatewayConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-event.xml' ) );
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setLicensePropertiesTemplate( expandPath( '/cfconfig-services/resources/adobe11/license.properties' ) );
 		setVersion( '11' );

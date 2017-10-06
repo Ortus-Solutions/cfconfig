@@ -40,6 +40,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	property name='schedulerConfigPath' type='string';
 	property name='schedulerConfigTemplate' type='string';
 
+	property name='eventGatewayConfigPath' type='string';
+	property name='eventGatewayConfigTemplate' type='string';
+
 	// I'm basically always writing all properties in these two files, so not bothering with a template.
 	property name='seedPropertiesPath' type='string';
 	property name='passwordPropertiesPath' type='string';
@@ -62,6 +65,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setSecurityConfigPath( '/lib/neo-security.xml' );
 		setDebugConfigPath( '/lib/neo-debug.xml' );
 		setSchedulerConfigPath( '/lib/neo-cron.xml' );
+		setEventGatewayConfigPath( '/lib/neo-event.xml' );
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setPasswordPropertiesPath( '/lib/password.properties' );
 		setLicensePropertiesPath( '/lib/license.properties' );
@@ -99,6 +103,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readSecurity();
 		readDebug();
 		readScheduler();
+		readEventGateway();
 			
 		return this;
 	}
@@ -240,6 +245,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setSchedulerLoggingEnabled( thisConfig[ 2 ] );
 	}
 	
+	private function readEventGateway() {
+		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getEventGatewayConfigPath(), '/' ) );
+		
+		setEventGatewayEnabled( thisConfig[ 'GLOBAL' ][ 'ENABLEEVENTGATEWAYSERVICE' ] );		
+	}
+		
 	private function readClientStore() {
 		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getClientStoreConfigPath(), '/' ) );
 		
@@ -443,6 +454,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeSecurity();
 		writeDebug();
 		writeScheduler();
+		writeEventGateway();
 		
 		return this;
 	}
@@ -647,6 +659,22 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 
 		if( !isNull( getSchedulerLoggingEnabled() ) ) { thisConfig[ 2 ] = !!getSchedulerLoggingEnabled(); }
+		
+		writeWDDXConfigFile( thisConfig, configFilePath );
+	}
+	
+	private function writeEventGateway() {
+		var configFilePath = getCFHomePath().listAppend( getEventGatewayConfigPath(), '/' );
+		
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getEventGatewayConfigTemplate() );
+		}
+
+		if( !isNull( getEventGatewayEnabled() ) ) { thisConfig[ 'GLOBAL' ][ 'ENABLEEVENTGATEWAYSERVICE' ] = !!getEventGatewayEnabled(); }
 		
 		writeWDDXConfigFile( thisConfig, configFilePath );
 	}

@@ -314,6 +314,9 @@ component accessors=true {
 	// Enable logging for scheduled tasks
 	property name='schedulerLoggingEnabled' type='boolean' _isCFConfig=true;
 	
+	// Enable Event Gateway Services 
+	property name='eventGatewayEnabled' type='boolean' _isCFConfig=true;
+	
 	// Enable robust error information (Adobe only)
 	property name='robustExceptionEnabled' type='boolean' _isCFConfig=true;
 	// Enable Ajax debugging window (Adobe only)
