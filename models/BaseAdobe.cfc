@@ -43,6 +43,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	property name='eventGatewayConfigPath' type='string';
 	property name='eventGatewayConfigTemplate' type='string';
 
+	property name='websocketConfigPath' type='string';
+	property name='websocketConfigTemplate' type='string';
+
 	// I'm basically always writing all properties in these two files, so not bothering with a template.
 	property name='seedPropertiesPath' type='string';
 	property name='passwordPropertiesPath' type='string';
@@ -66,6 +69,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setDebugConfigPath( '/lib/neo-debug.xml' );
 		setSchedulerConfigPath( '/lib/neo-cron.xml' );
 		setEventGatewayConfigPath( '/lib/neo-event.xml' );
+		setWebsocketConfigPath( '/lib/neo-websocket.xml' );
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setPasswordPropertiesPath( '/lib/password.properties' );
 		setLicensePropertiesPath( '/lib/license.properties' );
@@ -104,6 +108,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readDebug();
 		readScheduler();
 		readEventGateway();
+		readScheduler();
+		readWebsocket();
 			
 		return this;
 	}
@@ -249,6 +255,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getEventGatewayConfigPath(), '/' ) );
 		
 		setEventGatewayEnabled( thisConfig[ 'GLOBAL' ][ 'ENABLEEVENTGATEWAYSERVICE' ] );		
+	}
+	
+	private function readWebsocket() {
+		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getWebsocketConfigPath(), '/' ) );
+		
+		if( !isNull( thisConfig[ 'startWebSocketService' ] ) ) { setWebsocketEnabled( thisConfig[ 'startWebSocketService' ] ); }		
 	}
 		
 	private function readClientStore() {
@@ -455,6 +467,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeDebug();
 		writeScheduler();
 		writeEventGateway();
+		writeWebsocket();
 		
 		return this;
 	}
@@ -568,7 +581,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getUDFTypeChecking() ) ) { thisConfig[ 16 ].cfcTypeCheckEnabled = ( getUDFTypeChecking() ? false : true ); }
 		if( !isNull( getDisableInternalCFJavaComponents() ) ) { thisConfig[ 16 ].disableServiceFactory = ( getDisableInternalCFJavaComponents() ? true : false ); }
 		// Lucee and Adobe store opposite value
-		if( !isNull( getDotNotationUpperCase() ) ) { thisConfig[ 16 ].preserveCaseForSerialize = ( getDotNotationUpperCase() ? true : false ); }
+		if( !isNull( getDotNotationUpperCase() ) ) { thisConfig[ 16 ].preserveCaseForSerialize = !getDotNotationUpperCase(); }
 		if( !isNull( getSecureJSON() ) ) { thisConfig[ 16 ].secureJSON = ( getSecureJSON() ? true : false ); }
 		if( !isNull( getSecureJSONPrefix() ) ) { thisConfig[ 16 ].secureJSONPrefix = getSecureJSONPrefix(); }
 		if( !isNull( getMaxOutputBufferSize() ) ) { thisConfig[ 16 ].maxOutputBufferSize = getMaxOutputBufferSize()+0; }
@@ -675,6 +688,22 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 
 		if( !isNull( getEventGatewayEnabled() ) ) { thisConfig[ 'GLOBAL' ][ 'ENABLEEVENTGATEWAYSERVICE' ] = !!getEventGatewayEnabled(); }
+		
+		writeWDDXConfigFile( thisConfig, configFilePath );
+	}
+	
+	private function writeWebsocket() {
+		var configFilePath = getCFHomePath().listAppend( getWebsocketConfigPath(), '/' );
+		
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getWebsocketConfigTemplate() );
+		}
+
+		if( !isNull( getWebsocketEnabled() ) ) { thisConfig[ 'startWebSocketService' ] = !!getWebsocketEnabled(); }
 		
 		writeWDDXConfigFile( thisConfig, configFilePath );
 	}

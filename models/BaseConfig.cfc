@@ -317,6 +317,9 @@ component accessors=true {
 	// Enable Event Gateway Services 
 	property name='eventGatewayEnabled' type='boolean' _isCFConfig=true;
 	
+	// Enable WebSocket Service
+	property name='websocketEnabled' type='boolean' _isCFConfig=true;
+	
 	// Enable robust error information (Adobe only)
 	property name='robustExceptionEnabled' type='boolean' _isCFConfig=true;
 	// Enable Ajax debugging window (Adobe only)
