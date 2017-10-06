@@ -336,7 +336,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				password = ( ( thisConfig.password ?: '' ).len() ? passwordManager.decryptMailServer( thisConfig.password ) : '' ),
 				port = val( thisConfig.port ?: '0' ),
 				SSL= thisConfig.useSSL ?: false,
-				TSL = thisConfig.useTLS ?: false		
+				TLS = thisConfig.useTLS ?: false		
 			);
 			
 		}
