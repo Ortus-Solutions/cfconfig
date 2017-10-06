@@ -311,6 +311,8 @@ component accessors=true {
 	//property name='debuggingTimerEnabled' type='boolean' _isCFConfig=true;
 	//property name='debuggingImplicitVariableAccessEnabled' type='boolean' _isCFConfig=true;
 	
+	// Enable logging for scheduled tasks
+	property name='schedulerLoggingEnabled' type='boolean' _isCFConfig=true;
 	
 	// Enable robust error information (Adobe only)
 	property name='robustExceptionEnabled' type='boolean' _isCFConfig=true;

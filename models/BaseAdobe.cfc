@@ -37,6 +37,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	property name='debugConfigPath' type='string';
 	property name='debugConfigTemplate' type='string';
 
+	property name='schedulerConfigPath' type='string';
+	property name='schedulerConfigTemplate' type='string';
+
 	// I'm basically always writing all properties in these two files, so not bothering with a template.
 	property name='seedPropertiesPath' type='string';
 	property name='passwordPropertiesPath' type='string';
@@ -58,6 +61,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setDatasourceConfigPath( '/lib/neo-datasource.xml' );
 		setSecurityConfigPath( '/lib/neo-security.xml' );
 		setDebugConfigPath( '/lib/neo-debug.xml' );
+		setSchedulerConfigPath( '/lib/neo-cron.xml' );
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setPasswordPropertiesPath( '/lib/password.properties' );
 		setLicensePropertiesPath( '/lib/license.properties' );
@@ -94,6 +98,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readLicense();
 		readSecurity();
 		readDebug();
+		readScheduler();
 			
 		return this;
 	}
@@ -227,6 +232,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( thisConfig[ 4 ].remote_inspection_enabled ) ) {
 			setWeinreRemoteInspectionEnabled( thisConfig[ 4 ].remote_inspection_enabled );
 		}
+	}
+	
+	private function readScheduler() {
+		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSchedulerConfigPath(), '/' ) );
+		
+		setSchedulerLoggingEnabled( thisConfig[ 2 ] );
 	}
 	
 	private function readClientStore() {
@@ -430,7 +441,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeAuth();
 		writeLicense();
 		writeSecurity();
-		writeDebug()
+		writeDebug();
+		writeScheduler();
 		
 		return this;
 	}
@@ -571,7 +583,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getRMISSLKeystore() ) ) { thisConfig[ 16 ].RmiSSLKeystore = getRMISSLKeystore(); }
 		if( !isNull( getRMISSLKeystorePassword() ) ) { thisConfig[ 16 ].RmiSSLKeystorePassword = passwordManager.encryptMailServer( getRMISSLKeystorePassword() ); }
 		
-		
 		if( !isNull( getApplicationMode() ) ) {
 			
 			// See comments in BaseConfig class for descriptions
@@ -613,13 +624,29 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var thisConfig = readWDDXConfigFile( getDebugConfigTemplate() );
 		}
 
-		if( !isNull( getRobustExceptionEnabled() ) ) { thisConfig[ 1 ][ 'robust_enabled' ] =!! getRobustExceptionEnabled(); }
+		if( !isNull( getRobustExceptionEnabled() ) ) { thisConfig[ 1 ][ 'robust_enabled' ] = !!getRobustExceptionEnabled(); }
 		if( !isNull( getAjaxDebugWindowEnabled() ) ) { thisConfig[ 1 ][ 'ajax_enabled' ] = !!getAjaxDebugWindowEnabled(); }
 		if( !isNull( getDebuggingEnabled() ) ) { thisConfig[ 1 ][ 'enabled' ] = !!getDebuggingEnabled(); }
 		if( !isNull( getDebuggingReportExecutionTimes() ) ) { thisConfig[ 1 ][ 'template' ] = !!getDebuggingReportExecutionTimes(); }
 		
 		if( !isNull( getWeinreRemoteInspectionEnabled() ) ) { thisConfig[ 4 ][ 'REMOTE_INSPECTION_ENABLED' ] = !!getWeinreRemoteInspectionEnabled(); }
 		
+		
+		writeWDDXConfigFile( thisConfig, configFilePath );
+	}
+	
+	private function writeScheduler() {
+		var configFilePath = getCFHomePath().listAppend( getSchedulerConfigPath(), '/' );
+		
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getSchedulerConfigTemplate() );
+		}
+
+		if( !isNull( getSchedulerLoggingEnabled() ) ) { thisConfig[ 2 ] = !!getSchedulerLoggingEnabled(); }
 		
 		writeWDDXConfigFile( thisConfig, configFilePath );
 	}

@@ -22,7 +22,8 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setMailConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-mail.xml' ) );
 		setDatasourceConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-datasource.xml' ) );
 		setSecurityConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-security.xml' ) );
-		setDebugConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-debug.xml' ) );		
+		setDebugConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-debug.xml' ) );
+		setSchedulerConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-cron.xml' ) );
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setLicensePropertiesTemplate( expandPath( '/cfconfig-services/resources/adobe2016/license.properties' ) );
 		setVersion( '2016' );
