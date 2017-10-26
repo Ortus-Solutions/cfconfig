@@ -414,7 +414,7 @@ component accessors=true {
 	* Custom setter to clean up paths
 	*/	
 	function setCFHomePath( required string CFHomePath ) {
-		variables.CFHomePath = arguments.CFHomePath.replace( '\', '/', 'all' );
+		variables.CFHomePath = normalizeSlashes( arguments.CFHomePath );
 		return this;
 	}
 	
@@ -789,6 +789,17 @@ component accessors=true {
 			}
 		}
 		return configProperties;
+	}
+	
+	/*
+	* Turns all slashes in a path to forward slashes except for \\ in a Windows UNC network share
+	*/
+	function normalizeSlashes( string path ) {
+		if( path.left( 2 ) == '\\' ) {
+			return '\\' & path.replace( '\', '/', 'all' ).right( -2 );
+		} else {
+			return path.replace( '\', '/', 'all' );			
+		}
 	}
 
 }
