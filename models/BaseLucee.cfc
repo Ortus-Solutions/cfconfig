@@ -104,6 +104,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var thisCache = xmlSearch( thisConfig, '/cfLuceeConfiguration/cache' );
 		if( thisCache.len() ){ readCache( thisCache[ 1 ] ); }
 		
+		var logging = xmlSearch( thisConfig, '/cfLuceeConfiguration/logging' );
+		if( logging.len() ){ readLoggers( logging[ 1 ] ); }
+
 		readAuth( thisConfig.XMLRoot );
 		
 		readConfigChanges( thisConfig.XMLRoot );
@@ -320,6 +323,26 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					
 	}
 	
+	private function readLoggers( loggers ) {
+		for ( var logger in loggers.XMLChildren ) {
+			var attrStruct = structNew().append( logger.XMLAttributes );
+			var params = { };
+
+			for ( var attrName in attrStruct ) {
+				var paramKey = REReplace( attrName, '-([ac])', '\U\1', 'all' );
+				if ( attrName.listLast( '-' ) == 'arguments' ) {
+					params[ paramKey ] = { };
+					for ( var arg in attrStruct[ attrName ].listToArray( ';' ) ) {
+						params[ paramKey ][ arg.listFirst( ':' ) ] = arg.listRest( ':' );
+					}
+				} else {
+					params[ paramKey ] = attrStruct[ attrName ];
+				}
+			}
+			addLogger( argumentCollection = params );
+		}
+	}
+
 	/**
 	* I write out config
 	*
@@ -803,6 +826,47 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 	}
 	
+	private function writeLoggers( thisConfig ) {
+		var loggers = xmlSearch( thisConfig, '/cfLuceeConfiguration/logging' )[ 1 ].XMLChildren;
+
+		for( var name in getLoggers() ?: {} ) {
+			var loggerStruct = getLoggers()[ name ];
+			// Search to see if this logger already exists
+			var loggerXMLSearch = xmlSearch( thisConfig, "/cfLuceeConfiguration/logging/logger[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( name )#']" );
+			// logger already exists
+			if( loggerXMLSearch.len() ) {
+				loggerXMLNode = loggerXMLSearch[ 1 ];
+				// Wipe out old attributes for this logging
+				structClear( loggerXMLNode.XMLAttributes );
+			// Create new logger tag
+			} else {
+				var loggerXMLNode = xmlElemnew( thisConfig, "logger" );
+			}
+
+			// Populate XML node
+			loggerXMLNode.XMLAttributes[ 'name' ] = name;
+			for ( var key in [ 'appender', 'appenderClass', 'layout', 'layoutClass', 'level' ] ) {
+				if ( !isNull( loggerStruct[ key ] ) ) { 
+					loggerXMLNode.XMLAttributes[ key.replace( 'C', '-c' ) ] = loggerStruct[ key ]; 
+				}
+			}
+			for ( var key in [ 'appenderArguments', 'layoutArguments' ] ) {
+				if ( !isNull( loggerStruct[ key ] ) && isStruct( loggerStruct[ key ] ) ) {
+					var args = [ ];
+					for ( var argName in loggerStruct[ key ] ) {
+						args.append( argName & ':' & loggerStruct[ key ][ argName ] );
+					}
+					loggerXMLNode.XMLAttributes[ key.replace( 'A', '-a' ) ] = args.toList( ';' ); 
+				}
+			}
+
+			// Insert into doc if this was new.
+			if( !loggerXMLSearch.len() ) {
+				loggers.append( loggerXMLNode );
+			}
+		}
+	}
+
 	/**
 	* I find the actual Lucee 4.x context config file
 	*/
