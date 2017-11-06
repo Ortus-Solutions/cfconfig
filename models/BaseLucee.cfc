@@ -329,7 +329,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var params = { };
 
 			for ( var attrName in attrStruct ) {
-				var paramKey = REReplace( attrName, '-([ac])', '\U\1', 'all' );
+				// translate from {var}-arguments and {var}-class to {var}Arguments and {var}Class
+				var paramKey = REReplace( attrName, '-([ac])', '\U\1' );
 				if ( attrName.listLast( '-' ) == 'arguments' ) {
 					params[ paramKey ] = { };
 					for ( var arg in attrStruct[ attrName ].listToArray( ';' ) ) {
@@ -847,6 +848,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			loggerXMLNode.XMLAttributes[ 'name' ] = name;
 			for ( var key in [ 'appender', 'appenderClass', 'layout', 'layoutClass', 'level' ] ) {
 				if ( !isNull( loggerStruct[ key ] ) ) { 
+                    // replace() translates {var}Class to {var}-class
 					loggerXMLNode.XMLAttributes[ key.replace( 'C', '-c' ) ] = loggerStruct[ key ]; 
 				}
 			}
@@ -856,6 +858,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					for ( var argName in loggerStruct[ key ] ) {
 						args.append( argName & ':' & loggerStruct[ key ][ argName ] );
 					}
+                    // replace() translates {var}Arguments to {var}-arguments
 					loggerXMLNode.XMLAttributes[ key.replace( 'A', '-a' ) ] = args.toList( ';' ); 
 				}
 			}
