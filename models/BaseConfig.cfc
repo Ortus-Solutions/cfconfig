@@ -188,6 +188,8 @@ component accessors=true {
 	
 	// Key is virtual path, value is struct of properties
 	property name='CFMappings' type='struct' _isCFConfig=true;
+	// Key is log name, value is struct of properties
+	property name='loggers' type='struct' _isCFConfig=true;
 	// True/false
 	property name='errorStatusCode' type='boolean' _isCFConfig=true;
 	// True/false
@@ -737,7 +739,45 @@ component accessors=true {
 	* Add a single custom tag to the config
 	*/
 	function addCustomTagPath() { throw 'addCustomTagPath() not implemented'; }
-	
+
+	/**
+	* Add a single logger to the config
+	*
+	* @name name for the logger
+	* @appender resource or console
+	* @appenderArguments args for the appender
+	* @appenderClass A full class path to a Appender class
+	* @layout one of 'classic', 'html', 'xml', or 'pattern'
+	* @layoutArguments args for the layout
+	* @layoutClass A full class path to a Layout class
+	* @level log level
+	*/
+	function addLogger(
+		required string name,
+		string appender,
+		string appenderClass,
+		struct appenderArguments,
+		string layout,
+		struct layoutArguments,
+		string layoutClass,
+		string level
+	) {
+
+		var logger = {};
+		if( !isNull( appender ) ) { logger[ 'appender' ] = appender; };
+		if( !isNull( appenderArguments ) ) { logger[ 'appenderArguments' ] = appenderArguments; };
+		if( !isNull( appenderClass ) ) { logger[ 'appenderClass' ] = appenderClass; };
+		if( !isNull( layout ) ) { logger[ 'layout' ] = layout; };
+		if( !isNull( layoutArguments ) ) { logger[ 'layoutArguments' ] = layoutArguments; };
+		if( !isNull( layoutClass ) ) { logger[ 'layoutClass' ] = layoutClass; };
+		if( !isNull( level ) ) { logger[ 'level' ] = level; };
+
+		var thisLoggers = getLoggers() ?: {};
+		thisLoggers[ arguments.name ] = logger;
+		setLoggers( thisLoggers );
+		return this;
+	}
+
 	/**
 	* Get a struct representation of the config settings
 	*/
