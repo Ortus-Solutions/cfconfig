@@ -907,6 +907,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return 'oracle.jdbc.driver.OracleDriver';
 			case 'MySQL' :
 				return 'org.gjt.mm.mysql.Driver';
+			case 'H2' :
+				return 'org.h2.Driver';
 			default :
 				return arguments.className;
 		}
@@ -950,6 +952,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return 'jdbc:postgresql://{host}:{port}/{database}';
 			case 'MSSQL' :
 				return 'jdbc:sqlserver://{host}:{port}';
+			case 'H2' :
+				return 'jdbc:h2:{path}{database};MODE={mode}';
 			default :
 				return arguments.JDBCUrl;
 		}
