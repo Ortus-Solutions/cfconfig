@@ -680,17 +680,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeRESTMappings( thisConfig ) {
-		var ignores = [ '/lucee-server/' , '/lucee/', '/lucee/doc', '/lucee/admin' ];
 		// Get all restmappings
 		// TODO: Add tag if it doesn't exist
 		var restmappings = xmlSearch( thisConfig, '/cfLuceeConfiguration/rest' )[ 1 ].XMLChildren;
 		var i = 0;
 		while( ++i<= restmappings.len() ) {
 			var thisrestMapping = restmappings[ i ];
-			if( !ignores.findNoCase( thisrestMapping.XMLAttributes.virtual ) ) {
-				arrayDeleteAt( restmappings, i );
-				i--;
-			}
 		}
 		
 		for( var virtual in getRESTmappings() ?: {} ) {
