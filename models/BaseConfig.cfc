@@ -256,7 +256,7 @@ component accessors=true {
 	// Maximum number of simultaneous Template requests
 	property name='maxTemplateRequests' type='numeric' _isCFConfig=true;
 	// Maximum number of simultaneous Flash Remoting requests
-	property name='maxFlashRemotingeRequests' type='numeric' _isCFConfig=true;
+	property name='maxFlashRemotingRequests' type='numeric' _isCFConfig=true;
 	// Maximum number of simultaneous Web Service requests
 	property name='maxWebServiceRequests' type='numeric' _isCFConfig=true;
 	// Maximum number of simultaneous CFC function requests

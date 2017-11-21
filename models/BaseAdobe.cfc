@@ -148,7 +148,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		// Request Tuning
 		setMaxTemplateRequests( thisConfig[ 10 ][ 'requestLimit' ] );
-		setMaxFlashRemotingeRequests( thisConfig[ 10 ][ 'flashRemotingLimit' ] );
+		setmaxFlashRemotingRequests( thisConfig[ 10 ][ 'flashRemotingLimit' ] );
 		setMaxWebServiceRequests( thisConfig[ 10 ][ 'webserviceLimit' ] );
 		setMaxCFCFunctionRequests( thisConfig[ 10 ][ 'CFCLimit' ] );
 		setMaxReportRequests( thisConfig[ 17 ][ 'numSimultaneousReports' ] );
@@ -282,7 +282,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			}  
 		}
 		
-		setClientStorage( thisConfig[ 2 ].default );
+		setClientStorage( thisConfig[ 2 ][ 'default' ] );
 		setUseUUIDForCFToken( thisConfig[ 2 ].uuidToken );
 		if( !isNull( thisConfig[ 2 ][ 'PURGE_INTERVAL' ] ) ) {
 			// A colon-delimited list with 2 items representing hours and minutes. Ex: 1:7
@@ -526,7 +526,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		// Request Tuning
 		if( !isNull( getMaxTemplateRequests() ) ) { thisConfig[ 10 ][ 'requestLimit' ] = getMaxTemplateRequests()+0; }
-		if( !isNull( getMaxFlashRemotingeRequests() ) ) { thisConfig[ 10 ][ 'flashRemotingLimit' ] = getMaxFlashRemotingeRequests()+0; }
+		if( !isNull( getmaxFlashRemotingRequests() ) ) { thisConfig[ 10 ][ 'flashRemotingLimit' ] = getmaxFlashRemotingRequests()+0; }
 		if( !isNull( getMaxWebServiceRequests() ) ) { thisConfig[ 10 ][ 'webserviceLimit' ] = getMaxWebServiceRequests()+0; }
 		if( !isNull( getMaxCFCFunctionRequests() ) ) { thisConfig[ 10 ][ 'CFCLimit' ] = getMaxCFCFunctionRequests()+0; }
 		if( !isNull( getMaxReportRequests() ) ) { thisConfig[ 17 ][ 'numSimultaneousReports' ] = getMaxReportRequests()+0; }
