@@ -234,14 +234,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function readRESTMappings( restmappings ) {
-		var ignores = [ '/lucee-server/' , '/lucee/', '/lucee/doc', '/lucee/admin' ];
 		
 		for( var restmapping in restmappings.XMLChildren ) {
 			var params = structNew().append( restmapping.XMLAttributes );
-			
-			if( ignores.findNoCase( params.virtual ) ) {
-				continue;
-			} 
 			addRESTMapping( argumentCollection = params );
 		}
 	}
