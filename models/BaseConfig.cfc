@@ -761,8 +761,30 @@ component accessors=true {
 	
 	/**
 	* Add a single rest mapping to the config
+	*
+	* @virtual The virtual path such as /foo
+	* @physical The physical path that the mapping points to
+	* @primary Strings containing one of "physical", "archive"
+	* @readOnly True/false
 	*/
-	function addRestMapping() { throw 'addRestMapping() not implemented'; }
+	function addRESTMapping(
+			required string virtual,
+			string physical,
+			string primary,
+			boolean readOnly
+		) {
+		
+		var mapping = {};
+		if( !isNull( physical ) ) { mapping.physical = physical; };
+		if( !isNull( archive ) ) { mapping.archive = archive; };
+		if( !isNull( primary ) ) { mapping.primary = primary; };
+		if( !isNull( readOnly ) ) { mapping.readOnly = readOnly; };
+		
+		var thisRESTMappings = getRESTMappings() ?: {};
+		thisRESTMappings[ arguments.virtual ] = mapping; 
+		setRESTMappings( thisRESTMappings );
+		return this;		
+	}
 	
 	/**
 	* Add a single custom tag to the config
