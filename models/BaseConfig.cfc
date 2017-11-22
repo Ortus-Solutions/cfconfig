@@ -292,9 +292,11 @@ component accessors=true {
 	// name of default WebService cache connection
 	property name='cacheDefaultWebservice' type='string' _isCFConfig=true;
 	
+	// name of the default REST connection
+	property name='restMappings' type='string' _isCFConfig=true;
+	
 	// TODO:
 	//property name='externalizeStrings' type='string' _isCFConfig=true;
-	//property name='restMappings' type='array' _isCFConfig=true;
 	//property name='componentBase' type='string' _isCFConfig=true;
 	//property name='componentAutoImport' type='string' _isCFConfig=true;
 	//property name='componentSearchLocal' type='boolean' _isCFConfig=true;
@@ -727,6 +729,33 @@ component accessors=true {
 		var thisCFMappings = getCFMappings() ?: {};
 		thisCFMappings[ arguments.virtual ] = mapping; 
 		setCFMappings( thisCFMappings );
+		return this;		
+	}
+	
+	/**
+	* Add a single rest mapping to the config
+	*
+	* @virtual The virtual path such as /foo
+	* @physical The physical path that the mapping points to
+	* @primary Strings containing one of "physical", "archive"
+	* @readOnly True/false
+	*/
+	function addRESTMapping(
+			required string virtual,
+			string physical,
+			string primary,
+			boolean readOnly
+		) {
+		
+		var mapping = {};
+		if( !isNull( physical ) ) { mapping.physical = physical; };
+		if( !isNull( archive ) ) { mapping.archive = archive; };
+		if( !isNull( primary ) ) { mapping.primary = primary; };
+		if( !isNull( readOnly ) ) { mapping.readOnly = readOnly; };
+		
+		var thisRESTMappings = getRESTMappings() ?: {};
+		thisRESTMappings[ arguments.virtual ] = mapping; 
+		setRESTMappings( thisRESTMappings );
 		return this;		
 	}
 	
