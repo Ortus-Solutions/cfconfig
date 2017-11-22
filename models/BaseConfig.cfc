@@ -4,40 +4,40 @@
 * www.ortussolutions.com
 ********************************************************************************
 * @author Brad Wood
-* 
+*
 * I represent the configuration of a CF engine.  I am agnostic and don't contain any particular
-* behavior for a specific engine.  Not all the data I store applies to every engine though.  
+* behavior for a specific engine.  Not all the data I store applies to every engine though.
 * I am capable of reading and writing to a standard JSON format, but if you want to read or write
 * to/from a specific engine's format, you'll need to create one of my subclasses
 */
-component accessors=true {
-	
+component accessors="true" {
+
 	// ----------------------------------------------------------------------------------------
 	// Depdendency Injections
 	// ----------------------------------------------------------------------------------------
 
 	property name='wirebox' inject='wirebox';
 	property name='Util' inject='Util@cfconfig-services';
-	
+
 	// ----------------------------------------------------------------------------------------
 	// Properties for the internal workings
 	// ----------------------------------------------------------------------------------------
-	
+
 	// The config file to read/write from/to
 	// - For adobe, it's <installDir>/cfusion
 	// - For Railo/Lucee, it's the server context or web context folder
 	// - For generic JSON config, it's just the folder you want to read/write from
 	property name='CFHomePath' type='string';
-	
+
 	// The name of the format this config provider can handle. "adobe", "lucee", or "railo"
 	property name='format' type='string';
 	// A semver range that covers the version of the formats that are covered.
 	property name='version' type='string';
-	
+
 	// ----------------------------------------------------------------------------------------
 	// CF Config properties that map to the CF engines
 	// ----------------------------------------------------------------------------------------
-	
+
 	// One of the strings "never", "once", "always"
 	property name='inspectTemplate' type='string' _isCFConfig=true;
 	// Number of templates to cache
@@ -45,7 +45,7 @@ component accessors=true {
 	// True/false
 	property name='componentCacheEnabled' type='boolean' _isCFConfig=true;
 	// True/false
-	property name='saveClassFiles' type='boolean' _isCFConfig=true;	
+	property name='saveClassFiles' type='boolean' _isCFConfig=true;
 	// True/false
 	property name='UDFTypeChecking' type='boolean' _isCFConfig=true;
 	// true/false
@@ -58,7 +58,7 @@ component accessors=true {
 	property name='scopeCascading' type='string' _isCFConfig=true;
 	// True/false
 	property name='searchResultsets' type='boolean' _isCFConfig=true;
-	
+
 	// Ex: en_US
 	property name='thisLocale' type='string' _isCFConfig=true;
 	// Ex: 	America/Chicago
@@ -67,14 +67,14 @@ component accessors=true {
 	property name='timeServer' type='string' _isCFConfig=true;
 	// true/false
 	property name='useTimeServer' type='boolean' _isCFConfig=true;
-	
+
 	// Ex: windows-1252 (Lucee: Default character used to read templates (*.cfm and *.cfc files))
 	property name='templateCharset' type='string' _isCFConfig=true;
 	// Ex: UTF-8 (Lucee: Default character set for output streams, form-, url-, and cgi scope variables and reading/writing the header)
 	property name='webCharset' type='string' _isCFConfig=true;
 	// Ex: windows-1252 (Default character set for reading from/writing to various resources)
 	property name='resourceCharset' type='string' _isCFConfig=true;
-	
+
 	// One of the strings "cfml", "j2ee"
 	property name='sessionType' type='string' _isCFConfig=true;
 	// True/false
@@ -89,7 +89,7 @@ component accessors=true {
 	property name='domainCookies' type='boolean' _isCFConfig=true;
 	// True/false
 	property name='clientCookies' type='boolean' _isCFConfig=true;
-		
+
 	// Number of seconds
 	property name='sessionCookieTimeout' type='numeric' _isCFConfig=true;
 	// True/false
@@ -98,7 +98,7 @@ component accessors=true {
 	property name='sessionCookieSecure' type='boolean' _isCFConfig=true;
 	// True/false
 	property name='sessionCookieDisableUpdate' type='boolean' _isCFConfig=true;
-	
+
 	// One of the strings "classic", "modern"
 	property name='localScopeMode' type='string' _isCFConfig=true;
 	// True/false
@@ -111,10 +111,10 @@ component accessors=true {
 	property name='sessionMaximumTimeout' type='string' _isCFConfig=true;
 	// Timespan Ex: 0,5,30,0
 	property name='applicationMaximumTimeout' type='string' _isCFConfig=true;
-	
+
 	// One of the strings "none", "mixed", "modern", "classic"
 	property name='applicationListener' type='string' _isCFConfig=true;
-	/* One of the strings 
+	/* One of the strings
 	* "curr2root" - Current dir to web root (Lucee and Adobe [option 2])
 	* "curr" - Current dir only (Lucee only)
 	* "root" - Only in web root (Lucee only)
@@ -122,7 +122,7 @@ component accessors=true {
 	* "curr2driveroot" - Current dir to drive root (Adobe only [option 1])
 	*/
 	property name='applicationMode' type='string' _isCFConfig=true;
-	
+
 	// Timespan Ex: 0,5,30,0
 	property name='clientTimeout' type='string' _isCFConfig=true;
 	// One of the strings "memory", "file", "cookie", <cache-name>, <datasource-name>
@@ -134,21 +134,21 @@ component accessors=true {
 	// A struct of valid client storage locations including registry, cookie, and any configured datasources. Only used by Adobe.
 	property name='clientStorageLocations' type='struct' _isCFConfig=true;
 	// TODO: Add functions/commands to manage this manually.
-	
-	
-	
+
+
+
 	// Timespan Ex: 0,5,30,0
 	property name='requestTimeout' type='string' _isCFConfig=true;
 	// True/false
 	property name='requestTimeoutEnabled' type='boolean' _isCFConfig=true;
-	
+
 	// "none", "all" or a comma-delimited list with some combination of "cgi", "cookie", "form", "url".
 	property name='scriptProtect' type='string' _isCFConfig=true;
 	// True/false
 	property name='perAppSettingsEnabled' type='boolean' _isCFConfig=true;
 	// True/false
 	property name='useUUIDForCFToken' type='boolean' _isCFConfig=true;
-	// True/false	
+	// True/false
 	property name='requestTimeoutInURL' type='boolean' _isCFConfig=true;
 	// One of the strings "regular", "white-space", "white-space-pref"
 	property name='whitespaceManagement' type='string' _isCFConfig=true;
@@ -157,10 +157,10 @@ component accessors=true {
 	// True/false
 	property name='supressContentForCFCRemoting' type='boolean' _isCFConfig=true;
 	// True/false
-	property name='bufferTagBodyOutput' type='boolean' _isCFConfig=true;		
+	property name='bufferTagBodyOutput' type='boolean' _isCFConfig=true;
 	// Key is datasource name, value is struct of properties
 	property name='datasources' type='struct' _isCFConfig=true;
-	
+
 	// Array of structs of properties.  Mail servers are uniquely identified by host
 	property name='mailServers' type='array' _isCFConfig=true;
 	// Encoding to use for mail. Ex: UTF-8
@@ -183,9 +183,9 @@ component accessors=true {
 	property name='mailSignKeyAlias' type='string' _isCFConfig=true;
 	// Password with which the private key is stored.
 	property name='mailSignKeyPassword' type='string' _isCFConfig=true;
-	
-	
-	
+
+
+
 	// Key is virtual path, value is struct of properties
 	property name='CFMappings' type='struct' _isCFConfig=true;
 	// Key is log name, value is struct of properties
@@ -194,29 +194,29 @@ component accessors=true {
 	property name='errorStatusCode' type='boolean' _isCFConfig=true;
 	// True/false
 	property name='disableInternalCFJavaComponents' type='boolean' _isCFConfig=true;
-	
+
 	// True/false
 	property name='secureJSON' type='boolean' _isCFConfig=true;
 	// A string representing the JSON prefx like "//"
 	property name='secureJSONPrefix' type='string' _isCFConfig=true;
-	
+
 	// Number of KB for buffer size (1024)
 	property name='maxOutputBufferSize' type='numeric' _isCFConfig=true;
-	
+
 	// True/false
 	property name='inMemoryFileSystemEnabled' type='boolean' _isCFConfig=true;
 	// Number of MB for in memory file system
 	property name='inMemoryFileSystemLimit' type='numeric' _isCFConfig=true;
 	// Number of MB for in memory application file system
 	property name='inMemoryFileSystemAppLimit' type='numeric' _isCFConfig=true;
-	
+
 	// True/false
 	property name='watchConfigFilesForChangesEnabled' type='boolean' _isCFConfig=true;
 	// Number of seconds
 	property name='watchConfigFilesForChangesInterval' type='numeric' _isCFConfig=true;
 	// List of file extensions. Ex: "xml,properties"
 	property name='watchConfigFilesForChangesExtensions' type='string' _isCFConfig=true;
-	
+
 	// True/false
 	property name='allowExtraAttributesInAttrColl' type='boolean' _isCFConfig=true;
 	// True/false
@@ -227,11 +227,11 @@ component accessors=true {
 	property name='CFaaSGeneratedFilesExpiryTime' type='numeric' _isCFConfig=true;
 	// Absolute path to store index files for ORM search.
 	property name='ORMSearchIndexDirectory' type='string' _isCFConfig=true;
-	// default path (relative to the web root) to the directory containing the cfform.js file. 
+	// default path (relative to the web root) to the directory containing the cfform.js file.
 	property name='CFFormScriptDirectory' type='string' _isCFConfig=true;
 	// Your Google maps API key
 	property name='googleMapKey' type='string' _isCFConfig=true;
-	
+
 	// True/false
 	property name='serverCFCEenabled' type='boolean' _isCFConfig=true;
 	// Specify the absolute path to a CFC having onServerStart() method, like "c:\server.cfc". Or specify a dot delimited CFC path under webroot, like "a.b.server". By default, ColdFusion will look for server.cfc under webroot.
@@ -239,10 +239,10 @@ component accessors=true {
 
 	// file extensions as a comma separated list which gets compiled when used in the CFInclude tag * for all.
 	property name='compileExtForCFInclude' type='string' _isCFConfig=true;
-	
+
 	property name='generalErrorTemplate' type='string' _isCFConfig=true;
 	property name='missingErrorTemplate' type='string' _isCFConfig=true;
-	
+
 	// Maximum number of parameters in a POST request sent to the server.
 	property name='postParametersLimit' type='numeric' _isCFConfig=true;
 	// Limits the amount of data in MB that can be posted to the server in a single request.
@@ -251,8 +251,8 @@ component accessors=true {
 	property name='throttleThreshold' type='numeric' _isCFConfig=true;
 	// Limits total memory size in MB for the throttle
 	property name='totalThrottleMemory' type='numeric' _isCFConfig=true;
-			
-	
+
+
 	// Maximum number of simultaneous Template requests
 	property name='maxTemplateRequests' type='numeric' _isCFConfig=true;
 	// Maximum number of simultaneous Flash Remoting requests
@@ -269,10 +269,10 @@ component accessors=true {
 	property name='requestQueueTimeout' type='numeric' _isCFConfig=true;
 	// Request Queue Timeout Page
 	property name='requestQueueTimeoutPage' type='string' _isCFConfig=true;
-			
+
 	// Key is cache connection name, value is struct of properties
 	property name='caches' type='struct' _isCFConfig=true;
-				
+
 	// name of default Object cache connection
 	property name='cacheDefaultObject' type='string' _isCFConfig=true;
 	// name of default function cache connection
@@ -291,7 +291,7 @@ component accessors=true {
 	property name='cacheDefaultHTTP' type='string' _isCFConfig=true;
 	// name of default WebService cache connection
 	property name='cacheDefaultWebservice' type='string' _isCFConfig=true;
-	
+
 	// TODO:
 	//property name='externalizeStrings' type='string' _isCFConfig=true;
 	//property name='restMappings' type='array' _isCFConfig=true;
@@ -312,28 +312,28 @@ component accessors=true {
 	//property name='debuggingDumpEnabled' type='boolean' _isCFConfig=true;
 	//property name='debuggingTimerEnabled' type='boolean' _isCFConfig=true;
 	//property name='debuggingImplicitVariableAccessEnabled' type='boolean' _isCFConfig=true;
-	
+
 	// Enable logging for scheduled tasks
 	property name='schedulerLoggingEnabled' type='boolean' _isCFConfig=true;
-	
-	// Enable Event Gateway Services 
+
+	// Enable Event Gateway Services
 	property name='eventGatewayEnabled' type='boolean' _isCFConfig=true;
-	
+
 	// Enable WebSocket Service
 	property name='websocketEnabled' type='boolean' _isCFConfig=true;
-	
+
 	// Enable robust error information (Adobe only)
 	property name='robustExceptionEnabled' type='boolean' _isCFConfig=true;
 	// Enable Ajax debugging window (Adobe only)
 	property name='ajaxDebugWindowEnabled' type='boolean' _isCFConfig=true;
-	// Enable Request Debugging Output 
+	// Enable Request Debugging Output
 	property name='debuggingEnabled' type='boolean' _isCFConfig=true;
-	// Remote DOM Inspection Settings 
+	// Remote DOM Inspection Settings
 	property name='weinreRemoteInspectionEnabled' type='boolean' _isCFConfig=true;
 	// Report Execution Times
 	property name='debuggingReportExecutionTimes' type='boolean' _isCFConfig=true;
-	
-	
+
+
 	// Enable Flash remoting
 	property name='FlashRemotingEnable' type='boolean' _isCFConfig=true;
 	//  Enable Remote Adobe LiveCycle Data Management access
@@ -344,7 +344,7 @@ component accessors=true {
 	property name='RMISSLKeystore' type='string' _isCFConfig=true;
 	// RMI SSL Keystore Password
 	property name='RMISSLKeystorePassword' type='string' _isCFConfig=true;
-	
+
 	// Plain text admin password
 	property name='adminPassword' type='string' _isCFConfig=true;
 	// Plain text admin RDS password
@@ -363,8 +363,8 @@ component accessors=true {
 	property name='defaultHspw' type='string' _isCFConfig=true;
 	// hashed default password for new Lucee/Railo web context
 	property name='defaultPw' type='string' _isCFConfig=true;
-	
-	
+
+
 	// Password required for admin
 	property name='adminLoginRequired' type='boolean' _isCFConfig=true;
 	// Password required for RDS
@@ -385,25 +385,25 @@ component accessors=true {
 	property name='adminAllowedIPList' type='string' _isCFConfig=true;
 	// Enable secure profile.  Note, fipping this flag doesn't actually change any of the security settings.  It really just tracks the fact that you've enabled it at some point.
 	property name='secureProfileEnabled' type='boolean' _isCFConfig=true;
-	
-	
+
+
 	// TODO: adminUsers array (AuthorizedUsers)
 	// TODO: sandboxes (contexts)
-	
+
 	// License key (only used for Adobe)
 	property name='license' type='string' _isCFConfig=true;
 	// Previous license key (required for an upgrade license key)
 	property name='previousLicense' type='string' _isCFConfig=true;
-	
-	
-	// TODO: Figure out what hashing algorithms each version of ACF use, and share the 
+
+
+	// TODO: Figure out what hashing algorithms each version of ACF use, and share the
 	// same setting so the hashes passwords are as portable as possible
-	
+
 	// hashed admin password for Adobe CF11
 	property name='ACF11Password' type='string' _isCFConfig=true;
 	// hashed RDS password for Adobe CF11
 	property name='ACF11RDSPassword' type='string' _isCFConfig=true;
-	
+
 	/**
 	* Constructor
 	*/
@@ -411,22 +411,22 @@ component accessors=true {
 		// This will need to be set before you can read/write
 		setCFHomePath( '' );
 	}
-	
+
 	/**
 	* Custom setter to clean up paths
-	*/	
+	*/
 	function setCFHomePath( required string CFHomePath ) {
 		variables.CFHomePath = normalizeSlashes( arguments.CFHomePath );
 		return this;
 	}
-	
+
 	////////////////////////////////////////
 	// Custom Setters for complex types
 	////////////////////////////////////////
-	
+
 	/**
 	* Add a single cache to the config
-	* 
+	*
 	* @name name of the cache to save or update
 	* @class Java class of implementing provider
 	* @type The type of cache. This is a shortcut for providing the "class" parameter. Values "ram", and "ehcache".
@@ -448,16 +448,16 @@ component accessors=true {
 		if( !isNull( readOnly ) ) { cacheConnection[ 'readOnly' ] = readOnly; };
 		if( !isNull( storage ) ) { cacheConnection[ 'storage' ] = storage; };
 		if( !isNull( custom ) ) { cacheConnection[ 'custom' ] = custom; };
-		
+
 		var thisCaches = getCaches() ?: {};
 		thisCaches[ arguments.name ] = cacheConnection;
 		setCaches( thisCaches );
-		return this;	
+		return this;
 	}
-  
+
 	/**
 	* Add a single datasource to the config
-	* 
+	*
 	* @name Name of datasource
 	* @allowSelect Allow select operations
 	* @allowDelete Allow delete operations
@@ -470,10 +470,10 @@ component accessors=true {
 	* @allowAlter Allow alter operations
 	* @allowStoredProcs Allow Stored proc calls
 	* @blob Enable blob
-	* @blobBuffer Number of bytes to retreive in binary fields 
+	* @blobBuffer Number of bytes to retreive in binary fields
 	* @class Java class of driver
 	* @clob Enable clob
-	* @clobBuffer Number of chars to retreive in long text fields 
+	* @clobBuffer Number of chars to retreive in long text fields
 	* @maintainConnections Maintain connections accross client requests
 	* @connectionLimit Max number of connections. -1 means unlimimted
 	* @connectionTimeout Connectiontimeout in minutes
@@ -501,7 +501,7 @@ component accessors=true {
 	* @validate Enable validating this datasource connection every time it's used
 	* @validationQuery Query to run when validating datasource connection
 	* @logActivity Enable logging queries to a text file
-	* @logActivityFile A file path ending with .txt to log to	
+	* @logActivityFile A file path ending with .txt to log to
 	* @disableAutogeneratedKeyRetrieval Disable retrieval of autogenerated keys
 	* @SID Used for Oracle datasources
 	* @linkedServers Enable Oracle linked servers support
@@ -564,7 +564,7 @@ component accessors=true {
 		) {
 		var ds = {};
 		if( !isNull( database ) ) { ds[ 'database' ] = database; };
-		
+
 		if( !isNull( allowSelect ) ) { ds[ 'allowSelect' ] = allowSelect; };
 		if( !isNull( allowDelete ) ) { ds[ 'allowDelete' ] = allowDelete; };
 		if( !isNull( allowUpdate ) ) { ds[ 'allowUpdate' ] = allowUpdate; };
@@ -575,7 +575,7 @@ component accessors=true {
 		if( !isNull( allowDrop ) ) { ds[ 'allowDrop' ] = allowDrop; };
 		if( !isNull( allowAlter ) ) { ds[ 'allowAlter' ] = allowAlter; };
 		if( !isNull( allowStoredProcs ) ) { ds[ 'allowStoredProcs' ] = allowStoredProcs; };
-		
+
 		if( !isNull( blob ) ) { ds[ 'blob' ] = blob; };
 		if( !isNull( class ) ) { ds[ 'class' ] = class; };
 		if( !isNull( dbdriver ) ) { ds[ 'dbdriver' ] = dbdriver; };
@@ -610,16 +610,16 @@ component accessors=true {
 		if( !isNull( clientApplicationName ) ) { ds[ 'clientApplicationName' ] = clientApplicationName; };
 		if( !isNull( clientApplicationNamePrefix ) ) { ds[ 'clientApplicationNamePrefix' ] = clientApplicationNamePrefix; };
 		if( !isNull( description ) ) { ds[ 'description' ] = description; };
-		
+
 		var thisDatasources = getDataSources() ?: {};
-		thisDatasources[ arguments.name ] = ds; 
+		thisDatasources[ arguments.name ] = ds;
 		setDatasources( thisDatasources );
 		return this;
 	}
-	
+
 	/**
 	* Add a single mail server to the config
-	* 
+	*
 	* @idleTimout Idle timeout in seconds
 	* @lifeTimeout Overall timeout in seconds
 	* @password Plain text password for mail server
@@ -637,9 +637,9 @@ component accessors=true {
 		string smtp,
 		boolean SSL,
 		boolean TLS,
-		string username		
+		string username
 	) {
-			
+
 		var mailServer = {};
 		if( !isNull( idleTimeout ) ) { mailServer[ 'idleTimeout' ] = idleTimeout; };
 		if( !isNull( lifeTimeout ) ) { mailServer[ 'lifeTimeout' ] = lifeTimeout; };
@@ -649,16 +649,16 @@ component accessors=true {
 		if( !isNull( ssl ) ) { mailServer[ 'ssl' ] = ssl; };
 		if( !isNull( tls ) ) { mailServer[ 'tls' ] = tls; };
 		if( !isNull( username ) ) { mailServer[ 'username' ] = username; };
-		
+
 		var thisMailServers = getMailServers() ?: [];
-		thisMailServers.append( mailServer ); 
+		thisMailServers.append( mailServer );
 		setMailServers( thisMailServers );
 		return this;
 	}
-	
+
 	/**
 	* Add a single client storage location to the config.  Only used for Adobe engines
-	* 
+	*
 	* @name Name of the storage.  "cookie", "registry" or a datasource name
 	* @description The description of the storage
 	* @DSN Name of DSN for JDBC storage locations
@@ -676,7 +676,7 @@ component accessors=true {
 		numeric purgeTimeout,
 		string type
 	) {
-			
+
 		var clientStorageLocation = {};
 		if( !isNull( name ) ) { clientStorageLocation[ 'name' ] = name; };
 		if( !isNull( description ) ) { clientStorageLocation[ 'description' ] = description; };
@@ -685,13 +685,13 @@ component accessors=true {
 		if( !isNull( purgeEnable ) ) { clientStorageLocation[ 'purgeEnable' ] = purgeEnable; };
 		if( !isNull( purgeTimeout ) ) { clientStorageLocation[ 'purgeTimeout' ] = purgeTimeout; };
 		if( !isNull( type ) ) { clientStorageLocation[ 'type' ] = type; };
-		
+
 		var thisClientStorageLocations = getClientStorageLocations() ?: {};
-		thisClientStorageLocations[ name ] = clientStorageLocation; 
+		thisClientStorageLocations[ name ] = clientStorageLocation;
 		setClientStorageLocations( thisClientStorageLocations );
 		return this;
 	}
-	
+
 	/**
 	* Add a single CF mapping to the config
 	*
@@ -699,8 +699,8 @@ component accessors=true {
 	* @physical The physical path that the mapping points to
 	* @archive Path to the Lucee/Railo archive
 	* @inspectTemplate String containing one of "never", "once", "always", "" (inherit)
-	* @listenerMode 
-	* @listenerType 
+	* @listenerMode
+	* @listenerType
 	* @primary Strings containing one of "physical", "archive"
 	* @readOnly True/false
 	*/
@@ -714,7 +714,7 @@ component accessors=true {
 			string primary,
 			boolean readOnly
 		) {
-		
+
 		var mapping = {};
 		if( !isNull( physical ) ) { mapping.physical = physical; };
 		if( !isNull( archive ) ) { mapping.archive = archive; };
@@ -723,18 +723,18 @@ component accessors=true {
 		if( !isNull( database ) ) { mapping.listenerType = listenerType; };
 		if( !isNull( primary ) ) { mapping.primary = primary; };
 		if( !isNull( readOnly ) ) { mapping.readOnly = readOnly; };
-		
+
 		var thisCFMappings = getCFMappings() ?: {};
-		thisCFMappings[ arguments.virtual ] = mapping; 
+		thisCFMappings[ arguments.virtual ] = mapping;
 		setCFMappings( thisCFMappings );
-		return this;		
+		return this;
 	}
-	
+
 	/**
 	* Add a single rest mapping to the config
 	*/
 	function addRestMapping() { throw 'addRestMapping() not implemented'; }
-	
+
 	/**
 	* Add a single custom tag to the config
 	*/
@@ -786,7 +786,7 @@ component accessors=true {
 		for( var propName in getConfigProperties() ) {
 			var thisValue = this[ 'get' & propName ]();
 			if( !isNull( thisValue ) ) {
-				memento[ propName ] = thisValue;				
+				memento[ propName ] = thisValue;
 			}
 		}
 		// This could be an empty struct if nothing has been set.
@@ -825,12 +825,12 @@ component accessors=true {
 		var configProperties = [];
 		for( var prop in md.properties ) {
 			if( prop._isCFConfig ?: false ) {
-				configProperties.append( prop.name );				
+				configProperties.append( prop.name );
 			}
 		}
 		return configProperties;
 	}
-	
+
 	/*
 	* Turns all slashes in a path to forward slashes except for \\ in a Windows UNC network share
 	*/
@@ -838,7 +838,7 @@ component accessors=true {
 		if( path.left( 2 ) == '\\' ) {
 			return '\\' & path.replace( '\', '/', 'all' ).right( -2 );
 		} else {
-			return path.replace( '\', '/', 'all' );			
+			return path.replace( '\', '/', 'all' );
 		}
 	}
 
