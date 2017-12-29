@@ -104,7 +104,13 @@ component accessors=true singleton {
 						result.version = initContents.mid( findVersion.pos[ 2 ], findVersion.len[ 2 ] );
 					}
 				} else {
-					// Potential backup approaches here if the file above doesn't exist.
+					// Fallback approach-- guess the version from the path
+					// See if the path looks like C:/coldfusion11/cfusion
+					var findresults = CFHomePath.reFindNoCase( '[\\/]coldfusion([0-9]{2,4})[\\/]', 1, true );
+					if( findresults.len.len() == 2 ) {
+						// Strip the version number out
+						result.version = CFHomePath.mid( findresults.pos[ 2 ], findresults.len[ 2 ] );
+					} 
 				}
 				
 				return result;
