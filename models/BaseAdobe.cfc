@@ -654,7 +654,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getDebuggingEnabled() ) ) { thisConfig[ 1 ][ 'enabled' ] = !!getDebuggingEnabled(); }
 		if( !isNull( getDebuggingReportExecutionTimes() ) ) { thisConfig[ 1 ][ 'template' ] = !!getDebuggingReportExecutionTimes(); }
 		
-		if( !isNull( getWeinreRemoteInspectionEnabled() ) ) { thisConfig[ 4 ][ 'REMOTE_INSPECTION_ENABLED' ] = !!getWeinreRemoteInspectionEnabled(); }
+		if( !isNull( getWeinreRemoteInspectionEnabled() ) ) {
+			// CF will freak out if the 3rd index exists, but is null.
+			thisConfig[ 3 ] = thisConfig[ 3 ] ?: {};
+			thisConfig[ 4 ][ 'REMOTE_INSPECTION_ENABLED' ] = !!getWeinreRemoteInspectionEnabled();
+		}
 		
 		
 		writeWDDXConfigFile( thisConfig, configFilePath );
