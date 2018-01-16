@@ -789,6 +789,10 @@ component accessors="true" {
 				memento[ propName ] = thisValue;
 			}
 		}
+		
+		// Force keys to be alphabetizes for consistent serialization
+		memento = convertStructToSorted( memento );
+		
 		// This could be an empty struct if nothing has been set.
 		return memento;
 	}
@@ -840,6 +844,27 @@ component accessors="true" {
 		} else {
 			return path.replace( '\', '/', 'all' );
 		}
+	}
+
+
+	/*
+	* Sort a structs keys alphabetically.  There is not native support for 
+	* sorted structs in Lucee at the time I'm writing this.
+	*/	
+	function convertStructToSorted( required struct unsortedStruct ) {	
+		var sortedStruct = structNew('ordered');		
+		
+		// Sort the struct keys and insert them in that order to ordered struct
+		unsortedStruct.keyArray().sort( 'textnocase' ).each( function( i ) { 
+			// Recurse into nested structs
+			if( isStruct( unsortedStruct[ i ] ) ) {
+				sortedStruct[ i ] = convertStructToSorted( unsortedStruct[ i ] );
+			} else {
+				sortedStruct[ i ] = unsortedStruct[ i ];				
+			}
+		 } );
+		
+		return sortedStruct;
 	}
 
 }
