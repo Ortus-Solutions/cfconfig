@@ -1,8 +1,8 @@
 {
     "name":"CFConfig Services",
-    "version":"0.18.9-alpha",
+    "version":"0.18.10-alpha",
     "author":"Brad Wood",
-    "location":"Ortus-Solutions/cfconfig#v0.18.9-alpha",
+    "location":"Ortus-Solutions/cfconfig#v0.18.10-alpha",
     "homepage":"https://github.com/Ortus-Solutions/cfconfig",
     "slug":"cfconfig-services",
     "shortDescription":"A library to read/write/store CF engine configs.  This project is just the service layer, not the CLI component.",
@@ -29,12 +29,12 @@
         "/testbox"
     ],
     "installPaths":{
-        "lucee-password-util":"modules\\lucee-password-util",
-        "adobe-password-util":"modules\\adobe-password-util",
+        "lucee-password-util":"modules/lucee-password-util",
+        "adobe-password-util":"modules/adobe-password-util",
         "coldbox":"coldbox",
         "testbox":"testbox",
-        "propertyFile":"modules\\propertyFile",
-        "semver":"modules\\semver"
+        "propertyFile":"modules/propertyFile",
+        "semver":"modules/semver"
     },
     "devDependencies":{
         "coldbox":"^4.3.0+188",
