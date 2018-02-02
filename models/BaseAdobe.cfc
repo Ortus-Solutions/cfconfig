@@ -235,14 +235,17 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	private function readDebug() {
 		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDebugConfigPath(), '/' ) );
 		
+		// Not checking for existance here because I guess these are always going to be there? ¯\_(ツ)_/¯
 		setRobustExceptionEnabled( thisConfig[ 1 ].robust_enabled );
 		setAjaxDebugWindowEnabled( thisConfig[ 1 ].ajax_enabled );
 		setDebuggingEnabled( thisConfig[ 1 ].enabled );
 		setDebuggingReportExecutionTimes( thisConfig[ 1 ].template );
 		
-		if( !isNull( thisConfig[ 4 ].remote_inspection_enabled ) ) {
-			setWeinreRemoteInspectionEnabled( thisConfig[ 4 ].remote_inspection_enabled );
-		}
+		if( !isNull( thisConfig[ 3 ].LINE_DEBUGGER_ENABLED ) ) { setLineDebuggerEnabled( thisConfig[ 3 ].LINE_DEBUGGER_ENABLED ); }
+		if( !isNull( thisConfig[ 3 ].LINE_DEBUGGER_PORT ) ) { setLineDebuggerPort( thisConfig[ 3 ].LINE_DEBUGGER_PORT ); }
+		if( !isNull( thisConfig[ 3 ].MAX_DEBUG_SESSIONS ) ) { setLineDebuggerMaxSessions( thisConfig[ 3 ].MAX_DEBUG_SESSIONS ); }
+		
+		if( !isNull( thisConfig[ 4 ].remote_inspection_enabled ) ) { setWeinreRemoteInspectionEnabled( thisConfig[ 4 ].remote_inspection_enabled ); }				
 	}
 	
 	private function readScheduler() {
@@ -654,13 +657,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getDebuggingEnabled() ) ) { thisConfig[ 1 ][ 'enabled' ] = !!getDebuggingEnabled(); }
 		if( !isNull( getDebuggingReportExecutionTimes() ) ) { thisConfig[ 1 ][ 'template' ] = !!getDebuggingReportExecutionTimes(); }
 		
+		if( !isNull( getLineDebuggerEnabled() ) ) { thisConfig[ 3 ][ 'LINE_DEBUGGER_ENABLED' ] = !!getLineDebuggerEnabled(); }
+		if( !isNull( getLineDebuggerPort() ) ) { thisConfig[ 3 ][ 'LINE_DEBUGGER_PORT' ] = getLineDebuggerPort()+0; }
+		if( !isNull( getLineDebuggerMaxSessions() ) ) { thisConfig[ 3 ][ 'MAX_DEBUG_SESSIONS' ] = getLineDebuggerMaxSessions()+0; }
+			
 		if( !isNull( getWeinreRemoteInspectionEnabled() ) ) {
 			// CF will freak out if the 3rd index exists, but is null.
 			thisConfig[ 3 ] = thisConfig[ 3 ] ?: {};
 			thisConfig[ 4 ][ 'REMOTE_INSPECTION_ENABLED' ] = !!getWeinreRemoteInspectionEnabled();
 		}
-		
-		
 		writeWDDXConfigFile( thisConfig, configFilePath );
 	}
 	

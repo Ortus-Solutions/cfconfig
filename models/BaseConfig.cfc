@@ -292,6 +292,13 @@ component accessors="true" {
 	// name of default WebService cache connection
 	property name='cacheDefaultWebservice' type='string' _isCFConfig=true;
 
+	// Line Debugger Settings - Allow Line Debugging
+	property name='lineDebuggerEnabled' type='boolean' _isCFConfig=true;
+	// Line Debugger Settings - Debugger Port
+	property name='lineDebuggerPort' type='numeric' _isCFConfig=true;
+	// Line Debugger Settings - Maximum Simultaneous Debugging Sessions:
+	property name='lineDebuggerMaxSessions' type='numeric' _isCFConfig=true;
+	
 	// TODO:
 	//property name='externalizeStrings' type='string' _isCFConfig=true;
 	//property name='restMappings' type='array' _isCFConfig=true;
