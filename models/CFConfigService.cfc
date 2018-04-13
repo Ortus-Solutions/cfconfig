@@ -218,7 +218,17 @@ component accessors=true singleton {
 		// An empty query object to hold our results
 		var qryResult = queryNew( 'propertyName,fromValue,toValue,fromOnly,toOnly,bothPopulated,bothEmpty,valuesMatch,valuesDiffer' );
 		// Recurse into these complex properties, but don't add them directly to the query+
-		var specialColumns = [ 'CFMappings', 'datasources', 'mailServers', 'caches', 'customTags', 'clientStorageLocations', 'loggers' ];
+		var specialColumns = [
+			'CFMappings',
+			'datasources',
+			'mailServers',
+			'caches',
+			'customTags',
+			'clientStorageLocations',
+			'loggers',
+			'restMappings',
+			'scheduledTasks'
+		];
 		
 		compareStructs( qryResult, fromData, toData, configProps, specialColumns );
 		
