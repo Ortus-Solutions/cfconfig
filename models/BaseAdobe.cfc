@@ -741,6 +741,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		} else {
 			var thisConfig = readWDDXConfigFile( getSchedulerConfigTemplate() );
 		}
+		
+		thisConfig[ 1 ] = {};
 
 		for( var taskName in getScheduledTasks() ?: {} ) {
 			var thisTask = getScheduledTasks()[ taskName ];
