@@ -172,13 +172,14 @@ component accessors=true singleton {
 		required string fromFormat,
 		required string toFormat,
 		string fromVersion='0',
-		string toVersion='0'
+		string toVersion='0',
+		pauseTasks=false
 	) {
 		 var oFrom = determineProvider( fromFormat, fromVersion ).read( from );
 		 
 		 var oTo = determineProvider( toFormat, toVersion )
 		 	.setMemento( oFrom.getMemento() )
-		 	.write( to );
+		 	.write( to, pauseTaskspauseTasks );
 		 
 	}
 	

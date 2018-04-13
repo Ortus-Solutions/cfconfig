@@ -322,6 +322,9 @@ component accessors="true" {
 
 	// Enable logging for scheduled tasks
 	property name='schedulerLoggingEnabled' type='boolean' _isCFConfig=true;
+	property name='schedulerClusterDatasource' type='string' _isCFConfig=true;
+	property name='schedulerLogFileExtensions' type='string' _isCFConfig=true;
+	property name='scheduledTasks' type='struct' _isCFConfig=true;
 
 	// Enable Event Gateway Services
 	property name='eventGatewayEnabled' type='boolean' _isCFConfig=true;
@@ -782,6 +785,88 @@ component accessors="true" {
 		var thisLoggers = getLoggers() ?: {};
 		thisLoggers[ arguments.name ] = logger;
 		setLoggers( thisLoggers );
+		return this;
+	}
+
+	/**
+	* Add a single Scheduled Task to the config
+	* @task The name of the task
+	* @url The full URL to hit
+	* @group The group for the task (Adobe only)
+	* @chained Is this task chained?
+	* @clustered Is this task clustered?
+	* @crontime Schedule in Cron format
+	* @end_date Date when task will end as 1/1/2000
+	* @end_time Time when task will end as 9:57:00 AM
+	* @eventhandler Specify a dot-delimited CFC path under webroot, for example a.b.server (without the CFC extension). The CFC should implement CFIDE.scheduler.ITaskEventHandler.
+	* @exclude Comma-separated list of dates or date range for exclusion in the schedule period.
+	* @file Save output of task to this file
+	* @http_port The port for the main task URL
+	* @http_proxy_port The port for the proxy server
+	* @interval The type of schedule. Once, Weekly, Daily, Monthly, an integer containing the number of seconds between runs, Custom, crontime, chained, 
+	* @misfire What to do in case of a misfire.  Ignore, FireNow, invokeHander
+	* @oncomplete Comma-separated list of chained tasks to be run after the completion of the current task (task1:group1,task2:group2...)
+	* @onexception Specify what to do if a task results in error. Ignore, Pause, ReFire, InvokeHandler
+	* @overwrite Overwrite the log file?
+	* @password Basic auth password to use when hitting URL
+	* @priority An integer that indicates the priority of the task.
+	* @proxy_password Proxy server password
+	* @proxy_server Name of the proxy server to use
+	* @proxy_user Proxy server username
+	* @saveOutputToFile Save output to a file?
+	* @repeat -1 to repeat forever, otherwise integer.
+	* @requestTimeOut Number of seconds to timeout the request.  Empty string for none. 
+	* @resolveurl When saving output of task to file, Resolve internal URLs so that links remain intact.
+	* @retrycount The number of reattempts if the task results in an error.
+	* @start_date The date to start executing the task
+	* @start_time The date to end excuting the task
+	* @status The current status of the task.  Running, Paused
+	* @username Basic auth username to use when hitting URL
+	*/
+	function addScheduledTask(
+		required string task,
+		string url,
+		string group,
+		boolean chained,
+		boolean clustered,
+		string crontime,
+		string endDate,
+		string endTime,
+		string eventhandler,
+		string exclu de,
+		string file,
+		string httpPort,
+		string httpProxyPort,
+		string interval,
+		string misfire,
+		string oncomplete,
+		string onexception,
+		string overwrite,
+		string password,
+		string priority,
+		string proxyPassword,
+		string proxyServer,
+		string proxy_user,
+		boolean saveOutputToFile,
+		string repeat,
+		string requestTimeOut,
+		boolean resolveurl,
+		string retryCount,
+		string startDate,
+		string startTime,
+		string status,
+		string username
+		) {
+
+		var scheduledTask = {};
+		
+		for( var arg in arguments ) {
+			if( !isNull( arguments[ arg ] ) ) { scheduledTask[ arg ] = arguments[ arg ]; };
+		}
+		
+		var thisScheduledTasks = getScheduledTasks() ?: {};
+		thisScheduledTasks[ ( arguments.group ?: 'default' ) & ':' & arguments.task ] = scheduledTask;
+		setScheduledTasks( thisScheduledTasks );
 		return this;
 	}
 

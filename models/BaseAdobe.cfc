@@ -249,9 +249,70 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readScheduler() {
+		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
 		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSchedulerConfigPath(), '/' ) );
 		
-		setSchedulerLoggingEnabled( thisConfig[ 2 ] );
+		if( isStruct( thisConfig[ 1 ] ) ) {
+			for( var thisTaskID in thisConfig[ 1 ] ) {
+				var thisTask = thisConfig[ 1 ][ thisTaskID ];
+				var params = {};
+				
+				if( !isNull( thisTask.chained ) && isBoolean( thisTask.chained ) ) { params[ 'chained' ] = thisTask.chained; }
+				if( !isNull( thisTask.clustered ) && isBoolean( thisTask.clustered ) ) { params[ 'clustered' ] = thisTask.clustered; }
+				if( !isNull( thisTask.crontime ) ) { params[ 'crontime' ] = thisTask.crontime; }
+				if( !isNull( thisTask.end_date ) ) { params[ 'endDate' ] = thisTask.end_date; }
+				if( !isNull( thisTask.end_time ) ) { params[ 'endTime' ] = thisTask.end_time; }
+				if( !isNull( thisTask.eventhandler ) ) { params[ 'eventhandler' ] = thisTask.eventhandler; }
+				if( isNull( params[ 'eventhandler' ] ) && !isNull( thisTask.eventhandlerrp ) ) { params[ 'eventhandler' ] = thisTask.eventhandlerrp; }
+				if( !isNull( thisTask.exclude ) ) { params[ 'exclude' ] = thisTask.exclude; }
+				if( !isNull( thisTask.file ) ) { params[ 'file' ] = thisTask.file; }
+				if( !isNull( thisTask.group ) ) { params[ 'group' ] = thisTask.group; }
+				if( !isNull( thisTask.http_port ) ) { params[ 'httpPort' ] = thisTask.http_port; }
+				if( !isNull( thisTask.http_proxy_port ) ) { params[ 'httpProxyPort' ] = thisTask.http_proxy_port; }
+				if( !isNull( thisTask.interval ) ) { params[ 'interval' ] = thisTask.interval; }
+				if( !isNull( thisTask.oncomplete ) ) { params[ 'oncomplete' ] = thisTask.oncomplete; }
+				if( !isNull( thisTask.overwrite ) ) { params[ 'overwrite' ] = thisTask.overwrite; }
+				if( !isNull( thisTask.password ) && thisTask.password.len() ) { params[ 'password' ] = passwordManager.decryptMailServer( thisTask.password ); }
+				if( !isNull( thisTask.priority ) ) { params[ 'priority' ] = thisTask.priority; }
+				if( !isNull( thisTask.proxy_password ) && thisTask.proxy_password.len() ) { params[ 'proxyPassword' ] = passwordManager.decryptMailServer( thisTask.proxy_password ); }
+				if( !isNull( thisTask.proxy_server ) ) { params[ 'proxyServer' ] = thisTask.proxy_server; }
+				if( !isNull( thisTask.proxy_user ) ) { params[ 'proxyUser' ] = thisTask.proxy_user; }
+				if( !isNull( thisTask.publish ) && isBoolean( thisTask.publish ) ) { params[ 'saveOutputToFile' ] = thisTask.publish; }
+				if( !isNull( thisTask.repeat ) ) { params[ 'repeat' ] = thisTask.repeat; }
+				if( !isNull( thisTask.request_time_out ) ) { params[ 'requestTimeOut' ] = thisTask.request_time_out; }
+				if( !isNull( thisTask.resolveURL ) && isBoolean( thisTask.resolveURL ) ) { params[ 'resolveURL' ] = thisTask.resolveURL; }
+				if( !isNull( thisTask.retryCount ) ) { params[ 'retryCount' ] = thisTask.retryCount; }
+				if( !isNull( thisTask.start_date ) ) { params[ 'startDate' ] = thisTask.start_date; }
+				if( !isNull( thisTask.start_time ) ) { params[ 'startTime' ] = thisTask.start_time; }
+				if( !isNull( thisTask.status ) ) { params[ 'status' ] = thisTask.status; }
+				if( !isNull( thisTask.task ) ) { params[ 'task' ] = thisTask.task; }
+				if( !isNull( thisTask.URL ) ) { params[ 'URL' ] = thisTask.URL; }
+				if( !isNull( thisTask.username ) ) { params[ 'username' ] = thisTask.username; }
+								
+				// Adobe stores empty string for "ignore"
+				if( !isNull( thisTask.onexception ) ) {
+					if( !thisTask.onexception.len() ) {
+						thisTask.onexception = 'Ignore';
+					}
+					params[ 'onexception' ] = thisTask.onexception;
+				}
+				
+				// Adobe stores empty string for "ignore"
+				if( !isNull( thisTask.misfire ) ) {
+					if( !thisTask.misfire.len() ) {
+						thisTask.misfire = 'Ignore';
+					}
+					params[ 'misfire' ] = thisTask.misfire;
+				}
+				
+				addScheduledTask( argumentCollection = params );
+			}
+		}
+				
+		if( !isNull( thisConfig[ 2 ] ) ) { setSchedulerLoggingEnabled( thisConfig[ 2 ] ); }
+		if( !isNull( thisConfig[ 3 ] ) ) { setSchedulerClusterDatasource( thisConfig[ 3 ] ); }
+		if( !isNull( thisConfig[ 4 ] ) ) { setSchedulerLogFileExtensions( thisConfig[ 4 ] ); }
+		
 	}
 	
 	private function readEventGateway() {
@@ -273,7 +334,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			for( var storageLocationName in thisConfig[ 1 ] ) {
 				var thisStorageLocation = thisConfig[ 1 ][ storageLocationName ];
 				
-				var params = { name : storageLocationName };				
+				var params = { name : storageLocationName };
 				if( !isNull( thisStorageLocation.description ) ) { params[ 'description' ] = thisStorageLocation.description; }
 				if( !isNull( thisStorageLocation.disable_globals ) ) { params[ 'disableGlobals' ] = thisStorageLocation.disable_globals; }
 				if( !isNull( thisStorageLocation.purge ) ) { params[ 'purgeEnable' ] = thisStorageLocation.purge; }
@@ -435,14 +496,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( len( propertyFile.get( 'sn', '' ) ) ) { setLicense( propertyFile.get( 'sn', '' ) ); }
 		if( len( propertyFile.get( 'previous_sn', '' ) ) ) { setPreviousLicense( propertyFile.get( 'previous_sn', '' ) ); }
 	}
-		
+
 
 	/**
 	* I write out config from a base JSON format
 	*
 	* @CFHomePath The JSON file to write to
 	*/
-	function write( string CFHomePath ){
+	function write( string CFHomePath, pauseTasks=false ){
 		setCFHomePath( arguments.CFHomePath ?: getCFHomePath() );
 		var thisCFHomePath = getCFHomePath();
 		
@@ -468,7 +529,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeLicense();
 		writeSecurity();
 		writeDebug();
-		writeScheduler();
+		writescheduler( pauseTasks );
 		writeEventGateway();
 		writeWebsocket();
 		
@@ -669,7 +730,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeWDDXConfigFile( thisConfig, configFilePath );
 	}
 	
-	private function writeScheduler() {
+	private function writeScheduler( boolean pauseTasks=false ) {
+		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
 		var configFilePath = getCFHomePath().listAppend( getSchedulerConfigPath(), '/' );
 		
 		// If the target config file exists, read it in
@@ -680,7 +742,89 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var thisConfig = readWDDXConfigFile( getSchedulerConfigTemplate() );
 		}
 
+		for( var taskName in getScheduledTasks() ?: {} ) {
+			var thisTask = getScheduledTasks()[ taskName ];
+			var thisName = thisTask.task;
+			var thisGroup = thisTask.group ?: 'DEFAULT';
+			
+			// This will ensure every task has all the default data
+			var taskData = getDefaultScheduledTaskData();
+			taskData[ 'task' ] = thisName;
+			taskData[ 'chained' ] = thisTask.chained ?: taskData.chained;
+			taskData[ 'clustered' ] = thisTask.clustered ?: taskData.clustered;
+			taskData[ 'crontime' ] = thisTask.crontime ?: taskData.crontime;
+			taskData[ 'eventhandler' ] = thisTask.eventhandler ?: taskData.eventhandler;
+			taskData[ 'eventhandlerrp' ] = thisTask.eventhandler ?: taskData.eventhandler;
+			taskData[ 'exclude' ] = thisTask.exclude ?: taskData.exclude;
+			taskData[ 'file' ] = thisTask.file ?: taskData.file;
+			taskData[ 'group' ] = thisTask.group ?: taskData.group;
+			taskData[ 'http_port' ] = thisTask.httpPort ?: taskData.http_port;
+			taskData[ 'http_proxy_port' ] = thisTask.httpProxyPort ?: taskData.http_proxy_port;
+			taskData[ 'interval' ] = thisTask.interval ?: taskData.interval;
+			taskData[ 'oncomplete' ] = thisTask.oncomplete ?: taskData.oncomplete;
+			taskData[ 'overwrite' ] = thisTask.overwrite ?: taskData.overwrite;
+			taskData[ 'priority' ] = thisTask.priority ?: taskData.priority;
+			taskData[ 'proxy_server' ] = thisTask.proxyServer ?: taskData.proxy_server;
+			taskData[ 'proxy_user' ] = thisTask.proxyUser ?: taskData.proxy_user;
+			taskData[ 'publish' ] = !!( thisTask.saveOutputToFile ?: taskData.publish );
+			taskData[ 'repeat' ] = thisTask.repeat ?: taskData.repeat;
+			taskData[ 'request_time_out' ] = thisTask.requestTimeOut ?: taskData.request_time_out;
+			taskData[ 'resolveURL' ] = !!( thisTask.resolveURL ?: taskData.resolveURL );
+			taskData[ 'retryCount' ] = thisTask.retryCount ?: taskData.retryCount;
+			taskData[ 'start_date' ] = thisTask.startDate ?: taskData.start_date;
+			taskData[ 'start_time' ] = thisTask.startTime ?: taskData.start_time;
+			taskData[ 'URL' ] = thisTask.URL ?: taskData.URL;
+			taskData[ 'username' ] = thisTask.username ?: taskData.username;			
+					
+			// User can specify all tasks to be inserted in a paused state
+			if( pauseTasks ) {
+				taskData[ 'status' ] = 'Paused';	
+			} else {
+				taskData[ 'status' ] = thisTask.status ?: taskData.status;				
+			}
+					
+			if( !isNull( thisTask.proxyPassword ) && thisTask.proxyPassword.len() ) {
+				taskData.proxy_password = passwordManager.encryptMailServer( thisTask.proxyPassword );
+			}		
+			if( !isNull( thisTask.password ) && thisTask.password.len() ) {
+				taskData.password = passwordManager.encryptMailServer( thisTask.password );
+			}
+			
+			// Don't save it unless we have a time.
+			if( !isNull( thisTask.endTime ) && thisTask.endTime.len() ) {
+				taskData[ 'end_time' ] = thisTask.endTime;
+			}
+			
+			// Don't save it unless we have a date.
+			if( !isNull( thisTask.endDate ) && thisTask.endDate.len() ) {
+				taskData[ 'end_date' ] = thisTask.endDate;
+			}
+						
+			if( !isNull( thisTask.onexception ) ) {
+				// Adobe stores empty string for "ignore"
+				if( thisTask.onexception == 'Ignore' ) {
+					thisTask.onexception = '';
+				}
+				taskData[ 'onexception' ] = thisTask.onexception;
+			}
+						
+			if( !isNull( thisTask.misfire ) ) {
+				// Adobe stores empty string for "ignore"
+				if( thisTask.misfire == 'Ignore' ) {
+					thisTask.misfire = '';
+				}
+				taskData[ 'misfire' ] = thisTask.misfire;
+			}
+			
+			// Adobe uses this weird syntax as the key for each task
+			thisConfig[ 1 ][ 'SERVERSCHEDULETASK##$%^#thisGroup.ucase()###$%^#thisName.ucase()#' ] = taskData;
+		}
+
 		if( !isNull( getSchedulerLoggingEnabled() ) ) { thisConfig[ 2 ] = !!getSchedulerLoggingEnabled(); }
+		if( !isNull( getSchedulerClusterDatasource() ) ) { thisConfig[ 3 ] = getSchedulerClusterDatasource(); }
+		if( !isNull( getSchedulerLogFileExtensions() ) && getSchedulerLogFileExtensions().len() ) { thisConfig[ 4 ] = getSchedulerLogFileExtensions(); }
+		
+		
 		
 		writeWDDXConfigFile( thisConfig, configFilePath );
 	}
@@ -1051,6 +1195,49 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				.store( seedPropertiesPath );
 		}
 		
+	}
+	
+	private function getDefaultScheduledTaskData() {
+		// These appear to be the default when adding via the UI (tested in 2016)
+		return {
+			'appname' : 'serverscheduletask',
+			'chained' : 'false',
+			'clustered' : 'false',
+			'crontime' : '',
+			'eventhandler' : '',
+			'exclude' : '',
+			'file' : '',
+			'group' : '',
+			'http_port' : '80',
+			'http_proxy_port' : '80',
+			'interval' : '',
+			'lastfire' : '',
+			'misfire' : '',
+			'mode' : 'server',
+			'nextfire' : '',
+			'oncomplete' : '',
+			'onexception' : '',
+			'overwrite' : 'true',
+			'password' : '',
+			'path' : '\',
+			'priority' : '5',
+			'proxy_password' : '',
+			'proxy_server' : '',
+			'proxy_user' : '',
+			'publish' : false,
+			'remainingCount' : '1',
+			'repeat' : 0,
+			'request_time_out' : '',
+			'resolveURL' : false,
+			'retryCount' : '3',
+			'start_date' : '',
+			'start_time' : '',
+			'status' : 'Running', // Paused
+			'task' : '',
+			'url' : '',
+			'username' : '',
+			'request_time_out' : ''
+		};
 	}
 
 	private function readWDDXConfigFile( required string configFilePath ) {
