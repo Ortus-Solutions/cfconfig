@@ -752,31 +752,31 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			// This will ensure every task has all the default data
 			var taskData = getDefaultScheduledTaskData();
 			taskData[ 'task' ] = thisName;
-			taskData[ 'chained' ] = thisTask.chained ?: taskData.chained;
-			taskData[ 'clustered' ] = thisTask.clustered ?: taskData.clustered;
-			taskData[ 'crontime' ] = thisTask.crontime ?: taskData.crontime;
-			taskData[ 'eventhandler' ] = thisTask.eventhandler ?: taskData.eventhandler;
-			taskData[ 'eventhandlerrp' ] = thisTask.eventhandler ?: taskData.eventhandler;
-			taskData[ 'exclude' ] = thisTask.exclude ?: taskData.exclude;
-			taskData[ 'file' ] = thisTask.file ?: taskData.file;
-			taskData[ 'group' ] = thisTask.group ?: taskData.group;
-			taskData[ 'http_port' ] = thisTask.httpPort ?: taskData.http_port;
-			taskData[ 'http_proxy_port' ] = thisTask.httpProxyPort ?: taskData.http_proxy_port;
-			taskData[ 'interval' ] = thisTask.interval ?: taskData.interval;
-			taskData[ 'oncomplete' ] = thisTask.oncomplete ?: taskData.oncomplete;
-			taskData[ 'overwrite' ] = thisTask.overwrite ?: taskData.overwrite;
-			taskData[ 'priority' ] = thisTask.priority ?: taskData.priority;
-			taskData[ 'proxy_server' ] = thisTask.proxyServer ?: taskData.proxy_server;
-			taskData[ 'proxy_user' ] = thisTask.proxyUser ?: taskData.proxy_user;
+			taskData[ 'chained' ] = ( thisTask.chained ?: taskData.chained ) & '';
+			taskData[ 'clustered' ] = ( thisTask.clustered ?: taskData.clustered ) & '';
+			taskData[ 'crontime' ] = ( thisTask.crontime ?: taskData.crontime ) & '';
+			taskData[ 'eventhandler' ] = ( thisTask.eventhandler ?: taskData.eventhandler ) & '';
+			taskData[ 'eventhandlerrp' ] = ( thisTask.eventhandler ?: taskData.eventhandler ) & '';
+			taskData[ 'exclude' ] = ( thisTask.exclude ?: taskData.exclude ) & '';
+			taskData[ 'file' ] = ( thisTask.file ?: taskData.file ) & '';
+			taskData[ 'group' ] = ( thisTask.group ?: taskData.group ) & '';
+			taskData[ 'http_port' ] = ( thisTask.httpPort ?: taskData.http_port ) & '';
+			taskData[ 'http_proxy_port' ] = ( thisTask.httpProxyPort ?: taskData.http_proxy_port ) & '';
+			taskData[ 'interval' ] = ( thisTask.interval ?: taskData.interval ) & '';
+			taskData[ 'oncomplete' ] = ( thisTask.oncomplete ?: taskData.oncomplete ) & '';
+			taskData[ 'overwrite' ] = ( thisTask.overwrite ?: taskData.overwrite ) & '';
+			taskData[ 'priority' ] = ( thisTask.priority ?: taskData.priority ) & '';
+			taskData[ 'proxy_server' ] = ( thisTask.proxyServer ?: taskData.proxy_server ) & '';
+			taskData[ 'proxy_user' ] = ( thisTask.proxyUser ?: taskData.proxy_user ) & '';
 			taskData[ 'publish' ] = !!( thisTask.saveOutputToFile ?: taskData.publish );
-			taskData[ 'repeat' ] = thisTask.repeat ?: taskData.repeat;
-			taskData[ 'request_time_out' ] = thisTask.requestTimeOut ?: taskData.request_time_out;
+			taskData[ 'repeat' ] = ( thisTask.repeat ?: taskData.repeat ) & '';
+			taskData[ 'request_time_out' ] = ( thisTask.requestTimeOut ?: taskData.request_time_out ) & '';
 			taskData[ 'resolveURL' ] = !!( thisTask.resolveURL ?: taskData.resolveURL );
-			taskData[ 'retryCount' ] = thisTask.retryCount ?: taskData.retryCount;
-			taskData[ 'start_date' ] = thisTask.startDate ?: taskData.start_date;
-			taskData[ 'start_time' ] = thisTask.startTime ?: taskData.start_time;
-			taskData[ 'URL' ] = thisTask.URL ?: taskData.URL;
-			taskData[ 'username' ] = thisTask.username ?: taskData.username;			
+			taskData[ 'retryCount' ] = ( thisTask.retryCount ?: taskData.retryCount ) & '';
+			taskData[ 'start_date' ] = ( thisTask.startDate ?: taskData.start_date ) & '';
+			taskData[ 'start_time' ] = ( thisTask.startTime ?: taskData.start_time ) & '';
+			taskData[ 'URL' ] = ( thisTask.URL ?: taskData.URL ) & '';
+			taskData[ 'username' ] = ( thisTask.username ?: taskData.username ) & '';			
 					
 			// User can specify all tasks to be inserted in a paused state
 			if( pauseTasks ) {
