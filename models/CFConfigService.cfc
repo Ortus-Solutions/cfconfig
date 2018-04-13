@@ -179,7 +179,7 @@ component accessors=true singleton {
 		 
 		 var oTo = determineProvider( toFormat, toVersion )
 		 	.setMemento( oFrom.getMemento() )
-		 	.write( to, pauseTaskspauseTasks );
+		 	.write( to, pauseTasks );
 		 
 	}
 	
