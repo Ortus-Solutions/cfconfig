@@ -13,7 +13,8 @@
         "lucee-password-util":"^1.0.0",
         "adobe-password-util":"^1.0.0",
         "propertyFile":"^1.0.7",
-        "semver":"^1.0.0"
+        "semver":"^1.0.0",
+        "JSONPrettyPrint":"^1.2.6"
     },
     "scripts":{
         "postVersion":"package set location='Ortus-Solutions/cfconfig#v`package version`'",
@@ -34,7 +35,8 @@
         "coldbox":"coldbox",
         "testbox":"testbox",
         "propertyFile":"modules/propertyFile",
-        "semver":"modules/semver"
+        "semver":"modules/semver",
+        "JSONPrettyPrint":"modules/JSONPrettyPrint"
     },
     "devDependencies":{
         "coldbox":"^4.3.0+188",

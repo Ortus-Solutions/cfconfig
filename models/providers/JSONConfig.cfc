@@ -10,6 +10,9 @@
 */
 component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
+	// DI
+	property name='JSONPrettyPrint' inject='JSONPrettyPrint@JSONPrettyPrint';
+	
 	/**
 	* Constructor
 	*/
@@ -77,8 +80,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		var thisConfigRaw = serializeJSON( getMemento() );
 		// Ensure the parent directories exist
-		directoryCreate( path=getDirectoryFromPath( thisCFHomePath ), createPath=true, ignoreExists=true )
-		fileWrite( thisCFHomePath, getUtil().formatJson( thisConfigRaw ) );
+		directoryCreate( path=getDirectoryFromPath( thisCFHomePath ), createPath=true, ignoreExists=true );
+		fileWrite( thisCFHomePath, JSONPrettyPrint.formatJson( thisConfigRaw ) );
 		return this;
 	}
 		
