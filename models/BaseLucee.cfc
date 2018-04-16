@@ -907,6 +907,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			case 'Oracle' :
 				return 'oracle.jdbc.driver.OracleDriver';
 			case 'MySQL' :
+				// If one of the known Lucee MySQL class names are in use, stick with it
+				if( listFindNoCase( 'com.mysql.jdbc.Driver,org.gjt.mm.mysql.Driver', className ) ) {
+					return className;
+				}
+				// If the class name wasn't recognized, default to this one. 
+				// This assumes an earlier version of the MySQL JDBC extension
+				// But have I no way to know what the user will have installed.
 				return 'org.gjt.mm.mysql.Driver';
 			case 'H2' :
 				return 'org.h2.Driver';
