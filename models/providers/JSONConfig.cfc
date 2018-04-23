@@ -10,9 +10,6 @@
 */
 component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
-	// DI
-	property name='JSONPrettyPrint' inject='JSONPrettyPrint@JSONPrettyPrint';
-	
 	/**
 	* Constructor
 	*/

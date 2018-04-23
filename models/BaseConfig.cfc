@@ -18,6 +18,7 @@ component accessors="true" {
 
 	property name='wirebox' inject='wirebox';
 	property name='Util' inject='Util@cfconfig-services';
+	property name='JSONPrettyPrint' inject='JSONPrettyPrint@JSONPrettyPrint';
 
 	// ----------------------------------------------------------------------------------------
 	// Properties for the internal workings
@@ -893,7 +894,7 @@ component accessors="true" {
 	* Get a formatted string JSON representation of the config settings
 	*/
 	function toString(){
-		return getUtil().formatJson( getMemento() );
+		return getJSONPrettyPrint().formatJson( getMemento() );
 	}
 
 	/**
