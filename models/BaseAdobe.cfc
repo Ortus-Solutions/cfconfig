@@ -265,7 +265,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isNull( thisTask.eventhandler ) ) { params[ 'eventhandler' ] = thisTask.eventhandler; }
 				if( isNull( params[ 'eventhandler' ] ) && !isNull( thisTask.eventhandlerrp ) ) { params[ 'eventhandler' ] = thisTask.eventhandlerrp; }
 				if( !isNull( thisTask.exclude ) ) { params[ 'exclude' ] = thisTask.exclude; }
-				if( !isNull( thisTask.file ) ) { params[ 'file' ] = thisTask.file; }
+				// Combine path and file into a full path
+				if( !isNull( thisTask.file ) && !isNull( thisTask.path ) ) { params[ 'file' ] = thisTask.path & thisTask.file; }
 				if( !isNull( thisTask.group ) ) { params[ 'group' ] = thisTask.group; }
 				if( !isNull( thisTask.http_port ) ) { params[ 'httpPort' ] = thisTask.http_port; }
 				if( !isNull( thisTask.http_proxy_port ) ) { params[ 'httpProxyPort' ] = thisTask.http_proxy_port; }
@@ -758,7 +759,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			taskData[ 'eventhandler' ] = ( thisTask.eventhandler ?: taskData.eventhandler ) & '';
 			taskData[ 'eventhandlerrp' ] = ( thisTask.eventhandler ?: taskData.eventhandler ) & '';
 			taskData[ 'exclude' ] = ( thisTask.exclude ?: taskData.exclude ) & '';
-			taskData[ 'file' ] = ( thisTask.file ?: taskData.file ) & '';
+			taskData[ 'path' ] = ( getDirectoryFromPath( thisTask.file ) ?: taskData.file ) & '';
+			taskData[ 'file' ] = ( getFileFromPath( thisTask.file ) ?: taskData.file ) & '';
 			taskData[ 'group' ] = ( thisTask.group ?: taskData.group ) & '';
 			taskData[ 'http_port' ] = ( thisTask.httpPort ?: taskData.http_port ) & '';
 			taskData[ 'http_proxy_port' ] = ( thisTask.httpProxyPort ?: taskData.http_proxy_port ) & '';
