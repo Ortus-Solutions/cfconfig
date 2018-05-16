@@ -1082,6 +1082,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( incomingDS.SID ) ) {
 				savingDS.urlmap.SID = incomingDS.SID;
 				savingDS.urlmap.connectionprops.SID = incomingDS.SID;
+				savingDS.url = savingDS.url.replaceNoCase( '{SID}', incomingDS.SID );
+			} else {
+				// I think SID may be optional for Oracle, so completely remove if there isn't one.
+				// This shouldn't affect other datasources at all
+				savingDS.url = savingDS.url.replaceNoCase( 'SID={SID};', '' );				
 			}
 			// All the datasource templates default to true for all permissions, so a new datasource will have all permissions turned on by default.
 			// When saving an existing datasource, default to whatever is there.

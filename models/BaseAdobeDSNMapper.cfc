@@ -261,7 +261,7 @@ component accessors=true {
 		    "revoke":true,
 		    "validationQuery":"",
 		    "drop":true,
-		    "url":"jdbc:macromedia:oracle://Server:1521;AuthenticationMethod=userIDPassword;sendStringParametersAsUnicode=false;querytimeout=0;MaxPooledStatements=100",
+		    "url":"jdbc:macromedia:oracle://{host}:{port};SID={SID};AuthenticationMethod=userIDPassword;sendStringParametersAsUnicode=false;querytimeout=0;MaxPooledStatements=100",
 		    "update":true,
 		    "password":"",
 		    "DRIVER":"Oracle",
@@ -284,7 +284,7 @@ component accessors=true {
 		        "CONNECTIONPROPS":{
 		            "SID":"",
 		            "SENDSTRINGPARAMETERSASUNICODE":"false",
-		            "HOST":"Server",
+		            "HOST":"",
 		            "PORT":"1521",
 		            "MAXPOOLEDSTATEMENTS":"100",
 		            "QTIMEOUT":"0"
