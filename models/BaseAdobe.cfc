@@ -52,6 +52,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	property name='licensePropertiesPath' type='string';
 	property name='licensePropertiesTemplate' type='string';
+	
+	property name='jettyConfigPath' type='string';
+	property name='jettyConfigTemplate' type='string';
 
 	
 	/**
@@ -73,6 +76,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setPasswordPropertiesPath( '/lib/password.properties' );
 		setLicensePropertiesPath( '/lib/license.properties' );
+		setJettyConfigPath( '/lib/jetty.xml' );
 
 		setFormat( 'adobe' );
 		
@@ -110,13 +114,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readEventGateway();
 		readScheduler();
 		readWebsocket();
+		readJetty();
 			
 		return this;
 	}
 	
 	private function readRuntime() {
 		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
-		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getRuntimeConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getRuntimeConfigPath(), '/' ) );
 				
 		setSessionMangement( thisConfig[ 7 ].session.enable );
 		setSessionTimeout( thisConfig[ 7 ].session.timeout );
@@ -233,7 +238,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readDebug() {
-		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDebugConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDebugConfigPath(), '/' ) );
 		
 		// Not checking for existance here because I guess these are always going to be there? ¯\_(ツ)_/¯
 		setRobustExceptionEnabled( thisConfig[ 1 ].robust_enabled );
@@ -250,7 +255,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	private function readScheduler() {
 		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
-		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSchedulerConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSchedulerConfigPath(), '/' ) );
 		
 		if( isStruct( thisConfig[ 1 ] ) ) {
 			for( var thisTaskID in thisConfig[ 1 ] ) {
@@ -317,19 +322,34 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readEventGateway() {
-		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getEventGatewayConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getEventGatewayConfigPath(), '/' ) );
 		
 		setEventGatewayEnabled( thisConfig[ 'GLOBAL' ][ 'ENABLEEVENTGATEWAYSERVICE' ] );		
 	}
 	
 	private function readWebsocket() {
-		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getWebsocketConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getWebsocketConfigPath(), '/' ) );
 		
 		if( !isNull( thisConfig[ 'startWebSocketService' ] ) ) { setWebsocketEnabled( thisConfig[ 'startWebSocketService' ] ); }		
 	}
+	
+	private function readJetty() {
+		var thisConfig = readXMLConfigFile( getCFHomePath().listAppend( getJettyConfigPath(), '/' ) );
+		
+		var hostSearch = XMLSearch( thisConfig, "//Call[@name='addConnector']/Arg/New/Set[@name='host']" );
+		var portSearch = XMLSearch( thisConfig, "//Call[@name='addConnector']/Arg/New/Set[@name='port']" );
+		
+		if( hostSearch.len() ) {
+			setMonitoringServiceHost( hostSearch[ 1 ].XMLText );
+		}
+		if( portSearch.len() ) {
+			setMonitoringServicePort( portSearch[ 1 ].XMLText );
+		}
+		
+	}
 		
 	private function readClientStore() {
-		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getClientStoreConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getClientStoreConfigPath(), '/' ) );
 		
 		if( isStruct( thisConfig[ 2 ] ) ) {
 			for( var storageLocationName in thisConfig[ 1 ] ) {
@@ -356,7 +376,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readSecurity() {
-		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSecurityConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSecurityConfigPath(), '/' ) );
 		
 		if( !isNull( thisConfig[ 'secureprofile.enabled' ] ) ) { setSecureProfileEnabled( thisConfig[ 'secureprofile.enabled' ] ); }
 		if( !isNull( thisConfig[ 'rds.enabled' ] ) ) { setAdminRDSEnabled( thisConfig[ 'rds.enabled' ] ); }
@@ -373,7 +393,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readWatch() {
-		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getWatchConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getWatchConfigPath(), '/' ) );
 	
 		setWatchConfigFilesForChangesEnabled( thisConfig[ 'watch.watchEnabled' ] );
 		setWatchConfigFilesForChangesInterval( thisConfig[ 'watch.interval' ] );
@@ -382,7 +402,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	private function readMail() {
 		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
-		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getMailConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getMailConfigPath(), '/' ) );
 		
 		if( !isNull( thisConfig.spoolEnable ) ) { setMailSpoolEnable( thisConfig.spoolEnable ); }
 		if( !isNull( thisConfig.schedule ) ) { setMailSpoolInterval( thisConfig.schedule ); }
@@ -409,7 +429,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	private function readDatasource() {
 		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
-		thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDatasourceConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDatasourceConfigPath(), '/' ) );
 		var datasources = thisConfig[ 1 ];
 		
 		for( var datasource in datasources ) {
@@ -533,6 +553,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writescheduler( pauseTasks );
 		writeEventGateway();
 		writeWebsocket();
+		writeJetty();
 		
 		return this;
 	}
@@ -863,6 +884,31 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getWebsocketEnabled() ) ) { thisConfig[ 'startWebSocketService' ] = !!getWebsocketEnabled(); }
 		
 		writeWDDXConfigFile( thisConfig, configFilePath );
+	}
+	
+	private function writeJetty() {
+		var configFilePath = getCFHomePath().listAppend( getJettyConfigPath(), '/' );
+		
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readXMLConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readXMLConfigFile( getJettyConfigTemplate() );
+		}
+		
+		var hostSearch = XMLSearch( thisConfig, "//Call[@name='addConnector']/Arg/New/Set[@name='host']" );
+		var portSearch = XMLSearch( thisConfig, "//Call[@name='addConnector']/Arg/New/Set[@name='port']" );
+		
+		if( !isNull( getMonitoringServiceHost() ) && hostSearch.len() ) {
+			hostSearch[ 1 ].XMLText = getMonitoringServiceHost();
+		}
+
+		if( !isNull( getMonitoringServicePort() ) && portSearch.len() ) {
+			portSearch[ 1 ].XMLText = getMonitoringServicePort();
+		}
+		
+		writeXMLConfigFile( thisConfig, configFilePath );
 	}
 	
 	private function writeClientStore() {
@@ -1249,7 +1295,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		};
 	}
 
-	private function readWDDXConfigFile( required string configFilePath ) {
+	private function readXMLConfigFile( required string configFilePath, boolean raw=false ) {
 		if( !fileExists( configFilePath ) ) {
 			throw "The config file doesn't exist [#configFilePath#]";
 		}
@@ -1258,6 +1304,30 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isXML( thisConfigRaw ) ) {
 			throw "Config file doesn't contain XML [#configFilePath#]";
 		}
+		
+		if( raw ) {
+			return thisConfigRaw;	
+		} else {
+			return XMLParse( thisConfigRaw );
+		}		
+	}
+	
+	private function writeXMLConfigFile( required any data, required string configFilePath ) {
+		// Ensure the parent directories exist		
+		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true )
+		
+		var xlt = '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+			<xsl:output method="xml" encoding="utf-8" indent="yes" xslt:indent-amount="2" xmlns:xslt="http://xml.apache.org/xslt" />
+			<xsl:strip-space elements="*"/>
+			<xsl:template match="node() | @*"><xsl:copy><xsl:apply-templates select="node() | @*" /></xsl:copy></xsl:template>
+			</xsl:stylesheet>';
+		
+		fileWrite( configFilePath, toString( XmlTransform( data, xlt) ) );
+		
+	}
+	
+	private function readWDDXConfigFile( required string configFilePath ) {
+		var thisConfigRaw = readXMLConfigFile( configFilePath=configFilePath, raw=true );
 		
 		// Work around Lucee bug:
 		// https://luceeserver.atlassian.net/browse/LDEV-1167
@@ -1269,20 +1339,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeWDDXConfigFile( required any data, required string configFilePath ) {
-		// Ensure the parent directories exist		
-		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true )
 		
 		wddx action='cfml2wddx' input=data output='local.thisConfigRaw';
 		thisConfigRaw = thisConfigRaw.replaceNoCase( '<struct>', '<struct type="coldfusion.server.ConfigMap">', 'all' );
 		
-		var xlt = '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-			<xsl:output method="xml" encoding="utf-8" indent="yes" xslt:indent-amount="2" xmlns:xslt="http://xml.apache.org/xslt" />
-			<xsl:strip-space elements="*"/>
-			<xsl:template match="node() | @*"><xsl:copy><xsl:apply-templates select="node() | @*" /></xsl:copy></xsl:template>
-			</xsl:stylesheet>';
-		
-		fileWrite( configFilePath, toString( XmlTransform( thisConfigRaw, xlt) ) );
-		
+		writeXMLConfigFile( thisConfigRaw, configFilePath );
 	}
 	
 }

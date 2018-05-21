@@ -300,6 +300,10 @@ component accessors="true" {
 	// Line Debugger Settings - Maximum Simultaneous Debugging Sessions:
 	property name='lineDebuggerMaxSessions' type='numeric' _isCFConfig=true;
 	
+	// Monitorying Service Port (Only used by Adobe CF)
+	property name='monitoringServicePort' type='numeric' _isCFConfig=true;
+	property name='monitoringServiceHost' type='string' _isCFConfig=true;
+	
 	// TODO:
 	//property name='externalizeStrings' type='string' _isCFConfig=true;
 	//property name='restMappings' type='array' _isCFConfig=true;
@@ -411,6 +415,7 @@ component accessors="true" {
 	// same setting so the hashes passwords are as portable as possible
 
 	// hashed admin password for Adobe CF11
+	// TODO: Need to get 10, 11, 2016, and 2018 ironed out here.
 	property name='ACF11Password' type='string' _isCFConfig=true;
 	// hashed RDS password for Adobe CF11
 	property name='ACF11RDSPassword' type='string' _isCFConfig=true;

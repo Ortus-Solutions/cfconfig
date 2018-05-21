@@ -29,6 +29,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setWebsocketConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-websocket.xml' ) );
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setLicensePropertiesTemplate( expandPath( '/cfconfig-services/resources/adobe11/license.properties' ) );
+		setJettyConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/jetty.xml' ) );
 		setVersion( '11' );
 		
 		return this;

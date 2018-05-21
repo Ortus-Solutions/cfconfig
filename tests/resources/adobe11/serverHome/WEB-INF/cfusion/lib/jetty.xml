@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- =============================================================== --><!-- Documentation of this file format can be found at:              --><!-- http://wiki.eclipse.org/Jetty/Reference/jetty.xml_syntax        --><!--                                                                 --><!-- =============================================================== --><!-- Configure a Jetty Server instance with an ID "Server"           --><!-- Other configuration files may also configure the "Server"       --><!-- ID, in which case they are adding configuration to the same     --><!-- instance.  If other configuration have a different ID, they     --><!-- will create and configure another instance of Jetty.            --><!-- Consult the javadoc of o.e.j.server.Server for all              --><!-- configuration that may be set here.                             --><!-- =============================================================== --><!DOCTYPE Configure SYSTEM "configure_9_0.dtd">
+<Configure class="org.eclipse.jetty.server.Server" id="Server">
+
+    <!-- =========================================================== -->
+    <!-- Server Thread Pool                                          -->
+    <!-- =========================================================== -->
+    <Arg name="ThreadPool">
+      <!-- Default queued blocking threadpool 
+      -->
+      <New class="org.eclipse.jetty.util.thread.QueuedThreadPool">
+        <Set name="maxThreads">50</Set>
+        <Set name="minThreads">2</Set>
+      </New>
+
+      <!-- Optional Java 5 bounded threadpool with job queue 
+      <New class="org.eclipse.thread.concurrent.ThreadPool">
+        <Set name="corePoolSize">50</Set>
+        <Set name="maximumPoolSize">50</Set>
+      </New>
+      -->
+    </Arg>
+
+  <!-- =========================================================== -->
+  <!-- Set connectors                                              -->
+  <!-- =========================================================== -->
+  <!-- =========================================================== -->
+  
+  <!-- =========================================================== -->
+  <!-- Http Configuration.                                         -->
+  <!-- This is a common configuration instance used by all         -->
+  <!-- connectors that can carry HTTP semantics (HTTP, HTTPS, SPDY)-->
+  <!-- It configures the non wire protocol aspects of the HTTP     -->
+  <!-- semantic.                                                   -->
+
+  <!--                                                             -->
+  <!-- This configuration is only defined here and is used by      -->
+  <!-- reference from the jetty-http.xml, jetty-https.xml and      -->
+  <!-- jetty-spdy.xml configuration files which instantiate the    -->
+  <!-- connectors.                                                 -->
+  <!--                                                             -->
+  <!-- Consult the javadoc of o.e.j.server.HttpConfiguration       -->
+  <!-- for all configuration that may be set here.                 -->
+  <!-- =========================================================== -->
+  
+    <New class="org.eclipse.jetty.server.HttpConfiguration" id="httpConfig">
+      <Set name="secureScheme">https</Set>
+      <Set name="securePort">5050</Set>
+      <Set name="outputBufferSize">32768</Set>
+      <Set name="requestHeaderSize">8192</Set>
+      <Set name="responseHeaderSize">8192</Set>
+      <!-- send the server version in the response header? -->
+      <Set name="sendServerVersion">true</Set>
+      <!-- send the date header in the response header? -->
+      <Set name="sendDateHeader">true</Set>
+      <Set name="headerCacheSize">512</Set>
+
+      <!-- Uncomment to enable handling of X-Forwarded- style headers
+      <Call name="addCustomizer">
+        <Arg><New class="org.eclipse.jetty.server.ForwardedRequestCustomizer"/></Arg>
+      </Call>
+      -->
+    </New>
+
+  <!-- Add a HTTP Connector.                                       -->
+  <!-- Configure an o.e.j.server.ServerConnector with a single     -->
+  <!-- HttpConnectionFactory instance using the common httpConfig  -->
+  <!-- instance defined in jetty.xml                               -->
+  <!--                                                             -->
+  <!-- Consult the javadoc of o.e.j.server.ServerConnector and     -->
+  <!-- o.e.j.server.HttpConnectionFactory for all configuration    -->
+  <!-- that may be set here.                                       -->
+  <!-- =========================================================== -->
+  <Call name="addConnector">
+    <Arg>
+      <New class="org.eclipse.jetty.server.ServerConnector">
+        <Arg name="server"><Ref refid="Server"/></Arg>
+		<Arg name="executor"/>
+		<Arg name="scheduler"/>
+		<Arg name="bufferPool"/>
+		<Arg name="acceptors" type="int">2</Arg>
+		<Arg name="selectors" type="int">-1</Arg>
+        <Arg name="factories">
+          <Array type="org.eclipse.jetty.server.ConnectionFactory">
+            <Item>
+              <New class="org.eclipse.jetty.server.HttpConnectionFactory">
+                <Arg name="config"><Ref refid="httpConfig"/></Arg>
+              </New>
+            </Item>
+          </Array>
+        </Arg>
+        <Set name="host">0.0.0.0</Set>
+        <Set name="port">5500</Set>
+        <Set name="idleTimeout">300000</Set>
+      </New>
+    </Arg>
+  </Call>
+	
+    <!-- =========================================================== -->
+    <!-- Set SSL connectors                                          -->
+    <!-- Uncomment it and comment all other addConnectors, in case   -->
+    <!-- you want to use https.                                      --> 	
+    <!-- =========================================================== -->
+    
+    <!-- ============================================================= -->
+    <!-- Configure a TLS (SSL) Context Factory                         -->
+    <!-- This configuration must be used in conjunction with jetty.xml -->
+    <!-- and either jetty-https.xml or jetty-spdy.xml (but not both)   -->
+    <!-- ============================================================= -->
+    <!-- <New id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory">
+	    <Set name="KeyStorePath"><Property name="jetty.home" default="." />/<Property name="jetty.keystore" default="etc/keystore"/></Set>
+	    <Set name="KeyStorePassword"><Property name="jetty.keystore.password" default="OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4"/></Set>
+	    <Set name="KeyManagerPassword"><Property name="jetty.keymanager.password" default="OBF:1u2u1wml1z7s1z7a1wnl1u2g"/></Set>
+	    <Set name="TrustStorePath"><Property name="jetty.home" default="." />/<Property name="jetty.truststore" default="etc/keystore"/></Set>
+	    <Set name="TrustStorePassword"><Property name="jetty.truststore.password" default="OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4"/></Set>
+	    <Set name="EndpointIdentificationAlgorithm"></Set>
+	    <Set name="ExcludeCipherSuites">
+	    <Array type="String">
+		    <Item>SSL_RSA_WITH_DES_CBC_SHA</Item>
+		    <Item>SSL_DHE_RSA_WITH_DES_CBC_SHA</Item>
+		    <Item>SSL_DHE_DSS_WITH_DES_CBC_SHA</Item>
+		    <Item>SSL_RSA_EXPORT_WITH_RC4_40_MD5</Item>
+		    <Item>SSL_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
+		    <Item>SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
+		    <Item>SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA</Item>
+	    </Array>
+	    </Set>-->
+    
+    <!-- =========================================================== -->
+    <!-- Create a TLS specific HttpConfiguration based on the        -->
+    <!-- common HttpConfiguration defined in jetty.xml               -->
+    <!-- Add a SecureRequestCustomizer to extract certificate and    -->
+    <!-- session information                                         -->
+    <!-- =========================================================== -->
+    <!-- <New id="sslHttpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
+    <Arg><Ref refid="httpConfig"/></Arg>
+    <Call name="addCustomizer">
+    <Arg><New class="org.eclipse.jetty.server.SecureRequestCustomizer"/></Arg>
+    </Call>
+    </New>    
+    </New> -->
+    
+  <!-- =========================================================== -->
+  <!-- Add a HTTPS Connector.                                      -->
+  <!-- Configure an o.e.j.server.ServerConnector with connection   -->
+  <!-- factories for TLS (aka SSL) and HTTP to provide HTTPS.      -->
+  <!-- All accepted TLS connections are wired to a HTTP connection.-->
+  <!--                                                             -->
+  <!-- Consult the javadoc of o.e.j.server.ServerConnector,        -->
+  <!-- o.e.j.server.SslConnectionFactory and                       -->
+  <!-- o.e.j.server.HttpConnectionFactory for all configuration    -->
+  <!-- that may be set here.                                       -->
+  <!-- =========================================================== -->
+  <!--<Call id="httpsConnector" name="addConnector">
+    <Arg>
+      <New class="org.eclipse.jetty.server.ServerConnector">
+        <Arg name="server"><Ref refid="Server" /></Arg>
+		<Arg name="executor"></Arg>
+		<Arg name="scheduler"></Arg>
+		<Arg name="bufferPool"></Arg>
+		<Arg type="int" name="acceptors">2</Arg>
+		<Arg type="int" name="selectors">-1</Arg>
+          <Arg name="factories">
+            <Array type="org.eclipse.jetty.server.ConnectionFactory">
+              <Item>
+                <New class="org.eclipse.jetty.server.SslConnectionFactory">
+                  <Arg name="next">http/1.1</Arg>
+                  <Arg name="sslContextFactory"><Ref refid="sslContextFactory"/></Arg>
+                </New>
+              </Item>
+              <Item>
+                <New class="org.eclipse.jetty.server.HttpConnectionFactory">
+                  <Arg name="config"><Ref refid="sslHttpConfig"/></Arg>
+                </New>
+              </Item>
+            </Array>
+          </Arg>
+          <Set name="host">0.0.0.0</Set>
+          <Set name="port">5050</Set>
+          <Set name="idleTimeout">300000</Set>
+          <Set name="acceptQueueSize">100</Set>
+        </New>
+    </Arg>
+  </Call>-->
+
+
+    <!-- =========================================================== -->
+    <!-- Set handler Collection Structure                            --> 
+    <!-- =========================================================== -->
+    <Set name="handler">
+      <New class="org.eclipse.jetty.server.handler.HandlerCollection" id="Handlers">
+        <Set name="handlers">
+         <Array type="org.eclipse.jetty.server.Handler">
+           <Item>
+             <New class="org.eclipse.jetty.servlet.ServletContextHandler" id="ServletContext">
+             	<!-- <Arg>org.eclipse.jetty.servlet.ServletContextHandler.SESSIONS</Arg>  -->
+				 <Arg type="int">1</Arg>  <!-- in Jetty 7 Value for SESSIONS is 1. giving it programatically was not working. -->
+				<Set name="ContextPath">/</Set>
+				<!--Bug 3300531 When monitoring server is enabled ColdFusion JSESSIONID is getting replaced by Jetty JSESSIONID 
+				changing the name to CFMONJSESSIONID
+				-->
+				<Set name="SessionHandler">
+				<New class="org.eclipse.jetty.server.session.SessionHandler">
+					<Arg>
+						<New class="org.eclipse.jetty.server.session.HashSessionManager">
+							<Set name="SessionCookie">CFMONJSESSIONID</Set>
+							<Set name="SessionIdPathParameterName">CFMONJSESSIONID</Set>
+						</New>
+					</Arg>
+				</New>
+				</Set>
+				<Call name="addServlet">
+	  				<Arg>
+	  					<New class="org.eclipse.jetty.servlet.ServletHolder">
+	  						<Arg>
+		  						<New class="coldfusion.monitor.jetty.server.MonitoringServlet">
+		  						</New>
+							</Arg>	
+						</New>	
+					</Arg>
+					<Arg>/crossdomain.xml,/flex2gateway/*,/CFIDE/administrator/monitor/*,/CFIDE/administrator/help/*</Arg>
+				</Call>
+				<Call name="addServlet">
+	  				<Arg>
+	  					<New class="org.eclipse.jetty.servlet.ServletHolder">
+	  						<Arg>
+		  						<New class="coldfusion.util.CFFileServlet">
+		  						</New>
+							</Arg>	
+						</New>	
+					</Arg>
+					<Arg>/CFPDFServiceFileServlet/*</Arg>
+				</Call>
+				<Call name="addFilter">
+					<Arg>
+						<New class="org.eclipse.jetty.servlet.FilterHolder">
+							<Arg>
+								<New class="coldfusion.filter.HTTPMethodFilter">
+								</New>
+							</Arg>
+							<Call name="setInitParameter">
+								<Arg>allowedHTTPMethods</Arg>
+								<Arg>GET,POST</Arg>
+							</Call>
+						</New>
+					</Arg>
+					<Arg>/*</Arg>
+					<Arg>
+						<Call class="java.util.EnumSet" name="of">
+							<Arg>
+								<Get class="javax.servlet.DispatcherType" name="REQUEST">
+								</Get>
+							</Arg>
+						</Call>
+					</Arg>
+				</Call>
+			</New>
+           </Item>
+           <!--<Item>
+             <New id="RequestLog" class="org.eclipse.jetty.server.handler.RequestLogHandler"/>
+           </Item>-->
+         </Array>
+        </Set>
+      </New>
+    </Set>	
+
+    <!-- =========================================================== -->
+    <!-- Configure Request Log                                       -->
+    <!-- Request logs  may be configured for the entire server here, -->
+    <!-- or they can be configured for a specific web app in a       -->
+    <!-- contexts configuration (see $(jetty.home)/contexts/test.xml -->
+    <!-- for an example).                                            -->
+	<!-- Uncomment it if request needs to be logged.                  -->
+    <!-- =========================================================== -->
+	
+	
+    <!--<Ref id="RequestLog">
+      <Set name="requestLog">
+        <New id="RequestLogImpl" class="org.eclipse.jetty.server.NCSARequestLog">
+          <Set name="filename"><SystemProperty name="jetty.home" default="."/>/logs/yyyy_mm_dd.request.log</Set>
+          <Set name="filenameDateFormat">yyyy_MM_dd</Set>
+          <Set name="retainDays">90</Set>
+          <Set name="append">true</Set>
+          <Set name="extended">false</Set>
+          <Set name="logCookies">false</Set>
+          <Set name="LogTimeZone">GMT</Set>
+        </New>
+      </Set>
+    </Ref>-->
+		 
+	<!-- =============================================================== -->
+	<!-- Configure stderr and stdout to a Jetty rollover log file.        -->
+	<!-- Uncomment this to redirect logs from jetty                       -->
+	<!-- constructor's first arg append and second retain days.           -->
+	<!-- =============================================================== -->
+	
+<!--
+	 <New id="ServerLog" class="java.io.PrintStream">
+      <Arg>
+        <New class="org.eclipse.jetty.util.RolloverFileOutputStream">
+          <Arg>monitoringServer.log</Arg>
+          <Arg type="boolean">true</Arg> 
+          <Arg type="int">10</Arg> 
+          <Get id="ServerLogName" name="datedFilename"/>
+     </New>
+      </Arg>
+    </New>
+
+	<Get class="org.eclipse.jetty.util.log.Log" name="rootLogger">
+      <Call name="info"><Arg>Redirecting stderr/stdout to <Ref refid="ServerLogName"/></Arg></Call>
+    </Get>
+    <Call class="java.lang.System" name="setErr"><Arg><Ref id="ServerLog"/></Arg></Call>
+    <Call class="java.lang.System" name="setOut"><Arg><Ref id="ServerLog"/></Arg></Call>
+-->	
+
+    <!-- =========================================================== -->
+    <!-- extra options                                               -->
+    <!-- =========================================================== -->
+	
+    <!-- Stops the server when ctrl+c is pressed (registers to Runtime.addShutdownHook)-->
+    <Set name="stopAtShutdown">true</Set>
+    
+    <!-- allows requests(prior to shutdown) to finish gracefully -->
+    <Set name="stopTimeout">100</Set>
+
+</Configure>

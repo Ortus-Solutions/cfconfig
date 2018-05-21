@@ -28,6 +28,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setWebsocketConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-websocket.xml' ) );
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setLicensePropertiesTemplate( expandPath( '/cfconfig-services/resources/adobe2016/license.properties' ) );
+		setJettyConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/jetty.xml' ) );
 		setVersion( '2016' );
 		
 		return this;
