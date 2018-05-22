@@ -4,7 +4,7 @@
     },
     "app":{
         "serverHomeDirectory":"serverHome",
-        "cfengine":"@ortus/adobe-aether@2018"
+        "cfengine":"adobe@2018-beta"
     },
     "name":"cfconfigadobe2018"
 }
