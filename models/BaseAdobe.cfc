@@ -246,12 +246,32 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	private function readDebug() {
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDebugConfigPath(), '/' ) );
 		
-		// Not checking for existance here because I guess these are always going to be there? ¯\_(ツ)_/¯
-		setRobustExceptionEnabled( thisConfig[ 1 ].robust_enabled );
-		setAjaxDebugWindowEnabled( thisConfig[ 1 ].ajax_enabled );
-		setDebuggingEnabled( thisConfig[ 1 ].enabled );
-		setDebuggingReportExecutionTimes( thisConfig[ 1 ].template );
+		if( !isNull( thisConfig[ 1 ].robust_enabled ) ) { setRobustExceptionEnabled( thisConfig[ 1 ].robust_enabled ); }
+		if( !isNull( thisConfig[ 1 ].ajax_enabled ) ) { setAjaxDebugWindowEnabled( thisConfig[ 1 ].ajax_enabled ); }
+		if( !isNull( thisConfig[ 1 ].enabled ) ) { setDebuggingEnabled( thisConfig[ 1 ].enabled ); }
+		if( !isNull( thisConfig[ 1 ].template ) ) { setDebuggingReportExecutionTimes( thisConfig[ 1 ].template ); }
+		if( !isNull( thisConfig[ 1 ].template_highlight_minimum ) ) { setDebuggingReportExecutionTimesMinimum( thisConfig[ 1 ].template_highlight_minimum ); }
+		if( !isNull( thisConfig[ 1 ].template_mode ) ) { setDebuggingReportExecutionTimesTemplate( thisConfig[ 1 ].template_mode ); }
+		if( !isNull( thisConfig[ 1 ].debug_template ) ) { setDebuggingTemplate( thisConfig[ 1 ].debug_template ); }
+		if( !isNull( thisConfig[ 1 ].general ) ) { setDebuggingShowGeneral( thisConfig[ 1 ].general ); }
+		if( !isNull( thisConfig[ 1 ].database ) ) { setDebuggingShowDatabase( thisConfig[ 1 ].database ); }
+		if( !isNull( thisConfig[ 1 ].exception ) ) { setDebuggingShowException( thisConfig[ 1 ].exception ); }
+		if( !isNull( thisConfig[ 1 ].trace ) ) { setDebuggingShowTrace( thisConfig[ 1 ].trace ); }
+		if( !isNull( thisConfig[ 1 ].TIMER ) ) { setDebuggingShowTimer( thisConfig[ 1 ].TIMER ); }
+		if( !isNull( thisConfig[ 1 ].FLASHFORMCOMPILEERRORS ) ) { setDebuggingShowFlashFormCompileErrors( thisConfig[ 1 ].FLASHFORMCOMPILEERRORS ); }
+		if( !isNull( thisConfig[ 1 ][ 'variables' ] ) ) { setDebuggingShowVariables( thisConfig[ 1 ][ 'variables' ] ); }
+		if( !isNull( thisConfig[ 1 ].applicationvar ) ) { setDebuggingShowVariableApplication( thisConfig[ 1 ].applicationvar ); }
+		if( !isNull( thisConfig[ 1 ].cgivar ) ) { setDebuggingShowVariableCGI( thisConfig[ 1 ].cgivar ); }
+		if( !isNull( thisConfig[ 1 ].clientvar ) ) { setDebuggingShowVariableClient( thisConfig[ 1 ].clientvar ); }
+		if( !isNull( thisConfig[ 1 ].cookievar ) ) { setDebuggingShowVariableCookie( thisConfig[ 1 ].cookievar ); }
+		if( !isNull( thisConfig[ 1 ].formvar ) ) { setDebuggingShowVariableForm( thisConfig[ 1 ].formvar ); }
+		if( !isNull( thisConfig[ 1 ].requestvar ) ) { setDebuggingShowVariableRequest( thisConfig[ 1 ].requestvar ); }
+		if( !isNull( thisConfig[ 1 ].servervar ) ) { setDebuggingShowVariableServer( thisConfig[ 1 ].servervar ); }
+		if( !isNull( thisConfig[ 1 ].sessionvar ) ) { setDebuggingShowVariableSession( thisConfig[ 1 ].sessionvar ); }
+		if( !isNull( thisConfig[ 1 ].urlvar ) ) { setDebuggingShowVariableURL( thisConfig[ 1 ].urlvar ); }
 		
+		if( !isNull( thisConfig[ 2 ].iplist ) ) { setDebuggingIPList( thisConfig[ 2 ].iplist ); }
+				
 		if( !isNull( thisConfig[ 3 ].LINE_DEBUGGER_ENABLED ) ) { setLineDebuggerEnabled( thisConfig[ 3 ].LINE_DEBUGGER_ENABLED ); }
 		if( !isNull( thisConfig[ 3 ].LINE_DEBUGGER_PORT ) ) { setLineDebuggerPort( thisConfig[ 3 ].LINE_DEBUGGER_PORT ); }
 		if( !isNull( thisConfig[ 3 ].MAX_DEBUG_SESSIONS ) ) { setLineDebuggerMaxSessions( thisConfig[ 3 ].MAX_DEBUG_SESSIONS ); }
@@ -756,6 +776,30 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getAjaxDebugWindowEnabled() ) ) { thisConfig[ 1 ][ 'ajax_enabled' ] = !!getAjaxDebugWindowEnabled(); }
 		if( !isNull( getDebuggingEnabled() ) ) { thisConfig[ 1 ][ 'enabled' ] = !!getDebuggingEnabled(); }
 		if( !isNull( getDebuggingReportExecutionTimes() ) ) { thisConfig[ 1 ][ 'template' ] = !!getDebuggingReportExecutionTimes(); }
+		
+		
+		if( !isNull( getDebuggingReportExecutionTimesMinimum() ) ) { thisConfig[ 1 ][ 'template_highlight_minimum' ] = getDebuggingReportExecutionTimesMinimum()+0; }
+		if( !isNull( getDebuggingReportExecutionTimesTemplate() ) ) { thisConfig[ 1 ][ 'template_mode' ] = getDebuggingReportExecutionTimesTemplate()&''; }
+		if( !isNull( getDebuggingTemplate() ) ) { thisConfig[ 1 ][ 'debug_template' ] = getDebuggingTemplate()&''; }
+		if( !isNull( getDebuggingShowGeneral() ) ) { thisConfig[ 1 ][ 'general' ] = !!getDebuggingShowGeneral(); }
+		if( !isNull( getDebuggingShowDatabase() ) ) { thisConfig[ 1 ][ 'database' ] = !!getDebuggingShowDatabase(); }
+		if( !isNull( getDebuggingShowException() ) ) { thisConfig[ 1 ][ 'exception' ] = !!getDebuggingShowException(); }
+		if( !isNull( getDebuggingShowTrace() ) ) { thisConfig[ 1 ][ 'trace' ] = !!getDebuggingShowTrace(); }
+		if( !isNull( getDebuggingShowTimer() ) ) { thisConfig[ 1 ][ 'TIMER' ] = !!getDebuggingShowTimer(); }
+		if( !isNull( getDebuggingShowFlashFormCompileErrors() ) ) { thisConfig[ 1 ][ 'FLASHFORMCOMPILEERRORS' ] = !!getDebuggingShowFlashFormCompileErrors(); }
+		if( !isNull( getDebuggingShowVariables() ) ) { thisConfig[ 1 ][ 'variables' ] = !!getDebuggingShowVariables(); }
+		if( !isNull( getDebuggingShowVariableApplication() ) ) { thisConfig[ 1 ][ 'applicationvar' ] = !!getDebuggingShowVariableApplication(); }
+		if( !isNull( getDebuggingShowVariableCGI() ) ) { thisConfig[ 1 ][ 'cgivar' ] = !!getDebuggingShowVariableCGI(); }
+		if( !isNull( getDebuggingShowVariableClient() ) ) { thisConfig[ 1 ][ 'clientvar' ] = !!getDebuggingShowVariableClient(); }
+		if( !isNull( getDebuggingShowVariableCookie() ) ) { thisConfig[ 1 ][ 'cookievar' ] = !!getDebuggingShowVariableCookie(); }
+		if( !isNull( getDebuggingShowVariableForm() ) ) { thisConfig[ 1 ][ 'formvar' ] = !!getDebuggingShowVariableForm(); }
+		if( !isNull( getDebuggingShowVariableRequest() ) ) { thisConfig[ 1 ][ 'requestvar' ] = !!getDebuggingShowVariableRequest(); }
+		if( !isNull( getDebuggingShowVariableServer() ) ) { thisConfig[ 1 ][ 'servervar' ] = !!getDebuggingShowVariableServer(); }
+		if( !isNull( getDebuggingShowVariableSession() ) ) { thisConfig[ 1 ][ 'sessionvar' ] = !!getDebuggingShowVariableSession(); }
+		if( !isNull( getDebuggingShowVariableURL() ) ) { thisConfig[ 1 ][ 'urlvar' ] = !!getDebuggingShowVariableURL(); }
+		
+		if( !isNull( getDebuggingIPList() ) ) { thisConfig[ 2 ][ 'iplist' ] = getDebuggingIPList()&''; }
+		
 		
 		if( !isNull( getLineDebuggerEnabled() ) ) { thisConfig[ 3 ][ 'LINE_DEBUGGER_ENABLED' ] = !!getLineDebuggerEnabled(); }
 		if( !isNull( getLineDebuggerPort() ) ) { thisConfig[ 3 ][ 'LINE_DEBUGGER_PORT' ] = getLineDebuggerPort()+0; }

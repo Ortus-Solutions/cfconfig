@@ -299,6 +299,58 @@ component accessors="true" {
 	property name='lineDebuggerPort' type='numeric' _isCFConfig=true;
 	// Line Debugger Settings - Maximum Simultaneous Debugging Sessions:
 	property name='lineDebuggerMaxSessions' type='numeric' _isCFConfig=true;
+
+	// Enable robust error information (Adobe only)
+	property name='robustExceptionEnabled' type='boolean' _isCFConfig=true;
+	// Enable Ajax debugging window (Adobe only)
+	property name='ajaxDebugWindowEnabled' type='boolean' _isCFConfig=true;
+	// Enable Request Debugging Output
+	property name='debuggingEnabled' type='boolean' _isCFConfig=true;
+	// Remote DOM Inspection Settings
+	property name='weinreRemoteInspectionEnabled' type='boolean' _isCFConfig=true;
+	// Report Execution Times
+	property name='debuggingReportExecutionTimes' type='boolean' _isCFConfig=true;
+	
+	// Debugging Highlight templates taking longer than the following ms
+	property name='debuggingReportExecutionTimesMinimum' type='numeric' _isCFConfig=true;
+	// Debugging Use the following output mode for long template request execution times
+	property name='debuggingReportExecutionTimesTemplate' type='string' _isCFConfig=true;
+	// Debugging Output Format (dockable.cfm, classic.cfm)
+	property name='debuggingTemplate' type='string' _isCFConfig=true;
+	// Debugging show General debug information
+	property name='debuggingShowGeneral' type='boolean' _isCFConfig=true;
+	// Debugging show Database Activity
+	property name='debuggingShowDatabase' type='boolean' _isCFConfig=true;
+	// Debugging show Exception Information
+	property name='debuggingShowException' type='boolean' _isCFConfig=true;
+	// Debugging show Tracing Information
+	property name='debuggingShowTrace' type='boolean' _isCFConfig=true;
+	// Debugging show Timer Information
+	property name='debuggingShowTimer' type='boolean' _isCFConfig=true;
+	// Debugging Flash Form Compile Errors and Messages
+	property name='debuggingShowFlashFormCompileErrors' type='boolean' _isCFConfig=true;
+	// Debugging Variables. Select this option to enable variable reporting.
+	property name='debuggingShowVariables' type='boolean' _isCFConfig=true;
+	// Debugging include application vars
+	property name='debuggingShowVariableApplication' type='boolean' _isCFConfig=true;
+	// Debugging include cgi vars
+	property name='debuggingShowVariableCGI' type='boolean' _isCFConfig=true;
+	// Debugging include client vars
+	property name='debuggingShowVariableClient' type='boolean' _isCFConfig=true;
+	// Debugging include cookie vars
+	property name='debuggingShowVariableCookie' type='boolean' _isCFConfig=true;
+	// Debugging include form vars
+	property name='debuggingShowVariableForm' type='boolean' _isCFConfig=true;
+	// Debugging include request vars
+	property name='debuggingShowVariableRequest' type='boolean' _isCFConfig=true;
+	// Debugging include server vars
+	property name='debuggingShowVariableServer' type='boolean' _isCFConfig=true;
+	// Debugging include session vars
+	property name='debuggingShowVariableSession' type='boolean' _isCFConfig=true;
+	// Debugging include URL vars
+	property name='debuggingShowVariableURL' type='boolean' _isCFConfig=true;
+	// Debugging IP Addresses
+	property name='debuggingIPList' type='string' _isCFConfig=true;
 	
 	// Monitoring Service Port (Only used by Adobe CF)
 	// The port for the monitoring service to bind to
@@ -349,17 +401,6 @@ component accessors="true" {
 
 	// Enable WebSocket Service
 	property name='websocketEnabled' type='boolean' _isCFConfig=true;
-
-	// Enable robust error information (Adobe only)
-	property name='robustExceptionEnabled' type='boolean' _isCFConfig=true;
-	// Enable Ajax debugging window (Adobe only)
-	property name='ajaxDebugWindowEnabled' type='boolean' _isCFConfig=true;
-	// Enable Request Debugging Output
-	property name='debuggingEnabled' type='boolean' _isCFConfig=true;
-	// Remote DOM Inspection Settings
-	property name='weinreRemoteInspectionEnabled' type='boolean' _isCFConfig=true;
-	// Report Execution Times
-	property name='debuggingReportExecutionTimes' type='boolean' _isCFConfig=true;
 
 
 	// Enable Flash remoting
