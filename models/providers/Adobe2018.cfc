@@ -29,6 +29,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setSeedPropertiesPath( '/lib/seed.properties' );
 		setLicensePropertiesTemplate( expandPath( '/cfconfig-services/resources/adobe2018/license.properties' ) );
 		setJettyConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2018/jetty.xml' ) );
+		setDotNetConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2018/neo-dotnet.xml' ) );
 		setVersion( '2018' );
 		
 		return this;

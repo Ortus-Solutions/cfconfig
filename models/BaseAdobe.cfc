@@ -55,6 +55,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	property name='jettyConfigPath' type='string';
 	property name='jettyConfigTemplate' type='string';
+	
+	property name='dotNetConfigPath' type='string';
+	property name='dotNetConfigTemplate' type='string';
+
 
 	
 	/**
@@ -77,6 +81,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setPasswordPropertiesPath( '/lib/password.properties' );
 		setLicensePropertiesPath( '/lib/license.properties' );
 		setJettyConfigPath( '/lib/jetty.xml' );
+		setDotNetConfigPath( '/lib/neo-dotnet.xml' );
 
 		setFormat( 'adobe' );
 		
@@ -115,6 +120,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readScheduler();
 		readWebsocket();
 		readJetty();
+		readDotNet();
 			
 		return this;
 	}
@@ -347,6 +353,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 		
 	}
+	
+	private function readDotNet() {
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDotNetConfigPath(), '/' ) );
+
+		if( !isNull( thisConfig[ 'port' ] ) ) { setDotNetPort( thisConfig[ 'port' ] ); }
+		if( !isNull( thisConfig[ 'dotnetport' ] ) ) { setDotNetClientPort( thisConfig[ 'dotnetport' ] ); }
+		if( !isNull( thisConfig[ 'install_dir' ] ) ) { setDotNetInstallDir( thisConfig[ 'install_dir' ] ); }
+		if( !isNull( thisConfig[ 'protocol' ] ) ) { setDotNetProtocol( thisConfig[ 'protocol' ] ); }		
+	}
+	
 		
 	private function readClientStore() {
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getClientStoreConfigPath(), '/' ) );
@@ -554,6 +570,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeEventGateway();
 		writeWebsocket();
 		writeJetty();
+		writeDotNet();
 		
 		return this;
 	}
@@ -910,6 +927,28 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		writeXMLConfigFile( thisConfig, configFilePath );
 	}
+	
+	private function writeDotNet() {
+		var configFilePath = getCFHomePath().listAppend( getDotNetConfigPath(), '/' );
+		
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getDotNetConfigTemplate() );
+		}
+
+		// All of these are strings, even the ports!
+		if( !isNull( getDotNetPort() ) ) { thisConfig[ 'port' ] = getDotNetPort()&''; }
+		if( !isNull( getDotNetClientPort() ) ) { thisConfig[ 'dotnetport' ] = getDotNetClientPort()&''; }
+		if( !isNull( getDotNetInstallDir() ) ) { thisConfig[ 'install_dir' ] = getDotNetInstallDir()&''; }
+		if( !isNull( getDotNetProtocol() ) ) { thisConfig[ 'protocol' ] = getDotNetProtocol()&''; }
+		
+		writeWDDXConfigFile( thisConfig, configFilePath );
+	}
+	
+	
 	
 	private function writeClientStore() {
 		var configFilePath = getCFHomePath().listAppend( getClientStoreConfigPath(), '/' );

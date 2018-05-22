@@ -300,9 +300,22 @@ component accessors="true" {
 	// Line Debugger Settings - Maximum Simultaneous Debugging Sessions:
 	property name='lineDebuggerMaxSessions' type='numeric' _isCFConfig=true;
 	
-	// Monitorying Service Port (Only used by Adobe CF)
+	// Monitoring Service Port (Only used by Adobe CF)
+	// The port for the monitoring service to bind to
 	property name='monitoringServicePort' type='numeric' _isCFConfig=true;
+	// The host for the monitoring service to bind to
+	// See https://tracker.adobe.com/#/view/CF-4202562
 	property name='monitoringServiceHost' type='string' _isCFConfig=true;
+	
+	// .NET Services (Only used by Adobe CF)
+	// Java port for .NET services
+	property name='dotNetPort' type='numeric' _isCFConfig=true;
+	// .Net port of JNBridge for .NET services
+	property name='dotNetClientPort' type='numeric' _isCFConfig=true;
+	// Install path to the .NET services
+	property name='dotNetInstallDir' type='string' _isCFConfig=true;
+	// Protocol for the .NET services.  Possible options: TCP, ??
+	property name='dotNetProtocol' type='string' _isCFConfig=true;
 	
 	// TODO:
 	//property name='externalizeStrings' type='string' _isCFConfig=true;
