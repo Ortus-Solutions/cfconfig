@@ -953,9 +953,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
 			var thisConfig = readXMLConfigFile( configFilePath );
+			var docType = getDocTypeFromXMLFile( configFilePath );
 		// Otherwise, start from an empty base template
 		} else {
 			var thisConfig = readXMLConfigFile( getJettyConfigTemplate() );
+			var docType = getDocTypeFromXMLFile( getJettyConfigTemplate() );
 		}
 		
 		var hostSearch = XMLSearch( thisConfig, "//Call[@name='addConnector']/Arg/New/Set[@name='host']" );
@@ -969,7 +971,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			portSearch[ 1 ].XMLText = getMonitoringServicePort();
 		}
 		
-		writeXMLConfigFile( thisConfig, configFilePath );
+		writeXMLConfigFile( thisConfig, configFilePath, docType );
 	}
 	
 	private function writeDotNet() {
@@ -1378,6 +1380,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		};
 	}
 
+	/**
+	* Reads an XML file from disk.  Returns a string or XML doc based on raw variable
+	*/
 	private function readXMLConfigFile( required string configFilePath, boolean raw=false ) {
 		if( !fileExists( configFilePath ) ) {
 			throw "The config file doesn't exist [#configFilePath#]";
@@ -1395,8 +1400,30 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}		
 	}
 	
-	private function writeXMLConfigFile( required any data, required string configFilePath ) {
-		// Ensure the parent directories exist		
+	/**
+	* Reads an XML file from disk and parses the DOCTYPE element from it if it exists.  
+	* If no doctype is found, an empty string will be returned
+	*/
+	private function getDocTypeFromXMLFile( required string path ) {
+		
+		// Look for a doctype before we clobber it
+		if( fileExists( path ) ) {
+		 	var rawXMLOriginal = fileRead( path );
+		 	var doctypeSearch = rawXMLOriginal.reFind( '<!DOCTYPE[^<]*>', 1, true );
+		 	// Found a doctype in the original XML doc
+		 	if( doctypeSearch.pos.len() && doctypeSearch.pos[ 1 ] ) {
+		 		return rawXMLOriginal.mid( doctypeSearch.pos[ 1 ], doctypeSearch.len[ 1 ] );
+		 	}
+		}
+		return '';
+	}
+	
+	/**
+	* Writes an XML file to disk and applies formatting to it.  If a DOCTYPE is supplied, it will be 
+	* inserted before the opening root tag.
+	*/
+	private function writeXMLConfigFile( required any data, required string configFilePath, string docType='' ) {
+		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true )
 		
 		var xlt = '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -1405,10 +1432,21 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			<xsl:template match="node() | @*"><xsl:copy><xsl:apply-templates select="node() | @*" /></xsl:copy></xsl:template>
 			</xsl:stylesheet>';
 		
-		fileWrite( configFilePath, toString( XmlTransform( data, xlt) ) );
+		 var rawXMLToWrite = toString( XmlTransform( data, xlt) );
+		 
+		// Look for a doctype before we clobber it
+		if( docType.len() ) {
+	 		var rootTagName = xmlParse( rawXMLToWrite ).XMLRoot.xmlName;
+	 		rawXMLToWrite = rawXMLToWrite.reReplace( '(.*)(<#rootTagName#.*)', '\1#chr(10)##docType##chr(10)#\2' )
+		}
+		
+		fileWrite( configFilePath, rawXMLToWrite );
 		
 	}
 	
+	/**
+	* Reads a WDDX file from disk and returns parsed version.
+	*/
 	private function readWDDXConfigFile( required string configFilePath ) {
 		var thisConfigRaw = readXMLConfigFile( configFilePath=configFilePath, raw=true );
 		
@@ -1421,6 +1459,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		return local.thisConfig;		
 	}
 	
+	/**
+	* Writes a WDDX file to disk.
+	*/
 	private function writeWDDXConfigFile( required any data, required string configFilePath ) {
 		
 		wddx action='cfml2wddx' input=data output='local.thisConfigRaw';
