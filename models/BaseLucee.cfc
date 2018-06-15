@@ -562,7 +562,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSessionTimeout() ) ) { config[ 'sessiontimeout' ] = getSessionTimeout(); }
 		if( !isNull( getClientCookies() ) ) { config[ 'setclientcookies' ] = getClientCookies(); }
 		if( !isNull( getDomainCookies() ) ) { config[ 'setdomaincookie' ] = getDomainCookies(); }
-		if( !isNull( getSessionStorage() ) ) {config[ 'sessionStorage' ] = getSessionStorage(); }
+		if( !isNull( getSessionStorage() ) ) {config[ 'sessionstorage' ] = getSessionStorage(); }
 		if( !isNull( getClientStorage() ) ) {
 			var thisClientStorage = getClientStorage();
 			
