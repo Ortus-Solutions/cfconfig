@@ -300,7 +300,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			// Rename read-only to readOnly
 			if( !isNull( params[ 'read-only' ] ) ) { params[ 'readOnly' ] = params[ 'read-only' ]; }
 			
-			// Turn cusom values into struct
+			// Turn custom values into struct
 			if( !isNull( params[ 'custom' ] ) ) {
 				var thisCustom = params[ 'custom' ];
 				var thisStruct = {};
@@ -499,7 +499,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			
 			// Populate XML node
 			DSXMLNode.XMLAttributes[ 'name' ] = DSName;
-			if( !isNull( DSStruct.database ) ) { DSXMLNode.XMLAttributes[ 'database' ] = DSStruct.database; }
+			if( !isNull( DSStruct.database ) ) {
+				DSXMLNode.XMLAttributes[ 'database' ] = DSStruct.database;
+				// Set default custom string for MSSQL
+				if( DSStruct.dbdriver == 'MSSQL' ) {
+					// This will be overwritten below if there is a custom key for this datasource
+					DSXMLNode.XMLAttributes[ 'custom' ] = 'DATABASENAME=#DSStruct.database#&amp;sendStringParametersAsUnicode=true&amp;SelectMethod=direct';
+				}
+			}
 			DSXMLNode.XMLAttributes[ 'allow' ] = translatePermissionsToBitMask( DSStruct );
 			if( !isNull( DSStruct.blob ) ) { DSXMLNode.XMLAttributes[ 'blob' ] = DSStruct.blob; }
 			if( !isNull( DSStruct.dbdriver ) ) {
