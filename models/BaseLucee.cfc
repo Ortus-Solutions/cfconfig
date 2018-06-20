@@ -899,7 +899,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		if( listFindNoCase( 'MSSQL,PostgreSQL,Oracle,MySQL,DB2Firebird,H2,H2Server,HSQLDB,ODBC,Sybase', arguments.driverName ) ) {
 			return arguments.driverName;
-		} else if (arguments.driverName == 'MYSQL2') {
+		} else if (arguments.driverName == 'MSSQL2') {
 			return 'JTDS';
 		} else {
 			// Adobe stores arbitrary text here
