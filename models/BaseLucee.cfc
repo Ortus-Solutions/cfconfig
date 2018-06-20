@@ -899,6 +899,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		if( listFindNoCase( 'MSSQL,PostgreSQL,Oracle,MySQL,DB2Firebird,H2,H2Server,HSQLDB,ODBC,Sybase', arguments.driverName ) ) {
 			return arguments.driverName;
+		} else if (arguments.driverName == 'MSSQL2') {
+			return 'JTDS';
 		} else {
 			// Adobe stores arbitrary text here
 			return 'Other';
@@ -911,6 +913,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		switch( driverName ) {
 			case 'MSSQL' :
 				return 'com.microsoft.jdbc.sqlserver.SQLServerDriver';
+			case 'JTDS' :
+				return 'net.sourceforge.jtds.jdbc.Driver';
 			case 'Oracle' :
 				return 'oracle.jdbc.driver.OracleDriver';
 			case 'MySQL' :
@@ -967,6 +971,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return 'jdbc:postgresql://{host}:{port}/{database}';
 			case 'MSSQL' :
 				return 'jdbc:sqlserver://{host}:{port}';
+			case 'JTDS' :
+				return 'jdbc:jtds:sqlserver://{host}:{port}/{database}';
 			case 'H2' :
 				return 'jdbc:h2:{path}{database};MODE={mode}';
 			default :
