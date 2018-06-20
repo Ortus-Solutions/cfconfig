@@ -58,6 +58,17 @@
             "username":"user",
             "connectionTimeout":"20"
         },
+        "sqlserverJTDS":{
+            "clob":"false",
+            "blob":"false",
+            "host":"localhost",
+            "dbdriver":"MSSQL2",
+            "username":"user",
+            "password":"password",
+            "database":"test",
+            "port":"1433",
+            "connectionTimeout":"20"
+        },
         "other":{
             "clob":"false",
             "blob":"false",
@@ -180,7 +191,7 @@
     "CGIReadOnly":"false",
     "applicationListener":"classic",
     "suppressWhitespaceBeforecfargument":"true",
-    "hspw":"6ff0c995b4fc466e0e029b1a45996452859be4751ce09d1af9e4a5510813776e",
+    "adminpassword":"commandbox",
     "resourceCharset":"windows-1252",
     "defaultHspw":"eb93137093b23f3230657d1f8cad7bfe0c00975805fb017f608448bbda3f33a0",
     "timeServer":"pool.ntp.org",

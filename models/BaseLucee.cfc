@@ -513,7 +513,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				DSXMLNode.XMLAttributes[ 'class' ] = translateDatasourceClassToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.class ?: '' );
 			 }
 			if( !isNull( DSStruct.dbdriver ) ) {
-				DSXMLNode.XMLAttributes[ 'dbdriver' ] = translateDatasourceDriverToLucee( DSStruct.dbdriver );
+				DSXMLNode.XMLAttributes[ 'dbdriver' ] = translateDatasourceDriverToLucee( DSStruct.dbdriver ) == 'MSSQL2' ? 'JTDS' : translateDatasourceDriverToLucee( DSStruct.dbdriver ); // Override DB Driver name for MSSQL2
 			}
 			if( !isNull( DSStruct.clob ) ) { DSXMLNode.XMLAttributes[ 'clob' ] = DSStruct.clob; }
 			if( !isNull( DSStruct.connectionLimit ) ) { DSXMLNode.XMLAttributes[ 'connectionLimit' ] = DSStruct.connectionLimit; }
@@ -897,7 +897,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function translateDatasourceDriverToLucee( required string driverName ) {
 		
-		if( listFindNoCase( 'MSSQL,PostgreSQL,Oracle,MySQL,DB2Firebird,H2,H2Server,HSQLDB,ODBC,Sybase', arguments.driverName ) ) {
+		if( listFindNoCase( 'MSSQL,MSSQL2,PostgreSQL,Oracle,MySQL,DB2Firebird,H2,H2Server,HSQLDB,ODBC,Sybase', arguments.driverName ) ) {
 			return arguments.driverName;
 		} else {
 			// Adobe stores arbitrary text here
@@ -911,6 +911,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		switch( driverName ) {
 			case 'MSSQL' :
 				return 'com.microsoft.jdbc.sqlserver.SQLServerDriver';
+			case 'MSSQL2' :
+				return 'net.sourceforge.jtds.jdbc.Driver';
 			case 'Oracle' :
 				return 'oracle.jdbc.driver.OracleDriver';
 			case 'MySQL' :
@@ -967,6 +969,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return 'jdbc:postgresql://{host}:{port}/{database}';
 			case 'MSSQL' :
 				return 'jdbc:sqlserver://{host}:{port}';
+			case 'MSSQL2' :
+				return 'jdbc:jtds:sqlserver://{host}:{port}/{database}';
 			case 'H2' :
 				return 'jdbc:h2:{path}{database};MODE={mode}';
 			default :
