@@ -504,7 +504,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				// Set default custom string for MSSQL
 				if( DSStruct.dbdriver == 'MSSQL' ) {
 					// This will be overwritten below if there is a custom key for this datasource
-					DSXMLNode.XMLAttributes[ 'custom' ] = 'DATABASENAME=#DSStruct.database#&amp;sendStringParametersAsUnicode=true&amp;SelectMethod=direct';
+					DSXMLNode.XMLAttributes[ 'custom' ] = 'DATABASENAME=#DSStruct.database#&sendStringParametersAsUnicode=true&SelectMethod=direct';
 				}
 			}
 			DSXMLNode.XMLAttributes[ 'allow' ] = translatePermissionsToBitMask( DSStruct );
