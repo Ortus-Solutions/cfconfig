@@ -30,6 +30,7 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			});
 			
 			it( "can determine an Adobe provider", function() {
+				expect( configService.determineProvider( 'adobe', '9' ) ).toBeInstanceOf( 'adobe9' );
 				expect( configService.determineProvider( 'adobe', '11' ) ).toBeInstanceOf( 'adobe11' );
 				expect( configService.determineProvider( 'adobe', '11.0.10' ) ).toBeInstanceOf( 'adobe11' );	
 			});
@@ -182,7 +183,11 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				var results = configService.guessFormat( '/tests/resources/Adobe11/ServerHome/WEB-INF/cfusion' );
 				expect( results.format ).toBe( 'adobe' );
 			});
-			
+			it( "can recognize Adobe 9", function() {
+				var results = configService.guessFormat( '/tests/resources/Adobe9/ServerHome/WEB-INF/cfusion' );
+				expect( results.version ).toBe( '9' );
+			});
+
 			it( "can recognize Adobe 11", function() {
 				var results = configService.guessFormat( '/tests/resources/Adobe11/ServerHome/WEB-INF/cfusion' );
 				expect( results.version ).toBe( '11' );
