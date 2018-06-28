@@ -1,0 +1,1 @@
+<wddxPacket version='1.0'><header/><data><array length='1'><struct type='coldfusion.server.ConfigMap'><var name='CacheType'><number>1</number></var><var name='MaxEngines'><number>4</number></var><var name='ServletName'><string>/CFIDE/GraphData.cfm</string></var><var name='CacheSize'><number>50</number></var></struct></array></data></wddxPacket>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server useBidi="true" image="PNG" cache="Memory" minTimeout="5000" maxTimeout="30000"
+	cacheSize="100" throwException="true" maxThreads="20" gcInterval="3000"
+	compression="Default" useBuiltinXmlParser="true" xmlParser="org.apache.xerces.parsers.SAXParser" useFlashFonts="false"
+	license="241S-0AEO-7UPN-0PXE" HOST="localhost" PORT="8802">
+		<folders>
+			<map key="images" value="Images"/>
+			<map key="root" value="E:/WebCharts3D.Java2D/5.0/setup/package/."/>
+			<map key="fonts" value="fonts"/>
+			<map key="home" value="/res/html"/>
+		</folders>
+		<mime>
+			<map key="application/pdf" value=".pdf"/>
+			<map key="image/png" value=".png"/>
+			<map key="image/jpeg" value=".jpg;.jpeg"/>
+			<map key="text/vnd.wap.wml" value=".wml"/>
+			<map key="application/x-shockwave-flash" value=".swf"/>
+			<map key="image/svg-xml" value=".svg"/>
+			<map key="text/html" value=".htm;.html"/>
+			<map key="image/tiff" value=".tif;.tiff"/>
+			<map key="text/text" value=".txt;.ini"/>
+			<map key="application/octet-stream" value=".cab;.jar;.zip;.class"/>
+			<map key="image/vnd.wap.wbmp" value=".wbmp"/>
+			<map key="image/gif" value=".gif"/>
+		</mime>
+		<plugins>
+			<map key="tif">
+			<![CDATA[
+<object width="%(width)" height="%(height)" classid="CLSID:106E49CF-797A-11D2-81A2-00E02C015623" %(attrs)>
+<param name="src" value="%(src)"/>
+<param name="toolbar" value="bottom"/>
+<embed width="%(width)" height="%(height)" type="image/tiff" toolbar="bottom" %(attrs)
+	src="%(src)"
+	pluginspace="http://www.alternatiff.com"/>
+</object>
+			]]>
+			</map>
+			<map key="swf">
+			<![CDATA[
+<OBJECT classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" %(attrs) %(ALT)
+ codebase="%(http)://active.macromedia.com/flash2/cabs/swflash.cab#version=4,0,2,0"
+ ID="%(id)" name="%(name)" WIDTH="%(width)" HEIGHT="%(height)">
+	<PARAM NAME="movie" VALUE="%(src)"/>
+	<PARAM NAME="quality" VALUE="high"/>
+	<PARAM NAME="bgcolor" VALUE="#FFFFFF"/>
+<EMBED src="%(src)" %(attrs)
+		quality="high" bgcolor="#FFFFFF" WIDTH="%(width)" HEIGHT="%(height)" TYPE="application/x-shockwave-flash"
+ PLUGINSPAGE="%(http)://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash">
+</EMBED>
+</OBJECT>
+			]]>
+			</map>
+			<map key="pdf">
+			<![CDATA[
+<embed width="%(width)" height="%(height)" src="%(src)" type="application/pdf" %(attrs)
+	pluginspage="http://www.adobe.com/support/downloads/main.html">
+</embed>
+			]]>
+			</map>
+			<map key="map">
+			<![CDATA[
+<script language="javascript">
+
+function xx_set_visible(id, e, value){
+	if (!xx_supported_client()) return ;
+	xx_get_by_id(id).style.visibility= value ? "visible" : "hidden";
+	if(value) xx_move_tag(id,e);
+	xx_get_by_id(id).style.display=value ? "" : "none";
+}
+
+function xx_move_tag(id,e){
+	if (!xx_supported_client()) return ;
+	var popup = xx_get_by_id(id);
+	if (popup.style.visibility!="visible") return ;
+
+	var ie=document.all;
+	var ns6=!(!document.getElementById || ie)   ; /*document.getElementById AND !document.all*/
+
+	var iebody = !(!document.compatMode || document.compatMode=="BackCompat")? document.documentElement : document.body;
+
+	var dx = 10, dy = 10;
+	var posX=(ns6)?e.pageX : event.x+iebody.scrollLeft;
+	var posY=(ns6)?e.pageY : event.y+iebody.scrollTop;
+
+	if(ie || ns6) {
+		var parent = popup.offsetParent ;
+		while(parent) {		
+			posX -= parent.offsetLeft;
+			posY -= parent.offsetTop;
+			parent=parent.offsetParent;
+		}
+	}
+
+	var ieNOTopera = !(!ie || window.opera);	
+	var rightedge= ieNOTopera ? iebody.clientWidth-event.clientX: window.innerWidth-e.clientX-20
+	var bottomedge=ieNOTopera ? iebody.clientHeight-event.clientY : window.innerHeight-e.clientY-20
+
+	if (xx_less(rightedge-dx,popup.offsetWidth))
+		posX=ie? iebody.scrollLeft+event.clientX-popup.offsetWidth : window.pageXOffset+e.clientX-popup.offsetWidth;
+
+	if (xx_less(bottomedge-dy,popup.offsetHeight)) {
+		posY=ie? iebody.scrollTop+event.clientY-popup.offsetHeight : window.pageYOffset+e.clientY-popup.offsetHeight;
+		dy =-dy;
+	}
+	popup.style.left=posX+dx+"px";
+	popup.style.top=posY+dy+"px" ;
+}
+
+function xx_less(l,r) { return Math.max(l-r,0) == 0 ; /* l LE r */}
+function xx_and(l, r) { return   !(!l || !r);         /*l AND r */}
+function xx_supported_client() { 	return (document.all) || (document.getElementById);}
+function xx_get_by_id(id) { return document.all? document.all[id]: document.getElementById? document.getElementById(id) : "" }
+
+</script>
+			]]>
+			</map>
+			<map key="svg">
+			<![CDATA[
+<embed width="%(width)" height="%(height)" src="%(src)" type="image/svg-xml" %(attrs)
+	pluginspage="http://www.adobe.com/svg/viewer/install/main.html">
+</embed>
+			]]>
+			</map>
+		</plugins>
+		<fontMap>
+			<map key="timesroman" value="Times New Roman"/>
+			<map key="dialog" value="Arial"/>
+			<map key="helvetica" value="Arial"/>
+			<map key="sansserif" value="Arial"/>
+			<map key="serif" value="Times New Roman"/>
+			<map key="dialoginput" value="Arial"/>
+			<map key="monospased" value="Courier New"/>
+			<map key="helv" value="Arial"/>
+			<map key="courier" value="Courier New"/>
+		</fontMap>
+		<fonts value="*.fft"/>
+</server>
