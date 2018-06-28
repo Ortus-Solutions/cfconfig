@@ -106,6 +106,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			throw 'No CF home specified to read from';
 		}
 		
+
+		
 		readRuntime();
 		readClientStore();
 		readWatch();
@@ -118,8 +120,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readScheduler();
 		readEventGateway();
 		readScheduler();
-		readWebsocket();
-		readJetty();
+
+		//CF9 has none of this!
+		if(getVersion() GT 9 ){
+			readWebsocket(); 
+			readJetty();
+		}
 		readDotNet();
 			
 		return this;
@@ -194,12 +200,27 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( thisConfig[ 16 ].preserveCaseForSerialize ) ) { setDotNotationUpperCase( !thisConfig[ 16 ].preserveCaseForSerialize ); }
 		setSecureJSON( thisConfig[ 16 ].secureJSON );
 		setSecureJSONPrefix( thisConfig[ 16 ].secureJSONPrefix );
-		setMaxOutputBufferSize( thisConfig[ 16 ].maxOutputBufferSize );
+		if(structKeyExists(thisConfig[ 16 ] , "maxOutputBufferSize" )){
+			//Default: 1024   kb
+			setMaxOutputBufferSize( thisConfig[ 16 ].maxOutputBufferSize );
+		}
+		
 		setInMemoryFileSystemEnabled( thisConfig[ 16 ].enableInMemoryFileSystem );
-		setInMemoryFileSystemLimit( thisConfig[ 16 ].inMemoryFileSystemLimit );
-		setInMemoryFileSystemAppLimit( thisConfig[ 16 ].inMemoryFileSystemAppLimit );
+
+		if(structKeyExists(thisConfig[ 16 ], "inMemoryFileSystemLimit")){
+			//default  100 Mb
+			setInMemoryFileSystemLimit( thisConfig[ 16 ].inMemoryFileSystemLimit );	
+		}
+		
+		if(structKeyExists(thisConfig[ 16 ],"inMemoryFileSystemAppLimit")){
+			setInMemoryFileSystemAppLimit( thisConfig[ 16 ].inMemoryFileSystemAppLimit );
+		}
+		
 		setAllowExtraAttributesInAttrColl( thisConfig[ 16 ].allowExtraAttributesInAttrColl );
-		setDisallowUnamedAppScope( thisConfig[ 16 ].dumpunnamedappscope );
+
+		if(structKeyExists(thisConfig[ 16 ], "dumpunnamedappscope")){
+			setDisallowUnamedAppScope( thisConfig[ 16 ].dumpunnamedappscope );
+		}
 		
 		setFlashRemotingEnable( thisConfig[ 16 ].enableFlashRemoting );
 		setFlexDataServicesEnable( thisConfig[ 16 ].enableFlexDataServices );
@@ -213,7 +234,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( thisConfig[ 16 ].allowappvarincontext ) ) { setAllowApplicationVarsInServletContext( thisConfig[ 16 ].allowappvarincontext ); }
 		
 		setCFaaSGeneratedFilesExpiryTime( thisConfig[ 16 ].CFaaSGeneratedFilesExpiryTime );
-		setORMSearchIndexDirectory( thisConfig[ 16 ].ORMSearchIndexDirectory );
+
+		if(structKeyExists(thisConfig[ 16 ], "ORMSearchIndexDirectory")){
+			setORMSearchIndexDirectory( thisConfig[ 16 ].ORMSearchIndexDirectory );
+		}
+
 		setGoogleMapKey( thisConfig[ 16 ].googleMapKey );
 		setServerCFCEenabled( thisConfig[ 16 ].enableServerCFC );
 		setServerCFC( thisConfig[ 16 ].serverCFC );
@@ -221,10 +246,25 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// This setting CF11+
 		if( !isNull( thisConfig[ 16 ].compileextforinclude ) ) { setCompileExtForCFInclude( thisConfig[ 16 ].compileextforinclude ); }
 		
-		setSessionCookieTimeout( thisConfig[ 16 ].sessionCookieTimeout );
-		setSessionCookieHTTPOnly( thisConfig[ 16 ].httpOnlySessionCookie );
-		setSessionCookieSecure( thisConfig[ 16 ].secureSessionCookie );
-		setSessionCookieDisableUpdate( thisConfig[ 16 ].internalCookiesDisableUpdate );
+		//CF9 doesn't have any of these. 
+
+		if(structKeyExists(thisConfig[ 16 ], "sessionCookieTimeout")){
+			setSessionCookieTimeout( thisConfig[ 16 ].sessionCookieTimeout );
+		}
+		if(structKeyExists(thisConfig[ 16 ], "httpOnlySessionCookie")){
+			setSessionCookieHTTPOnly( thisConfig[ 16 ].httpOnlySessionCookie );
+		}
+		if(structKeyExists(thisConfig[ 16 ], "secureSessionCookie")){
+			setSessionCookieSecure( thisConfig[ 16 ].secureSessionCookie );
+		}
+		if(structKeyExists(thisConfig[ 16 ], "internalCookiesDisableUpdate")){
+			setSessionCookieDisableUpdate( thisConfig[ 16 ].internalCookiesDisableUpdate );
+		}
+
+
+		
+		
+		
 		
 		// Map Adobe values to shared Lucee settings
 		switch( thisConfig[ 16 ].applicationCFCSearchLimit ) {
