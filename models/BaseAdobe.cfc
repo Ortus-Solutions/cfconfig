@@ -543,7 +543,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				password = passwordManager.decryptDataSource( ds.password ),
 				port = ds.urlmap.port,
 				username = ds.username,
-				validate = ds.validateConnection,
+				validate = ds.keyExists("validateConnection")?ds.validateConnection:false,
 				SID = ds.urlmap.SID ?: '',
 				maintainConnections = ds.pooling ?: false,
 				maxPooledStatements = ds.urlmap.maxPooledStatements ?: 100,
