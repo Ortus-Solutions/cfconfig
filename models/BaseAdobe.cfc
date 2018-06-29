@@ -120,12 +120,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readScheduler();
 		readEventGateway();
 		readScheduler();
-
-		//CF9 has none of this!
-		if(getVersion() GT 9 ){
-			readWebsocket(); 
-			readJetty();
-		}
+		readWebsocket(); 
+		readJetty();
 		readDotNet();
 			
 		return this;
@@ -248,16 +244,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		//CF9 doesn't have any of these. 
 
-		if(structKeyExists(thisConfig[ 16 ], "sessionCookieTimeout")){
+		if(!isNull(thisConfig[ 16 ].sessionCookieTimeout)){
 			setSessionCookieTimeout( thisConfig[ 16 ].sessionCookieTimeout );
 		}
-		if(structKeyExists(thisConfig[ 16 ], "httpOnlySessionCookie")){
+		if(!isNull(thisConfig[ 16 ].httpOnlySessionCookie)){
 			setSessionCookieHTTPOnly( thisConfig[ 16 ].httpOnlySessionCookie );
 		}
-		if(structKeyExists(thisConfig[ 16 ], "secureSessionCookie")){
+		if(!isNull(thisConfig[ 16 ].secureSessionCookie)){
 			setSessionCookieSecure( thisConfig[ 16 ].secureSessionCookie );
 		}
-		if(structKeyExists(thisConfig[ 16 ], "internalCookiesDisableUpdate")){
+		if(!isNull(thisConfig[ 16 ].internalCookiesDisableUpdate)){
 			setSessionCookieDisableUpdate( thisConfig[ 16 ].internalCookiesDisableUpdate );
 		}
 
