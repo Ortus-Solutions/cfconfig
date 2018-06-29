@@ -54,6 +54,10 @@ component extends="tests.BaseTest" appMapping="/tests" {
 
 				var outfile = deserializeJSON(FileRead('/tests/resources/tmp/Adobe9Config.json'));
 				expect(outfile.debuggingTemplate).Tobe("/WEB-INF/debug/classic.cfm");
+				expect(outfile.datasources).toHaveKey( "LogDB");
+				expect(outfile.datasources.LogDB).toHaveKey( "password");
+				expect(outfile.datasources.LogDB.password).ToBe( "example");
+
 				
 			});
 		
