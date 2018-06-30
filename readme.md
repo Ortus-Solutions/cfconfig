@@ -16,6 +16,9 @@ This is a library for reading, writing, and storing configuration for all CF eng
 Please enter tickets for bugs and enhancemnets here:
 https://ortussolutions.atlassian.net/browse/CFCONFIG
 
+Documentation is found here:
+https://cfconfig.ortusbooks.com
+
 ## Main Features
 
 1. Generic JSON storage of any CF engine's settings
