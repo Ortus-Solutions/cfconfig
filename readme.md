@@ -13,6 +13,9 @@
 
 This is a library for reading, writing, and storing configuration for all CF engines. This is an underlying service layer meant to have other tools built on top of it.
 
+Please enter tickets for bugs and enhancemnets here:
+https://ortussolutions.atlassian.net/browse/CFCONFIG
+
 ## Main Features
 
 1. Generic JSON storage of any CF engine's settings
@@ -37,13 +40,13 @@ or config setting that's not supported yet.  Please submit pull requests for the
 
 If you don't have time for a pull request, please enter a ticket so we can track remaining features.  
 
-Major features left to develop
-* **Adobe CF9** - Everything
-* **Adobe CF10** - Everything
-* **Adobe CF11** - In progress...
-* **Adobe C2016** - In progress...
-* **Railo 4.x** - Everything-- probably can heavily re-use from Lucee 4.x
-* **Lucee 4.x/5.x** - custom tags, debugging, REST mappings, error settings, component settings
+Major features developed
+* **Adobe CF9** - Most everything but event gateways
+* **Adobe CF10** - Most everything but event gateways
+* **Adobe CF11** - Most everything but event gateways
+* **Adobe C2016** - Most everything but event gateways
+* **Railo 4.x** - Most everything but event gateways and scheduled tasks
+* **Lucee 4.x/5.x** - Most everything but event gateways and scheduled tasks
 
 ## Component Overview
 
