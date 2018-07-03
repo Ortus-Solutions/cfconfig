@@ -1203,11 +1203,18 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				savingDS.url = savingDS.url.replaceNoCase( '{host}', incomingDS.host );
 			}
 			if( !isNull( incomingDS.password ) ) { savingDS.password = passwordManager.encryptDataSource( incomingDS.password ); }
-			if( !isNull( incomingDS.port ) ) {
+			
+			// Named SQL Server instances have no port, so remove the place holder
+			if( isNull( incomingDS.port ) || trim( incomingDS.port ) == '' ) {
+				savingDS.urlmap.port = '';
+				savingDS.urlmap.connectionprops.port = '';
+				savingDS.url = savingDS.url.replaceNoCase( ':{port}', '' );
+			} else {
 				savingDS.urlmap.port = incomingDS.port;
 				savingDS.urlmap.connectionprops.port = incomingDS.port;
 				savingDS.url = savingDS.url.replaceNoCase( '{port}', incomingDS.port );
 			}
+			
 			if( !isNull( incomingDS.username ) ) { savingDS.username = incomingDS.username; }
 			if( !isNull( incomingDS.validate ) ) { savingDS.validateConnection = !!incomingDS.validate; }
 			if( !isNull( incomingDS.SID ) ) {
