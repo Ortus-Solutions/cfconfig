@@ -90,7 +90,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	// This is not a singleton since it holds state regarding the encryption seeds, so create it fresh each time as a transient.
 	private function getAdobePasswordManager() {
-		return wirebox.getInstance( 'PasswordManager@adobe-password-util' );
+
+		var passwordManager = wirebox.getInstance( 'PasswordManager@adobe-password-util' );
+		var pathToPasswordFile = getCFHomePath().listAppend( getSeedPropertiesPath(), '/' );
+
+		if(FileExists(pathToPasswordFile)){
+			passwordManager.setSeedProperties( pathToPasswordFile );
+		}
+		return passwordManager;
 	}
 	
 	/**
@@ -128,7 +135,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readRuntime() {
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getRuntimeConfigPath(), '/' ) );
 				
 		setSessionMangement( thisConfig[ 7 ].session.enable );
@@ -316,7 +323,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readScheduler() {
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSchedulerConfigPath(), '/' ) );
 		
 		if( isStruct( thisConfig[ 1 ] ) ) {
@@ -473,7 +480,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readMail() {
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getMailConfigPath(), '/' ) );
 		
 		if( !isNull( thisConfig.spoolEnable ) ) { setMailSpoolEnable( thisConfig.spoolEnable ); }
@@ -500,7 +507,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readDatasource() {
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDatasourceConfigPath(), '/' ) );
 		var datasources = thisConfig[ 1 ];
 		
@@ -632,7 +639,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeRuntime() {
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		var configFilePath = getCFHomePath().listAppend( getRuntimeConfigPath(), '/' );
 		
 		// If the target config file exists, read it in
@@ -850,7 +857,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeScheduler( boolean pauseTasks=false ) {
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		var configFilePath = getCFHomePath().listAppend( getSchedulerConfigPath(), '/' );
 		
 		// If the target config file exists, read it in
@@ -1139,7 +1146,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	private function writeMail() {
 		var configFilePath = getCFHomePath().listAppend( getMailConfigPath(), '/' );
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1181,7 +1188,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 		
 		var configFilePath = getCFHomePath().listAppend( getDatasourceConfigPath(), '/' );
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
