@@ -90,7 +90,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	// This is not a singleton since it holds state regarding the encryption seeds, so create it fresh each time as a transient.
 	private function getAdobePasswordManager() {
-		return wirebox.getInstance( 'PasswordManager@adobe-password-util' );
+
+		var passwordManager = wirebox.getInstance( 'PasswordManager@adobe-password-util' );
+		var pathToPasswordFile = getCFHomePath().listAppend( getSeedPropertiesPath(), '/' );
+
+		if(FileExists(pathToPasswordFile)){
+			passwordManager.setSeedProperties( pathToPasswordFile );
+		}
+		return passwordManager;
 	}
 	
 	/**
@@ -106,6 +113,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			throw 'No CF home specified to read from';
 		}
 		
+
+		
 		readRuntime();
 		readClientStore();
 		readWatch();
@@ -118,7 +127,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readScheduler();
 		readEventGateway();
 		readScheduler();
-		readWebsocket();
+		readWebsocket(); 
 		readJetty();
 		readDotNet();
 			
@@ -126,7 +135,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readRuntime() {
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getRuntimeConfigPath(), '/' ) );
 				
 		setSessionMangement( thisConfig[ 7 ].session.enable );
@@ -194,12 +203,27 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( thisConfig[ 16 ].preserveCaseForSerialize ) ) { setDotNotationUpperCase( !thisConfig[ 16 ].preserveCaseForSerialize ); }
 		setSecureJSON( thisConfig[ 16 ].secureJSON );
 		setSecureJSONPrefix( thisConfig[ 16 ].secureJSONPrefix );
-		setMaxOutputBufferSize( thisConfig[ 16 ].maxOutputBufferSize );
+		if(structKeyExists(thisConfig[ 16 ] , "maxOutputBufferSize" )){
+			//Default: 1024   kb
+			setMaxOutputBufferSize( thisConfig[ 16 ].maxOutputBufferSize );
+		}
+		
 		setInMemoryFileSystemEnabled( thisConfig[ 16 ].enableInMemoryFileSystem );
-		setInMemoryFileSystemLimit( thisConfig[ 16 ].inMemoryFileSystemLimit );
-		setInMemoryFileSystemAppLimit( thisConfig[ 16 ].inMemoryFileSystemAppLimit );
+
+		if(structKeyExists(thisConfig[ 16 ], "inMemoryFileSystemLimit")){
+			//default  100 Mb
+			setInMemoryFileSystemLimit( thisConfig[ 16 ].inMemoryFileSystemLimit );	
+		}
+		
+		if(structKeyExists(thisConfig[ 16 ],"inMemoryFileSystemAppLimit")){
+			setInMemoryFileSystemAppLimit( thisConfig[ 16 ].inMemoryFileSystemAppLimit );
+		}
+		
 		setAllowExtraAttributesInAttrColl( thisConfig[ 16 ].allowExtraAttributesInAttrColl );
-		setDisallowUnamedAppScope( thisConfig[ 16 ].dumpunnamedappscope );
+
+		if(structKeyExists(thisConfig[ 16 ], "dumpunnamedappscope")){
+			setDisallowUnamedAppScope( thisConfig[ 16 ].dumpunnamedappscope );
+		}
 		
 		setFlashRemotingEnable( thisConfig[ 16 ].enableFlashRemoting );
 		setFlexDataServicesEnable( thisConfig[ 16 ].enableFlexDataServices );
@@ -213,7 +237,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( thisConfig[ 16 ].allowappvarincontext ) ) { setAllowApplicationVarsInServletContext( thisConfig[ 16 ].allowappvarincontext ); }
 		
 		setCFaaSGeneratedFilesExpiryTime( thisConfig[ 16 ].CFaaSGeneratedFilesExpiryTime );
-		setORMSearchIndexDirectory( thisConfig[ 16 ].ORMSearchIndexDirectory );
+
+		if(structKeyExists(thisConfig[ 16 ], "ORMSearchIndexDirectory")){
+			setORMSearchIndexDirectory( thisConfig[ 16 ].ORMSearchIndexDirectory );
+		}
+
 		setGoogleMapKey( thisConfig[ 16 ].googleMapKey );
 		setServerCFCEenabled( thisConfig[ 16 ].enableServerCFC );
 		setServerCFC( thisConfig[ 16 ].serverCFC );
@@ -221,10 +249,25 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// This setting CF11+
 		if( !isNull( thisConfig[ 16 ].compileextforinclude ) ) { setCompileExtForCFInclude( thisConfig[ 16 ].compileextforinclude ); }
 		
-		setSessionCookieTimeout( thisConfig[ 16 ].sessionCookieTimeout );
-		setSessionCookieHTTPOnly( thisConfig[ 16 ].httpOnlySessionCookie );
-		setSessionCookieSecure( thisConfig[ 16 ].secureSessionCookie );
-		setSessionCookieDisableUpdate( thisConfig[ 16 ].internalCookiesDisableUpdate );
+		//CF9 doesn't have any of these. 
+
+		if(!isNull(thisConfig[ 16 ].sessionCookieTimeout)){
+			setSessionCookieTimeout( thisConfig[ 16 ].sessionCookieTimeout );
+		}
+		if(!isNull(thisConfig[ 16 ].httpOnlySessionCookie)){
+			setSessionCookieHTTPOnly( thisConfig[ 16 ].httpOnlySessionCookie );
+		}
+		if(!isNull(thisConfig[ 16 ].secureSessionCookie)){
+			setSessionCookieSecure( thisConfig[ 16 ].secureSessionCookie );
+		}
+		if(!isNull(thisConfig[ 16 ].internalCookiesDisableUpdate)){
+			setSessionCookieDisableUpdate( thisConfig[ 16 ].internalCookiesDisableUpdate );
+		}
+
+
+		
+		
+		
 		
 		// Map Adobe values to shared Lucee settings
 		switch( thisConfig[ 16 ].applicationCFCSearchLimit ) {
@@ -280,7 +323,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readScheduler() {
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSchedulerConfigPath(), '/' ) );
 		
 		if( isStruct( thisConfig[ 1 ] ) ) {
@@ -437,7 +480,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readMail() {
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getMailConfigPath(), '/' ) );
 		
 		if( !isNull( thisConfig.spoolEnable ) ) { setMailSpoolEnable( thisConfig.spoolEnable ); }
@@ -464,7 +507,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readDatasource() {
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDatasourceConfigPath(), '/' ) );
 		var datasources = thisConfig[ 1 ];
 		
@@ -503,7 +546,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				password = passwordManager.decryptDataSource( ds.password ),
 				port = ds.urlmap.port,
 				username = ds.username,
-				validate = ds.validateConnection,
+				validate = ds.keyExists("validateConnection")?ds.validateConnection:false,
 				SID = ds.urlmap.SID ?: '',
 				maintainConnections = ds.pooling ?: false,
 				maxPooledStatements = ds.urlmap.maxPooledStatements ?: 100,
@@ -596,7 +639,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeRuntime() {
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		var configFilePath = getCFHomePath().listAppend( getRuntimeConfigPath(), '/' );
 		
 		// If the target config file exists, read it in
@@ -814,7 +857,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeScheduler( boolean pauseTasks=false ) {
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		var configFilePath = getCFHomePath().listAppend( getSchedulerConfigPath(), '/' );
 		
 		// If the target config file exists, read it in
@@ -1103,7 +1146,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	private function writeMail() {
 		var configFilePath = getCFHomePath().listAppend( getMailConfigPath(), '/' );
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1145,7 +1188,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 		
 		var configFilePath = getCFHomePath().listAppend( getDatasourceConfigPath(), '/' );
-		var passwordManager = getAdobePasswordManager().setSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		var passwordManager = getAdobePasswordManager();
 		
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1167,10 +1210,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			
 			savingDS.name = datasource;
 
+
+
 			// Only use the incoming JDBC URL if this is a datasource of type other.  This is to prevent a Lucee
 			// JDBC URL from getting imported into Adobe.  Instead, the URL will be pulled from  getDefaultDatasourceStruct() above.
-			if( ( incomingDS.dbdriver ?: 'Other' ) == 'Other' || !savingDS.url.len() ) {
-				savingDS.url = incomingDS.dsn;	
+			if( ( incomingDS.dbdriver ?: 'Other' ) == 'Other' || !savingDS.url.len() 
+					&& incomingDS.keyExists("dsn")) {
+					// ^^^ the above has been added to stop most errors but not sure if the whole logic is correct as it is.
+
+					savingDS.url = incomingDS.dsn;	
 			}
 	
 			// Invert logic

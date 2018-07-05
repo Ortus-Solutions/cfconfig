@@ -88,12 +88,13 @@ component accessors=true singleton {
 			format : '',
 			version : 0
 		};
+
 		
 		// If this is a directory and it exists
 		if( directoryExists( CFHomePath ) ) {
 			
 			// Check for Adobe server
-			if( fileExists( CFHomePath & '/lib/cfusion.jar' ) ) {
+			if( fileExists( CFHomePath & '/lib/cfusion.jar' ) OR fileExists( CFHomePath & '/lib/neo-runtime.xml' ) ) {
 				result.format = 'adobe';
 				
 				// Now that we know it's Adobe, try and detect version
@@ -111,6 +112,15 @@ component accessors=true singleton {
 						// Strip the version number out
 						result.version = CFHomePath.mid( findresults.pos[ 2 ], findresults.len[ 2 ] );
 					} 
+					//If it is still empty, try it for commandbox installations
+					if(result.version IS 0){
+						var findresults = CFHomePath.reFindNoCase( '[\\/]adobe([0-9]{1,4})[\\/]', 1, true );
+						if( findresults.len.len() == 2 ) {
+						// Strip the version number out
+							result.version = CFHomePath.mid( findresults.pos[ 2 ], findresults.len[ 2 ] );
+						} 
+					}
+
 				}
 				
 				return result;
