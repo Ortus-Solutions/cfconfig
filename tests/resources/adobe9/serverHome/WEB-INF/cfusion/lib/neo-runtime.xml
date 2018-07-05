@@ -82,7 +82,7 @@
           <string>/opt/jrun4/servers/cfusion/cfusion-ear/cfusion-war/WEB-INF/cfusion/gateway/cfc</string>
         </var>
         <var name="/CFIDE">
-          <string>/Users/markdrew/.CommandBox/server/A7C460E192538BCFEF51CF490EDA5E05-box_cf9_test/adobe-9.0.2.282541/CFIDE</string>
+          <string>C:\Users\Brad.development\Documents\GitHub\cfconfig\tests\resources\adobe9\serverHome\/CFIDE</string>
         </var>
       </struct>
       <struct type="coldfusion.server.ConfigMap">

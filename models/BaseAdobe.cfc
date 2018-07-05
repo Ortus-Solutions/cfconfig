@@ -1214,15 +1214,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var savingDS = thisConfig[ 1 ][ datasource ];
 			
 			savingDS.name = datasource;
-
-
-
-			// Only use the incoming JDBC URL if this is a datasource of type other.  This is to prevent a Lucee
-			// JDBC URL from getting imported into Adobe.  Instead, the URL will be pulled from  getDefaultDatasourceStruct() above.
-			if( ( incomingDS.dbdriver ?: 'Other' ) == 'Other' || !savingDS.url.len() 
-					&& incomingDS.keyExists("dsn")) {
-					// ^^^ the above has been added to stop most errors but not sure if the whole logic is correct as it is.
-
+			
+			// Only use the incoming JDBC URL if it exists and this is a datasource of type other or we don't have a default URL
+			// for this DB type.  This is to prevent a Lucee JDBC URL from getting imported into Adobe.  
+			// Instead, the URL will be pulled from  getDefaultDatasourceStruct() above.
+			if( incomingDS.keyExists( 'dsn' ) && ( ( incomingDS.dbdriver ?: 'Other' ) == 'Other' || !savingDS.url.len() ) ) {
 					savingDS.url = incomingDS.dsn;	
 			}
 	
