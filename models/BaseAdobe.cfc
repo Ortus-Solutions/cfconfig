@@ -857,6 +857,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeScheduler( boolean pauseTasks=false ) {
+		
+		if( isNull( getScheduledTasks() ) ) {
+			return;
+		}
+		
 		var passwordManager = getAdobePasswordManager();
 		var configFilePath = getCFHomePath().listAppend( getSchedulerConfigPath(), '/' );
 		
@@ -884,8 +889,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			taskData[ 'eventhandler' ] = ( thisTask.eventhandler ?: taskData.eventhandler ) & '';
 			taskData[ 'eventhandlerrp' ] = ( thisTask.eventhandler ?: taskData.eventhandler ) & '';
 			taskData[ 'exclude' ] = ( thisTask.exclude ?: taskData.exclude ) & '';
-			taskData[ 'path' ] = ( getDirectoryFromPath( thisTask.file ) ?: taskData.file ) & '';
-			taskData[ 'file' ] = ( getFileFromPath( thisTask.file ) ?: taskData.file ) & '';
+			taskData[ 'path' ] = ( getDirectoryFromPath( thisTask.file ?: taskData.file ) ) & '';
+			taskData[ 'file' ] = ( getFileFromPath( thisTask.file ?: taskData.file ) ) & '';
 			taskData[ 'group' ] = ( thisTask.group ?: taskData.group ) & '';
 			taskData[ 'http_port' ] = ( thisTask.httpPort ?: taskData.http_port ) & '';
 			taskData[ 'http_proxy_port' ] = ( thisTask.httpProxyPort ?: taskData.http_proxy_port ) & '';
@@ -1183,7 +1188,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function writeDatasource() {
 		
-		if( isNull( getDatasources() ) || !structCount( getDatasources() ) ) {
+		if( isNull( getDatasources() ) ) {
 			return;
 		}
 		

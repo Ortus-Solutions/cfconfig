@@ -886,7 +886,7 @@ component accessors="true" {
 	function addScheduledTask(
 		required string task,
 		string url,
-		string group,
+		string group='DEFAULT',
 		boolean chained,
 		boolean clustered,
 		string crontime,
@@ -925,7 +925,7 @@ component accessors="true" {
 		}
 		
 		var thisScheduledTasks = getScheduledTasks() ?: {};
-		thisScheduledTasks[ ( arguments.group ?: 'default' ) & ':' & arguments.task ] = scheduledTask;
+		thisScheduledTasks[ arguments.group & ':' & arguments.task ] = scheduledTask;
 		setScheduledTasks( thisScheduledTasks );
 		return this;
 	}
