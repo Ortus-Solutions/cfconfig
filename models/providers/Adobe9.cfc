@@ -11,9 +11,6 @@
 */
 component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 	
-	property name='seed';
-    property name='Algorithm';
-
 	/**
 	* Constructor
 	*/
@@ -36,8 +33,6 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setDotNetConfigTemplate( expandPath( '/cfconfig-services/resources/adobe9/neo-dotnet.xml' ) );
 		setVersion( '9' );
 		
-		setSeed( '0yJ!@1$r8p0L@r1$6yJ!@1rj' );
-    	setAlgorithm( 'DESede' );
 		return this;
 	}
 
@@ -114,35 +109,11 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		return this;
 	}
 
-	private function decryptDataSource(required String pass){
-		
-    	if( !len( pass ) ) { return ''; }
-    	var secretKey = _generate3DesKey( seed );
-    	try {
-			return decrypt( pass, secretKey, getAlgorithm(), "Base64");
-		} catch( any e ) {
-			return 'ERROR DECRYPTING: [#e.message#]';
-		}
-    
-	}
-
-	  public string function encryptDataSource( required string pass ) {
-    	var secretKey = _generate3DesKey( seed );
-		return encrypt( pass, secretKey, getAlgorithm(), "Base64");
-    }
-
-
-	// Adobe CF has this as a built-in function, but not Lucee. Credit to Paul Klinkenberg 
-	// http://www.lucee.nl/post.cfm/cf-function-generate3deskey
-	private function _generate3DesKey( string fromString ) {
-		if( !structKeyExists( arguments, 'fromString' ) ){
-			return generateSecretKey( 'DESEDE' );
-		}
-		var secretKeySpec = createObject( 'java', 'javax.crypto.spec.SecretKeySpec' ).init( arguments.fromString.getBytes(), getAlgorithm() );
-		return toBase64( secretKeySpec.getEncoded() );
-	}
-
 	private function readDatasource() {
+
+
+
+		
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDatasourceConfigPath(), '/' ) );
 		var datasources = thisConfig[ 1 ];
 		
@@ -178,7 +149,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 				dbdriver = DSNUtil.translateDatasourceDriverToGeneric( ds.driver ),
 				dsn = ds.url,
 				host = ds.urlmap.host,
-				password = decryptDataSource(ds.password ),
+				password = getAdobePasswordManager().decryptDataSource(ds.password ),
 				port = ds.urlmap.port,
 				username = ds.username,
 				validate = ds.keyExists("validateConnection")?ds.validateConnection:false,
@@ -274,7 +245,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 				savingDS.urlmap.connectionprops.host = incomingDS.host;
 				savingDS.url = savingDS.url.replaceNoCase( '{host}', incomingDS.host );
 			}
-			if( !isNull( incomingDS.password ) ) { savingDS.password = encryptDataSource( incomingDS.password ); }
+			if( !isNull( incomingDS.password ) ) { savingDS.password = getAdobePasswordManager().encryptDataSource( incomingDS.password ); }
 			if( !isNull( incomingDS.port ) ) {
 				savingDS.urlmap.port = incomingDS.port;
 				savingDS.urlmap.connectionprops.port = incomingDS.port;
