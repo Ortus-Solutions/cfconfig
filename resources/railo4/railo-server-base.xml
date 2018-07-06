@@ -8,7 +8,7 @@ Path placeholders:
 	{system-directory}: path to thesystem directory
 	{web-context-hash}: hash of the web context
 
---><cfRailoConfiguration hspw="449f4cc9a73416973402c560a3f99d46d6f71af0330fe8d7b14a150e19a36275" salt="D66C71AA-19B4-44F2-B980DCDA82D772C9" version="4.2"><cfabort/>
+--><cfRailoConfiguration version="4.2"><cfabort/>
 
 	<!--
 	system:
