@@ -36,8 +36,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			throw 'No CF home specified to read from';
 		}
 		
-		// If the path doesn't end with .json, assume it's just the directory
-		if( right( thisCFHomePath, 5 ) != '.json' ) {
+		// If the path doesn't end with .json and doesn't point to a JSON file, assume it's just the directory
+		if( right( thisCFHomePath, 5 ) != '.json' && !( fileExists( thisCFHomePath ) && isJSON( fileRead( thisCFHomePath ) ) ) ) {
 			thisCFHomePath = thisCFHomePath.listAppend( '.CFConfig.json', '/' );
 		}		
 		
@@ -70,8 +70,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			throw 'No CF home specified to write to';
 		}
 		
-		// If the path doesn't end with .json, assume it's just the directory
-		if( right( thisCFHomePath, 5 ) != '.json' ) {
+		// If the path doesn't end with .json and doesn't point to a JSON file, assume it's just the directory
+		if( right( thisCFHomePath, 5 ) != '.json' && !( fileExists( thisCFHomePath ) && isJSON( fileRead( thisCFHomePath ) ) ) ) {
 			thisCFHomePath = thisCFHomePath.listAppend( '.CFConfig.json', '/' );
 		}
 		

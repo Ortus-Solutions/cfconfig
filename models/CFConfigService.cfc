@@ -77,7 +77,9 @@ component accessors=true singleton {
 	function guessFormat( required string CFHomePath ) {
 		
 		// If the path is a JSON file, then we're doing JSON format
-		if( right( CFHomePath, 5 ) == '.json' ) {
+		// Check a JSON file ext as well as an existing file that contains valid JSON.
+		if( right( CFHomePath, 5 ) == '.json' || 
+			( fileExists( CFHomePath ) && isJSON( fileRead( CFHomePath ) ) ) ) {
 			return {
 				format : 'JSON',
 				version : 0
