@@ -121,6 +121,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 				var ds = data[ 1 ][ dsName ];
 				// CF9 chokes if this is present
 				ds.delete( 'clientInfo' );
+				ds.delete( 'validateConnection' );				
 			}			
 		}
 		
