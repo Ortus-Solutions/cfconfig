@@ -108,4 +108,24 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		
 		return this;
 	}
+	
+	
+	/**
+	* Writes a WDDX file to disk with a CF9 fix in place
+	*/
+	private function writeWDDXConfigFile( required any data, required string configFilePath ) {
+
+		// Fix to strip out key CF9 doesn't like
+		if( configFilePath.findNoCase( 'neo-datasource.xml' ) ) {
+			for( var dsName in data[ 1 ] ) {
+				var ds = data[ 1 ][ dsName ];
+				// CF9 chokes if this is present
+				ds.delete( 'clientInfo' );
+			}			
+		}
+		
+		// As you were...
+		super.writeWDDXConfigFile( data, configFilePath );
+	}
+	
 }
