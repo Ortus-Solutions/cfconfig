@@ -185,16 +185,43 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			});
 			it( "can recognize Adobe 9", function() {
 				var results = configService.guessFormat( '/tests/resources/Adobe9/ServerHome/WEB-INF/cfusion' );
+				expect( results.format ).toBe( 'adobe' );
 				expect( results.version ).toBe( '9' );
 			});
 
 			it( "can recognize Adobe 11", function() {
 				var results = configService.guessFormat( '/tests/resources/Adobe11/ServerHome/WEB-INF/cfusion' );
+				expect( results.format ).toBe( 'adobe' );
 				expect( results.version ).toBe( '11' );
 			});
 			
 			it( "can recognize Adobe 2016", function() {
 				var results = configService.guessFormat( '/tests/resources/Adobe2016/ServerHome/WEB-INF/cfusion' );
+				expect( results.format ).toBe( 'adobe' );
+				expect( results.version ).toBe( '2016' );
+			});
+			
+			it( "can recognize folder pattern adobeXXXX", function() {
+				var results = configService.guessFormat( '/tests/resources/altAdobeNames/adobe11/cfusion' );
+				expect( results.format ).toBe( 'adobe' );
+				expect( results.version ).toBe( '11' );
+			});
+			
+			it( "can recognize folder pattern CFXXXX", function() {
+				var results = configService.guessFormat( '/tests/resources/altAdobeNames/CF2018/cfusion' );
+				expect( results.format ).toBe( 'adobe' );
+				expect( results.version ).toBe( '2018' );
+			});
+			
+			it( "can recognize folder pattern ColdFusionXXXX", function() {
+				var results = configService.guessFormat( '/tests/resources/altAdobeNames/coldfusion10/cfusion' );
+				expect( results.format ).toBe( 'adobe' );
+				expect( results.version ).toBe( '10' );
+			});
+			
+			it( "can recognize folder pattern for CommandBox Home", function() {
+				var results = configService.guessFormat( '/tests/resources/altAdobeNames/server/8E5DBEA3AEE9FFF981F5C9A927DE02B7-adobeiistest/adobe-2016.0.05.303689/WEB-INF/cfusion' );
+				expect( results.format ).toBe( 'adobe' );
 				expect( results.version ).toBe( '2016' );
 			});
 			

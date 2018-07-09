@@ -105,26 +105,31 @@ component accessors=true singleton {
 					var findVersion = initContents.reFind( '.*VERSION="([0-9]*)".*', 1, true );
 					if( findVersion.pos.len() > 1 && findVersion.pos[ 2 ] ) {
 						result.version = initContents.mid( findVersion.pos[ 2 ], findVersion.len[ 2 ] );
+						return result;
 					}
-				} else {
-					// Fallback approach-- guess the version from the path
-					// See if the path looks like C:/coldfusion11/cfusion
-					var findresults = CFHomePath.reFindNoCase( '[\\/]coldfusion([0-9]{2,4})[\\/]', 1, true );
-					if( findresults.len.len() == 2 ) {
-						// Strip the version number out
-						result.version = CFHomePath.mid( findresults.pos[ 2 ], findresults.len[ 2 ] );
-					} 
-					//If it is still empty, try it for commandbox installations
-					if(result.version IS 0){
-						var findresults = CFHomePath.reFindNoCase( '[\\/]adobe([0-9]{1,4})[\\/]', 1, true );
-						if( findresults.len.len() == 2 ) {
-						// Strip the version number out
-							result.version = CFHomePath.mid( findresults.pos[ 2 ], findresults.len[ 2 ] );
-						} 
-					}
-
 				}
 				
+				// Fallback approach-- guess the version from the path
+				// See if the path looks like C:/coldfusion11/cfusion
+				// Or C:/CF2016
+				// Or C:/adobe11
+				var findresults = CFHomePath.reFindNoCase( '[\\/](coldfusion|adobe|cf)([0-9]{1,4})[\\/]', 1, true );
+				if( findresults.len.len() == 3 ) {
+					// Strip the version number out
+					result.version = CFHomePath.mid( findresults.pos[ 3 ], findresults.len[ 3 ] );
+					return result;
+				} 
+				
+				// Try it for commandbox installations such as:
+				// /server/8E5DBEA3AEE9FFF981F5C9A927DE02B7-adobeiistest/adobe-2016.0.05.303689/WEB-INF/cfusion
+				var findresults = CFHomePath.reFindNoCase( '[\\/]server[\\/].*[\\/]adobe-([0-9]{1,4})\.', 1, true );
+				if( findresults.len.len() == 2 ) {
+				// Strip the version number out
+					result.version = CFHomePath.mid( findresults.pos[ 2 ], findresults.len[ 2 ] );
+					return result;
+				}
+				
+				// Give up on Adobe version. Just return 0
 				return result;
 			}
 			
