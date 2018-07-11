@@ -105,7 +105,7 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				expect( fileRead( expandPath( '/tests/resources/tmp/AdobeConfig.json' ) ) ).toBeJSON();
 			});
 			
-			it( "can transer config from adobe to Lucee", function() {
+			it( "can transfer config from adobe to Lucee", function() {
 				
 				configService.transfer(
 					from		= '/tests/resources/.CFConfig.json',
@@ -125,7 +125,7 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				 );
 			});
 			
-			it( "can transer config from Lucee to adobe ", function() {
+			it( "can transfer config from Lucee to adobe ", function() {
 				
 				configService.transfer(
 					from		= '/tests/resources/.CFConfig.json',
