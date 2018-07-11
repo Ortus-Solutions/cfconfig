@@ -115,11 +115,11 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 	*/
 	private function writeWDDXConfigFile( required any data, required string configFilePath ) {
 
-		// Fix to strip out key CF9 doesn't like
+		// Fix to strip out keys CF9 doesn't like
 		if( configFilePath.findNoCase( 'neo-datasource.xml' ) ) {
 			for( var dsName in data[ 1 ] ) {
 				var ds = data[ 1 ][ dsName ];
-				// CF9 chokes if this is present
+				// CF9 chokes if these are present
 				ds.delete( 'clientInfo' );
 				ds.delete( 'validateConnection' );				
 			}			
