@@ -1091,7 +1091,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				'type' : thisLocation[ 'type' ] ?: ( listFindNoCase( 'Cookie,Registry', thisName ) ? thisName : 'JDBC' )
 			};
 		
-			// Add in DNS if it exists
+			// Add in DSN if it exists
 			if( !isNull( thisLocation[ 'DSN' ] ) ) {
 				thisConfig[ 1 ][ storageLocation ][ 'DSN' ] = thisLocation[ 'DSN' ];
 			}
