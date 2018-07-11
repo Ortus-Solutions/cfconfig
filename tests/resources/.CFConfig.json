@@ -198,5 +198,6 @@
     "applicationMode":"curr2root",
     "templateCharset":"windows-1252",
     "applicationTimeout":"2,0,0,0",
-    "sessionStorage":"memory"
+    "sessionStorage":"memory",
+    "scheduledTasks":{}
 }
