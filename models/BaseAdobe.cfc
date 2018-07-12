@@ -409,6 +409,20 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				addGatewayInstance(argumentCollection=params);
 			}
 		}
+
+		if (!isNull(thisConfig.gateways) && thisConfig.gateways.len()) {
+			for (var gateway in thisConfig.gateways) {
+				var params={};
+
+				if (!isNull(gateway.class)) { params[ 'class' ]=gateway.class; }
+				if (!isNull(gateway.description)) { params[ 'description' ]=gateway.description; }
+				if (!isNull(gateway.killontimeout) && isBoolean(gateway.killontimeout)) { params[ 'killontimeout' ]=gateway.killontimeout; }
+				if (!isNull(gateway.starttimeout)) { params[ 'starttimeout' ]=gateway.starttimeout; }
+				if (!isNull(gateway.type)) { params[ 'type' ]=gateway.type; }
+
+				addGatewayConfiguration(argumentCollection=params);
+			}
+		}
 	}
 	
 	private function readWebsocket() {

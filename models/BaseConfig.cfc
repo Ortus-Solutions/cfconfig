@@ -401,6 +401,7 @@ component accessors="true" {
 	property name='eventGatewayMaxQueueSize' type='numeric' _isCFConfig=true;
 	property name='eventGatewayThreadpoolSize' type='numeric' _isCFConfig=true;
 	property name='eventGatewayInstances' type='array' _isCFConfig=true;
+	property name='eventGatewayConfigurations' type='array' _isCFConfig=true;
 
 	// Enable WebSocket Service
 	property name='websocketEnabled' type='boolean' _isCFConfig=true;
@@ -951,6 +952,28 @@ component accessors="true" {
 		var thisEventGatewayInstances=getEventGatewayInstances() ?: [];
 		thisEventGatewayInstances.append(gatewayInstance);
 		setEventGatewayInstances(thisEventGatewayInstances);
+
+		return this;
+	}
+
+	/**
+	* Add a single Gateway configuration to the config
+	*/
+	function addGatewayConfiguration(string class,
+									 string description,
+									 boolean killontimeout,
+									 numeric starttimeout,
+									 string type)
+	{
+		var gatewayConfiguration={};
+
+		for (var arg in arguments) {
+			if (!isNull(arguments[ arg ])) { gatewayConfiguration[ arg ]=arguments[ arg ]; };
+		}
+
+		var thisEventGatewayConfigurations=getEventGatewayConfigurations() ?: [];
+		thisEventGatewayConfigurations.append(gatewayConfiguration);
+		setEventGatewayConfigurations(thisEventGatewayConfigurations);
 
 		return this;
 	}
