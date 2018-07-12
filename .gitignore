@@ -1,6 +1,7 @@
 
 .project
 .settings/org.eclipse.core.resources.prefs
+.idea
 
 /modules
 /coldbox

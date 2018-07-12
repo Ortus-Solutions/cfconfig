@@ -398,6 +398,9 @@ component accessors="true" {
 
 	// Enable Event Gateway Services
 	property name='eventGatewayEnabled' type='boolean' _isCFConfig=true;
+	property name='eventGatewayMaxQueueSize' type='numeric' _isCFConfig=true;
+	property name='eventGatewayThreadpoolSize' type='numeric' _isCFConfig=true;
+	property name='eventGatewayInstances' type='array' _isCFConfig=true;
 
 	// Enable WebSocket Service
 	property name='websocketEnabled' type='boolean' _isCFConfig=true;
@@ -927,6 +930,28 @@ component accessors="true" {
 		var thisScheduledTasks = getScheduledTasks() ?: {};
 		thisScheduledTasks[ arguments.group & ':' & arguments.task ] = scheduledTask;
 		setScheduledTasks( thisScheduledTasks );
+		return this;
+	}
+
+	/**
+	* Add a single Gateway instance to the config
+	*/
+	function addGatewayInstance(array cfcPaths,
+								string configurationPath,
+								string gatewayId,
+								string mode,
+								string type)
+	{
+		var gatewayInstance={};
+
+		for (var arg in arguments) {
+			if (!isNull(arguments[ arg ])) { gatewayInstance[ arg ]=arguments[ arg ]; };
+		}
+
+		var thisEventGatewayInstances=getEventGatewayInstances() ?: [];
+		thisEventGatewayInstances.append(gatewayInstance);
+		setEventGatewayInstances(thisEventGatewayInstances);
+
 		return this;
 	}
 

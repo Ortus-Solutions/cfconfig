@@ -126,8 +126,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readDebug();
 		readScheduler();
 		readEventGateway();
-		readScheduler();
-		readWebsocket(); 
+		readWebsocket();
 		readJetty();
 		readDotNet();
 			
@@ -137,7 +136,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	private function readRuntime() {
 		var passwordManager = getAdobePasswordManager();
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getRuntimeConfigPath(), '/' ) );
-				
+
 		setSessionMangement( thisConfig[ 7 ].session.enable );
 		setSessionTimeout( thisConfig[ 7 ].session.timeout );
 		setSessionMaximumTimeout( thisConfig[ 7 ].session.maximum_timeout );
@@ -389,11 +388,27 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( thisConfig[ 4 ] ) ) { setSchedulerLogFileExtensions( thisConfig[ 4 ] ); }
 		
 	}
-	
+
 	private function readEventGateway() {
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getEventGatewayConfigPath(), '/' ) );
-		
-		setEventGatewayEnabled( thisConfig[ 'GLOBAL' ][ 'ENABLEEVENTGATEWAYSERVICE' ] );		
+		var thisConfig=readWDDXConfigFile(getCFHomePath().listAppend(getEventGatewayConfigPath(), '/'));
+
+		setEventGatewayEnabled(thisConfig[ 'GLOBAL' ][ 'ENABLEEVENTGATEWAYSERVICE' ]);
+		setEventGatewayMaxQueueSize(thisConfig[ 'GLOBAL' ][ 'MAXQUEUESIZE' ]);
+		setEventGatewayThreadpoolSize(thisConfig[ 'GLOBAL' ][ 'THREADPOOLSIZE' ]);
+
+		if (!isNull(thisConfig.instances) && thisConfig.instances.len()) {
+			for (var gatewayInstance in thisConfig.instances) {
+				var params={};
+
+				if (!isNull(gatewayInstance.cfcpaths) && isValid("array", gatewayInstance.cfcpaths)) { params[ 'cfcpaths' ]=gatewayInstance.cfcpaths; }
+				if (!isNull(gatewayInstance.configurationPath)) { params[ 'configurationPath' ]=gatewayInstance.configurationPath; }
+				if (!isNull(gatewayInstance.gatewayId)) { params[ 'gatewayId' ]=gatewayInstance.gatewayId; }
+				if (!isNull(gatewayInstance.mode)) { params[ 'mode' ]=gatewayInstance.mode; }
+				if (!isNull(gatewayInstance.type)) { params[ 'type' ]=gatewayInstance.type; }
+
+				addGatewayInstance(argumentCollection=params);
+			}
+		}
 	}
 	
 	private function readWebsocket() {
@@ -482,7 +497,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	private function readMail() {
 		var passwordManager = getAdobePasswordManager();
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getMailConfigPath(), '/' ) );
-		
+
 		if( !isNull( thisConfig.spoolEnable ) ) { setMailSpoolEnable( thisConfig.spoolEnable ); }
 		if( !isNull( thisConfig.schedule ) ) { setMailSpoolInterval( thisConfig.schedule ); }
 		if( !isNull( thisConfig.timeout ) ) { setMailConnectionTimeout( thisConfig.timeout ); }
