@@ -164,6 +164,8 @@ component accessors="true" {
 
 	// Array of structs of properties.  Mail servers are uniquely identified by host
 	property name='mailServers' type='array' _isCFConfig=true;
+	// Array of tag paths ( physical locations )
+	property name='customTagPaths' type='array' _isCFConfig=true;
 	// Encoding to use for mail. Ex: UTF-8
 	property name='mailDefaultEncoding' type='string' _isCFConfig=true;
 	// True/false enable mail spooling
@@ -379,7 +381,6 @@ component accessors="true" {
 	//property name='customTagSearchSubdirectories' type='boolean' _isCFConfig=true;
 	//property name='customTagSearchLocal' type='boolean' _isCFConfig=true;
 	//property name='customTagExtensions' type='string' _isCFConfig=true;
-	//property name='customTagPaths' type='array' _isCFConfig=true;
 	//property name='cfxTags' type='string' _isCFConfig=true;
 	//property name='debuggingDBEnabled' type='string' _isCFConfig=true;
 	//property name='debuggingExceptionsEnabled' type='boolean' _isCFConfig=true;
@@ -816,7 +817,17 @@ component accessors="true" {
 	/**
 	* Add a single custom tag to the config
 	*/
-	function addCustomTagPath() { throw 'addCustomTagPath() not implemented'; }
+	function addCustomTagPath(
+			required string physical
+	) {
+		var thisCustomTagPaths = getCustomTagPaths() ?: [];
+		// Don't want to end up with duplicate paths
+		if ( ! thisCustomTagPaths.find( physical ) ) {
+			thisCustomTagPaths.append( physical );
+			setCustomTagPaths( thisCustomTagPaths );
+		}
+		return this;
+	}
 
 	/**
 	* Add a single logger to the config

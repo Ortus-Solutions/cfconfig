@@ -103,7 +103,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	/**
 	* I read in config
 	*
-	* @CFHomePath The JSON file to read from
+	* @CFHomePath The path of the coldfusion home, to find lib/neo-*.xml files to read from
 	*/
 	function read( string CFHomePath ){
 		// Override what's set if a path is passed in
@@ -136,6 +136,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	private function readRuntime() {
 		var passwordManager = getAdobePasswordManager();
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getRuntimeConfigPath(), '/' ) );
+
+		for( var thisMapping in thisConfig[ 4 ] ) {
+			// This will remove the spurious name of the custom tag path, but I don't think we care.
+			addCustomTagPath( thisConfig[ 4 ][ thisMapping ] );
+		}
 
 		setSessionMangement( thisConfig[ 7 ].session.enable );
 		setSessionTimeout( thisConfig[ 7 ].session.timeout );
@@ -630,7 +635,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	/**
 	* I write out config from a base JSON format
 	*
-	* @CFHomePath The JSON file to write to
+	* @CFHomePath The coldfusion home path to write xml files
 	*/
 	function write( string CFHomePath, pauseTasks=false ){
 		setCFHomePath( arguments.CFHomePath ?: getCFHomePath() );
@@ -677,6 +682,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// Otherwise, start from an empty base template
 		} else {
 			var thisConfig = readWDDXConfigFile( getRuntimeConfigTemplate() );
+		}
+
+		thisConfig[ 4 ] = {};
+		var ctr = 100000;
+		for( var physical in getCustomTagPaths() ?: [] ) {
+			thisConfig[ 4 ][ "/WEB-INF/customtags" & ctr ] = physical;
+			ctr = ctr + 10;
 		}
 
 		if( !isNull( getSessionMangement() ) ) { thisConfig[ 7 ].session.enable = ( getSessionMangement() ? true : false ); }
