@@ -35,5 +35,27 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		
 		return this;
 	}
+
+	
+	private function writeSecurity() {
+		
+		// CF10 expects secureprofile.enabled to be a STRING!
+		if( !isNull( getSecureProfileEnabled() ) ) {
+			
+			
+			// Back up and remove the setting entirely since CF10 doesn't even use it.
+			var secureProfileEnabled = getSecureProfileEnabled();
+			variables.delete( 'secureProfileEnabled' );
+			
+			super.writeSecurity();
+			
+			// Put it back just in case the base config object is used elsewhere
+			getSecureProfileEnabled( secureProfileEnabled );
+			
+		} else {
+			super.writeSecurity();			
+		}
+		
+	}
 		
 }
