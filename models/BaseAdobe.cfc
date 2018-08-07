@@ -1006,16 +1006,30 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getEventGatewayEnabled() ) ) { thisConfig[ 'GLOBAL' ][ 'ENABLEEVENTGATEWAYSERVICE' ] = !!getEventGatewayEnabled(); }
 		if( !isNull( getEventGatewayInstances() ) ) {
 			var eventGatewayInstances = getEventGatewayInstances();
-			thisConfig[ 'instances' ] = [];
+			thisConfig[ 'INSTANCES' ] = [];
 			for ( var eventGateway in getEventGatewayInstances() ) {
 				var currentEventGateWay = {
-					"cfcpaths" = eventGateway.cfcpaths,
-					"configurationpath" = eventGateway.configurationpath,
-					"gatewayid" = eventGateway.gatewayid,
-					"mode" = eventGateway.mode,
-					"type" = eventGateway.type,
+					"CFCPATHS" = eventGateway.cfcpaths,
+					"CONFIGURATIONPATH" = eventGateway.configurationpath,
+					"GATEWAYID" = eventGateway.gatewayid,
+					"MODE" = eventGateway.mode,
+					"TYPE" = eventGateway.type,
 				};
-				thisConfig[ 'instances' ].append( currentEventGateWay );
+				thisConfig[ 'INSTANCES' ].append( currentEventGateWay );
+			}
+		}
+		if( !isNull( getEventGatewayConfigurations() ) ) {
+			var eventGatewayConfigurations = getEventGatewayConfigurations();
+			thisConfig[ 'GATEWAYS' ] = [];
+			for (var eventGatewayConfiguration in eventGatewayConfigurations) {
+				var currentEventGatewayConfiguration = {
+					"DESCRIPTION" = eventGatewayConfiguration.description,
+					"KILLONTIMEOUT" = eventGatewayConfiguration.killontimeout,
+					"CLASS" = eventGatewayConfiguration.class,
+					"STARTTIMEOUT" = eventGatewayConfiguration.starttimeout,
+					"TYPE" = eventGatewayConfiguration.type
+				};
+				thisConfig[ 'GATEWAYS' ].append( currentEventGatewayConfiguration );
 			}
 		}
 
