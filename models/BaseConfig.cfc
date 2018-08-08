@@ -398,9 +398,13 @@ component accessors="true" {
 
 	// Enable Event Gateway Services
 	property name='eventGatewayEnabled' type='boolean' _isCFConfig=true;
+	// Maximum number of events to queue
 	property name='eventGatewayMaxQueueSize' type='numeric' _isCFConfig=true;
+	// Event Gateway Processing Threads
 	property name='eventGatewayThreadpoolSize' type='numeric' _isCFConfig=true;
+	// Event Gateways > Gateway Instances
 	property name='eventGatewayInstances' type='array' _isCFConfig=true;
+	// Event Gateways > Gateway Types
 	property name='eventGatewayConfigurations' type='array' _isCFConfig=true;
 
 	// Enable WebSocket Service
@@ -936,6 +940,11 @@ component accessors="true" {
 
 	/**
 	* Add a single Gateway instance to the config
+	* @cfcPaths The absolute path to the listener CFC or CFCs that handles incoming messages.
+	* @configurationPath A configuration file, if necessary for this event gateway type or instance.
+	* @gateway Id An event gateway ID to identify the specific event gateway instance.
+	* @mode The event gateway start-up status; one of the following: Automatic, Manual, Disabled
+	* @type The event gateway type, which you select from the available event gateway types, such as SMS or Socket.
 	*/
 	function addGatewayInstance(array cfcPaths,
 								string configurationPath,
@@ -958,6 +967,11 @@ component accessors="true" {
 
 	/**
 	* Add a single Gateway configuration to the config
+	* @class Java Class
+	* @description Description
+	* @killontimeout Stop on Startup Timeout
+	* @starttimeout Startup Timeout(in seconds)
+	* @type The event gateway type, which you will use when adding a gatewayInstance.
 	*/
 	function addGatewayConfiguration(string class,
 									 string description,

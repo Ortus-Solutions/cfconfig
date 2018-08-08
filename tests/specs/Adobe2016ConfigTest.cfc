@@ -15,9 +15,8 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				
 				var Adobe2016Config = getInstance( 'Adobe2016@cfconfig-services' )
 					.read( expandPath( '/tests/resources/adobe2016/ServerHome/WEB-INF/cfusion' ) );
-				var stMemento = Adobe2016Config.getMemento();
-				debug(stMemento);
-				expect( stMemento ).toBeStruct();
+
+				expect( Adobe2016Config.getMemento() ).toBeStruct();
 			});
 			
 			it( "can write config", function() {
