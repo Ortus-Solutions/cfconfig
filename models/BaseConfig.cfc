@@ -967,17 +967,17 @@ component accessors="true" {
 
 	/**
 	* Add a single Gateway configuration to the config
-	* @class Java Class
-	* @description Description
-	* @killontimeout Stop on Startup Timeout
-	* @starttimeout Startup Timeout(in seconds)
 	* @type The event gateway type, which you will use when adding a gatewayInstance.
+	* @description Description
+	* @class Java Class
+	* @starttimeout Startup Timeout(in seconds)
+	* @killontimeout Stop on Startup Timeout
 	*/
-	function addGatewayConfiguration(string class,
-									 string description,
-									 boolean killontimeout,
-									 numeric starttimeout,
-									 string type)
+	function addGatewayConfiguration(required string type,
+									 required string description,
+									 required string class,
+									 numeric starttimeout = 30,
+									 boolean killontimeout = true)
 	{
 		var gatewayConfiguration={};
 
@@ -986,6 +986,16 @@ component accessors="true" {
 		}
 
 		var thisEventGatewayConfigurations=getEventGatewayConfigurations() ?: [];
+
+		var i=0;
+		for( var thisGatewayConfiguration in thisEventGatewayConfigurations ) {
+			i++;
+			if( thisGatewayConfiguration.type == type ) {
+				thisEventGatewayConfigurations.deleteAt( i );
+				break;
+			}
+		}
+
 		thisEventGatewayConfigurations.append(gatewayConfiguration);
 		setEventGatewayConfigurations(thisEventGatewayConfigurations);
 
