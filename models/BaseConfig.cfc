@@ -940,17 +940,17 @@ component accessors="true" {
 
 	/**
 	* Add a single Gateway instance to the config
-	* @cfcPaths The absolute path to the listener CFC or CFCs that handles incoming messages.
-	* @configurationPath A configuration file, if necessary for this event gateway type or instance.
-	* @gateway Id An event gateway ID to identify the specific event gateway instance.
-	* @mode The event gateway start-up status; one of the following: Automatic, Manual, Disabled
+	* @gatewayId An event gateway ID to identify the specific event gateway instance.
 	* @type The event gateway type, which you select from the available event gateway types, such as SMS or Socket.
+	* @cfcPaths The absolute path to the listener CFC or CFCs that handles incoming messages.
+	* @mode The event gateway start-up status; one of the following: automatic, manual, disabled
+	* @configurationPath A configuration file, if necessary for this event gateway type or instance.
 	*/
-	function addGatewayInstance(array cfcPaths,
-								string configurationPath,
-								string gatewayId,
-								string mode,
-								string type)
+	function addGatewayInstance(required string gatewayId,
+								required string type,
+								required array cfcPaths,
+								string mode = "manual",
+								string configurationPath = "")
 	{
 		var gatewayInstance={};
 
@@ -959,6 +959,14 @@ component accessors="true" {
 		}
 
 		var thisEventGatewayInstances=getEventGatewayInstances() ?: [];
+		var i=0;
+		for( var thisEventGatewayInstance in thisEventGatewayInstances ) {
+			i++;
+			if( thisEventGatewayInstance.gatewayId == gatewayId ) {
+				thisEventGatewayInstances.deleteAt( i );
+				break;
+			}
+		}
 		thisEventGatewayInstances.append(gatewayInstance);
 		setEventGatewayInstances(thisEventGatewayInstances);
 

@@ -199,5 +199,42 @@
     "templateCharset":"windows-1252",
     "applicationTimeout":"2,0,0,0",
     "sessionStorage":"memory",
-    "scheduledTasks":{}
+    "scheduledTasks":{},
+    "eventGatewayConfigurations":[
+        {
+            "killontimeout":"true",
+            "starttimeout":"30",
+            "type":"XMPP",
+            "class":"coldfusion.eventgateway.im.XMPPGateway",
+            "description":"Handles XMPP instant messaging"
+        },
+        {
+            "killontimeout":"true",
+            "starttimeout":"30",
+            "type":"SMS",
+            "class":"coldfusion.eventgateway.sms.SMSGateway",
+            "description":"Handles SMS text messaging"
+        }
+    ],
+    "eventGatewayInstances":[
+        {
+            "mode":"manual",
+            "cfcPaths":[
+                "/path1/some.cfc",
+                "/path2/code.cfc"
+            ],
+            "configurationPath":"",
+            "gatewayId":"myInstance",
+            "type":"CFML"
+        },
+        {
+            "mode":"manual",
+            "cfcPaths":[
+                "/path2/some.cfc"
+            ],
+            "configurationPath":"",
+            "gatewayId":"myInstance3",
+            "type":"CFML"
+        }
+    ]
 }

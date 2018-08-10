@@ -244,7 +244,9 @@ component accessors=true singleton {
 			'clientStorageLocations',
 			'loggers',
 			'restMappings',
-			'scheduledTasks'
+			'scheduledTasks',
+			'eventGatewayInstances',
+			'eventGatewayConfigurations'
 		];
 		
 		compareStructs( qryResult, fromData, toData, configProps, specialColumns );
@@ -272,14 +274,14 @@ component accessors=true singleton {
 		required array configProps,
 		required array ignoredKeys,
 		string prefix='' ) {
-		 var somethingWasDirty = false;
-		 
-		 for( var prop in configProps ) {
-		 	var row = getDefaultRow( prefix & prop );
-		 	
-		 	// All keys are processed (and potentialy recursed into), but ignored ones aren't added to the query
-		 	if( !ignoredKeys.findNoCase( prop ) ) {
-		 		
+		var somethingWasDirty = false;
+
+		for( var prop in configProps ) {
+			var row = getDefaultRow( prefix & prop );
+
+			// All keys are processed (and potentialy recursed into), but ignored ones aren't added to the query
+			if( !ignoredKeys.findNoCase( prop ) ) {
+
 				var tmp = compareValues(
 					row,
 					fromData,
@@ -345,7 +347,7 @@ component accessors=true singleton {
 					);
 					qryResult.addRow( row );
 					
-										
+
 					// Get combined list of properties between both structs.
 					// Yes, we're ignoring some mapping/datasource properties if they're not defined in both locations
 					var combinedProps = {}.append( fromStruct ).append( toStruct ).keyArray();
@@ -364,7 +366,7 @@ component accessors=true singleton {
 		 return somethingWasDirty;
 	} // end function
 	
-	// Breaking this our for re-use and to keep function size down
+	// Breaking this out for re-use and to keep function size down
 	private function compareValues( 
 		required struct row,
 		required any fromData,
