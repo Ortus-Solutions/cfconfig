@@ -837,7 +837,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	private function writeLoggers( thisConfig ) {
 		var loggers = xmlSearch( thisConfig, '/cfLuceeConfiguration/logging' )[ 1 ];
-		loggers.XMLChildren = [];
 		
 		for( var name in getLoggers() ?: {} ) {
 			var loggerStruct = getLoggers()[ name ];
