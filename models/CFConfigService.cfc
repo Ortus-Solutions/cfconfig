@@ -244,7 +244,9 @@ component accessors=true singleton {
 			'clientStorageLocations',
 			'loggers',
 			'restMappings',
-			'scheduledTasks'
+			'scheduledTasks',
+			'eventGatewayConfigurations',
+			'eventGatewayInstances'
 		];
 		
 		compareStructs( qryResult, fromData, toData, configProps, specialColumns );
@@ -315,14 +317,14 @@ component accessors=true singleton {
 		 			qryResult.addRow( row );
 		 		}
 			
-		 	// If this was an array (datasource), compare its sub-members		
+		 	// If this was an array (datasource), compare its sub-members
 	 		} else if(  (!isNull( toData[ prop ] ) && isArray( toData[ prop ] ) )
 		 		|| (!isNull( fromData[ prop ] ) && isArray( fromData[ prop ] ) ) ) {
 		 		
 		 		if( !ignoredKeys.findNoCase( prop ) ) {
 		 			qryResult.addRow( row );
 		 		}
-		 	
+
 		 		// Prepare the new from and to structs
 				var fromArr = fromData[ prop ] ?: [];
 				var toArr = toData[ prop ] ?: [];
@@ -330,29 +332,50 @@ component accessors=true singleton {
 				// Loop as many times as the longest arrary
 				var i=0;
 				while( ++i <= max( fromArr.len(), toArr.len() ) ) {
-					var fromStruct = fromArr[ i ] ?: {};
-					var toStruct = toArr[ i ] ?: {};
+					// At least one of the arrays has an element, so test the first one for a type.
+					var defaultValue = isSimpleValue( fromArr[ 1 ] ?: toArr[ 1 ] ) ? '' : {};
+					var fromValue = fromArr[ i ] ?: defaultValue;
+					var toValue = toArr[ i ] ?: defaultValue;
 					
-					// Add a record for the entire mail server
-				 	var row = getDefaultRow( '#prop#-#i#' );
-					somethingWasDirty = compareValues(
-						row,
-						fromArr,
-						toArr,
-						i,
-						( fromStruct.smtp ?: '' ) & ( !isNull( fromStruct.port ) ? ':' : '' ) & ( fromStruct.port ?: '' ),
-						( toStruct.smtp ?: '' ) & ( !isNull( toStruct.port ) ? ':' : '' ) & ( toStruct.port ?: '' )
-					);
-					qryResult.addRow( row );
+					// If this type is complex
+					if( isStruct( toValue ) && isStruct( fromValue ) ) {
+
+						var row = getDefaultRow( '#prop#-#numberFormat( i, "09" )#' );
 					
-										
-					// Get combined list of properties between both structs.
-					// Yes, we're ignoring some mapping/datasource properties if they're not defined in both locations
-					var combinedProps = {}.append( fromStruct ).append( toStruct ).keyArray();
-					
-					// Call back to myself.  This will add another record to the query for each key in these nested structs
-					var tmp = compareStructs( qryResult, fromStruct, toStruct, combinedProps, [], '#prop#-#i#-' );
-					somethingWasDirty = somethingWasDirty || tmp;
+						// Add a record for the entire mail server
+						somethingWasDirty = compareValues(
+							row,
+							fromArr,
+							toArr,
+							i,
+							generateDefaultStructName( fromValue, prop ),
+							generateDefaultStructName( toValue, prop )
+						);
+						qryResult.addRow( row );
+						
+						// Get combined list of properties between both structs.
+						// Yes, we're ignoring some mapping/datasource properties if they're not defined in both locations
+						var combinedProps = {}.append( fromValue ).append( toValue ).keyArray();
+						
+						// Call back to myself.  This will add another record to the query for each key in these nested structs
+						var tmp = compareStructs( qryResult, fromValue, toValue, combinedProps, [], '#prop#-#numberFormat( i, "09" )#-' );
+						somethingWasDirty = somethingWasDirty || tmp;
+							
+					} else if( isSimpleValue( toValue ) && isSimpleValue( fromValue ) ) {
+						
+						var row = getDefaultRow( '#prefix##prop#-#numberFormat( i, "09" )#' );
+						
+						// Compare a simple value in the array
+						somethingWasDirty = compareValues(
+							row,
+							fromArr,
+							toArr,
+							i,
+							fromValue,
+							toValue
+						);
+						qryResult.addRow( row );
+					}
 					
 				}
 					
@@ -425,6 +448,24 @@ component accessors=true singleton {
 		 	valuesMatch = 0,
 		 	valuesDiffer = 0
 		};
+	}
+	
+	private function generateDefaultStructName( struct data, string type ) {
+		if( type == 'mailServers' ) {
+			return ( data.smtp ?: '' ) & ( !isNull( data.port ) ? ':' : '' ) & ( data.port ?: '' );
+		} else if( type == 'eventGatewayConfigurations' ) {
+			return ( data.class ?: '' ).listLast( '.' );
+		} else if( type == 'eventGatewayInstances' ) {
+			return data.gatewayId ?: '';
+		} else if( type == 'cfcPaths' ) {
+			return '';
+		} else {
+			return 'N/A';
+		}
+		
+		
+		
+		
 	}
 	
 }
