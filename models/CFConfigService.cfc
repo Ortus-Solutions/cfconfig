@@ -350,13 +350,13 @@ component accessors=true singleton {
 							i,
 							generateDefaultStructName( fromValue, prop ),
 							generateDefaultStructName( toValue, prop )
-					);
-					qryResult.addRow( row );
+						);
+						qryResult.addRow( row );
 
+						// Get combined list of properties between both structs.
+						// Yes, we're ignoring some mapping/datasource properties if they're not defined in both locations
+						var combinedProps = {}.append( fromValue ).append( toValue ).keyArray();
 
-					// Get combined list of properties between both structs.
-					// Yes, we're ignoring some mapping/datasource properties if they're not defined in both locations
-					var combinedProps = {}.append( fromValue ).append( toValue ).keyArray();
 						// Call back to myself.  This will add another record to the query for each key in these nested structs
 						var tmp = compareStructs( qryResult, fromValue, toValue, combinedProps, [], '#prop#-#numberFormat( i, "09" )#-' );
 						somethingWasDirty = somethingWasDirty || tmp;
