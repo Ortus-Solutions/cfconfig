@@ -19,6 +19,9 @@
         <var name="/WEB-INF/customtags10000">
           <string>#server.coldfusion.rootdir#/CustomTags</string>
         </var>
+	<var name="/WEB-INF/customtags294820192">
+	  <string>/tmp/manufactured/path</string>
+	</var>
       </struct>
       <struct type="coldfusion.server.ConfigMap">
         <var name="useorb">

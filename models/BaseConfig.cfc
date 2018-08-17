@@ -164,8 +164,8 @@ component accessors="true" {
 
 	// Array of structs of properties.  Mail servers are uniquely identified by host
 	property name='mailServers' type='array' _isCFConfig=true;
-	// Array of tag paths ( physical locations )
-	property name='customTagPaths' type='array' _isCFConfig=true;
+	// Array of tag paths ( key is physical:{physicalpath}_archive:{archivepath} value struct of properties )
+	property name='customTagPaths' type='struct' _isCFConfig=true;
 	// Encoding to use for mail. Ex: UTF-8
 	property name='mailDefaultEncoding' type='string' _isCFConfig=true;
 	// True/false enable mail spooling
@@ -816,17 +816,81 @@ component accessors="true" {
 
 	/**
 	* Add a single custom tag to the config
+	*
+	* Custom tags have no unique identifier.  In Adobe, there's a made up
+	* "virtual" key of /WEB-INF/customtags(somenumber), but it's never shown
+	* topside.  In Lucee, you *could* name a path, but you don't have to.
+	*
+	* So, internally, we search for combinations of physical and archive paths
+	* to determine uniqueness, specifically:
+	*   "physical:{physical path}_archive:{archivepath}"
+	*
+	* @physical The physical path that the engine should search
+	* @archive Path to the Lucee/Railo archive
+	* @name Name of the Custom Tag Path
+	* @inspectTemplate String containing one of "never", "once", "always", "" (inherit)
+	* @primary Strings containing one of "physical", "archive"
+	* @trusted true/false
 	*/
 	function addCustomTagPath(
-			required string physical
+			string physical,
+			string archive,
+			string name,
+			string inspectTemplate,
+			string primary,
+			boolean trusted
+
 	) {
-		var thisCustomTagPaths = getCustomTagPaths() ?: [];
-		// Don't want to end up with duplicate paths
-		if ( ! thisCustomTagPaths.find( physical ) ) {
-			thisCustomTagPaths.append( physical );
-			setCustomTagPaths( thisCustomTagPaths );
-		}
+
+		var customTagPath = _getCustomTagPathRecord( argumentCollection = arguments );
+
+		var thisCustomTagPaths = getCustomTagPaths() ?: {};
+		thisCustomTagPaths[ customTagPath.key ] = customTagPath ;
+		setCustomTagPaths( thisCustomTagPaths );
 		return this;
+	}
+
+	/**
+	* This is separate from the add so we can manufacture our internal key, and use it for comparisons.
+	*
+	* Custom tags have no unique identifier.  In Adobe, there's a made up
+	* "virtual" key of /WEB-INF/customtags(somenumber), but it's never shown
+	* topside.  In Lucee, you *could* name a path, but you don't have to.
+	*
+	* So, internally, we search for combinations of physical and archive paths
+	* to determine uniqueness, specifically:
+	*   "physical:{physical path}_archive:{archivepath}"
+	*
+	* @physical The physical path that the engine should search
+	* @archive Path to the Lucee/Railo archive
+	* @name Name of the Custom Tag Path
+	* @inspectTemplate String containing one of "never", "once", "always", "" (inherit)
+	* @primary Strings containing one of "physical", "archive"
+	* @trusted true/false
+	*/
+	private function _getCustomTagPathRecord(
+			string physical,
+			string archive,
+			string name,
+			string inspectTemplate,
+			string primary,
+			boolean trusted
+
+	) {
+
+		var customTagPath = {};
+
+		if( !isNull( physical ) ) { customTagPath.physical = physical; };
+		if( !isNull( archive ) ) { customTagPath.archive = archive; };
+		if( !isNull( name ) ) { customTagPath.name = name; };
+		if( !isNull( inspectTemplate ) ) { customTagPath.inspectTemplate = inspectTemplate; };
+		if( !isNull( primary ) ) { customTagPath.primary = primary; };
+		if( !isNull( trusted ) ) { customTagPath.trusted = trusted; };
+
+		var key = "physical:{" & ( physical ?: "" ) & "}_archive:{" & ( archive ?: "" ) & "}";
+		customTagPath.key = key;
+
+		return customTagPath;
 	}
 
 	/**
