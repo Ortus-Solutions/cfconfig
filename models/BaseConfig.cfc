@@ -823,7 +823,7 @@ component accessors="true" {
 	*
 	* So, internally, we search for combinations of physical and archive paths
 	* to determine uniqueness, specifically:
-	*   "physical:{physical path}_archive:{archivepath}"
+	*   "physical:(physical path)_archive:(archivepath)"
 	*
 	* @physical The physical path that the engine should search
 	* @archive Path to the Lucee/Railo archive
