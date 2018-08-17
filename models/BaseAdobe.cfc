@@ -103,7 +103,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	/**
 	* I read in config
 	*
-	* @CFHomePath The JSON file to read from
+	* @CFHomePath The path of the coldfusion home, to find lib/neo-*.xml files to read from
 	*/
 	function read( string CFHomePath ){
 		// Override what's set if a path is passed in
@@ -136,6 +136,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	private function readRuntime() {
 		var passwordManager = getAdobePasswordManager();
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getRuntimeConfigPath(), '/' ) );
+
+		for( var thisMapping in thisConfig[ 4 ] ) {
+			// This will remove the spurious name of the custom tag path, but on adobe, they're unnecessary anyway.
+			// Adobe only supports the physical path, all the other options are Lucee-specific
+			// Add some of the Lucee-specific ones, just in case we want to port our config...
+			addCustomTagPath( physical = thisConfig[ 4 ][ thisMapping ], primary = "physical", archive = "" );
+		}
 
 		setSessionMangement( thisConfig[ 7 ].session.enable );
 		setSessionTimeout( thisConfig[ 7 ].session.timeout );
@@ -630,7 +637,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	/**
 	* I write out config from a base JSON format
 	*
-	* @CFHomePath The JSON file to write to
+	* @CFHomePath The coldfusion home path to write xml files
 	*/
 	function write( string CFHomePath, pauseTasks=false ){
 		setCFHomePath( arguments.CFHomePath ?: getCFHomePath() );
@@ -677,6 +684,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// Otherwise, start from an empty base template
 		} else {
 			var thisConfig = readWDDXConfigFile( getRuntimeConfigTemplate() );
+		}
+
+		thisConfig[ 4 ] = {};
+		var ctr = 100000;
+		for( var key in getCustomTagPaths() ?: {} ) {
+			var customTagPath = getCustomTagPaths()[ key ] ;
+			// All Adobe handles is physical paths.  Anything that doesn't have a physical path
+			// probably came from Lucee, or from someone adding it manually, regardless, we can
+			// only write what is supported.  We manufacture new keys for WDDX.
+			if ( !isNull( customTagPath[ 'physical' ] ) && len( customTagPath[ 'physical' ] ) ) {
+				thisConfig[ 4 ][ "/WEB-INF/customtags" & ctr ] = customTagPath[ 'physical' ];
+				ctr = ctr + 10;
+			}
 		}
 
 		if( !isNull( getSessionMangement() ) ) { thisConfig[ 7 ].session.enable = ( getSessionMangement() ? true : false ); }

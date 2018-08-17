@@ -164,6 +164,8 @@ component accessors="true" {
 
 	// Array of structs of properties.  Mail servers are uniquely identified by host
 	property name='mailServers' type='array' _isCFConfig=true;
+	// Array of tag paths ( key is physical:(physicalpath)_archive:(archivepath) value struct of properties )
+	property name='customTagPaths' type='struct' _isCFConfig=true;
 	// Encoding to use for mail. Ex: UTF-8
 	property name='mailDefaultEncoding' type='string' _isCFConfig=true;
 	// True/false enable mail spooling
@@ -379,7 +381,6 @@ component accessors="true" {
 	//property name='customTagSearchSubdirectories' type='boolean' _isCFConfig=true;
 	//property name='customTagSearchLocal' type='boolean' _isCFConfig=true;
 	//property name='customTagExtensions' type='string' _isCFConfig=true;
-	//property name='customTagPaths' type='array' _isCFConfig=true;
 	//property name='cfxTags' type='string' _isCFConfig=true;
 	//property name='debuggingDBEnabled' type='string' _isCFConfig=true;
 	//property name='debuggingExceptionsEnabled' type='boolean' _isCFConfig=true;
@@ -815,8 +816,62 @@ component accessors="true" {
 
 	/**
 	* Add a single custom tag to the config
+	*
+	* Custom tags have no unique identifier.  In Adobe, there's a made up
+	* "virtual" key of /WEB-INF/customtags(somenumber), but it's never shown
+	* topside.  In Lucee, you *could* name a path, but you don't have to.
+	*
+	* So, internally, we search for combinations of physical and archive paths
+	* to determine uniqueness, specifically:
+	*   "physical:{physical path}_archive:{archivepath}"
+	*
+	* @physical The physical path that the engine should search
+	* @archive Path to the Lucee/Railo archive
+	* @name Name of the Custom Tag Path
+	* @inspectTemplate String containing one of "never", "once", "always", "" (inherit)
+	* @primary Strings containing one of "physical", "archive"
+	* @trusted true/false
 	*/
-	function addCustomTagPath() { throw 'addCustomTagPath() not implemented'; }
+	function addCustomTagPath(
+			string physical,
+			string archive,
+			string name,
+			string inspectTemplate,
+			string primary,
+			boolean trusted
+
+	) {
+
+		var customTagPath = {};
+
+		if( !isNull( physical ) ) { customTagPath.physical = physical; };
+		if( !isNull( archive ) ) { customTagPath.archive = archive; };
+		if( !isNull( name ) ) { customTagPath.name = name; };
+		if( !isNull( inspectTemplate ) ) { customTagPath.inspectTemplate = inspectTemplate; };
+		if( !isNull( primary ) ) { customTagPath.primary = primary; };
+		if( !isNull( trusted ) ) { customTagPath.trusted = trusted; };
+
+		var key = _getCustomTagPathKey( argumentCollection = arguments );
+
+		var thisCustomTagPaths = getCustomTagPaths() ?: {};
+		thisCustomTagPaths[ key ] = customTagPath ;
+		setCustomTagPaths( thisCustomTagPaths );
+		return this;
+	}
+
+	/**
+	* This is how we figure out our internal comparison key...
+	*
+	* @physical The physical path that the engine should search
+	* @archive Path to the Lucee/Railo archive
+	*/
+	private function _getCustomTagPathKey(
+			string physical,
+			string archive
+
+	) {
+		return "physical:(" & ( physical ?: "" ) & ")_archive:(" & ( archive ?: "" ) & ")";
+	}
 
 	/**
 	* Add a single logger to the config
