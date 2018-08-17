@@ -138,8 +138,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getRuntimeConfigPath(), '/' ) );
 
 		for( var thisMapping in thisConfig[ 4 ] ) {
-			// This will remove the spurious name of the custom tag path, but I don't think we care.
-			addCustomTagPath( thisConfig[ 4 ][ thisMapping ] );
+			// This will remove the spurious name of the custom tag path, but on adobe, they're unnecessary anyway.
+			// Adobe only supports the physical path, all the other options are Lucee-specific
+			addCustomTagPath( physical = thisConfig[ 4 ][ thisMapping ] );
 		}
 
 		setSessionMangement( thisConfig[ 7 ].session.enable );
@@ -686,9 +687,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		thisConfig[ 4 ] = {};
 		var ctr = 100000;
-		for( var physical in getCustomTagPaths() ?: [] ) {
-			thisConfig[ 4 ][ "/WEB-INF/customtags" & ctr ] = physical;
-			ctr = ctr + 10;
+		for( var key in getCustomTagPaths() ?: {} ) {
+			var customTagPath = getCustomTagPaths()[ key ] ;
+			// All Adobe handles is physical paths.  Anything that doesn't have a physical path
+			// probably came from Lucee, or from someone adding it manually, regardless, we can
+			// only write what is supported.  We manufacture new keys for WDDX.
+			if ( !isNull( customTagPath[ 'physical' ] ) && len( customTagPath[ 'physical' ] ) ) {
+				thisConfig[ 4 ][ "/WEB-INF/customtags" & ctr ] = customTagPath[ 'physical' ];
+				ctr = ctr + 10;
+			}
 		}
 
 		if( !isNull( getSessionMangement() ) ) { thisConfig[ 7 ].session.enable = ( getSessionMangement() ? true : false ); }

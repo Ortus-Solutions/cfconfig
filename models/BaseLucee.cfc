@@ -231,6 +231,23 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readCustomTags( customTags ) {
+		for( var customTagPath in customTags.XMLChildren ) {
+			var params = structNew().append( customTagPath.XMLAttributes );
+			if ( isNull( params.virtual ) ) {
+				// The first, reserved key doesn't have a virtual tag, skip it
+				continue;
+			}
+			var virtual = params.virtual;
+			StructDelete(params, "virtual");
+
+			// If the virtual is of the form ^/[0-9A-Fa-f]{32}$ then it's a "dynamic" name
+			// Otherwise, it's an explicit name starting with /
+			if( Len( virtual ) > 1 && not reFindNoCase( "^/[0-9a-f]{32}$", virtual ) ) {
+				params.name = Mid(virtual, 2, Len( virtual ));
+			}
+			addCustomTagPath( argumentCollection = params );
+
+		}
 	}
 	
 	private function readDebugging( debugging ) {
@@ -670,6 +687,65 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeCustomTags( thisConfig ) {
+		// Get all custom tag paths
+		// TODO: Add tag if it doesn't exist
+		var customTagPaths = xmlSearch( thisConfig, '/cfLuceeConfiguration/custom-tag' )[ 1 ].XMLChildren;
+		var i = 0;
+		// Clear the deck
+		while( ++i<= customTagPaths.len() ) {
+			if ( isNull( customTagPaths.XMLAttributes[ 'virtual ']) ) {
+				// First one is lucee's reserved, trusted Custom Tag Path
+				continue;
+			}
+			arrayDeleteAt( customTagPaths, i );
+			i--;
+		}
+
+		for( var customTagPath in getCustomTagPaths() ?: {} ) {
+			// We already cleared the deck so the Custom Tag Paths probably won't exist
+			// But Just in Case
+			var mappingXMLNode = "";
+			var found = false;
+			for( var j = 0; j < ArrayLen( customTagPaths ); j++ ) {
+				var params = structNew().append( customTagPaths[ j ].XMLAttributes );
+				if( isNull( params.virtual ) ) {
+					// The first, reserved key doesn't have a virtual tag, skip it
+					continue;
+				}
+				var rec = _getCustomTagPathRecord( argumentCollection = params );
+				// You should really be precise in the case of your paths, even if you're on a
+				// case insensitive filesystem.
+				if( Compare( rec.key, customTagPath.key ) EQ 0 ) {
+					mappingXMLNode = customTagPaths[ j ];
+					structClear( mappingXMLNode.XMLAttributes );
+					found = true;
+					break;
+				}
+			}
+			if( !found ) {
+				// "mapping" is not a typo - Lucee puts "mapping" tags in the custom-tag parent.
+				var mappingXMLNode = XMLElemNew( thisConfig, "mapping" );
+			}
+
+			// Populate XML node
+			var virtual = "";
+			if( !isNull( customTagPath.name )) {
+				virtual = "/" & name;
+			} else {
+				virtual = "/" & Replace( CreateUUID(), "-", "", "all" );
+			}
+			mappingXMLNode.XMLAttributes[ 'virtual' ] = virtual;
+			if( !isNull( customTagPath.physical ) ) { mappingXMLNode.XMLAttributes[ 'physical' ] = customTagPath.physical; }
+			if( !isNull( customTagPath.archive ) ) { mappingXMLNode.XMLAttributes[ 'archive' ] = customTagPath.archive; }
+			if( !isNull( customTagPath.inspectTemplate ) ) { mappingXMLNode.XMLAttributes[ 'inspectTemplate' ] = customTagPath.inspectTemplate; }
+			if( !isNull( customTagPath.primary ) ) { mappingXMLNode.XMLAttributes[ 'primary' ] = customTagPath.primary; }
+			if( !isNull( customTagPath.trusted ) ) { mappingXMLNode.XMLAttributes[ 'trusted' ] = customTagPath.trusted ? "yes" : "no"; }
+
+			// Insert into doc if this was new.
+			if( !found ) {
+				customTagPaths.append( mappingXMLNode );
+			}
+		}
 	}
 	
 	private function writeDebugging( thisConfig ) {
