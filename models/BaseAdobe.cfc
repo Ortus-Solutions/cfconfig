@@ -688,8 +688,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		thisConfig[ 4 ] = {};
 		var ctr = 100000;
-		for( var key in getCustomTagPaths() ?: {} ) {
-			var customTagPath = getCustomTagPaths()[ key ] ;
+		for( var customTagPath in getCustomTagPaths() ?: [] ) {
 			// All Adobe handles is physical paths.  Anything that doesn't have a physical path
 			// probably came from Lucee, or from someone adding it manually, regardless, we can
 			// only write what is supported.  We manufacture new keys for WDDX.

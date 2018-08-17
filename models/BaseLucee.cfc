@@ -701,21 +701,22 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			i--;
 		}
 
-		for( var customTagPath in getCustomTagPaths() ?: {} ) {
+		for( var customTagPath in getCustomTagPaths() ?: [] ) {
 			// We already cleared the deck so the Custom Tag Paths probably won't exist
 			// But Just in Case
 			var mappingXMLNode = "";
 			var found = false;
+			var cmpKey1 = _getCustomTagPathKey( argumentCollection = customTagPath );
 			for( var j = 0; j < ArrayLen( customTagPaths ); j++ ) {
 				var params = structNew().append( customTagPaths[ j ].XMLAttributes );
 				if( isNull( params.virtual ) ) {
 					// The first, reserved key doesn't have a virtual tag, skip it
 					continue;
 				}
-				var rec = _getCustomTagPathKey( argumentCollection = params );
+				var cmpKey2 = _getCustomTagPathKey( argumentCollection = params );
 				// You should really be precise in the case of your paths, even if you're on a
 				// case insensitive filesystem.
-				if( Compare( rec.key, customTagPath.key ) EQ 0 ) {
+				if( Compare( cmpKey1, cmpKey2 ) EQ 0 ) {
 					mappingXMLNode = customTagPaths[ j ];
 					structClear( mappingXMLNode.XMLAttributes );
 					found = true;

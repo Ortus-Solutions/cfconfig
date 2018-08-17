@@ -164,8 +164,16 @@ component accessors="true" {
 
 	// Array of structs of properties.  Mail servers are uniquely identified by host
 	property name='mailServers' type='array' _isCFConfig=true;
-	// Array of tag paths ( key is physical:(physicalpath)_archive:(archivepath) value struct of properties )
-	property name='customTagPaths' type='struct' _isCFConfig=true;
+	/**
+	 * Custom tags have no unique identifier.  In Adobe, there's a made up
+	 * "virtual" key of /WEB-INF/customtags(somenumber), but it's never shown
+	 * topside.  In Lucee, you *could* name a path, but you don't have to.
+	 *
+	 * We're going to store in an array, and later if we need to determine
+	 * uniqueness, we'll manufacture a key to do so.
+	 */
+	// Array of tag paths ( value struct of properties )
+	property name='customTagPaths' type='array' _isCFConfig=true;
 	// Encoding to use for mail. Ex: UTF-8
 	property name='mailDefaultEncoding' type='string' _isCFConfig=true;
 	// True/false enable mail spooling
@@ -817,14 +825,6 @@ component accessors="true" {
 	/**
 	* Add a single custom tag to the config
 	*
-	* Custom tags have no unique identifier.  In Adobe, there's a made up
-	* "virtual" key of /WEB-INF/customtags(somenumber), but it's never shown
-	* topside.  In Lucee, you *could* name a path, but you don't have to.
-	*
-	* So, internally, we search for combinations of physical and archive paths
-	* to determine uniqueness, specifically:
-	*   "physical:{physical path}_archive:{archivepath}"
-	*
 	* @physical The physical path that the engine should search
 	* @archive Path to the Lucee/Railo archive
 	* @name Name of the Custom Tag Path
@@ -851,10 +851,8 @@ component accessors="true" {
 		if( !isNull( primary ) ) { customTagPath.primary = primary; };
 		if( !isNull( trusted ) ) { customTagPath.trusted = trusted; };
 
-		var key = _getCustomTagPathKey( argumentCollection = arguments );
-
-		var thisCustomTagPaths = getCustomTagPaths() ?: {};
-		thisCustomTagPaths[ key ] = customTagPath ;
+		var thisCustomTagPaths = getCustomTagPaths() ?: [];
+		thisCustomTagPaths.append( customTagPath );
 		setCustomTagPaths( thisCustomTagPaths );
 		return this;
 	}
