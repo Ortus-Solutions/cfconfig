@@ -140,7 +140,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		for( var thisMapping in thisConfig[ 4 ] ) {
 			// This will remove the spurious name of the custom tag path, but on adobe, they're unnecessary anyway.
 			// Adobe only supports the physical path, all the other options are Lucee-specific
-			addCustomTagPath( physical = thisConfig[ 4 ][ thisMapping ] );
+			// Add some of the Lucee-specific ones, just in case we want to port our config...
+			addCustomTagPath( physical = thisConfig[ 4 ][ thisMapping ], primary = "physical", archive = "" );
 		}
 
 		setSessionMangement( thisConfig[ 7 ].session.enable );
