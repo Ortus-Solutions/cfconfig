@@ -707,7 +707,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var mappingXMLNode = "";
 			var found = false;
 			var cmpKey1 = _getCustomTagPathKey( argumentCollection = customTagPath );
-			for( var j = 0; j < ArrayLen( customTagPaths ); j++ ) {
+			for( var j = 1; j < ArrayLen( customTagPaths ); j++ ) {
 				var params = structNew().append( customTagPaths[ j ].XMLAttributes );
 				if( isNull( params.virtual ) ) {
 					// The first, reserved key doesn't have a virtual tag, skip it
@@ -731,7 +731,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			// Populate XML node
 			var virtual = "";
 			if( !isNull( customTagPath.name )) {
-				virtual = "/" & name;
+				virtual = "/" & customTagPath.name;
 			} else {
 				virtual = "/" & Replace( CreateUUID(), "-", "", "all" );
 			}
