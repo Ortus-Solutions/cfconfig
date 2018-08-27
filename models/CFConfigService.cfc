@@ -56,8 +56,13 @@ component accessors=true singleton {
 	*/	
 	function determineProvider( required string format, required string version ) {
 		for( var thisProvider in getProviderRegistry() ) {
+			// Remove prerelease id so non-stable engines can still match our provider ranges.
+			var cleanedVersionStruct = semanticVersion.parseVersion( arguments.version );
+			cleanedVersionStruct.delete( 'preReleaseID' );
+			var cleanedVersion = semanticVersion.getVersionAsString( cleanedVersionStruct );
+			
 			if( arguments.format == thisProvider.format 
-				&& semanticVersion.satisfies( arguments.version, thisProvider.version ) ) {
+				&& semanticVersion.satisfies( cleanedVersion, thisProvider.version  ) ) {
 					return wirebox.getInstance( thisProvider.invocationPath );
 				}
 		}
