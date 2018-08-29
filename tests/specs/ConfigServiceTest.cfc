@@ -245,11 +245,10 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			it( "can diff config between two json files", function() {
 				var qryDiff = configService.diff(
 					from		= '/tests/resources/.CFConfig.json',
-					to			= '/tests/resources/cfconfig2.json',
+					to			= '/tests/resources/.CFconfig2.json',
 					fromFormat	= 'json',
 					toFormat	= 'json' );
 
-				debug(qryDiff);
 				expect( qryDiff ).toBeQuery();
 			});
 

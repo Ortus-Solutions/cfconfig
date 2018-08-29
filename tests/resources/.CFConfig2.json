@@ -106,14 +106,14 @@
     "eventGatewayConfigurations":[
         {
             "killontimeout":"true",
-            "starttimeout":"30",
+            "starttimeout":30,
             "type":"SMS",
             "class":"coldfusion.eventgateway.sms.SMSGateway",
             "description":"Handles SMS text messaging"
         },
         {
             "killontimeout":"true",
-            "starttimeout":"30",
+            "starttimeout":30,
             "type":"XMPP",
             "class":"coldfusion.eventgateway.im.XMPPGateway",
             "description":"Handles XMPP instant messaging"
