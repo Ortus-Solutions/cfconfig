@@ -12,4 +12,5 @@
 !**/lib/password.properties
 !**/bin/cf-init.sh
 !.CFConfig.json
+!.CFConfig2.json
 !**/server.json

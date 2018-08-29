@@ -241,7 +241,17 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				 
 				expect( qryDiff ).toBeQuery();
 			});
-			
+
+			it( "can diff config between two json files", function() {
+				var qryDiff = configService.diff(
+					from		= '/tests/resources/.CFConfig.json',
+					to			= '/tests/resources/.CFconfig2.json',
+					fromFormat	= 'json',
+					toFormat	= 'json' );
+
+				expect( qryDiff ).toBeQuery();
+			});
+
 		});
 			
 	}

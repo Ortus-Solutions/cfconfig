@@ -60,8 +60,8 @@ component accessors=true singleton {
 			var cleanedVersionStruct = semanticVersion.parseVersion( arguments.version );
 			cleanedVersionStruct.delete( 'preReleaseID' );
 			var cleanedVersion = semanticVersion.getVersionAsString( cleanedVersionStruct );
-			
-			if( arguments.format == thisProvider.format 
+
+			if( arguments.format == thisProvider.format
 				&& semanticVersion.satisfies( cleanedVersion, thisProvider.version  ) ) {
 					return wirebox.getInstance( thisProvider.invocationPath );
 				}
@@ -250,8 +250,8 @@ component accessors=true singleton {
 			'loggers',
 			'restMappings',
 			'scheduledTasks',
-			'eventGatewayConfigurations',
-			'eventGatewayInstances'
+			'eventGatewayInstances',
+			'eventGatewayConfigurations'
 		];
 		
 		compareStructs( qryResult, fromData, toData, configProps, specialColumns );
@@ -279,14 +279,14 @@ component accessors=true singleton {
 		required array configProps,
 		required array ignoredKeys,
 		string prefix='' ) {
-		 var somethingWasDirty = false;
-		 
-		 for( var prop in configProps ) {
-		 	var row = getDefaultRow( prefix & prop );
-		 	
-		 	// All keys are processed (and potentialy recursed into), but ignored ones aren't added to the query
-		 	if( !ignoredKeys.findNoCase( prop ) ) {
-		 		
+		var somethingWasDirty = false;
+
+		for( var prop in configProps ) {
+			var row = getDefaultRow( prefix & prop );
+
+			// All keys are processed (and potentialy recursed into), but ignored ones aren't added to the query
+			if( !ignoredKeys.findNoCase( prop ) ) {
+
 				var tmp = compareValues(
 					row,
 					fromData,
@@ -341,7 +341,7 @@ component accessors=true singleton {
 					var defaultValue = isSimpleValue( fromArr[ 1 ] ?: toArr[ 1 ] ) ? '' : {};
 					var fromValue = fromArr[ i ] ?: defaultValue;
 					var toValue = toArr[ i ] ?: defaultValue;
-					
+
 					// If this type is complex
 					if( isStruct( toValue ) && isStruct( fromValue ) ) {
 
@@ -357,19 +357,19 @@ component accessors=true singleton {
 							generateDefaultStructName( toValue, prop )
 						);
 						qryResult.addRow( row );
-						
+
 						// Get combined list of properties between both structs.
 						// Yes, we're ignoring some mapping/datasource properties if they're not defined in both locations
 						var combinedProps = {}.append( fromValue ).append( toValue ).keyArray();
-						
+
 						// Call back to myself.  This will add another record to the query for each key in these nested structs
 						var tmp = compareStructs( qryResult, fromValue, toValue, combinedProps, [], '#prop#-#numberFormat( i, "09" )#-' );
 						somethingWasDirty = somethingWasDirty || tmp;
-							
+
 					} else if( isSimpleValue( toValue ) && isSimpleValue( fromValue ) ) {
-						
+
 						var row = getDefaultRow( '#prefix##prop#-#numberFormat( i, "09" )#' );
-						
+
 						// Compare a simple value in the array
 						somethingWasDirty = compareValues(
 							row,
@@ -392,7 +392,7 @@ component accessors=true singleton {
 		 return somethingWasDirty;
 	} // end function
 	
-	// Breaking this our for re-use and to keep function size down
+	// Breaking this out for re-use and to keep function size down
 	private function compareValues( 
 		required struct row,
 		required any fromData,
@@ -467,10 +467,5 @@ component accessors=true singleton {
 		} else {
 			return 'N/A';
 		}
-		
-		
-		
-		
 	}
-	
 }
