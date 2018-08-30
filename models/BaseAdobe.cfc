@@ -1043,9 +1043,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			for (var eventGatewayConfiguration in eventGatewayConfigurations) {
 				var currentEventGatewayConfiguration = {
 					"DESCRIPTION" = eventGatewayConfiguration.description,
-					"KILLONTIMEOUT" = javacast("boolean", eventGatewayConfiguration.killontimeout),
+					"KILLONTIMEOUT" = !!eventGatewayConfiguration.killontimeout,
 					"CLASS" = eventGatewayConfiguration.class,
-					"STARTTIMEOUT" = javacast("int", eventGatewayConfiguration.starttimeout),
+					"STARTTIMEOUT" = eventGatewayConfiguration.starttimeout+0,
 					"TYPE" = eventGatewayConfiguration.type
 				};
 				thisConfig[ 'GATEWAYS' ].append( currentEventGatewayConfiguration );
