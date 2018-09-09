@@ -844,12 +844,12 @@ component accessors="true" {
 
 		var customTagPath = {};
 
-		if( !isNull( physical ) ) { customTagPath.physical = physical; };
-		if( !isNull( archive ) ) { customTagPath.archive = archive; };
-		if( !isNull( name ) ) { customTagPath.name = name; };
-		if( !isNull( inspectTemplate ) ) { customTagPath.inspectTemplate = inspectTemplate; };
-		if( !isNull( primary ) ) { customTagPath.primary = primary; };
-		if( !isNull( trusted ) ) { customTagPath.trusted = trusted; };
+		if( !isNull( physical ) ) { customTagPath[ 'physical' ] = physical; };
+		if( !isNull( archive ) ) { customTagPath[ 'archive' ] = archive; };
+		if( !isNull( name ) ) { customTagPath[ 'name' ] = name; };
+		if( !isNull( inspectTemplate ) ) { customTagPath[ 'inspectTemplate' ] = inspectTemplate; };
+		if( !isNull( primary ) ) { customTagPath[ 'primary' ] = primary; };
+		if( !isNull( trusted ) ) { customTagPath[ 'trusted' ] = trusted; };
 
 		var thisCustomTagPaths = getCustomTagPaths() ?: [];
 		thisCustomTagPaths.append( customTagPath );

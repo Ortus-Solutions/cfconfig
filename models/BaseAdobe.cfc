@@ -686,6 +686,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var thisConfig = readWDDXConfigFile( getRuntimeConfigTemplate() );
 		}
 
+
+		var ignoredCustomTagPaths = [ '#server.coldfusion.rootdir#/CustomTags' ];
+		for( var thisMapping in thisConfig[ 4 ] ) {
+			if( !ignoredMappings.findNoCase( thisConfig[ 4 ][ thisMapping ] ) ) {
+				structDelete( thisConfig[ 4 ], thisMapping );
+			}
+		}
 		thisConfig[ 4 ] = {};
 		var ctr = 100000;
 		for( var customTagPath in getCustomTagPaths() ?: [] ) {
