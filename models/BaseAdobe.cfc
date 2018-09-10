@@ -686,22 +686,26 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var thisConfig = readWDDXConfigFile( getRuntimeConfigTemplate() );
 		}
 
-
-		var ignoredCustomTagPaths = [ '#server.coldfusion.rootdir#/CustomTags' ];
-		for( var thisMapping in thisConfig[ 4 ] ) {
-			if( !ignoredCustomTagPaths.findNoCase( thisConfig[ 4 ][ thisMapping ] ) ) {
-				structDelete( thisConfig[ 4 ], thisMapping );
+		// Only save custom tag paths if defined.  
+		// i.e., an empty array means delete everything, not having a value at all means don't touch it.
+		if( !isNull( getCustomTagPaths() ) ) {		 
+			// Special Adobe Custom Tag path we don't want to remove
+			var ignoredCustomTagPaths = [ '#server.coldfusion.rootdir#/CustomTags' ];
+			for( var thisMapping in thisConfig[ 4 ] ) {
+				if( !ignoredCustomTagPaths.findNoCase( thisConfig[ 4 ][ thisMapping ] ) ) {
+					structDelete( thisConfig[ 4 ], thisMapping );
+				}
 			}
-		}
-		var ctr = 100000;
-		for( var customTagPath in getCustomTagPaths() ?: [] ) {
-			// All Adobe handles is physical paths.  Anything that doesn't have a physical path
-			// probably came from Lucee, or from someone adding it manually, regardless, we can
-			// only write what is supported.  We manufacture new keys for WDDX.
-			if ( !isNull( customTagPath[ 'physical' ] ) && len( customTagPath[ 'physical' ] ) ) {
-				thisConfig[ 4 ][ "/WEB-INF/customtags" & ctr ] = customTagPath[ 'physical' ];
-				ctr = ctr + 10;
-			}
+			var ctr = 100000;
+			for( var customTagPath in getCustomTagPaths() ?: [] ) {
+				// All Adobe handles is physical paths.  Anything that doesn't have a physical path
+				// probably came from Lucee, or from someone adding it manually, regardless, we can
+				// only write what is supported.  We manufacture new keys for WDDX.
+				if ( !isNull( customTagPath[ 'physical' ] ) && len( customTagPath[ 'physical' ] ) ) {
+					thisConfig[ 4 ][ "/WEB-INF/customtags" & ctr ] = customTagPath[ 'physical' ];
+					ctr = ctr + 10;
+				}
+			}			
 		}
 
 		if( !isNull( getSessionMangement() ) ) { thisConfig[ 7 ].session.enable = ( getSessionMangement() ? true : false ); }
@@ -719,17 +723,20 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getGeneralErrorTemplate() ) ) { thisConfig[ 8 ].site_wide = getGeneralErrorTemplate(); }
 		if( !isNull( getRequestQueueTimeoutPage() ) ) { thisConfig[ 8 ][ 'queue_timeout' ] = getRequestQueueTimeoutPage(); }
 
-		var ignoredMappings = [ '/CFIDE', '/gateway' ];
-		for( var thisMapping in thisConfig[ 9 ] ) {
-			if( !ignoredMappings.findNoCase( thisMapping ) ) {
-				structDelete( thisConfig[ 9 ], thisMapping );
+		// Only save CF Mapingsif defined.
+		if( !isNull( getCFmappings() ) ) {	
+			var ignoredMappings = [ '/CFIDE', '/gateway' ];
+			for( var thisMapping in thisConfig[ 9 ] ) {
+				if( !ignoredMappings.findNoCase( thisMapping ) ) {
+					structDelete( thisConfig[ 9 ], thisMapping );
+				}
 			}
-		}
-
-		for( var virtual in getCFmappings() ?: {} ) {
-			if( !isNull( getCFmappings()[ virtual ][ 'physical' ] ) && len( getCFmappings()[ virtual ][ 'physical' ] ) ) {
-				var physical = getCFmappings()[ virtual ][ 'physical' ];
-				thisConfig[ 9 ][ virtual ] = physical;
+	
+			for( var virtual in getCFmappings() ?: {} ) {
+				if( !isNull( getCFmappings()[ virtual ][ 'physical' ] ) && len( getCFmappings()[ virtual ][ 'physical' ] ) ) {
+					var physical = getCFmappings()[ virtual ][ 'physical' ];
+					thisConfig[ 9 ][ virtual ] = physical;
+				}
 			}
 		}
 
@@ -1152,32 +1159,36 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			thisConfig[ 2 ][ 'PURGE_INTERVAL' ] = int( getClientStoragePurgeInterval() / 60 ) & ':' & int( getClientStoragePurgeInterval() % 60 );
 		}
 
-		// Clear out all storages locations excetor for these special ones that should always be there
-		var ignoredLocations = [ 'Registry', 'Cookie' ];
-		for( var thisLocation in thisConfig[ 1 ] ) {
-			if( !ignoredLocations.findNoCase( thisLocation ) ) {
-				structDelete( thisConfig[ 1 ], thisLocation );
+
+		if( !isNull( getClientStorageLocations() ) ) {
+ 
+			// Clear out all storages locations except for for these special ones that should always be there
+			var ignoredLocations = [ 'Registry', 'Cookie' ];
+			for( var thisLocation in thisConfig[ 1 ] ) {
+				if( !ignoredLocations.findNoCase( thisLocation ) ) {
+					structDelete( thisConfig[ 1 ], thisLocation );
+				}
 			}
-		}
-
-		for( var storageLocation in getClientStorageLocations() ?: {} ) {
-			var thisLocation = getClientStorageLocations()[ storageLocation ];
-			var thisName = thisLocation[ 'name' ];
-			// Write out each of the client storage locations
-			thisConfig[ 1 ][ storageLocation ] = {
-				'name' : thisName,
-				'description' : thisLocation[ 'description' ] ?: '',
-				'disable_globals' : !!( thisLocation[ 'disableGlobals' ] ?: false ),
-				'purge' : !!( thisLocation[ 'purgeEnable' ] ?: false ),
-				'timeout' : ( thisLocation[ 'purgeTimeout' ] ?: 90 )+0,
-				'type' : thisLocation[ 'type' ] ?: ( listFindNoCase( 'Cookie,Registry', thisName ) ? thisName : 'JDBC' )
-			};
-
-			// Add in DSN if it exists
-			if( !isNull( thisLocation[ 'DSN' ] ) ) {
-				thisConfig[ 1 ][ storageLocation ][ 'DSN' ] = thisLocation[ 'DSN' ];
-			}
-
+	
+			for( var storageLocation in getClientStorageLocations() ?: {} ) {
+				var thisLocation = getClientStorageLocations()[ storageLocation ];
+				var thisName = thisLocation[ 'name' ];
+				// Write out each of the client storage locations
+				thisConfig[ 1 ][ storageLocation ] = {
+					'name' : thisName,
+					'description' : thisLocation[ 'description' ] ?: '',
+					'disable_globals' : !!( thisLocation[ 'disableGlobals' ] ?: false ),
+					'purge' : !!( thisLocation[ 'purgeEnable' ] ?: false ),
+					'timeout' : ( thisLocation[ 'purgeTimeout' ] ?: 90 )+0,
+					'type' : thisLocation[ 'type' ] ?: ( listFindNoCase( 'Cookie,Registry', thisName ) ? thisName : 'JDBC' )
+				};
+	
+				// Add in DSN if it exists
+				if( !isNull( thisLocation[ 'DSN' ] ) ) {
+					thisConfig[ 1 ][ storageLocation ][ 'DSN' ] = thisLocation[ 'DSN' ];
+				}
+	
+			}			
 		}
 
 		writeWDDXConfigFile( thisConfig, configFilePath );

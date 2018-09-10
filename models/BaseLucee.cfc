@@ -494,6 +494,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeDatasources( thisConfig ) {
+		
+		// Only save if we have something defined
+		if( isNull( getDatasources() ) ) {
+			return;
+		}
+		
 		var passwordManager = getLuceePasswordManager();
 		// Get all datasources
 		// TODO: Add tag if it doesn't exist
@@ -604,6 +610,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeMail( thisConfig ) {
+		
+		// Only save if we have something defined
+		if( isNull( getMailServers() ) ) {
+			return;
+		}
+		
 		var passwordManager = getLuceePasswordManager();
 		// Get all mail servers
 		// TODO: Add tag if it doesn't exist
@@ -642,6 +654,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeMappings( thisConfig ) {
+		
+		// Only save if we have something defined
+		if( isNull( getCFmappings() ) ) {
+			return;
+		}
 		var ignores = [ '/lucee-server/' , '/lucee/', '/lucee/doc', '/lucee/admin' ];
 		// Get all mappings
 		// TODO: Add tag if it doesn't exist
@@ -687,6 +704,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeCustomTags( thisConfig ) {
+		
+		// Only save if we have something defined
+		if( isNull( getCustomTagPaths() ) ) {
+			return;
+		}
 		// Get all custom tag paths
 		// TODO: Add tag if it doesn't exist
 		var customTagPaths = xmlSearch( thisConfig, '/cfLuceeConfiguration/custom-tag' )[ 1 ].XMLChildren;
@@ -761,6 +783,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeCache( thisConfig ) {
+		
+		// Only save if we have something defined
+		if( isNull( getCaches() ) ) {
+			return;
+		}
 		// Get all caches connections
 		var cacheConnectionsSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/cache' );
 		if( cacheConnectionsSearch.len() ) {
@@ -913,6 +940,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeLoggers( thisConfig ) {
+		
+		// Only save if we have something defined
+		if( isNull( getLoggers() ) ) {
+			return;
+		}
 		var loggers = xmlSearch( thisConfig, '/cfLuceeConfiguration/logging' )[ 1 ];
 		
 		for( var name in getLoggers() ?: {} ) {
