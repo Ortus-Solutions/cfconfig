@@ -107,6 +107,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var logging = xmlSearch( thisConfig, '/cfLuceeConfiguration/logging' );
 		if( logging.len() ){ readLoggers( logging[ 1 ] ); }
 
+		var error = xmlSearch( thisConfig, '/cfLuceeConfiguration/error' );
+    	if( error.len() ){ readError( error[ 1 ] ); }
+
 		readAuth( thisConfig.XMLRoot );
 		
 		readConfigChanges( thisConfig.XMLRoot );
@@ -361,6 +364,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 	}
 
+	private function readError( error ) {
+	    var config = error.XMLAttributes;
+	    if( !isNull( config[ 'status-code' ] ) ) { setErrorStatusCode( config[ 'status-code' ] ); }
+	    if( !isNull( config[ 'template-404' ] ) ) { setMissingErrorTemplate( translateLuceeToSharedErrorTemplate( config[ 'template-404' ] ) ); }
+	    if( !isNull( config[ 'template-500' ] ) ) { setGeneralErrorTemplate( translateLuceeToSharedErrorTemplate( config[ 'template-500' ] ) ); }
+	}
+
 	/**
 	* I write out config
 	*
@@ -410,6 +420,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeConfigChanges( thisConfig );
 		writeCache( thisConfig );
 		writeLoggers( thisConfig );
+		writeError( thisConfig );
 		
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
@@ -987,6 +998,25 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 	}
 
+	private function writeError( thisConfig ) {
+	    var errorSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/error' );
+	    if( errorSearch.len() ) {
+	    	var error = errorSearch[1];
+	    } else {
+	    	var error = xmlElemnew( thisConfig, 'error' );
+	    }
+
+	    var config = error.XMLAttributes;
+
+	    if( !isNull( getErrorStatusCode() ) ) { config[ 'status-code' ] = getErrorStatusCode(); }
+	    if( !isNull( getMissingErrorTemplate() ) ) { config[ 'template-404' ] = translateSharedErrorTemplateToLucee( getMissingErrorTemplate() ); }
+	    if( !isNull( getGeneralErrorTemplate() ) ) { config[ 'template-500' ] = translateSharedErrorTemplateToLucee( getGeneralErrorTemplate() ); }
+
+	    if( !errorSearch.len() ) {
+	    	thisConfig.XMLRoot.XMLChildren.append( error );
+	    }
+	}
+
 	/**
 	* I find the actual Lucee 4.x context config file
 	*/
@@ -1085,6 +1115,36 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return 'jdbc:h2:{path}{database};MODE={mode}';
 			default :
 				return arguments.JDBCUrl;
+		}
+	
+	}
+
+	private function translateSharedErrorTemplateToLucee( required string templateName ) {
+		
+		switch( templateName ) {
+			case 'default' :
+				return '/lucee/templates/error/error.cfm';
+			case 'secure' :
+				return '/lucee/templates/error/error-public.cfm';
+			case 'neo' :
+				return '/lucee/templates/error/error-neo.cfm';
+			default :
+				return arguments.templateName;
+		}
+	
+	}
+
+	private function translateLuceeToSharedErrorTemplate( required string templateName ) {
+		
+		switch( templateName ) {
+			case '/lucee/templates/error/error.cfm' :
+				return 'default';
+			case '/lucee/templates/error/error-public.cfm' :
+				return 'secure';
+			case '/lucee/templates/error/error-neo.cfm' :
+				return 'neo';
+			default :
+				return arguments.templateName;
 		}
 	
 	}

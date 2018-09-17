@@ -155,8 +155,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		// Stored as 0/1
 		setErrorStatusCode( ( thisConfig[ 8 ].EnableHTTPStatus == 1 ) );
-		setMissingErrorTemplate( thisConfig[ 8 ].missing_template );
-		setGeneralErrorTemplate( thisConfig[ 8 ].site_wide );
+		setMissingErrorTemplate( translateAdobeToSharedErrorTemplate( thisConfig[ 8 ].missing_template ) );
+		setGeneralErrorTemplate( translateAdobeToSharedErrorTemplate( thisConfig[ 8 ].site_wide ) );
 		setRequestQueueTimeoutPage( thisConfig[ 8 ][ 'queue_timeout' ] );
 
 		var ignoredMappings = [ '/CFIDE', '/gateway' ];
@@ -719,8 +719,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		// Convert from boolean back to 1/0
 		if( !isNull( getErrorStatusCode() ) ) { thisConfig[ 8 ].EnableHTTPStatus = ( getErrorStatusCode() ? 1 : 0 ); }
-		if( !isNull( getMissingErrorTemplate() ) ) { thisConfig[ 8 ].missing_template = getMissingErrorTemplate(); }
-		if( !isNull( getGeneralErrorTemplate() ) ) { thisConfig[ 8 ].site_wide = getGeneralErrorTemplate(); }
+		if( !isNull( getMissingErrorTemplate() ) ) { thisConfig[ 8 ].missing_template = translateSharedErrorTemplateToAdobe( getMissingErrorTemplate(), 'missing' ); }
+		if( !isNull( getGeneralErrorTemplate() ) ) { thisConfig[ 8 ].site_wide = translateSharedErrorTemplateToAdobe( getGeneralErrorTemplate(), 'error' ); }
 		if( !isNull( getRequestQueueTimeoutPage() ) ) { thisConfig[ 8 ][ 'queue_timeout' ] = getRequestQueueTimeoutPage(); }
 
 		// Only save CF Mapingsif defined.
@@ -1484,6 +1484,39 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				.store( seedPropertiesPath );
 		}
 
+	}
+
+	private function translateSharedErrorTemplateToAdobe( required string templateName, required string type ) {
+
+		switch( templateName ) {
+			case 'default' :
+				return '';
+			case 'secure' :
+				if ( type == 'error' )
+					return '/CFIDE/administrator/templates/secure_profile_error.cfm';
+				else if ( type == 'missing' )
+					return '/CFIDE/administrator/templates/missing_template_error.cfm';
+			case 'neo' :
+				return '';
+			default :
+				return arguments.templateName;
+		}
+	
+	}
+
+	private function translateAdobeToSharedErrorTemplate( required string templateName ) {
+
+		switch( templateName ) {
+			case '' :
+				return 'default';
+			case '/CFIDE/administrator/templates/secure_profile_error.cfm' :
+				return 'secure';
+			case '/CFIDE/administrator/templates/missing_template_error.cfm' :
+				return 'secure';
+			default :
+				return arguments.templateName;
+		}
+	
 	}
 
 	private function getDefaultScheduledTaskData() {
