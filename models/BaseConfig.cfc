@@ -251,6 +251,12 @@ component accessors="true" {
 	// file extensions as a comma separated list which gets compiled when used in the CFInclude tag * for all.
 	property name='compileExtForCFInclude' type='string' _isCFConfig=true;
 
+	/* Error Templates. One of the strings
+	* "default" - Standard handling for engine. Blank for Adobe, "error.cfm" for Lucee/Railo. Not secure.
+	* "secure" - Uses the engine's secure template.
+	* "neo" - Mirrors appearance of default Adobe handler (Lucee/Railo)
+	* Alternatively, you can provide the path to a custom template
+	*/
 	property name='generalErrorTemplate' type='string' _isCFConfig=true;
 	property name='missingErrorTemplate' type='string' _isCFConfig=true;
 
