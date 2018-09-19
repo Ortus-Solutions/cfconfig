@@ -142,4 +142,4 @@ An example would be:
 C:/ColdFusion11/cfusion/
 ```
 
-The code in this library has only beed tested on Lucee and likely doesn't work on Adobe ColdFusion.  If anyone wants to make it compatible, feel free to try by beware of tons of use of the Elvis operator, reliance on sorted JSON structs, and some specific WDDX behavior.
+The code in this library has only been tested on Lucee and likely doesn't work on Adobe ColdFusion.  If anyone wants to make it compatible, feel free to try by beware of tons of use of the Elvis operator, reliance on sorted JSON structs, and some specific WDDX behavior.
