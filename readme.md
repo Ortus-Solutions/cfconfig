@@ -13,7 +13,7 @@
 
 This is a library for reading, writing, and storing configuration for all CF engines. This is an underlying service layer meant to have other tools built on top of it.
 
-Please enter tickets for bugs and enhancemnets here:
+Please enter tickets for bugs and enhancements here:
 https://ortussolutions.atlassian.net/browse/CFCONFIG
 
 Documentation is found here:
@@ -26,7 +26,7 @@ https://cfconfig.ortusbooks.com
 
 This does not use RDS and doesn't need the server to be running.  It just needs access to the installation folder for a server to locate its config files. 
 
-## Possible Uses
+## Uses
 
 Uses for this library include but are not limited to:
 
@@ -35,42 +35,43 @@ Uses for this library include but are not limited to:
 * Copy config from one server to another.  Servers could be different engines-- i.e. copy config from Adobe CF11 to Lucee 5.
 * Merge config from multiple servers together. Ex: combine several Lucee web contexts into a single config (mappings, datasources, etc)
 * Facilitate the external management of any server's settings (such as CLI tools to read or set settings)
+* Compare configuration between two sources
 
-## Completeness
+## Supported Engines
 
-This project is a work in progress.  I'm starting with the most common engines and the most common config settings so it's possible you may find an engine
-or config setting that's not supported yet.  Please submit pull requests for these.  It's not hard, it's just tedious to do all the copy/paste.  I'd *love* collaborate on this project
+CFConfig covers most of the common settings you'll find in Adobe and Lucee servers.  This includes datasources, CF Mappings, Lucee caches, mail servers, logging settings, debugging settings, event gateways (Adobe), scheduled tasks (Adobe), and custom tag paths.
 
-If you don't have time for a pull request, please enter a ticket so we can track remaining features.  
+The current list of supported engines is:
 
-Major features developed
-* **Adobe CF9** - Most everything but event gateways
-* **Adobe CF10** - Most everything but event gateways
-* **Adobe CF11** - Most everything but event gateways
-* **Adobe C2016** - Most everything but event gateways
-* **Railo 4.x** - Most everything but event gateways and scheduled tasks
-* **Lucee 4.x/5.x** - Most everything but event gateways and scheduled tasks
+* **Adobe ColdFusion 9, 10, 11, 2016, 2018**
+* **Lucee 4, 5**
+* **Railo 4**
+
+If you find a setting or feature which is not supported, please send a pull request or add a ticket so we can track it. 
 
 ## Component Overview
 
 Here are the main components in the project
 
-### BaseConfig
+### BaseConfig.cfc
 
 This class represents the configuration of a CF engine.  It is agnostic and doesn't contain any particular behavior for a specific engine.  
-Not all the data it stores applies to every engine though.  It is capable of reading and writing to a standard JSON format, but if you want to read or write to/from a specific engine's format, you'll need to create one of the engine-specific subclasses
+Not all the data it stores applies to every engine though.  The `BaseConfig.cfc` is not capable of reading or writing the config, it merely holds the data in a generic manner.  If you want to read or write to/from a specific engine's format, you'll need to create one of the engine-specific subclasses, all of which extend `BaseConfig.cfc`.
 
 ### Engine-specific mappers
 
-* **JSONConfig** - Engine-agnostic JSON format
-* **Lucee4Server** - Lucee 4.x server context
-* **Lucee4Web** - Lucee 4.x web context
-* **Lucee5Server** - Lucee 5.x server context
-* **Lucee5Web** - Lucee 5.x web context
-* **Adobe9** - Coming soon
-* **Adobe10** - Coming soon
-* **Adobe11** - Adobe ColdFusion 11
-* **Adobe2016** - Adobe Coldfusion 2016
+* **JSONConfig.cfc** - Engine-agnostic JSON format
+* **Lucee4Server.cfc** - Lucee 4.x server context
+* **Lucee4Web.cfc** - Lucee 4.x web context
+* **Lucee5Server.cfc** - Lucee 5.x server context
+* **Lucee5Web.cfc** - Lucee 5.x web context
+* **Railo4Server.cfc** - Railo 4.x server context
+* **Railo4Web.cfc** - Railo 4.x web context
+* **Adobe9.cfc** - Adobe ColdFusion 9
+* **Adobe10.cfc** - Adobe ColdFusion 10
+* **Adobe11.cfc** - Adobe ColdFusion 11
+* **Adobe2016.cfc** - Adobe Coldfusion 2016
+* **Adobe2018.cfc** - Adobe Coldfusion 2018
 
 ## Usage
 
@@ -86,7 +87,7 @@ Create an instance of the component that corresponds to the server that you'd li
 
 **Create a new JSON configuration file programmatically**
 ```
-baseConfig = new path.to.baseConfig()
+JSONConfig = new path.to.JSONConfig()
 	.setNullSupport( true );
 	.setUseTimeServer( true );
 	.setAdminPassword( 'myPass' );
@@ -96,7 +97,7 @@ baseConfig = new path.to.baseConfig()
 
 **Read an existing JSON configuration file**
 ```
-baseConfig = new path.to.baseConfig()
+JSONConfig = new path.to.JSONConfig()
 	.read( 'test.json' );
 ```
 
@@ -111,18 +112,17 @@ writeDump( lucee4ServerConfig.getMemento() );
 
 **Read an existing JSON config file and load into a Lucee 5 web context**
 ```
-JSONConfig = new path.to.baseConfig()
+JSONConfig = new path.to.JSONConfig()
 	.read( expandPath( '.CFConfig.json' ) );
 
-new models.Lucee4WebConfig()
+new path.to.Lucee4WebConfig()
 	.setMemento( JSONConfig.getMemento() )		
 	.write( expandPath( 'WEB-INF/lucee/' ) );
 ```
 
 ## Notes
 
-The `BaseConfig` will read/write to a JSON file called `.CFConfig.json` by default in the home directory you specify.  You can alternatively specify a full path
-to a JSON file to change the name. 
+The `JSONConfig` will read/write to a JSON file called `.CFConfig.json` by default in the home directory you specify.  You can alternatively specify a full path to a JSON file to change the name. 
 
 The Lucee 4 and Lucee 5 *web* components expect the `CFHomePath` to be the folder containing the `lucee-web.xml.cfm` file.  
 An example would be:
@@ -141,3 +141,5 @@ An example would be:
 ```
 C:/ColdFusion11/cfusion/
 ```
+
+The code in this library has only beed tested on Lucee and likely doesn't work on Adobe ColdFusion.  If anyone wants to make it compatible, feel free to try by beware of tons of use of the Elvis operator, reliance on sorted JSON structs, and some specific WDDX behavior.
