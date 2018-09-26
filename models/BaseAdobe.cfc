@@ -58,6 +58,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	property name='dotNetConfigPath' type='string';
 	property name='dotNetConfigTemplate' type='string';
+	
+	
+	property name='AdminRDSLoginRequiredBoolean' type='boolean' default="false" ;
 
 
 
@@ -82,6 +85,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setLicensePropertiesPath( '/lib/license.properties' );
 		setJettyConfigPath( '/lib/jetty.xml' );
 		setDotNetConfigPath( '/lib/neo-dotnet.xml' );
+		
+		// CF 10+ stors as a string.  CF9 will override this.
+		setAdminRDSLoginRequiredBoolean( false );
 
 		setFormat( 'adobe' );
 
@@ -1216,8 +1222,17 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSandboxEnabled() ) ) { thisConfig[ 'sbs.security.enabled' ] = !!getSandboxEnabled(); }
 		if( !isNull( getAdminAllowedIPList() ) ) { thisConfig[ 'allowedAdminIPList' ] = getAdminAllowedIPList(); }
 		if( !isNull( getServicesAllowedIPList() ) ) { thisConfig[ 'allowedIPList' ] = getServicesAllowedIPList(); }
-		// It's a string in the WDDX, not a boolean!
-		if( !isNull( getAdminRDSLoginRequired() ) ) { thisConfig[ 'rds.security.enabled' ] = getAdminRDSLoginRequired()&''; }
+		
+		// CF9 is boolean, CF10+ is string
+		if( getAdminRDSLoginRequiredBoolean() ) {
+			// Force to boolean
+			if( !isNull( getAdminRDSLoginRequired() ) ) { thisConfig[ 'rds.security.enabled' ] = !!getAdminRDSLoginRequired(); }	
+		} else {
+			// Force to string
+			if( !isNull( getAdminRDSLoginRequired() ) ) { thisConfig[ 'rds.security.enabled' ] = getAdminRDSLoginRequired()&''; }			
+		}
+		
+		
 		if( !isNull( getAdminRDSUserIDRequired() ) ) { thisConfig[ 'rds.security.usesinglerdspassword' ] = !!getAdminRDSUserIDRequired(); }
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
