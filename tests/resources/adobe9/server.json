@@ -5,5 +5,9 @@
     },
     "web":{
         "host":"adobe9cfconfig.local"
+    },
+    "name":"cfconfigadobe9",
+    "jvm":{
+        "javaHome":"D:\\JRE9\\jre"
     }
 }
