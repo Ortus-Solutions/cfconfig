@@ -19,6 +19,7 @@ component accessors="true" {
 	property name='wirebox' inject='wirebox';
 	property name='Util' inject='Util@cfconfig-services';
 	property name='JSONPrettyPrint' inject='JSONPrettyPrint@JSONPrettyPrint';
+	property name='fileSystemUtil' inject='fileSystem';
 
 	// ----------------------------------------------------------------------------------------
 	// Properties for the internal workings

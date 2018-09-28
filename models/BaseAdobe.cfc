@@ -143,11 +143,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var passwordManager = getAdobePasswordManager();
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getRuntimeConfigPath(), '/' ) );
 
+		// Special Adobe Custom Tag path we don't want to remove
+		var ignoredCustomTagPaths = [ '##server.coldfusion.rootdir##/CustomTags', '#fileSystemUtil.normalizeSlashes( getCFHomePath() ).replace( '//', '/', 'all' )#/CustomTags' ];
 		for( var thisMapping in thisConfig[ 4 ] ) {
 			// This will remove the spurious name of the custom tag path, but on adobe, they're unnecessary anyway.
 			// Adobe only supports the physical path, all the other options are Lucee-specific
-			// Add some of the Lucee-specific ones, just in case we want to port our config...
-			addCustomTagPath( physical = thisConfig[ 4 ][ thisMapping ], primary = "physical", archive = "" );
+			// Add some of the Lucee-specific ones, just in case we want to port our config...			
+			if( !ignoredCustomTagPaths.findNoCase( fileSystemUtil.normalizeSlashes( thisConfig[ 4 ][ thisMapping ] ).replace( '//', '/', 'all' ) ) ) {
+				addCustomTagPath( physical = thisConfig[ 4 ][ thisMapping ], primary = "physical", archive = "" );	
+			}
 		}
 
 		setSessionMangement( thisConfig[ 7 ].session.enable );
@@ -694,11 +698,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		// Only save custom tag paths if defined.  
 		// i.e., an empty array means delete everything, not having a value at all means don't touch it.
-		if( !isNull( getCustomTagPaths() ) ) {		 
+		if( !isNull( getCustomTagPaths() ) ) {
 			// Special Adobe Custom Tag path we don't want to remove
-			var ignoredCustomTagPaths = [ '#server.coldfusion.rootdir#/CustomTags' ];
+			var ignoredCustomTagPaths = [ '##server.coldfusion.rootdir##/CustomTags', '#fileSystemUtil.normalizeSlashes( getCFHomePath() ).replace( '//', '/', 'all' )#/CustomTags' ];
 			for( var thisMapping in thisConfig[ 4 ] ) {
-				if( !ignoredCustomTagPaths.findNoCase( thisConfig[ 4 ][ thisMapping ] ) ) {
+				if( !ignoredCustomTagPaths.findNoCase( fileSystemUtil.normalizeSlashes( thisConfig[ 4 ][ thisMapping ] ).replace( '//', '/', 'all' ) ) ) {
 					structDelete( thisConfig[ 4 ], thisMapping );
 				}
 			}
