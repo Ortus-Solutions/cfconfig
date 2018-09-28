@@ -1,8 +1,8 @@
 {
     "name":"CFConfig Services",
-    "version":"1.0.1",
+    "version":"1.0.2",
     "author":"Brad Wood",
-    "location":"Ortus-Solutions/cfconfig#v1.0.1",
+    "location":"Ortus-Solutions/cfconfig#v1.0.2",
     "homepage":"https://github.com/Ortus-Solutions/cfconfig",
     "slug":"cfconfig-services",
     "shortDescription":"A library to read/write/store CF engine configs.  This project is just the service layer, not the CLI component.",
