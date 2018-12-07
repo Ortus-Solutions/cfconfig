@@ -535,11 +535,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			DSXMLNode.XMLAttributes[ 'name' ] = DSName;
 			if( !isNull( DSStruct.database ) ) {
 				DSXMLNode.XMLAttributes[ 'database' ] = DSStruct.database;
-				// Set default custom string for MSSQL
-				if( DSStruct.dbdriver == 'MSSQL' ) {
-					// This will be overwritten below if there is a custom key for this datasource
-					DSXMLNode.XMLAttributes[ 'custom' ] = 'DATABASENAME=#DSStruct.database#&sendStringParametersAsUnicode=true&SelectMethod=direct';
-				}
 			}
 			DSXMLNode.XMLAttributes[ 'allow' ] = translatePermissionsToBitMask( DSStruct );
 			if( !isNull( DSStruct.blob ) ) { DSXMLNode.XMLAttributes[ 'blob' ] = DSStruct.blob; }
@@ -552,7 +547,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.clob ) ) { DSXMLNode.XMLAttributes[ 'clob' ] = DSStruct.clob; }
 			if( !isNull( DSStruct.connectionLimit ) ) { DSXMLNode.XMLAttributes[ 'connectionLimit' ] = DSStruct.connectionLimit; }
 			if( !isNull( DSStruct.connectionTimeout ) ) { DSXMLNode.XMLAttributes[ 'connectionTimeout' ] = DSStruct.connectionTimeout; }
-			if( !isNull( DSStruct.custom ) ) { DSXMLNode.XMLAttributes[ 'custom' ] = DSStruct.custom; }
+			
+			// Always set custom, defaulting if neccessary
+			DSXMLNode.XMLAttributes[ 'custom' ] = buildDatasourceCustom( DSStruct.dbdriver, DSStruct.custom ?: '', DSStruct );
+			
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'dsn' ] = translateDatasourceURLToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.dsn ?: '' );
 			}
@@ -1115,6 +1113,36 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return 'jdbc:h2:{path}{database};MODE={mode}';
 			default :
 				return arguments.JDBCUrl;
+		}
+	
+	}
+	
+	private function buildDatasourceCustom( required string driverName, required string custom='', required struct datasourceData ) {
+		
+		// If a custom set of attributes are already provided, use it!
+		if( custom.trim().len() ) {
+			return custom;
+		}
+		
+		switch( driverName ) {
+			case 'MySQL' :
+				// TODO: make these actually dynamic and stored!
+				return 'useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true';
+			case 'Oracle' :
+				// TODO: make this actually dynamic and stored!
+				return 'drivertype=thin';
+			case 'PostgreSql' :
+				return '';
+			case 'MSSQL' :
+				// Add in datasource if it's there
+				// TODO: make the rest of these actually dynamic and stored!
+				if( !isNull( datasourceData.database ) && datasourceData.database.len() ) {
+					return 'DATABASENAME=#datasourceData.database#&sendStringParametersAsUnicode=true&SelectMethod=direct';
+				} else {
+					return 'sendStringParametersAsUnicode=true&SelectMethod=direct';
+				}				
+			default :
+				return '';
 		}
 	
 	}
