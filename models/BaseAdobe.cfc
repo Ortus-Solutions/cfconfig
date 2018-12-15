@@ -58,6 +58,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	property name='dotNetConfigPath' type='string';
 	property name='dotNetConfigTemplate' type='string';
+
+	property name='loggingConfigPath' type='string';
+	property name='loggingConfigTemplate' type='string';
 	
 	
 	property name='AdminRDSLoginRequiredBoolean' type='boolean' default="false" ;
@@ -85,6 +88,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setLicensePropertiesPath( '/lib/license.properties' );
 		setJettyConfigPath( '/lib/jetty.xml' );
 		setDotNetConfigPath( '/lib/neo-dotnet.xml' );
+		setLoggingConfigPath( '/lib/neo-logging.xml' );
 		
 		// CF 10+ stors as a string.  CF9 will override this.
 		setAdminRDSLoginRequiredBoolean( false );
@@ -119,8 +123,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			throw 'No CF home specified to read from';
 		}
 
-
-
 		readRuntime();
 		readClientStore();
 		readWatch();
@@ -135,6 +137,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readWebsocket();
 		readJetty();
 		readDotNet();
+		readLogging();
 
 		return this;
 	}
@@ -153,7 +156,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				addCustomTagPath( physical = thisConfig[ 4 ][ thisMapping ], primary = "physical", archive = "" );	
 			}
 		}
-
+		
+		if( !isNull( thisConfig[ 1 ] ) ) { setWhitespaceManagement( translateWhitespaceFromAdobe( thisConfig[ 1 ] ) ); }
+		if( !isNull( thisConfig[ 5 ].logging ) ) { setLogCORBACalls( thisConfig[ 5 ].logging ); }
 		setSessionMangement( thisConfig[ 7 ].session.enable );
 		setSessionTimeout( thisConfig[ 7 ].session.timeout );
 		setSessionMaximumTimeout( thisConfig[ 7 ].session.maximum_timeout );
@@ -190,7 +195,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setMaxReportRequests( thisConfig[ 17 ][ 'numSimultaneousReports' ] );
 		setMaxCFThreads( thisConfig[ 16 ][ 'cfthreadpool' ] );
 		setRequestQueueTimeout( thisConfig[ 10 ][ 'queueTimeout' ] );
-
+		
+		if( !isNull( thisConfig[ 10 ][ 'logSlowRequests' ] ) ) { setLogSlowRequestsEnabled( thisConfig[ 10 ][ 'logSlowRequests' ] ); }
+		if( !isNull( thisConfig[ 10 ][ 'slowRequestTimeLimit' ] ) ) { setLogSlowRequestsThreshold( thisConfig[ 10 ][ 'slowRequestTimeLimit' ] ); }
+		
 		setTemplateCacheSize( thisConfig[ 11 ].templateCacheSize );
 		if( thisConfig[ 11 ].trustedCacheEnabled ) {
 			setInspectTemplate( 'never' );
@@ -201,7 +209,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 		setSaveClassFiles(  thisConfig[ 11 ].saveClassFiles  );
 		setComponentCacheEnabled( thisConfig[ 11 ].componentCacheEnabled );
-
+		if( !isNull( thisConfig[ 11 ].enableInternalQueryCache ) ) { setQueryInternalCacheEnabled( thisConfig[ 11 ].enableInternalQueryCache ); }
+		
 		setMailDefaultEncoding( thisConfig[ 12 ].defaultMailCharset );
 
 		setCFFormScriptDirectory( thisConfig[ 14 ].CFFormScriptSrc );
@@ -538,6 +547,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( thisConfig.keystorepassword ) ) { setMailSignKeystorePassword( passwordManager.decryptMailServer( thisConfig.keystorepassword ) ); }
 		if( !isNull( thisConfig.keyAlias ) ) { setMailSignKeyAlias( thisConfig.keyAlias ); }
 		if( !isNull( thisConfig.keypassword ) ) { setMailSignKeyPassword( passwordManager.decryptMailServer( thisConfig.keypassword ) ); }
+		if( !isNull( thisConfig.mailsentloggingenable ) ) { setMailLogEnabled( thisConfig.mailsentloggingenable ); }
+		if( !isNull( thisConfig.severity ) ) { setMailLogSeverity( thisConfig.severity ); }
+
 
 		if( !isNull( thisConfig.server ) && thisConfig.server.len() ) {
 			addMailServer(
@@ -614,7 +626,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				description = ds.description ?: '',
 				custom = ds.urlmap.args ?: ''
 			);
-		}
+		} // end loop over datasource
+				
+		if( !isNull( thisConfig[ 2 ].maxcachecount ) ) { setQueryCacheSize( thisConfig[ 2 ].maxcachecount ) }
 	}
 
 	function readAuth() {
@@ -641,6 +655,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		if( len( propertyFile.get( 'sn', '' ) ) ) { setLicense( propertyFile.get( 'sn', '' ) ); }
 		if( len( propertyFile.get( 'previous_sn', '' ) ) ) { setPreviousLicense( propertyFile.get( 'previous_sn', '' ) ); }
+	}
+
+	private function readLogging() {
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getLoggingConfigPath(), '/' ) );
+
+		if( !isNull( thisConfig[ 2 ].logDirectory ) ) { setLogDirectory( thisConfig[ 2 ].logDirectory ); }
+		// Setting is in KB, but storage is in B. Factor of 1000, not 1024.  Thanks, Adobe.
+		if( !isNull( thisConfig[ 2 ].maxFileSize ) ) { setLogMaxFileSize( thisConfig[ 2 ].maxFileSize/1000 ); }
+		if( !isNull( thisConfig[ 2 ].maxFileBackup ) ) { setLogMaxArchives( thisConfig[ 2 ].maxFileBackup ); }
+	
 	}
 
 
@@ -673,6 +697,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeDatasource();
 		writeAuth();
 		writeLicense();
+		writeLogging();
 		writeSecurity();
 		writeDebug();
 		writescheduler( pauseTasks );
@@ -718,6 +743,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			}			
 		}
 
+		if( !isNull( getWhitespaceManagement() ) ) { thisConfig[ 1 ] = ( translateWhitespaceToAdobe( getWhitespaceManagement() ) ? true : false ); }
+		if( !isNull( getLogCORBACalls() ) ) { thisConfig[ 5 ].logging = ( getLogCORBACalls() ? true : false ); }
 		if( !isNull( getSessionMangement() ) ) { thisConfig[ 7 ].session.enable = ( getSessionMangement() ? true : false ); }
 		if( !isNull( getSessionTimeout() ) ) { thisConfig[ 7 ].session.timeout = getSessionTimeout(); }
 		if( !isNull( getSessionMaximumTimeout() ) ) { thisConfig[ 7 ].session.maximum_timeout = getSessionMaximumTimeout(); }
@@ -769,11 +796,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getMaxReportRequests() ) ) { thisConfig[ 17 ][ 'numSimultaneousReports' ] = getMaxReportRequests()+0; }
 		if( !isNull( getMaxCFThreads() ) ) { thisConfig[ 16 ][ 'cfthreadpool' ] = getMaxCFThreads()+0; }
 		if( !isNull( getRequestQueueTimeout() ) ) { thisConfig[ 10 ][ 'queueTimeout' ] = getRequestQueueTimeout()+0; }
+		if( !isNull( getLogSlowRequestsEnabled() ) ) { thisConfig[ 10 ][ 'logSlowRequests' ] = !!getLogSlowRequestsEnabled(); }
+		if( !isNull( getLogSlowRequestsThreshold() ) ) { thisConfig[ 10 ][ 'slowRequestTimeLimit' ] = getLogSlowRequestsThreshold()+0; }		
+		
 
 		if( !isNull( getTemplateCacheSize() ) ) { thisConfig[ 11 ].templateCacheSize = getTemplateCacheSize()+0; }
 		if( !isNull( getSaveClassFiles() ) ) { thisConfig[ 11 ].saveClassFiles = ( getSaveClassFiles() ? true : false ); }
 		if( !isNull( getComponentCacheEnabled() ) ) { thisConfig[ 11 ].componentCacheEnabled = ( getComponentCacheEnabled() ? true : false ); }
-
+		if( !isNull( getQueryInternalCacheEnabled() ) ) { thisConfig[ 11 ].enableInternalQueryCache = ( getQueryInternalCacheEnabled() ? true : false ); }
+		
 		if( !isNull( getInspectTemplate() ) ) {
 
 			switch( getInspectTemplate() ) {
@@ -1282,6 +1313,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getMailSignKeystorePassword() ) ) { thisConfig.keystorepassword = passwordManager.encryptMailServer( getMailSignKeystorePassword() ); }
 		if( !isNull( getMailSignKeyAlias() ) ) { thisConfig.keyAlias = getMailSignKeyAlias(); }
 		if( !isNull( getMailSignKeyPassword() ) ) { thisConfig.keypassword = passwordManager.encryptMailServer( getMailSignKeyPassword() ); }
+		if( !isNull( getMailLogEnabled() ) ) { thisConfig.mailsentloggingenable = getMailLogEnabled() ? true : false; }
+		if( !isNull( getMailLogSeverity() ) ) { thisConfig.severity = getMailLogSeverity(); }
+
 
 		// Adobe can only store 1 mail server, so ignore any others.
 		if( !isNull( getMailServers() ) && arrayLen( getMailServers() ) ) {
@@ -1299,11 +1333,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeDatasource() {
-
-		if( isNull( getDatasources() ) ) {
-			return;
-		}
-
 		var configFilePath = getCFHomePath().listAppend( getDatasourceConfigPath(), '/' );
 		var passwordManager = getAdobePasswordManager();
 
@@ -1314,123 +1343,129 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		} else {
 			var thisConfig = readWDDXConfigFile( getDatasourceConfigTemplate() );
 		}
-
-		thisConfig[ 1 ] = {};
-
-		var datasources = getDatasources();
-
-		for( var datasource in datasources ) {
-			// For brevity
-			var incomingDS = datasources[ datasource ];
-			thisConfig[ 1 ][ datasource ] = thisConfig[ 1 ][ datasource ] ?: DSNUtil.getDefaultDatasourceStruct( DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ?: 'Other'  ) );
-			var savingDS = thisConfig[ 1 ][ datasource ];
-
-			savingDS.name = datasource;
-
-			// Only use the incoming JDBC URL if it exists and this is a datasource of type other or we don't have a default URL
-			// for this DB type.  This is to prevent a Lucee JDBC URL from getting imported into Adobe.
-			// Instead, the URL will be pulled from  getDefaultDatasourceStruct() above.
-			if( incomingDS.keyExists( 'dsn' ) && ( ( incomingDS.dbdriver ?: 'Other' ) == 'Other' || !savingDS.url.len() ) ) {
-					savingDS.url = incomingDS.dsn;
-			}
-
-			// Invert logic
-			if( !isNull( incomingDS.blob ) ) { savingDS.disable_blob = !incomingDS.blob; }
-			if( !isNull( incomingDS.dbdriver ) ) { savingDS.class = DSNUtil.translateDatasourceClassToAdobe( DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ), incomingDS.class ?: '' ); }
-			// Invert logic
-			if( !isNull( incomingDS.clob ) ) { savingDS.disable_clob = !incomingDS.clob; }
-
-			if( !isNull( incomingDS.connectionLimit ) ) {
-				// If the field is "-1" (unlimited) then remove it entirely from the config
-				if( incomingDS.connectionLimit == -1 ) {
-					structDelete( savingDS.urlmap, 'maxConnections' );
-				} else {
-					savingDS.urlmap.maxConnections = incomingDS.connectionLimit;
+		
+		if( !isNull( getQueryCacheSize() ) ) { thisConfig[ 2 ].maxcachecount = getQueryCacheSize()+0; }
+		
+		if( !isNull( getDatasources() ) ) {
+	
+			thisConfig[ 1 ] = {};
+	
+			var datasources = getDatasources();
+	
+			for( var datasource in datasources ) {
+				// For brevity
+				var incomingDS = datasources[ datasource ];
+				thisConfig[ 1 ][ datasource ] = thisConfig[ 1 ][ datasource ] ?: DSNUtil.getDefaultDatasourceStruct( DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ?: 'Other'  ) );
+				var savingDS = thisConfig[ 1 ][ datasource ];
+	
+				savingDS.name = datasource;
+	
+				// Only use the incoming JDBC URL if it exists and this is a datasource of type other or we don't have a default URL
+				// for this DB type.  This is to prevent a Lucee JDBC URL from getting imported into Adobe.
+				// Instead, the URL will be pulled from  getDefaultDatasourceStruct() above.
+				if( incomingDS.keyExists( 'dsn' ) && ( ( incomingDS.dbdriver ?: 'Other' ) == 'Other' || !savingDS.url.len() ) ) {
+						savingDS.url = incomingDS.dsn;
 				}
-			}
-
-			// Convert from minutes to seconds
-			if( !isNull( incomingDS.connectionTimeout ) ) { savingDS.timeout = incomingDS.connectionTimeout * 60; }
-			if( !isNull( incomingDS.database ) ) {
-				savingDS.urlmap.database = incomingDS.database;
-				savingDS.urlmap.connectionprops.database = incomingDS.database;
-				savingDS.url = savingDS.url.replaceNoCase( '{database}', incomingDS.database );
-			}
-			// Normalize names
-			if( !isNull( incomingDS.dbdriver ) ) { savingDS.driver = DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ); }
-			if( !isNull( incomingDS.host ) ) {
-				savingDS.urlmap.host = incomingDS.host;
-				savingDS.urlmap.connectionprops.host = incomingDS.host;
-				savingDS.url = savingDS.url.replaceNoCase( '{host}', incomingDS.host );
-			}
-			if( !isNull( incomingDS.password ) ) { savingDS.password = passwordManager.encryptDataSource( incomingDS.password ); }
-
-			// Named SQL Server instances have no port, so remove the place holder
-			if( isNull( incomingDS.port ) || trim( incomingDS.port ) == '' ) {
-				savingDS.urlmap.port = '';
-				savingDS.urlmap.connectionprops.port = '';
-				savingDS.url = savingDS.url.replaceNoCase( ':{port}', '' );
-			} else {
-				savingDS.urlmap.port = incomingDS.port;
-				savingDS.urlmap.connectionprops.port = incomingDS.port;
-				savingDS.url = savingDS.url.replaceNoCase( '{port}', incomingDS.port );
-			}
-
-			if( !isNull( incomingDS.username ) ) { savingDS.username = incomingDS.username; }
-			if( !isNull( incomingDS.validate ) ) { savingDS.validateConnection = !!incomingDS.validate; }
-			if( !isNull( incomingDS.SID ) ) {
-				savingDS.urlmap.SID = incomingDS.SID;
-				savingDS.urlmap.connectionprops.SID = incomingDS.SID;
-				savingDS.url = savingDS.url.replaceNoCase( '{SID}', incomingDS.SID );
-			} else {
-				// I think SID may be optional for Oracle, so completely remove if there isn't one.
-				// This shouldn't affect other datasources at all
-				savingDS.url = savingDS.url.replaceNoCase( 'SID={SID};', '' );
-			}
-			// All the datasource templates default to true for all permissions, so a new datasource will have all permissions turned on by default.
-			// When saving an existing datasource, default to whatever is there.
-			savingDS.select = !!(incomingDS.allowSelect ?: savingDS.select);
-			savingDS.delete = !!(incomingDS.allowDelete ?: savingDS.delete);
-			savingDS.update = !!(incomingDS.allowUpdate ?: savingDS.update);
-			savingDS.insert = !!(incomingDS.allowInsert ?: savingDS.insert);
-			savingDS.create = !!(incomingDS.allowCreate ?: savingDS.create);
-			savingDS.grant = !!(incomingDS.allowGrant ?: savingDS.grant);
-			savingDS.revoke = !!(incomingDS.allowRevoke ?: savingDS.revoke);
-			savingDS.drop = !!(incomingDS.allowDrop ?: savingDS.drop);
-			savingDS.alter = !!(incomingDS.allowAlter ?: savingDS.alter);
-			savingDS.storedproc = !!(incomingDS.allowStoredProcs ?: savingDS.storedproc);
-
-			if( !isNull( incomingDS.maintainConnections ) ) { savingDS.pooling = !!incomingDS.maintainConnections; }
-			if( !isNull( incomingDS.maxPooledStatements ) ) {
-				savingDS.urlmap.maxPooledStatements = incomingDS.maxPooledStatements+0;
-				savingDS.urlmap.connectionprops.maxPooledStatements = incomingDS.maxPooledStatements+0;
-			}
-			if( !isNull( incomingDS.connectionTimeoutInterval ) ) { savingDS.interval = incomingDS.connectionTimeoutInterval+0; }
-			if( !isNull( incomingDS.queryTimeout ) ) {
-				savingDS.urlmap.qTimeout = incomingDS.queryTimeout+0;
-				savingDS.urlmap.connectionprops.qTimeout = incomingDS.queryTimeout+0;
-			}
-			if( !isNull( incomingDS.logActivity ) ) { savingDS.urlmap.useSpyLog = !!incomingDS.logActivity; }
-			if( !isNull( incomingDS.logActivityFile ) ) { savingDS.urlmap.spyLogFile = incomingDS.logActivityFile; }
-			if( !isNull( incomingDS.disableConnections ) ) { savingDS.disable = !!incomingDS.disableConnections; }
-			if( !isNull( incomingDS.loginTimeout ) ) { savingDS.login_timeout = incomingDS.loginTimeout+0; }
-			if( !isNull( incomingDS.clobBuffer ) ) { savingDS.buffer = incomingDS.clobBuffer+0; }
-			if( !isNull( incomingDS.blobBuffer ) ) { savingDS.blob_buffer = incomingDS.blobBuffer+0; }
-			if( !isNull( incomingDS.disableAutogeneratedKeyRetrieval ) ) { savingDS.disable_autogenkeys = !!incomingDS.disableAutogeneratedKeyRetrieval; }
-			if( !isNull( incomingDS.validationQuery ) ) { savingDS.validationQuery = incomingDS.validationQuery; }
-			if( !isNull( incomingDS.linkedServers ) ) { savingDS.urlmap.supportLinks = !!incomingDS.linkedServers; }
-			if( !isNull( incomingDS.clientHostname ) ) { savingDS.clientinfo.ClientHostName = !!incomingDS.clientHostname; }
-			if( !isNull( incomingDS.clientUsername ) ) { savingDS.clientinfo.ClientUser = !!incomingDS.clientUsername; }
-			if( !isNull( incomingDS.clientApplicationName ) ) { savingDS.clientinfo.ApplicationName = !!incomingDS.clientApplicationName; }
-			if( !isNull( incomingDS.clientApplicationNamePrefix ) ) { savingDS.clientinfo.ApplicationNamePrefix = incomingDS.clientApplicationNamePrefix; }
-			if( !isNull( incomingDS.description ) ) { savingDS.description = incomingDS.description; }
-			if( !isNull( incomingDS.custom ) ) {
-				savingDS.urlmap.args = incomingDS.custom;
-				// Also save to savingDS.urlmap.connectionProps
-				// need to parse values and break out brad=wood as savingDS.urlmap.connectionProps.brad=wood
-			}
-
-		}
+	
+				// Invert logic
+				if( !isNull( incomingDS.blob ) ) { savingDS.disable_blob = !incomingDS.blob; }
+				if( !isNull( incomingDS.dbdriver ) ) { savingDS.class = DSNUtil.translateDatasourceClassToAdobe( DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ), incomingDS.class ?: '' ); }
+				// Invert logic
+				if( !isNull( incomingDS.clob ) ) { savingDS.disable_clob = !incomingDS.clob; }
+	
+				if( !isNull( incomingDS.connectionLimit ) ) {
+					// If the field is "-1" (unlimited) then remove it entirely from the config
+					if( incomingDS.connectionLimit == -1 ) {
+						structDelete( savingDS.urlmap, 'maxConnections' );
+					} else {
+						savingDS.urlmap.maxConnections = incomingDS.connectionLimit;
+					}
+				}
+	
+				// Convert from minutes to seconds
+				if( !isNull( incomingDS.connectionTimeout ) ) { savingDS.timeout = incomingDS.connectionTimeout * 60; }
+				if( !isNull( incomingDS.database ) ) {
+					savingDS.urlmap.database = incomingDS.database;
+					savingDS.urlmap.connectionprops.database = incomingDS.database;
+					savingDS.url = savingDS.url.replaceNoCase( '{database}', incomingDS.database );
+				}
+				// Normalize names
+				if( !isNull( incomingDS.dbdriver ) ) { savingDS.driver = DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ); }
+				if( !isNull( incomingDS.host ) ) {
+					savingDS.urlmap.host = incomingDS.host;
+					savingDS.urlmap.connectionprops.host = incomingDS.host;
+					savingDS.url = savingDS.url.replaceNoCase( '{host}', incomingDS.host );
+				}
+				if( !isNull( incomingDS.password ) ) { savingDS.password = passwordManager.encryptDataSource( incomingDS.password ); }
+	
+				// Named SQL Server instances have no port, so remove the place holder
+				if( isNull( incomingDS.port ) || trim( incomingDS.port ) == '' ) {
+					savingDS.urlmap.port = '';
+					savingDS.urlmap.connectionprops.port = '';
+					savingDS.url = savingDS.url.replaceNoCase( ':{port}', '' );
+				} else {
+					savingDS.urlmap.port = incomingDS.port;
+					savingDS.urlmap.connectionprops.port = incomingDS.port;
+					savingDS.url = savingDS.url.replaceNoCase( '{port}', incomingDS.port );
+				}
+	
+				if( !isNull( incomingDS.username ) ) { savingDS.username = incomingDS.username; }
+				if( !isNull( incomingDS.validate ) ) { savingDS.validateConnection = !!incomingDS.validate; }
+				if( !isNull( incomingDS.SID ) ) {
+					savingDS.urlmap.SID = incomingDS.SID;
+					savingDS.urlmap.connectionprops.SID = incomingDS.SID;
+					savingDS.url = savingDS.url.replaceNoCase( '{SID}', incomingDS.SID );
+				} else {
+					// I think SID may be optional for Oracle, so completely remove if there isn't one.
+					// This shouldn't affect other datasources at all
+					savingDS.url = savingDS.url.replaceNoCase( 'SID={SID};', '' );
+				}
+				// All the datasource templates default to true for all permissions, so a new datasource will have all permissions turned on by default.
+				// When saving an existing datasource, default to whatever is there.
+				savingDS.select = !!(incomingDS.allowSelect ?: savingDS.select);
+				savingDS.delete = !!(incomingDS.allowDelete ?: savingDS.delete);
+				savingDS.update = !!(incomingDS.allowUpdate ?: savingDS.update);
+				savingDS.insert = !!(incomingDS.allowInsert ?: savingDS.insert);
+				savingDS.create = !!(incomingDS.allowCreate ?: savingDS.create);
+				savingDS.grant = !!(incomingDS.allowGrant ?: savingDS.grant);
+				savingDS.revoke = !!(incomingDS.allowRevoke ?: savingDS.revoke);
+				savingDS.drop = !!(incomingDS.allowDrop ?: savingDS.drop);
+				savingDS.alter = !!(incomingDS.allowAlter ?: savingDS.alter);
+				savingDS.storedproc = !!(incomingDS.allowStoredProcs ?: savingDS.storedproc);
+	
+				if( !isNull( incomingDS.maintainConnections ) ) { savingDS.pooling = !!incomingDS.maintainConnections; }
+				if( !isNull( incomingDS.maxPooledStatements ) ) {
+					savingDS.urlmap.maxPooledStatements = incomingDS.maxPooledStatements+0;
+					savingDS.urlmap.connectionprops.maxPooledStatements = incomingDS.maxPooledStatements+0;
+				}
+				if( !isNull( incomingDS.connectionTimeoutInterval ) ) { savingDS.interval = incomingDS.connectionTimeoutInterval+0; }
+				if( !isNull( incomingDS.queryTimeout ) ) {
+					savingDS.urlmap.qTimeout = incomingDS.queryTimeout+0;
+					savingDS.urlmap.connectionprops.qTimeout = incomingDS.queryTimeout+0;
+				}
+				if( !isNull( incomingDS.logActivity ) ) { savingDS.urlmap.useSpyLog = !!incomingDS.logActivity; }
+				if( !isNull( incomingDS.logActivityFile ) ) { savingDS.urlmap.spyLogFile = incomingDS.logActivityFile; }
+				if( !isNull( incomingDS.disableConnections ) ) { savingDS.disable = !!incomingDS.disableConnections; }
+				if( !isNull( incomingDS.loginTimeout ) ) { savingDS.login_timeout = incomingDS.loginTimeout+0; }
+				if( !isNull( incomingDS.clobBuffer ) ) { savingDS.buffer = incomingDS.clobBuffer+0; }
+				if( !isNull( incomingDS.blobBuffer ) ) { savingDS.blob_buffer = incomingDS.blobBuffer+0; }
+				if( !isNull( incomingDS.disableAutogeneratedKeyRetrieval ) ) { savingDS.disable_autogenkeys = !!incomingDS.disableAutogeneratedKeyRetrieval; }
+				if( !isNull( incomingDS.validationQuery ) ) { savingDS.validationQuery = incomingDS.validationQuery; }
+				if( !isNull( incomingDS.linkedServers ) ) { savingDS.urlmap.supportLinks = !!incomingDS.linkedServers; }
+				if( !isNull( incomingDS.clientHostname ) ) { savingDS.clientinfo.ClientHostName = !!incomingDS.clientHostname; }
+				if( !isNull( incomingDS.clientUsername ) ) { savingDS.clientinfo.ClientUser = !!incomingDS.clientUsername; }
+				if( !isNull( incomingDS.clientApplicationName ) ) { savingDS.clientinfo.ApplicationName = !!incomingDS.clientApplicationName; }
+				if( !isNull( incomingDS.clientApplicationNamePrefix ) ) { savingDS.clientinfo.ApplicationNamePrefix = incomingDS.clientApplicationNamePrefix; }
+				if( !isNull( incomingDS.description ) ) { savingDS.description = incomingDS.description; }
+				if( !isNull( incomingDS.custom ) ) {
+					savingDS.urlmap.args = incomingDS.custom;
+					// Also save to savingDS.urlmap.connectionProps
+					// need to parse values and break out brad=wood as savingDS.urlmap.connectionProps.brad=wood
+				}
+	
+			} // end loop iver datasources
+			
+		} // end if datasources is null
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
 	}
@@ -1492,6 +1527,26 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getPreviousLicense() ) ) { propertyFile[ 'previous_sn' ] = getPreviousLicense(); }
 
 		propertyFile.store( configFilePath );
+	}
+
+	private function writeLogging() {
+		var configFilePath = getCFHomePath().listAppend( getLoggingConfigPath(), '/' );
+
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getLoggingConfigTemplate() );
+		}
+
+		if( !isNull( getLogDirectory() ) ) { thisConfig[ 2 ].logDirectory = getLogDirectory(); }
+		// Setting is in KB, but storage is in B. Factor of 1000, not 1024.  Thanks, Adobe.
+		if( !isNull( getLogMaxFileSize() ) ) { thisConfig[ 2 ].maxFileSize = getLogMaxFileSize()*1000; }
+		if( !isNull( getLogMaxArchives() ) ) { thisConfig[ 2 ].maxFileBackup = getLogMaxArchives(); }
+
+		writeWDDXConfigFile( thisConfig, configFilePath );
+
 	}
 
 	private function ensureSeedProperties( required string seedPropertiesPath ) {
@@ -1669,6 +1724,37 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		thisConfigRaw = thisConfigRaw.replaceNoCase( '<struct>', '<struct type="coldfusion.server.ConfigMap">', 'all' );
 
 		writeXMLConfigFile( thisConfigRaw, configFilePath );
+	}
+	
+	private function translateWhitespaceToAdobe( required string whitespaceManagement ) {
+		
+		switch( whitespaceManagement ) {
+			case 'off' :
+			case 'regular' :
+				return false;
+			case 'simple' :
+			case 'white-space' :
+				return true;
+			case 'smart' :
+			case 'white-space-pref' :
+				return true;
+			default :
+				return false;
+		}
+
+	}
+	
+	private function translateWhitespaceFromAdobe( required string whitespaceManagement ) {
+		
+		switch( whitespaceManagement ) {
+			case false :
+				return 'off';
+			case true :
+				return 'smart';
+			default :
+				return 'off';
+		}
+	
 	}
 
 }

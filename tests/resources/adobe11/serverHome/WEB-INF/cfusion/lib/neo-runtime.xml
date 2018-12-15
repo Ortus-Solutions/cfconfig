@@ -19,9 +19,9 @@
         <var name="/WEB-INF/customtags10000">
           <string>#server.coldfusion.rootdir#/CustomTags</string>
         </var>
-	<var name="/WEB-INF/customtags294820192">
-	  <string>/tmp/manufactured/path</string>
-	</var>
+        <var name="/WEB-INF/customtags100000">
+          <string>/tmp/manufactured/path</string>
+        </var>
       </struct>
       <struct type="coldfusion.server.ConfigMap">
         <var name="useorb">
@@ -233,7 +233,7 @@
           <string/>
         </var>
         <var name="RmiSSLKeystorePassword">
-          <string>Jpb3u8LkDBX+PLe74hX4PQ/4oVuff2qgzYjcmiCxH1c=</string>
+          <string>Ogbvne/7VbW4R21Y1ZAM+S5YFT/JkplbxnrMW1rOTsY=</string>
         </var>
         <var name="dumpunnamedappscope">
           <boolean value="false"/>

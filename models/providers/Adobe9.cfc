@@ -31,6 +31,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setLicensePropertiesTemplate( expandPath( '/cfconfig-services/resources/adobe9/license.properties' ) );
 		setJettyConfigTemplate( expandPath( '/cfconfig-services/resources/adobe9/jetty.xml' ) );
 		setDotNetConfigTemplate( expandPath( '/cfconfig-services/resources/adobe9/neo-dotnet.xml' ) );
+		setLoggingConfigTemplate( expandPath( '/cfconfig-services/resources/adobe9/neo-logging.xml' ) );
 		
 		// CF9 stores this as a boolean whereas CF10+ is a string
 		setAdminRDSLoginRequiredBoolean( true );

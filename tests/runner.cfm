@@ -17,5 +17,13 @@ Author: Brad Wood
 <cfparam name="url.propertiesFilename" 	default="TEST.properties">
 <cfparam name="url.propertiesSummary" 	default="false" type="boolean">
 
+<!--- Code Coverage requires FusionReactor --->
+<cfparam name="url.coverageEnabled"					default="true">
+<cfparam name="url.coveragePathToCapture"			default="#expandPath( '/root/cfconfig/models' )#">
+<cfparam name="url.coverageWhitelist"				default="">
+<cfparam name="url.coverageBlacklist"				default="">
+<cfparam name="url.coverageBrowserOutputDir"		default="#expandPath( '/tests/results/coverageReport' )#">
+<!---<cfparam name="url.coverageSonarQubeXMLOutputPath"	default="#expandPath( '/tests/results/SonarQubeCoverage.xml' )#">--->
+
 <!--- Include the TestBox HTML Runner --->
 <cfinclude template="/testbox/system/runners/HTMLRunner.cfm" >

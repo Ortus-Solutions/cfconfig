@@ -8,7 +8,7 @@ Path placeholders:
 	{system-directory}: path to thesystem directory
 	{web-context-hash}: hash of the web context
 
---><cfRailoConfiguration check-for-changes="true" salt="4251D0AF-B76B-4D9E-91A9568175BFCBD6" version="4.2">
+--><cfRailoConfiguration check-for-changes="true" default-hspw="eb93137093b23f3230657d1f8cad7bfe0c00975805fb017f608448bbda3f33a0" hspw="eb93137093b23f3230657d1f8cad7bfe0c00975805fb017f608448bbda3f33a0" salt="4BD328D9-9471-49FE-BFCC96C8C1949BEC" version="4.2"><cfabort/>
 
 	<!--
 	system:
@@ -35,7 +35,7 @@ Path placeholders:
 <!--	 - http://sourceforge.net 																		-->
 <!--	or ask your database distributor 																-->
 	<data-sources psq="false">
-	</data-sources>
+	<data-source allow="511" blob="false" class="oracle.jdbc.driver.OracleDriver" clob="false" connectionLimit="-1" connectionTimeout="20" database="" dbdriver="Oracle" dsn="jdbc:oracle:{drivertype}:@{host}:{port}:{database}" host="Server" name="oracle" password="encrypted:1ed433e50484dbcd7d868abda108700915c169c98cb2d0497476fe3012095efc" port="1521" username="User name" validate="false"/><data-source allow="511" blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" database="" dbdriver="Other" dsn="jdbc:mysql://localhost:3306/test?tinyInt1isBit=false&amp;" host="" name="other" password="encrypted:8ea0dc9d89dfe23712b5f8edc027af82451242f9287209e22b1c6aa142557646" port="" username="User name" validate="false"/><data-source allow="511" blob="false" class="org.postgresql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" database="Database" dbdriver="PostgreSql" dsn="jdbc:postgresql://{host}:{port}/{database}" host="Server" name="postgres" password="encrypted:55a0d2d4a2eaaae5e10c0d845c4ccefdb511a273e1639db22c5c443f9f27790b" port="5432" username="User name" validate="false"/><data-source allow="511" blob="false" class="com.microsoft.jdbc.sqlserver.SQLServerDriver" clob="false" connectionLimit="-1" connectionTimeout="20" custom="DATABASENAME=test&amp;sendStringParametersAsUnicode=true&amp;SelectMethod=direct" database="test" dbdriver="MSSQL" dsn="jdbc:sqlserver://{host}:{port}" host="localhost" name="sqlserver" password="encrypted:6db8c6a7f6328da7eb2f410589687150be9d1c143ae76e30b81df9b3d569d1ba" port="1433" username="user" validate="false"/><data-source allow="511" blob="false" class="net.sourceforge.jtds.jdbc.Driver" clob="false" connectionTimeout="20" database="test" dbdriver="JTDS" dsn="jdbc:jtds:sqlserver://{host}:{port}/{database}" host="localhost" name="sqlserverJTDS" password="encrypted:a5de8f5c1996751d5dba27a1538a688418914251b90e6f324e69308344f53db4" port="1433" username="user"/><data-source allow="511" blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="87" connectionTimeout="3" database="test" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" name="test" password="encrypted:36661575d8a5f7c5d237e8832f6ff6eb1e7d80fc9f9152e773146713b03c4598" port="3306" username="test" validate="false"/><data-source allow="511" blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" database="test" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" name="thisisforreal" password="encrypted:182e61e9bf697f56f8919c3697e63dc5" port="3306" username="root" validate="false"/></data-sources>
 
 	<!--
 		deploy-directory - directory where java classes will be deployed
@@ -148,10 +148,10 @@ Path placeholders:
 		client-max-age
 			the max age of the client scope in days
 	-->
-	<scope applicationtimeout="1,0,0,0" cascade-to-resultset="yes" cascading="standard" client-directory-max-size="10mb" clientmanagement="no" clienttimeout="90,0,0,0" merge-url-form="no" sessionmanagement="yes" sessiontimeout="0,0,30,0" setclientcookies="yes" setdomaincookies="no"/>
+	<scope applicationtimeout="2,0,0,0" cascade-to-resultset="true" cascading="standard" cgi-readonly="false" client-directory-max-size="10mb" clientStorage="cookie" clientmanagement="false" clienttimeout="90,0,0,0" local-mode="classic" merge-url-form="false" session-type="j2ee" sessionmanagement="true" sessionstorage="memory" sessiontimeout="0,0,20,0" setclientcookies="true" setdomaincookies="no"/>
 		
 	<mail spool-enable="yes" spool-interval="5" timeout="30">
-	</mail>
+	<server idle="10000" life="60000" password="encrypted:e5908b3b09afa91161cd41b4d4b02d809667f36ef6169806533c8321d7329beb" port="587" smtp="smptout.secureserver.net" ssl="false" tls="false" username="brad@bradwood.com"/><server password="encrypted:1fde67c4e7193b2b5394ca0beee6caf1985d5f3a8a75d7b065815da8d484f5ab" port="25" smtp="tests" ssl="false" username="user"/></mail>
 	
 	<mappings>
 	<!--
@@ -181,7 +181,7 @@ Path placeholders:
 		
 		
 
-	<mapping archive="{railo-config}/context/railo-context.ra" physical="{railo-config}/context/" primary="physical" readOnly="yes" virtual="/railo-context/"/><mapping archive="" physical="{railo-server}/context/" primary="physical" readOnly="yes" virtual="/railo-server-context/"/></mappings>	
+	<mapping inspectTemplate="once" physical="D:\" primary="physical" virtual="/bar"/><mapping inspectTemplate="once" physical="C:\" primary="physical" virtual="/fooi"/></mappings>	
 	
 	<custom-tag>
 		<mapping inspect-template="never" physical="{railo-config}/customtags/"/>
@@ -214,7 +214,7 @@ Path placeholders:
 		timeserver: [example: swisstime.ethz.ch] default:local time
 			dns of a ntp time server
 	-->
-	<regional timeserver="pool.ntp.org"/>
+	<regional locale="en_US" timeserver="pool.ntp.org" timezone="America/Chicago" use-timeserver="true"/>
 	
 	<!--
 	orm configuration:
@@ -250,7 +250,7 @@ Path placeholders:
 			current:		search only in current directory
 			curr2root:	search the App... from current directory up to root. 
 	-->
-	<application listener-mode="curr2root" listener-type="mixed" requesttimeout="0,0,0,50"/>
+	<application allow-url-requesttimeout="true" listener-mode="curr2root" listener-type="classic" requesttimeout="0,0,0,60" script-protect="FORM,URL,COOKIE,CGI" type-checking="false"/>
 	
 	<update location="http://www.getrailo.org" type="manual"/>
 	<!--
@@ -333,6 +333,6 @@ for every argument defined railo tries to call a matching setter method
 		
 		
 		
-	<logger appender="resource" appender-arguments="path:{railo-config}/logs/scheduler.log" layout="classic" name="scheduler"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/application.log" layout="classic" name="application"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/requesttimeout.log" layout="classic" name="requesttimeout"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/exception.log" layout="classic" name="exception"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/mapping.log" layout="classic" name="mapping"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/orm.log" layout="classic" name="orm"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/deploy.log" layout="classic" name="deploy"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/trace.log" layout="classic" name="trace"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/memory.log" layout="classic" name="memory"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/gateway.log" layout="classic" name="gateway"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/search.log" layout="classic" name="search"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/rest.log" layout="classic" name="rest"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/thread.log" layout="classic" name="thread"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/scope.log" layout="classic" name="scope"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/remoteclient.log" layout="classic" level="info" name="remoteclient"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/mail.log" layout="classic" name="mail"/></logging>
+	<logger appender="resource" appender-arguments="path:{railo-config}/logs/scheduler.log" layout="classic" name="scheduler"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/application.log" layout="classic" name="application"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/requesttimeout.log" layout="classic" name="requesttimeout"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/exception.log" layout="classic" name="exception"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/mapping.log" layout="classic" name="mapping"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/orm.log" layout="classic" name="orm"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/deploy.log" layout="classic" name="deploy"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/trace.log" layout="classic" name="trace"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/memory.log" layout="classic" name="memory"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/gateway.log" layout="classic" name="gateway"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/rest.log" layout="classic" name="rest"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/search.log" layout="classic" name="search"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/thread.log" layout="classic" name="thread"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/scope.log" layout="classic" name="scope"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/remoteclient.log" layout="classic" level="info" name="remoteclient"/><logger appender="resource" appender-arguments="path:{railo-config}/logs/mail.log" layout="classic" name="mail"/></logging>
 	
-<compiler/><charset/><java/><setting/><cache/></cfRailoConfiguration>
+<compiler dot-notation-upper-case="true" full-null-support="false" suppress-ws-before-arg="true"/><charset resource-charset="windows-1252" template-charset="windows-1252" web-charset="UTF-8"/><java inspect-template="once"/><setting allow-compression="true" buffer-output="true" cfml-writer="regular" suppress-content="true"/><error status-code="true" template-404="/railo-context/templates/error/error-public.cfm" template-500="/railo-context/templates/error/error-public.cfm"/><cache><connection class="railo.runtime.cache.ram.RamCache" name="testcache"/></cache></cfRailoConfiguration>

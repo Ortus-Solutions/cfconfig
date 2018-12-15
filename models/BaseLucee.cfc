@@ -295,7 +295,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var config = settings.XMLAttributes;
 				
 		if( !isNull( config[ 'allow-compression' ] ) ) { setCompression( config[ 'allow-compression' ] ); }
-		if( !isNull( config[ 'cfml-writer' ] ) ) { setWhitespaceManagement( config[ 'cfml-writer' ] ); }
+		if( !isNull( config[ 'cfml-writer' ] ) ) { setWhitespaceManagement( translateWhitespaceFromLucee( config[ 'cfml-writer' ] ) ); }
 		if( !isNull( config[ 'buffer-output' ] ) ) { setBufferTagBodyOutput( config[ 'buffer-output' ] ); }
 		if( !isNull( config[ 'suppress-content' ] ) ) { setSupressContentForCFCRemoting( config[ 'suppress-content' ] ); }			
 	}
@@ -939,7 +939,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var config = setting.XMLAttributes;
 		
 		if( !isNull( getCompression() ) ) { config[ 'allow-compression' ] = getCompression(); }
-		if( !isNull( getWhitespaceManagement() ) ) { config[ 'cfml-writer' ] = getWhitespaceManagement(); }
+		if( !isNull( getWhitespaceManagement() ) ) { config[ 'cfml-writer' ] = translateWhitespaceToLucee( getWhitespaceManagement() ); }
 		if( !isNull( getBufferTagBodyOutput() ) ) { config[ 'buffer-output' ] = getBufferTagBodyOutput(); }
 		if( !isNull( getSupressContentForCFCRemoting() ) ) { config[ 'suppress-content' ] = getSupressContentForCFCRemoting(); }
 
@@ -1241,6 +1241,39 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	    // if( !bitMaskRead( bitMask, 9, 1 ) ) { ds.allowStoredproc = false; }
 	    
 	    return ds;		    
+	}
+	
+	private function translateWhitespaceToLucee( required string whitespaceManagement ) {
+		
+		switch( whitespaceManagement ) {
+			case 'off' :
+			case 'regular' :
+				return 'regular';
+			case 'simple' :
+			case 'white-space' :
+				return 'white-space';
+			case 'smart' :
+			case 'white-space-pref' :
+				return 'white-space-pref';
+			default :
+				return 'regular';
+		}
+
+	}
+	
+	private function translateWhitespaceFromLucee( required string whitespaceManagement ) {
+		
+		switch( whitespaceManagement ) {
+			case 'regular' :
+				return 'off';
+			case 'white-space' :
+				return 'simple';
+			case 'white-space-pref' :
+				return 'smart';
+			default :
+				return 'off';
+		}
+	
 	}
 	
 }

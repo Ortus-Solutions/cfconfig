@@ -43,6 +43,11 @@ component accessors="true" {
 	property name='inspectTemplate' type='string' _isCFConfig=true;
 	// Number of templates to cache
 	property name='templateCacheSize' type='numeric' _isCFConfig=true;
+	// Number of queries to keep in cache
+	property name='queryCacheSize' type='numeric' _isCFConfig=true;
+	// true/false When checked, at server level internal cache is used to store cached queries. By default, cached queries are stored in QUERY region supported by Ehcache. 
+	// Adobe-only
+	property name='QueryInternalCacheEnabled' type='boolean' _isCFConfig=true;
 	// True/false
 	property name='componentCacheEnabled' type='boolean' _isCFConfig=true;
 	// True/false
@@ -151,7 +156,9 @@ component accessors="true" {
 	property name='useUUIDForCFToken' type='boolean' _isCFConfig=true;
 	// True/false
 	property name='requestTimeoutInURL' type='boolean' _isCFConfig=true;
-	// One of the strings "regular", "white-space", "white-space-pref"
+	// One of the strings "off", "simple", "smart"
+	// for Lucee backwards compat, you can use "regular", "white-space", "white-space-pref" which map to the above options in the same order.
+	// Adobe only has on and off so "simple" and "smart" both just map to the fetaure being on.
 	property name='whitespaceManagement' type='string' _isCFConfig=true;
 	// True/false
 	property name='compression' type='boolean' _isCFConfig=true;
@@ -194,6 +201,11 @@ component accessors="true" {
 	property name='mailSignKeyAlias' type='string' _isCFConfig=true;
 	// Password with which the private key is stored.
 	property name='mailSignKeyPassword' type='string' _isCFConfig=true;
+	// true/false Log all mail messages sent by ColdFusion.  Select this check box to save the To, From, and Subject fields of messages to a log file.
+	property name='mailLogEnabled' type='boolean' _isCFConfig=true;
+	// Error Log Severity. Select the type of SMTP-related error messages to log.
+	// One of the strings "debug", "information", "warning", "error" 
+	property name='mailLogSeverity' type='string' _isCFConfig=true;
 
 
 
@@ -384,6 +396,19 @@ component accessors="true" {
 	property name='dotNetInstallDir' type='string' _isCFConfig=true;
 	// Protocol for the .NET services.  Possible options: TCP, ??
 	property name='dotNetProtocol' type='string' _isCFConfig=true;
+	
+	// Log directory
+	property name='logDirectory' type='string' _isCFConfig=true;
+	// Maximum file size  (In KB)
+	property name='logMaxFileSize' type='numeric' _isCFConfig=true;
+	// Maximum number of archives
+	property name='logMaxArchives' type='numeric' _isCFConfig=true;
+	// Log slow pages taking longer than 
+	property name='logSlowRequestsEnabled' type='boolean' _isCFConfig=true;
+	// Number of seconds threshold for logging slow pages 
+	property name='logSlowRequestsThreshold' type='numeric' _isCFConfig=true;
+	// Log all CORBA calls 
+	property name='logCORBACalls' type='boolean' _isCFConfig=true;
 	
 	// TODO:
 	//property name='externalizeStrings' type='string' _isCFConfig=true;

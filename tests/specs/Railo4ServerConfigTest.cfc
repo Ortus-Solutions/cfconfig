@@ -51,10 +51,17 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				expect( fileExists( '/tests/resources/tmp/Railo4ServerConfig.json' ) ).toBeTrue();
 
 				var outfile = deserializeJSON(FileRead('/tests/resources/tmp/Railo4ServerConfig.json'));
-
 				
-				expect(outfile.CFMappings['/railo-context/'].PHYSICAL).ToBe( "{railo-config}/context/");
-	
+			});
+			it( "can import from JSON", function(){
+				var configService = getInstance( 'CFConfigService@cfconfig-services' );
+					configService.transfer(
+					from		= '/tests/resources/.CFConfig.json',
+					to			= '/tests/resources/railo4/serverHome/railo-server/',
+					fromFormat	= 'JSON',
+					toFormat	= 'railoServer',
+					toVersion	= '4'
+				 );	
 				
 			});
 		

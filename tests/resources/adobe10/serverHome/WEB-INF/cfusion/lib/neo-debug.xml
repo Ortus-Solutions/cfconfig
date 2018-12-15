@@ -1,1 +1,124 @@
-<wddxPacket version='1.0'><header/><data><array length='3'><struct type='coldfusion.server.ConfigMap'><var name='template_highlight_minimum'><number>250.0</number></var><var name='clientvar'><boolean value='true'/></var><var name='storedprocedure'><boolean value='true'/></var><var name='executiontime'><boolean value='true'/></var><var name='exception'><boolean value='true'/></var><var name='template_mode'><string>summary</string></var><var name='general'><boolean value='true'/></var><var name='ajax_enabled'><boolean value='false'/></var><var name='requestvar'><boolean value='false'/></var><var name='template'><boolean value='false'/></var><var name='applicationvar'><boolean value='false'/></var><var name='debug_template'><string>/WEB-INF/debug/classic.cfm</string></var><var name='cgivar'><boolean value='true'/></var><var name='sqlquery'><boolean value='true'/></var><var name='FLASHFORMCOMPILEERRORS'><boolean value='false'/></var><var name='lockrelease'><boolean value='false'/></var><var name='trace'><boolean value='true'/></var><var name='lockcreate'><boolean value='false'/></var><var name='TIMER'><boolean value='false'/></var><var name='sessionvar'><boolean value='true'/></var><var name='formvar'><boolean value='true'/></var><var name='http'><boolean value='true'/></var><var name='urlvar'><boolean value='true'/></var><var name='xml_template'><string>/WEB-INF/debug/dreamweaver.cfm</string></var><var name='lockwarning'><boolean value='false'/></var><var name='cookievar'><boolean value='true'/></var><var name='database'><boolean value='true'/></var><var name='robust_enabled'><boolean value='true'/></var><var name='servervar'><boolean value='false'/></var><var name='objectquery'><boolean value='true'/></var><var name='variables'><boolean value='true'/></var><var name='enabled'><boolean value='false'/></var><var name='lockacquire'><boolean value='false'/></var></struct><struct type='coldfusion.server.ConfigMap'><var name='iplist'><string>127.0.0.1,0:0:0:0:0:0:0:1</string></var></struct><struct type='coldfusion.server.ConfigMap'><var name='LINE_DEBUGGER_PORT'><number>5005.0</number></var><var name='LINE_DEBUGGER_ENABLED'><boolean value='false'/></var><var name='MAX_DEBUG_SESSIONS'><number>5.0</number></var></struct></array></data></wddxPacket>
+<?xml version="1.0" encoding="utf-8"?><wddxPacket version="1.0">
+  <header/>
+  <data>
+    <array length="3">
+      <struct type="coldfusion.server.ConfigMap">
+        <var name="xml_template">
+          <string>/WEB-INF/debug/dreamweaver.cfm</string>
+        </var>
+        <var name="ajax_enabled">
+          <boolean value="false"/>
+        </var>
+        <var name="storedprocedure">
+          <boolean value="true"/>
+        </var>
+        <var name="exception">
+          <boolean value="true"/>
+        </var>
+        <var name="applicationvar">
+          <boolean value="false"/>
+        </var>
+        <var name="formvar">
+          <boolean value="true"/>
+        </var>
+        <var name="sessionvar">
+          <boolean value="true"/>
+        </var>
+        <var name="urlvar">
+          <boolean value="true"/>
+        </var>
+        <var name="debug_template">
+          <string>/WEB-INF/debug/classic.cfm</string>
+        </var>
+        <var name="servervar">
+          <boolean value="false"/>
+        </var>
+        <var name="cgivar">
+          <boolean value="true"/>
+        </var>
+        <var name="FLASHFORMCOMPILEERRORS">
+          <boolean value="false"/>
+        </var>
+        <var name="lockrelease">
+          <boolean value="false"/>
+        </var>
+        <var name="template">
+          <boolean value="false"/>
+        </var>
+        <var name="requestvar">
+          <boolean value="false"/>
+        </var>
+        <var name="lockwarning">
+          <boolean value="false"/>
+        </var>
+        <var name="lockacquire">
+          <boolean value="false"/>
+        </var>
+        <var name="variables">
+          <boolean value="true"/>
+        </var>
+        <var name="http">
+          <boolean value="true"/>
+        </var>
+        <var name="TIMER">
+          <boolean value="false"/>
+        </var>
+        <var name="objectquery">
+          <boolean value="true"/>
+        </var>
+        <var name="robust_enabled">
+          <boolean value="true"/>
+        </var>
+        <var name="executiontime">
+          <boolean value="true"/>
+        </var>
+        <var name="template_highlight_minimum">
+          <number>250.0</number>
+        </var>
+        <var name="enabled">
+          <boolean value="false"/>
+        </var>
+        <var name="general">
+          <boolean value="true"/>
+        </var>
+        <var name="sqlquery">
+          <boolean value="true"/>
+        </var>
+        <var name="lockcreate">
+          <boolean value="false"/>
+        </var>
+        <var name="trace">
+          <boolean value="true"/>
+        </var>
+        <var name="clientvar">
+          <boolean value="true"/>
+        </var>
+        <var name="database">
+          <boolean value="true"/>
+        </var>
+        <var name="template_mode">
+          <string>summary</string>
+        </var>
+        <var name="cookievar">
+          <boolean value="true"/>
+        </var>
+      </struct>
+      <struct type="coldfusion.server.ConfigMap">
+        <var name="iplist">
+          <string>127.0.0.1,0:0:0:0:0:0:0:1</string>
+        </var>
+      </struct>
+      <struct type="coldfusion.server.ConfigMap">
+        <var name="LINE_DEBUGGER_PORT">
+          <number>5005.0</number>
+        </var>
+        <var name="MAX_DEBUG_SESSIONS">
+          <number>5.0</number>
+        </var>
+        <var name="LINE_DEBUGGER_ENABLED">
+          <boolean value="false"/>
+        </var>
+      </struct>
+    </array>
+  </data>
+</wddxPacket>

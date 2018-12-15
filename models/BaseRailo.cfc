@@ -488,6 +488,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeDatasources( thisConfig ) {
+		
+		// Only save if we have something defined
+		if( isNull( getDatasources() ) ) {
+			return;
+		}
 		var passwordManager = getLuceePasswordManager();
 		// Get all datasources
 		// TODO: Add tag if it doesn't exist
@@ -598,6 +603,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeMail( thisConfig ) {
+		
+		// Only save if we have something defined
+		if( isNull( getMailServers() ) ) {
+			return;
+		}
+		
 		var passwordManager = getLuceePasswordManager();
 		// Get all mail servers
 		// TODO: Add tag if it doesn't exist
@@ -636,6 +647,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeMappings( thisConfig ) {
+		
+		// Only save if we have something defined
+		if( isNull( getCFmappings() ) ) {
+			return;
+		}
+		
 		var ignores = [ '/lucee-server/' , '/lucee/', '/lucee/doc', '/lucee/admin' ];
 		// Get all mappings
 		// TODO: Add tag if it doesn't exist
@@ -695,8 +712,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeCache( thisConfig ) {
+		
+		// Only save if we have something defined
+		if( isNull( getCaches() ) ) {
+			return;
+		}
+		
 		// Get all caches connections
 		var cacheConnectionsSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/cache' );
+		
 		if( cacheConnectionsSearch.len() ) {
 			var cacheConnections = cacheConnectionsSearch[ 1 ];			
 		} else {
@@ -847,6 +871,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeLoggers( thisConfig ) {
+		
+		// Only save if we have something defined
+		if( isNull( getLoggers() ) ) {
+			return;
+		}
+		
 		var loggers = xmlSearch( thisConfig, '/cfRailoConfiguration/logging' )[ 1 ];
 		loggers.XMLChildren = [];
 		
@@ -965,13 +995,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function translateCacheTypeToClass( required string type ) {
-		throw("translateCacheTypeToClass not implemented yet. Need to get the actual classes");
-		abort;
 		switch( type ) {
 			case 'ram' :
-				return 'lucee.runtime.cache.ram.RamCache';
+				return 'railo.runtime.cache.ram.RamCache';
 			case 'ehcache' :
-				return 'org.lucee.extension.cache.eh.EHCache';
+				return 'org.railo.extension.cache.eh.EHCache';
 			default :
 				return '';
 		}
@@ -979,11 +1007,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function translateCacheClassToType( required string class ) {
-		throw("translateCacheClassToType not implemented yet. Need to get the actual classes");
 		switch( class ) {
-			case 'lucee.runtime.cache.ram.RamCache' :
+			case 'railo.runtime.cache.ram.RamCache' :
 				return 'RAM';
-			case 'org.lucee.extension.cache.eh.EHCache' :
+			case 'org.railo.extension.cache.eh.EHCache' :
 				return 'EHCache';
 			default :
 				return '';

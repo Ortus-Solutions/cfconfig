@@ -31,6 +31,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setLicensePropertiesTemplate( expandPath( '/cfconfig-services/resources/adobe11/license.properties' ) );
 		setJettyConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/jetty.xml' ) );
 		setDotNetConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-dotnet.xml' ) );
+		setLoggingConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-logging.xml' ) );
 		setVersion( '11' );
 		
 		return this;

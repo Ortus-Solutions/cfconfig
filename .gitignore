@@ -7,3 +7,4 @@
 /coldbox
 /testbox
 settings.xml
+/tests/results/coverageReport
