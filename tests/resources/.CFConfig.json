@@ -241,5 +241,9 @@
     "UDFTypeChecking":"false",
     "useTimeServer":"true",
     "webCharset":"UTF-8",
-    "whitespaceManagement":"regular"
+    "whitespaceManagement":"regular",
+     "extensionProviders":[
+        "http://google.com",
+        "http://forgebox.io"
+    ],
 }

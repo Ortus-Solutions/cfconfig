@@ -301,6 +301,9 @@ component accessors="true" {
 
 	// Key is cache connection name, value is struct of properties
 	property name='caches' type='struct' _isCFConfig=true;
+	
+	// Array of extension provider URLs (strings) 
+	property name='extensionProviders' type='array' _isCFConfig=true;
 
 	// name of default Object cache connection
 	property name='cacheDefaultObject' type='string' _isCFConfig=true;

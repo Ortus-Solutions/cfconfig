@@ -269,5 +269,9 @@
     "watchConfigFilesForChangesExtensions":"xml,properties",
     "watchConfigFilesForChangesInterval":120,
     "websocketEnabled":false,
-    "weinreRemoteInspectionEnabled":true
+    "weinreRemoteInspectionEnabled":true,
+     "extensionProviders":[
+        "http://google.com",
+        "http://forgebox.io"
+    ],
 }

@@ -26,14 +26,14 @@
       <var name="startListenerOnNormalPort">
         <boolean value="true"/>
       </var>
-      <var name="sslEnabled">
-        <boolean value="false"/>
+      <var name="port">
+        <string>8579</string>
       </var>
       <var name="keystoreLocation">
         <string/>
       </var>
-      <var name="port">
-        <string>8579</string>
+      <var name="sslEnabled">
+        <boolean value="false"/>
       </var>
       <var name="logging">
         <string>warning</string>
@@ -41,11 +41,11 @@
       <var name="socketTimeout">
         <number>300.0</number>
       </var>
-      <var name="multicastPort">
-        <string>45566</string>
-      </var>
       <var name="sslport">
         <string>8543</string>
+      </var>
+      <var name="multicastPort">
+        <string>45566</string>
       </var>
     </struct>
   </data>

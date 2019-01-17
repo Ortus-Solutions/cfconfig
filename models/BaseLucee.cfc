@@ -109,12 +109,26 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		var error = xmlSearch( thisConfig, '/cfLuceeConfiguration/error' );
     	if( error.len() ){ readError( error[ 1 ] ); }
-
+    	
+		var extensionProviders = xmlSearch( thisConfig, '/cfLuceeConfiguration/extensions' );
+    	if( extensionProviders.len() ){ readExtensionProviders( extensionProviders[ 1 ] ); }
+    	
 		readAuth( thisConfig.XMLRoot );
 		
 		readConfigChanges( thisConfig.XMLRoot );
 		
 		return this;
+	}
+	
+	private function readExtensionProviders( extensionProviders ) {
+		var providers = extensionProviders.XMLChildren;
+		var configExtproviders = getExtensionProviders() ?: [];
+		for( var provider in providers ) {
+			if( provider.XMLName == 'rhprovider' && isDefined( 'provider.XMLAttributes.url' ) && !configExtproviders.contains( provider.XMLAttributes.url ) ) {
+				configExtproviders.append( provider.XMLAttributes.url );
+				setExtensionProviders( configExtproviders );
+			}
+		}		
 	}
 	
 	private function readCompiler( compiler ) {
@@ -421,12 +435,57 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeCache( thisConfig );
 		writeLoggers( thisConfig );
 		writeError( thisConfig );
+		writeExtensionProviders( thisConfig );
 		
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
 		fileWrite( configFilePath, toString( thisConfig ) );
 		
 		return this;
+	}
+	
+	private function writeExtensionProviders( thisConfig ) {
+		
+		// Only save if we have something defined
+		if( isNull( getExtensionProviders() ) ) {
+			return;
+		}
+		
+		var extensionProviderSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/extensions' );
+		if( extensionProviderSearch.len() ) {
+			var extensionProviders = extensionProviderSearch[1];
+		} else {
+			var extensionProviders = xmlElemnew( thisConfig, 'extensions' );			
+		}
+		
+		var configProviders = extensionProviders;
+		// Loop througuh and add missing providers.  We don't blow away the entire array
+		// because it's also used to store information about extensions too
+		for( var providerURL in getExtensionProviders() ) {
+			var extProviderSearch = xmlSearch( configProviders, "//extensions/rhprovider[@url='#providerURL#']" );
+			if( !extProviderSearch.len() ) {
+				var newProviderElem = xmlElemnew( thisConfig, 'rhprovider' );
+				newProviderElem.XMLAttributes[ 'url' ]=providerURL;
+				configProviders.XMLChildren.append( newProviderElem );
+			}
+		}
+
+		if( !extensionProviderSearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( extensionProviders );
+		} else {
+			var validProviders = getExtensionProviders();
+			// Since we didn't blow away the array above, clean out any that shouldn't be there
+			var len = extensionProviders.XMLChildren.len();
+			var i = 0;
+			while( ++i <= len ) {
+				if( extensionProviders.XMLChildren[ i ].XMLName == 'rhprovider' && !validProviders.contains( extensionProviders.XMLChildren[ i ].XMLAttributes.url ) ) {
+					extensionProviders.XMLChildren.deleteAt( i );
+					// Moving target
+					i--;
+					len--;
+				} 
+			}			
+		}
 	}
 
 	private function writeCompiler( thisConfig ) {
