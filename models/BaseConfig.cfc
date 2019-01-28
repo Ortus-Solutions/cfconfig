@@ -343,7 +343,7 @@ component accessors="true" {
 	property name='debuggingReportExecutionTimes' type='boolean' _isCFConfig=true;
 		
 	// Database Activity - Select this option to log the database activity for the SQL Query events and Stored Procedure events. - Lucee only 
-	property name='debuggingDBEnabled' type='string' _isCFConfig=true;
+	property name='debuggingDBEnabled' type='boolean' _isCFConfig=true;
 	// Exceptions - Select this option to log all exceptions raised for the request. - Lucee only
 	property name='debuggingExceptionsEnabled' type='boolean' _isCFConfig=true;
 	// Query Usage - Select this option to log the query usage information. - Lucee only
