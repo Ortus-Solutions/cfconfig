@@ -335,12 +335,32 @@ component accessors="true" {
 	property name='robustExceptionEnabled' type='boolean' _isCFConfig=true;
 	// Enable Ajax debugging window (Adobe only)
 	property name='ajaxDebugWindowEnabled' type='boolean' _isCFConfig=true;
-	// Enable Request Debugging Output
+	// "Enable Request Debugging Output" in Adobe / "Enable debugging" in Lucee
 	property name='debuggingEnabled' type='boolean' _isCFConfig=true;
 	// Remote DOM Inspection Settings
 	property name='weinreRemoteInspectionEnabled' type='boolean' _isCFConfig=true;
 	// Report Execution Times
 	property name='debuggingReportExecutionTimes' type='boolean' _isCFConfig=true;
+		
+	// Database Activity - Select this option to log the database activity for the SQL Query events and Stored Procedure events. - Lucee only 
+	property name='debuggingDBEnabled' type='string' _isCFConfig=true;
+	// Exceptions - Select this option to log all exceptions raised for the request. - Lucee only
+	property name='debuggingExceptionsEnabled' type='boolean' _isCFConfig=true;
+	// Query Usage - Select this option to log the query usage information. - Lucee only
+	property name='debuggingQueryUsageEnabled' type='boolean' _isCFConfig=true;
+	// Tracing -Select this option to log trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag.  - Lucee only
+	property name='debuggingTracingEnabled' type='boolean' _isCFConfig=true;
+	// Dump - Select this option to enable output produced with help of the tag cfdump and send to debugging. - Lucee only
+	property name='debuggingDumpEnabled' type='boolean' _isCFConfig=true;
+	// Timer - Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag. - Lucee only
+	property name='debuggingTimerEnabled' type='boolean' _isCFConfig=true;
+	// Implicit variable Access - Select this option to log all accesses to scopes, queries and threads that happens implicit (cascaded). - Lucee only
+	property name='debuggingImplicitVariableAccessEnabled' type='boolean' _isCFConfig=true;
+	
+	// Maximum Logged Requests - Lucee only
+	property name='debuggingMaxLoggedRequests' type='numeric' _isCFConfig=true;
+
+	
 	
 	// Debugging Highlight templates taking longer than the following ms
 	property name='debuggingReportExecutionTimesMinimum' type='numeric' _isCFConfig=true;
@@ -424,14 +444,7 @@ component accessors="true" {
 	//property name='customTagSearchLocal' type='boolean' _isCFConfig=true;
 	//property name='customTagExtensions' type='string' _isCFConfig=true;
 	//property name='cfxTags' type='string' _isCFConfig=true;
-	//property name='debuggingDBEnabled' type='string' _isCFConfig=true;
-	//property name='debuggingExceptionsEnabled' type='boolean' _isCFConfig=true;
-	//property name='debuggingDBActivityEnabled' type='boolean' _isCFConfig=true;
-	//property name='debuggingQueryUsageEnabled' type='boolean' _isCFConfig=true;
-	//property name='debuggingTracingEnabled' type='boolean' _isCFConfig=true;
-	//property name='debuggingDumpEnabled' type='boolean' _isCFConfig=true;
-	//property name='debuggingTimerEnabled' type='boolean' _isCFConfig=true;
-	//property name='debuggingImplicitVariableAccessEnabled' type='boolean' _isCFConfig=true;
+
 
 	// Enable logging for scheduled tasks
 	property name='schedulerLoggingEnabled' type='boolean' _isCFConfig=true;

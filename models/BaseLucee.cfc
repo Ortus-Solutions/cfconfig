@@ -268,6 +268,17 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readDebugging( debugging ) {
+	
+		if( !isNull( debugging.XmlAttributes.debug ) ) { setDebuggingEnabled( debugging.XmlAttributes.debug ); }
+		if( !isNull( debugging.XmlAttributes.database ) ) { setDebuggingDBEnabled( debugging.XmlAttributes.database ); }
+		if( !isNull( debugging.XmlAttributes.exception ) ) { setDebuggingExceptionsEnabled( debugging.XmlAttributes.exception ); }
+		if( !isNull( debugging.XmlAttributes[ 'query-usage' ] ) ) { setDebuggingQueryUsageEnabled( debugging.XmlAttributes[ 'query-usage' ] ); }
+		if( !isNull( debugging.XmlAttributes.tracing ) ) { setDebuggingTracingEnabled( debugging.XmlAttributes.tracing ); }
+		if( !isNull( debugging.XmlAttributes.dump ) ) { setDebuggingDumpEnabled( debugging.XmlAttributes.dump ); }
+		if( !isNull( debugging.XmlAttributes.timer ) ) { setDebuggingTimerEnabled( debugging.XmlAttributes.timer ); }
+		if( !isNull( debugging.XmlAttributes[ 'implicit-access' ] ) ) { setDebuggingImplicitVariableAccessEnabled( debugging.XmlAttributes[ 'implicit-access' ] ); }
+		if( !isNull( debugging.XmlAttributes[ 'max-records-logged' ] ) ) { setDebuggingMaxLoggedRequests( debugging.XmlAttributes[ 'max-records-logged' ] ); }
+		
 	}
 	
 	private function readAuth( config ) {
@@ -840,6 +851,21 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeDebugging( thisConfig ) {
+		
+		// TODO: Add tag if it doesn't exist
+		var scope = xmlSearch( thisConfig, '/cfLuceeConfiguration/debugging' )[ 1 ];
+		var config = scope.XMLAttributes;
+		
+		if( !isNull( getDebuggingEnabled() ) ) { config[ 'debug' ] = getDebuggingEnabled(); }
+		if( !isNull( getDebuggingDBEnabled() ) ) { config[ 'database' ] = getDebuggingDBEnabled(); }
+		if( !isNull( getDebuggingExceptionsEnabled() ) ) { config[ 'exception' ] = getDebuggingExceptionsEnabled(); }
+		if( !isNull( getDebuggingQueryUsageEnabled() ) ) { config[ 'query-usage' ] = getDebuggingQueryUsageEnabled(); }
+		if( !isNull( getDebuggingTracingEnabled() ) ) { config[ 'tracing' ] = getDebuggingTracingEnabled(); }
+		if( !isNull( getDebuggingDumpEnabled() ) ) { config[ 'dump' ] = getDebuggingDumpEnabled(); }
+		if( !isNull( getDebuggingTimerEnabled() ) ) { config[ 'timer' ] = getDebuggingTimerEnabled(); }
+		if( !isNull( getDebuggingImplicitVariableAccessEnabled() ) ) { config[ 'implicit-access' ] = getDebuggingImplicitVariableAccessEnabled(); }
+		if( !isNull( getDebuggingMaxLoggedRequests() ) ) { config[ 'max-records-logged' ] = getDebuggingMaxLoggedRequests(); }
+		
 	}
 	
 	private function writeConfigChanges( thisConfig ) {
