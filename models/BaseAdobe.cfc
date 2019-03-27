@@ -288,11 +288,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if(!isNull(thisConfig[ 16 ].internalCookiesDisableUpdate)){
 			setSessionCookieDisableUpdate( thisConfig[ 16 ].internalCookiesDisableUpdate );
 		}
-
-
-
-
-
+		
+		if( !isNull( thisConfig[ 16 ][ 'blockedExtForFileUpload' ] ) ) { setBlockedExtForFileUpload( thisConfig[ 16 ][ 'blockedExtForFileUpload' ] ); }
+		if( !isNull( thisConfig[ 16 ][ 'enableNullSupport' ] ) ) { setNullSupport( thisConfig[ 16 ][ 'enableNullSupport' ] ); }
 
 		// Map Adobe values to shared Lucee settings
 		switch( thisConfig[ 16 ].applicationCFCSearchLimit ) {
@@ -308,7 +306,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		setThrottleThreshold( thisConfig[ 18 ][ 'throttle-threshold' ] );
 		setTotalThrottleMemory( thisConfig[ 18 ][ 'total-throttle-memory' ] );
-
+		
 	}
 
 	private function readDebug() {
@@ -869,7 +867,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSessionCookieHTTPOnly() ) ) { thisConfig[ 16 ].httpOnlySessionCookie = ( getSessionCookieHTTPOnly() ? true : false ); }
 		if( !isNull( getSessionCookieSecure() ) ) { thisConfig[ 16 ].secureSessionCookie = ( getSessionCookieSecure() ? true : false ); }
 		if( !isNull( getSessionCookieDisableUpdate() ) ) { thisConfig[ 16 ].internalCookiesDisableUpdate = ( getSessionCookieDisableUpdate() ? true : false ); }
-
+		if( !isNull( getBlockedExtForFileUpload() ) ) { thisConfig[ 16 ].blockedExtForFileUpload = getBlockedExtForFileUpload(); }
+		if( !isNull( getNullSupport() ) ) { thisConfig[ 16 ].enableNullSupport = !!getNullSupport(); }
 		if( !isNull( getFlashRemotingEnable() ) ) { thisConfig[ 16 ].enableFlashRemoting = !!getFlashRemotingEnable(); }
 		if( !isNull( getFlexDataServicesEnable() ) ) { thisConfig[ 16 ].enableFlexDataServices = !!getFlexDataServicesEnable(); }
 		if( !isNull( getRMISSLEnable() ) ) { thisConfig[ 16 ].enableRmiSSL = !!getRMISSLEnable(); }

@@ -148,6 +148,8 @@ component accessors="true" {
 	// True/false
 	property name='requestTimeoutEnabled' type='boolean' _isCFConfig=true;
 
+	// Blocked file extensions for CFFile uploads
+	property name='blockedExtForFileUpload' type='string' _isCFConfig=true;
 	// "none", "all" or a comma-delimited list with some combination of "cgi", "cookie", "form", "url".
 	property name='scriptProtect' type='string' _isCFConfig=true;
 	// True/false
