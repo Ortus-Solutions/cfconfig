@@ -1146,7 +1146,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				// If the class name wasn't recognized, default to this one. 
 				// This assumes an earlier version of the MySQL JDBC extension
 				// But have I no way to know what the user will have installed.
-				return 'org.gjt.mm.mysql.Driver';
+				return 'com.mysql.jdbc.Driver';
 			case 'H2' :
 				return 'org.h2.Driver';
 			default :
