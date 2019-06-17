@@ -14,8 +14,7 @@
         "adobe-password-util":"^1.0.0",
         "propertyFile":"^1.0.7",
         "semver":"^1.0.0",
-        "JSONPrettyPrint":"^1.2.6",
-        "testbox":"be"
+        "JSONPrettyPrint":"^1.2.6"
     },
     "scripts":{
         "postVersion":"package set location='Ortus-Solutions/cfconfig#v`package version`'",
@@ -31,13 +30,12 @@
         "/testbox"
     ],
     "installPaths":{
-        "lucee-password-util":"modules/lucee-password-util",
-        "adobe-password-util":"modules/adobe-password-util",
-        "coldbox":"coldbox",
-        "propertyFile":"modules/propertyFile",
-        "semver":"modules/semver",
-        "JSONPrettyPrint":"modules/JSONPrettyPrint",
-        "testbox":"testbox/"
+        "lucee-password-util":"modules/lucee-password-util/",
+        "adobe-password-util":"modules/adobe-password-util/",
+        "coldbox":"coldbox/",
+        "propertyFile":"modules/propertyFile/",
+        "semver":"modules/semver/",
+        "JSONPrettyPrint":"modules/JSONPrettyPrint/"
     },
     "devDependencies":{
         "coldbox":"^4.3.0+188"

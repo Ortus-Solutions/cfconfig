@@ -1462,7 +1462,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					// need to parse values and break out brad=wood as savingDS.urlmap.connectionProps.brad=wood
 				}
 	
-			} // end loop iver datasources
+			} // end loop over datasources
 			
 		} // end if datasources is null
 
