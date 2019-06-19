@@ -88,7 +88,7 @@ component accessors="true" {
 	// True/false
 	property name='applicationMangement' type='boolean' _isCFConfig=true;
 	// True/false
-	property name='sessionMangement' type='boolean' _isCFConfig=true;
+	property name='sessionManagement' type='boolean' _isCFConfig=true;
 	// True/false
 	property name='clientManagement' type='boolean' _isCFConfig=true;
 	// True/false
@@ -141,6 +141,16 @@ component accessors="true" {
 	property name='clientStorageLocations' type='struct' _isCFConfig=true;
 	// TODO: Add functions/commands to manage this manually.
 
+	// One of the strings "memory", "redis".  Adobe use only.
+	property name='sessionStorageLocation' type='string' _isCFConfig=true;
+	// Passowrd for session storage.  Adobe use only.
+	property name='sessionStoragePassword' type='string' _isCFConfig=true;
+	// Host for session storage.  Adobe use only.
+	property name='sessionStorageHost' type='string' _isCFConfig=true;
+	// Timeout in ms for session storage.  Adobe use only.
+	property name='sessionStorageTimeout' type='numeric' _isCFConfig=true;
+	// Port for session storage  Adobe use only.
+	property name='sessionStoragePort' type='numeric' _isCFConfig=true;
 
 
 	// Timespan Ex: 0,5,30,0

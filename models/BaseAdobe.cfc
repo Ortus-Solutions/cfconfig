@@ -159,7 +159,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		if( !isNull( thisConfig[ 1 ] ) ) { setWhitespaceManagement( translateWhitespaceFromAdobe( thisConfig[ 1 ] ) ); }
 		if( !isNull( thisConfig[ 5 ].logging ) ) { setLogCORBACalls( thisConfig[ 5 ].logging ); }
-		setSessionMangement( thisConfig[ 7 ].session.enable );
+		setSessionManagement( thisConfig[ 7 ].session.enable );
 		setSessionTimeout( thisConfig[ 7 ].session.timeout );
 		setSessionMaximumTimeout( thisConfig[ 7 ].session.maximum_timeout );
 		setSessionType( thisConfig[ 7 ].session.usej2eesession ? 'j2ee' : 'cfml' );
@@ -303,6 +303,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			case '3' :
 				setApplicationMode( 'currorroot' );
 		}
+
+		if( !isNull( thisConfig[ 16 ][ 'sessionStorage' ] ) ) { setSessionStorageLocation( thisConfig[ 16 ][ 'sessionStorage' ] ); }
+		if( !isNull( thisConfig[ 16 ][ 'sessionStoragePassword' ] ) ) {
+			// Just in case an empty string ever makes it in here, don't try and decrypt it
+			if( len( thisConfig[ 16 ][ 'sessionStoragePassword' ] ) ) {
+				setSessionStoragePassword( passwordManager.decryptMailServer( thisConfig[ 16 ][ 'sessionStoragePassword' ] ) );	
+			} else {
+				setSessionStoragePassword( thisConfig[ 16 ][ 'sessionStoragePassword' ] );	
+			}
+		}
+		if( !isNull( thisConfig[ 16 ][ 'sessionStorageHost' ] ) ) { setSessionStorageHost( thisConfig[ 16 ][ 'sessionStorageHost' ] ); }
+		if( !isNull( thisConfig[ 16 ][ 'sessionStorageTimeout' ] ) ) { setSessionStorageTimeout( thisConfig[ 16 ][ 'sessionStorageTimeout' ] ); }
+		if( !isNull( thisConfig[ 16 ][ 'sessionStoragePort' ] ) ) { setSessionStoragePort( thisConfig[ 16 ][ 'sessionStoragePort' ] ); }
 
 		setThrottleThreshold( thisConfig[ 18 ][ 'throttle-threshold' ] );
 		setTotalThrottleMemory( thisConfig[ 18 ][ 'total-throttle-memory' ] );
@@ -743,7 +756,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		if( !isNull( getWhitespaceManagement() ) ) { thisConfig[ 1 ] = ( translateWhitespaceToAdobe( getWhitespaceManagement() ) ? true : false ); }
 		if( !isNull( getLogCORBACalls() ) ) { thisConfig[ 5 ].logging = ( getLogCORBACalls() ? true : false ); }
-		if( !isNull( getSessionMangement() ) ) { thisConfig[ 7 ].session.enable = ( getSessionMangement() ? true : false ); }
+		if( !isNull( getSessionManagement() ) ) { thisConfig[ 7 ].session.enable = ( getSessionManagement() ? true : false ); }
 		if( !isNull( getSessionTimeout() ) ) { thisConfig[ 7 ].session.timeout = getSessionTimeout(); }
 		if( !isNull( getSessionMaximumTimeout() ) ) { thisConfig[ 7 ].session.maximum_timeout = getSessionMaximumTimeout(); }
 		if( !isNull( getSessionType() ) ) { thisConfig[ 7 ].session.usej2eesession = ( getSessionType() == 'j2ee' ); }
@@ -895,6 +908,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			}
 
 		}
+
+		if( !isNull( getSessionStorageLocation() ) ) { thisConfig[ 16 ][ 'sessionStorage' ] = getSessionStorageLocation(); }
+		if( !isNull( getSessionStoragePassword() ) ) { thisConfig[ 16 ][ 'sessionStoragePassword' ] = passwordManager.encryptMailServer( getSessionStoragePassword() ); }
+		if( !isNull( getSessionStorageHost() ) ) { thisConfig[ 16 ][ 'sessionStorageHost' ] = getSessionStorageHost(); }
+		if( !isNull( getSessionStorageTimeout() ) ) { thisConfig[ 16 ][ 'sessionStorageTimeout' ] = getSessionStorageTimeout()+0; }
+		if( !isNull( getSessionStoragePort() ) ) { thisConfig[ 16 ][ 'sessionStoragePort' ] = getSessionStoragePort()+0; }
 
 		if( !isNull( getSessionCookieDisableUpdate() ) ) { thisConfig[ 18 ][ 'throttle-threshold' ] = getThrottleThreshold()+0; }
 		if( !isNull( getTotalThrottleMemory() ) ) { thisConfig[ 18 ][ 'total-throttle-memory' ] = getTotalThrottleMemory()+0; }

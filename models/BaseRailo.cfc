@@ -186,7 +186,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( config[ 'merge-url-form' ] ) ) { setMergeURLAndForm( config[ 'merge-url-form' ] ); };
 		if( !isNull( config[ 'cgi-readonly' ] ) ) { setCGIReadOnly( config[ 'cgi-readonly' ] ); };
 		if( !isNull( config.requesttimeout ) ) { setRequestTimeout( config.requesttimeout ); };
-		if( !isNull( config.sessionmanagement ) ) { setSessionMangement( config.sessionmanagement ); };
+		if( !isNull( config.sessionmanagement ) ) { setSessionManagement( config.sessionmanagement ); };
 		if( !isNull( config.sessiontimeout ) ) { setSessionTimeout( config.sessiontimeout ); };
 		if( !isNull( config.setclientcookies ) ) { setClientCookies( config.setclientcookies ); };
 		if( !isNull( config.setdomaincookie ) ) { setDomainCookies( config.setdomaincookie ); };
@@ -581,7 +581,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getClientManagement() ) ) { config[ 'clientmanagement' ] = getClientManagement(); }
 		if( !isNull( getMergeURLAndForm() ) ) { config[ 'merge-url-form' ] = getMergeURLAndForm(); }
 		if( !isNull( getCGIReadOnly() ) ) { config[ 'cgi-readonly' ] = getCGIReadOnly(); }
-		if( !isNull( getSessionMangement() ) ) { config[ 'sessionmanagement' ] = getSessionMangement(); }
+		if( !isNull( getSessionManagement() ) ) { config[ 'sessionmanagement' ] = getSessionManagement(); }
 		if( !isNull( getSessionTimeout() ) ) { config[ 'sessiontimeout' ] = getSessionTimeout(); }
 		if( !isNull( getClientCookies() ) ) { config[ 'setclientcookies' ] = getClientCookies(); }
 		if( !isNull( getDomainCookies() ) ) { config[ 'setdomaincookie' ] = getDomainCookies(); }
