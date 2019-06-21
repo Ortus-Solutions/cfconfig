@@ -21,10 +21,10 @@
         <var name="formvar">
           <boolean value="true"/>
         </var>
-        <var name="urlvar">
+        <var name="sessionvar">
           <boolean value="true"/>
         </var>
-        <var name="sessionvar">
+        <var name="urlvar">
           <boolean value="true"/>
         </var>
         <var name="debug_template">
@@ -78,11 +78,11 @@
         <var name="enabled">
           <boolean value="false"/>
         </var>
-        <var name="general">
-          <boolean value="false"/>
-        </var>
         <var name="sqlquery">
           <boolean value="true"/>
+        </var>
+        <var name="general">
+          <boolean value="false"/>
         </var>
         <var name="lockcreate">
           <boolean value="false"/>

@@ -316,7 +316,16 @@ component accessors=true singleton {
 				
 				if( somethingWasDirty ) {
 					row.valuesMatch = 0;
-					row.valuesDiffer = 1;
+					// If to doesn't exist, it's from only
+					if( isNull( toData[ prop ] ) ) {
+						row.fromOnly = 1;
+					// If from doesn't exist, it's to only
+					} else if( isNull( fromData[ prop ] ) ) {
+						row.toOnly = 1;
+					// Otherwise, it's just different!
+					} else {
+						row.valuesDiffer = 1;		
+					}
 				}
 		 		if( !ignoredKeys.findNoCase( prop ) ) {
 		 			qryResult.addRow( row );

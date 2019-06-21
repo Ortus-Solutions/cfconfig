@@ -224,11 +224,11 @@
           <var name="ENABLEEVENTGATEWAYSERVICE">
             <boolean value="false"/>
           </var>
-          <var name="JIGID">
-            <string>G5JA%2AR%5CBQM%3E%200%22E7%3FZ%5C%27%3BNNI8%5FQ%20W%3E%5DE%3BTBJ%24%3AV%5B2%26%3BBWL1Z%25KX%26%3A%0A</string>
-          </var>
           <var name="MAXQUEUESIZE">
             <number>10.0</number>
+          </var>
+          <var name="JIGID">
+            <string>G5JA%2AR%5CBQM%3E%200%22E7%3FZ%5C%27%3BNNI8%5FQ%20W%3E%5DE%3BTBJ%24%3AV%5B2%26%3BBWL1Z%25KX%26%3A%0A</string>
           </var>
         </struct>
       </var>
