@@ -113,11 +113,43 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var extensionProviders = xmlSearch( thisConfig, '/cfLuceeConfiguration/extensions' );
     	if( extensionProviders.len() ){ readExtensionProviders( extensionProviders[ 1 ] ); }
     	
+		var security = xmlSearch( thisConfig, '/cfLuceeConfiguration/security' );
+    	if( security.len() ){ readSecurity( security[ 1 ] ); }
+    	
 		readAuth( thisConfig.XMLRoot );
 		
 		readConfigChanges( thisConfig.XMLRoot );
 		
 		return this;
+	}
+	
+	private function readSecurity( security ) {
+		var config = security.XMLAttributes;
+		
+		/*cache
+		mapping
+		orm
+		search
+		tag_registry
+		tag_object
+		tag_import
+		tag_execute
+		setting
+		scheduled_task
+		remote
+		mail
+		gateway
+		file
+		direct_java_access
+		debugging
+		datasource
+		custom_tag
+		cfx_usage
+		cfx_setting
+		*/
+		
+		if( !isNull( config[ 'access_write' ] ) ) { setAdminAccessWrite( config[ 'access_write' ] ); }
+		if( !isNull( config[ 'access_read' ] ) ) { setAdminAccessRead( config[ 'access_read' ] ); }
 	}
 	
 	private function readExtensionProviders( extensionProviders ) {
@@ -447,12 +479,38 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeLoggers( thisConfig );
 		writeError( thisConfig );
 		writeExtensionProviders( thisConfig );
+		writeSecurity( thisConfig );
 		
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
 		fileWrite( configFilePath, toString( thisConfig ) );
 		
 		return this;
+	}
+	
+	
+	private function writeSecurity( thisConfig ) {		
+		var securitySearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/security' );
+		if( securitySearch.len() ) {
+			var security = securitySearch[1];
+		} else {
+			var security = xmlElemnew( thisConfig, 'security' );			
+		}
+		
+		var config = security.XMLAttributes;
+		
+		if( !isNull( getAdminAccessWrite() ) ) {
+			config[ 'access_write' ] = getAdminAccessWrite() == 'closed' ? 'close' : getAdminAccessWrite();
+		}
+		if( !isNull( getAdminAccessRead() ) ) {
+			config[ 'access_read' ] = getAdminAccessRead() == 'closed' ? 'close' : getAdminAccessRead();
+		}
+
+		if( !securitySearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( security );
+		}
+		var config = security.XMLAttributes;
+		
 	}
 	
 	private function writeExtensionProviders( thisConfig ) {
