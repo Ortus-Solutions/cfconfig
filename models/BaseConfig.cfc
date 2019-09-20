@@ -525,13 +525,11 @@ component accessors="true" {
 	// Enable sandbox security
 	property name='sandboxEnabled' type='boolean' _isCFConfig=true;
 	
-	
 	// define the access for reading data from the admin. One of the strings open, closed, or protected
 	property name='adminAccessWrite' type='string' _isCFConfig=true;
 	// define the access for writing data from the admin. One of the strings open, closed, or protected
 	property name='adminAccessRead' type='string' _isCFConfig=true;
-	
-	
+		
 	
 	// List of allowed IPs for exposed services.  Formatted like 1.2.3.4,5.6.7.*
 	property name='servicesAllowedIPList' type='string' _isCFConfig=true;
