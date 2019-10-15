@@ -4,29 +4,29 @@
 * www.ortussolutions.com
 ********************************************************************************
 * @author Brad Wood
-* 
+*
 * I represent shared behavior for all Lucee providers.  The concrete providers can override my methods and proeprties as neccessary.
 * I extend the BaseConfig class, which represents the data itself.
 */
 component accessors=true extends='cfconfig-services.models.BaseConfig' {
-	
+
 	property name='configFileTemplate' type='string';
 	property name='configFileName' type='string';
 	property name='configRelativePathWithinServerHome' type='string';
 	property name='luceePasswordManager' inject='PasswordManager@lucee-password-util';
-	
-	
+
+
 	/**
 	* Constructor
 	*/
 	function init() {
 		super.init();
-		
+
 		// Used when writing out a Lucee server context config file from the generic config
 		setConfigFileTemplate( expandPath( '/cfconfig-services/resources/lucee4/lucee-server-base.xml' ) );
-		
+
 		// Ex: lucee-server/context/lucee-server.xml
-		
+
 		// This is the file name used by this config file
 		setConfigFileName( 'lucee-server.xml' );
 		// This is where said config file is stored inside the server home
@@ -34,10 +34,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		setFormat( 'luceeServer' );
 		setVersion( '4' );
-		
+
 		return this;
 	}
-	
+
 	/**
 	* I read in config
 	*
@@ -46,86 +46,86 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	function read( string CFHomePath ){
 		// Override what's set if a path is passed in
 		setCFHomePath( arguments.CFHomePath ?: getCFHomePath() );
-		
+
 		if( !len( getCFHomePath() ) ) {
 			throw 'No CF home specified to read from';
 		}
-		
+
 		var configFilePath = locateConfigFile();
 		if( !fileExists( configFilePath ) ) {
 			throw "The config file doesn't exist [#configFilePath#]";
 		}
-		
+
 		var thisConfigRaw = fileRead( configFilePath );
 		if( !isXML( thisConfigRaw ) ) {
 			throw "Config file doesn't contain XML [#configFilePath#]";
 		}
-		
+
 		var thisConfig = XMLParse( thisConfigRaw );
-		
+
 		//dump( thisConfig );abort;
-		
+
 		var compiler = xmlSearch( thisConfig, '/cfLuceeConfiguration/compiler' );
 		if( compiler.len() ){ readCompiler( compiler[ 1 ] ); }
-		
+
 		var charset = xmlSearch( thisConfig, '/cfLuceeConfiguration/charset' );
 		if( charset.len() ){ readCharset( charset[ 1 ] ); }
-		
+
 		var java = xmlSearch( thisConfig, '/cfLuceeConfiguration/java' );
 		if( java.len() ){ readJava( java[ 1 ] ); }
-		
+
 		var regional = xmlSearch( thisConfig, '/cfLuceeConfiguration/regional' );
 		if( regional.len() ){ readRegional( regional[ 1 ] ); }
-		
+
 		var datasources = xmlSearch( thisConfig, '/cfLuceeConfiguration/data-sources' );
 		if( datasources.len() ){ readDatasources( datasources[ 1 ] ); }
-		
+
 		var thisApplication = xmlSearch( thisConfig, '/cfLuceeConfiguration/application' );
 		if( thisApplication.len() ){ readApplication( thisApplication[ 1 ] ); }
-		
+
 		var scope = xmlSearch( thisConfig, '/cfLuceeConfiguration/scope' );
 		if( scope.len() ){ readScope( scope[ 1 ] ); }
-		
+
 		var mail = xmlSearch( thisConfig, '/cfLuceeConfiguration/mail' );
 		if( mail.len() ){ readMail( mail[ 1 ] ); }
-		
+
 		var mappings = xmlSearch( thisConfig, '/cfLuceeConfiguration/mappings' );
 		if( mappings.len() ){ readMappings( mappings[ 1 ] ); }
-		
+
 		var customTags = xmlSearch( thisConfig, '/cfLuceeConfiguration/custom-tag' );
 		if( customTags.len() ){ readCustomTags( customTags[ 1 ] ); }
-		
+
 		var debugging = xmlSearch( thisConfig, '/cfLuceeConfiguration/debugging' );
 		if( debugging.len() ){ readDebugging( debugging[ 1 ] ); }
-		
+
 		var setting = xmlSearch( thisConfig, '/cfLuceeConfiguration/setting' );
 		if( setting.len() ){ readSetting( setting[ 1 ] ); }
-		
+
 		var thisCache = xmlSearch( thisConfig, '/cfLuceeConfiguration/cache' );
 		if( thisCache.len() ){ readCache( thisCache[ 1 ] ); }
-		
+
 		var logging = xmlSearch( thisConfig, '/cfLuceeConfiguration/logging' );
 		if( logging.len() ){ readLoggers( logging[ 1 ] ); }
 
 		var error = xmlSearch( thisConfig, '/cfLuceeConfiguration/error' );
     	if( error.len() ){ readError( error[ 1 ] ); }
-    	
+
 		var extensionProviders = xmlSearch( thisConfig, '/cfLuceeConfiguration/extensions' );
     	if( extensionProviders.len() ){ readExtensionProviders( extensionProviders[ 1 ] ); }
-    	
+
 		var security = xmlSearch( thisConfig, '/cfLuceeConfiguration/security' );
     	if( security.len() ){ readSecurity( security[ 1 ] ); }
-    	
+
 		readAuth( thisConfig.XMLRoot );
-		
+
 		readConfigChanges( thisConfig.XMLRoot );
-		
+
 		return this;
 	}
-	
+
 	private function readSecurity( security ) {
 		var config = security.XMLAttributes;
-		
+
 		/*cache
 		mapping
 		orm
@@ -147,11 +147,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		cfx_usage
 		cfx_setting
 		*/
-		
+
 		if( !isNull( config[ 'access_write' ] ) ) { setAdminAccessWrite( config[ 'access_write' ] ); }
 		if( !isNull( config[ 'access_read' ] ) ) { setAdminAccessRead( config[ 'access_read' ] ); }
 	}
-	
+
 	private function readExtensionProviders( extensionProviders ) {
 		var providers = extensionProviders.XMLChildren;
 		var configExtproviders = getExtensionProviders() ?: [];
@@ -160,46 +160,50 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				configExtproviders.append( provider.XMLAttributes.url );
 				setExtensionProviders( configExtproviders );
 			}
-		}		
+		}
 	}
-	
+
 	private function readCompiler( compiler ) {
 		var config = compiler.XMLAttributes;
 		if( !isNull( config[ 'dot-notation-upper-case' ] ) ) { setDotNotationUpperCase( config[ 'dot-notation-upper-case' ] ); }
 		if( !isNull( config[ 'full-null-support' ] ) ) { setNullSupport( config[ 'full-null-support' ] ); }
 		if( !isNull( config[ 'suppress-ws-before-arg' ] ) ) { setSuppressWhitespaceBeforecfargument( config[ 'suppress-ws-before-arg' ] ); }
 	}
-	
+
 	private function readCharset( charset ) {
 		var config = charset.XMLAttributes;
 		if( !isNull( config[ 'template-charset' ] ) ) { setTemplateCharset( config[ 'template-charset' ] ); }
 		if( !isNull( config[ 'web-charset' ] ) ) { setWebCharset( config[ 'web-charset' ] ); }
 		if( !isNull( config[ 'resource-charset' ] ) ) { setResourceCharset( config[ 'resource-charset' ] ); }
 	}
-	
+
 	private function readJava( java ) {
 		var config = java.XMLAttributes;
 		if( !isNull( config[ 'inspect-template' ] ) ) { setInspectTemplate( config[ 'inspect-template' ] ); }
 	}
-	
+
 	private function readRegional( regional ) {
 		var config = regional.XMLAttributes;
-		
+
 		if( !isNull( config[ 'locale' ] ) ) { setThisLocale( config[ 'locale' ] ); }
 		if( !isNull( config[ 'timeserver' ] ) ) { setTimeServer( config[ 'timeserver' ] ); }
 		if( !isNull( config[ 'timezone' ] ) ) { setThisTimeZone( config[ 'timezone' ] ); }
 		if( !isNull( config[ 'use-timeserver' ] ) ) { setUseTimeServer( config[ 'use-timeserver' ] ); }
 	}
-	
+
 	private function readDatasources( datasources ) {
 		var passwordManager = getLuceePasswordManager();
+
+		var config = datasources.XMLAttributes;
+		if( !isNull( config[ 'psq' ] ) ) { setDatasourcePreserveSingleQuotes( config[ 'psq' ] ); }
+
 		for( var ds in datasources.XMLChildren ) {
 			var params = structNew().append( ds.XMLAttributes );
 			var permissions = translateBitMaskToPermissions( params.allow ?: '' );
-			params.append( permissions ); 
-			
-			// Decrypt datasource password 
-			if( !isNull( params.password ) ) {  
+			params.append( permissions );
+
+			// Decrypt datasource password
+			if( !isNull( params.password ) ) {
 				params.password = passwordManager.decryptDataSource( replaceNoCase( params.password, 'encrypted:', '' ) );
 			}
 			addDatasource( argumentCollection = params );
@@ -208,7 +212,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function readApplication( thisApplication ) {
 		var config = thisApplication.XMLAttributes;
-		
+
 		if( !isNull( config.requesttimeout ) ) {
 			setRequestTimeout( config.requesttimeout );
 			setRequestTimeoutEnabled( true );
@@ -219,10 +223,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( config[ 'listener-mode' ] ) ) { setApplicationMode( config[ 'listener-mode' ] ); }
 		if( !isNull( config[ 'type-checking' ] ) ) { setUDFTypeChecking( config[ 'type-checking' ] ); }
 	}
-	
+
 	private function readScope( scope ) {
 		var config = scope.XMLAttributes;
-		
+
 		if( !isNull( config.applicationtimeout ) ) { setApplicationTimeout( config.applicationtimeout ); };
 		if( !isNull( config[ 'cascade-to-resultset' ] ) ) { setSearchResultsets( config[ 'cascade-to-resultset' ] ); };
 		if( !isNull( config.cascading ) ) { setScopeCascading( config.cascading ); };
@@ -241,44 +245,44 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( config[ 'local-mode' ] ) ) { setLocalScopeMode( config[ 'local-mode' ] ); };
 		if( !isNull( config[ 'session-type' ] ) ) { setSessionType( config[ 'session-type' ] ); };
 	}
-	
+
 	private function readMail( mailServers ) {
 		var passwordManager = getLuceePasswordManager();
-		
+
 		/* TODO:
 		mailDefaultEncoding
 		mailSpoolEnable
 		mailConnectionTimeout*/
-		
+
 		for( var mailServer in mailServers.XMLChildren ) {
 			var params = structNew().append( mailServer.XMLAttributes );
-			// Decrypt mail server password 
-			if( !isNull( params.password ) ) {  
+			// Decrypt mail server password
+			if( !isNull( params.password ) ) {
 				params.password = passwordManager.decryptDataSource( replaceNoCase( params.password, 'encrypted:', '' ) );
-			} 
-			if( !isNull( params.life ) ) {  
+			}
+			if( !isNull( params.life ) ) {
 				params.lifeTimeout = params.life;
-			} 
-			if( !isNull( params.idle ) ) {  
+			}
+			if( !isNull( params.idle ) ) {
 				params.idleTimeout = params.idle;
 			}
 			addMailServer( argumentCollection = params );
 		}
 	}
-	
+
 	private function readMappings( mappings ) {
 		var ignores = [ '/lucee-server/' , '/lucee/', '/lucee/doc', '/lucee/admin' ];
-		
+
 		for( var mapping in mappings.XMLChildren ) {
 			var params = structNew().append( mapping.XMLAttributes );
-			
+
 			if( ignores.findNoCase( params.virtual ) ) {
 				continue;
-			} 
+			}
 			addCFMapping( argumentCollection = params );
 		}
 	}
-	
+
 	private function readCustomTags( customTags ) {
 		for( var customTagPath in customTags.XMLChildren ) {
 			var params = structNew().append( customTagPath.XMLAttributes );
@@ -298,9 +302,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		}
 	}
-	
+
 	private function readDebugging( debugging ) {
-	
+
 		if( !isNull( debugging.XmlAttributes.debug ) ) { setDebuggingEnabled( debugging.XmlAttributes.debug ); }
 		if( !isNull( debugging.XmlAttributes.database ) ) { setDebuggingDBEnabled( debugging.XmlAttributes.database ); }
 		if( !isNull( debugging.XmlAttributes.exception ) ) { setDebuggingExceptionsEnabled( debugging.XmlAttributes.exception ); }
@@ -310,19 +314,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( debugging.XmlAttributes.timer ) ) { setDebuggingTimerEnabled( debugging.XmlAttributes.timer ); }
 		if( !isNull( debugging.XmlAttributes[ 'implicit-access' ] ) ) { setDebuggingImplicitVariableAccessEnabled( debugging.XmlAttributes[ 'implicit-access' ] ); }
 		if( !isNull( debugging.XmlAttributes[ 'max-records-logged' ] ) ) { setDebuggingMaxLoggedRequests( debugging.XmlAttributes[ 'max-records-logged' ] ); }
-		
+
 	}
-	
+
 	private function readAuth( config ) {
 		var passwordManager = getLuceePasswordManager();
-		
+
 		// See comments in BaseConfig properties for details
 		if( !isNull( config.XmlAttributes.hspw ) ) { setHspw( config.XmlAttributes.hspw ); }
 		if( !isNull( config.XmlAttributes.pw ) ) { setPw( config.XmlAttributes.pw ); }
 		if( !isNull( config.XmlAttributes.salt ) ) { setAdminSalt( config.XmlAttributes.salt ); }
 		if( !isNull( config.XmlAttributes[ 'default-hspw' ] ) ) { setDefaultHspw( config.XmlAttributes[ 'default-hspw' ] ); }
 		if( !isNull( config.XmlAttributes[ 'default-pw' ] ) ) { setDefaultPw( config.XmlAttributes[ 'default-pw' ] ); }
-		
+
 		// Backwards compat for old, encrypted passwords
 		if( !isNull( config.XmlAttributes.password ) ) {
 			// Set decrypted password and ensure we have a salt.  It will be salted and hashed the next time we save.
@@ -337,29 +341,29 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( isNull( getAdminSalt() ) ){
 				setAdminSalt( createUUID() );
 			}
-		}		
+		}
 	}
-	
+
 	private function readConfigChanges( config ) {
 		if( !isNull( config.XmlAttributes[ 'check-for-changes' ] ) ) {
 			setWatchConfigFilesForChangesEnabled( ( config.XmlAttributes[ 'check-for-changes' ] ? true : false ) );
 			setWatchConfigFilesForChangesInterval( 60 );
 			setWatchConfigFilesForChangesExtensions( 'xml,properties' );
-		}		
+		}
 	}
-	
+
 	private function readSetting( settings ) {
 		var config = settings.XMLAttributes;
-				
+
 		if( !isNull( config[ 'allow-compression' ] ) ) { setCompression( config[ 'allow-compression' ] ); }
 		if( !isNull( config[ 'cfml-writer' ] ) ) { setWhitespaceManagement( translateWhitespaceFromLucee( config[ 'cfml-writer' ] ) ); }
 		if( !isNull( config[ 'buffer-output' ] ) ) { setBufferTagBodyOutput( config[ 'buffer-output' ] ); }
-		if( !isNull( config[ 'suppress-content' ] ) ) { setSupressContentForCFCRemoting( config[ 'suppress-content' ] ); }			
+		if( !isNull( config[ 'suppress-content' ] ) ) { setSupressContentForCFCRemoting( config[ 'suppress-content' ] ); }
 	}
-	
+
 	private function readCache( thisCache ) {
 		var config = thisCache.XMLAttributes;
-		
+
 		if( !isNull( config[ 'default-function' ] ) ) { setCacheDefaultFunction( config[ 'default-function' ] ); }
 		if( !isNull( config[ 'default-object' ] ) ) { setCacheDefaultObject( config[ 'default-object' ] ); }
 		if( !isNull( config[ 'default-template' ] ) ) { setCacheDefaultTemplate( config[ 'default-template' ] ); }
@@ -370,36 +374,36 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( config[ 'default-file' ] ) ) { setCacheDefaultFile( config[ 'default-file' ] ); }
 		if( !isNull( config[ 'default-http' ] ) ) { setCacheDefaultHTTP( config[ 'default-http' ] ); }
 		if( !isNull( config[ 'default-webservice' ] ) ) { setCacheDefaultWebservice( config[ 'default-webservice' ] ); }
-		
+
 		for( var connection in thisCache.XMLChildren ) {
 			var params = structNew().append( connection.XMLAttributes );
-			
+
 			// Rename read-only to readOnly
 			if( !isNull( params[ 'read-only' ] ) ) { params[ 'readOnly' ] = params[ 'read-only' ]; }
-			
+
 			// Turn custom values into struct
 			if( !isNull( params[ 'custom' ] ) ) {
 				var thisCustom = params[ 'custom' ];
 				var thisStruct = {};
 				for( var item in thisCustom.listToArray( '&' ) ) {
 					// Turn foo=bar&baz=bum&poof= into { foo : 'bar', baz : 'bum', poof : '' }
-					// Any "=" or "&" in the key values will be URL encoded. 
+					// Any "=" or "&" in the key values will be URL encoded.
 					thisStruct[ URLDecode( listFirst( item, '=' ) ) ] = ( listLen( item, '=' ) ?  URLDecode( listRest( item, '=' ) ) : '' );
 				}
 				// Overwrite original string with struct
 				params[ 'custom' ] = thisStruct;
 			}
-			
+
 			// If we have a class and we recognize it, generate the human-readable type
 			if( !isNull( params.class ) && translateCacheClassToType( params.class ).len() ) {
 				params.type = translateCacheClassToType( params.class );
 			}
-			
+
 			addCache( argumentCollection = params );
 		}
-					
+
 	}
-	
+
 	private function readLoggers( loggers ) {
 		for ( var logger in loggers.XMLChildren ) {
 			var attrStruct = structNew().append( logger.XMLAttributes );
@@ -436,31 +440,31 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	function write( string CFHomePath ){
 		setCFHomePath( arguments.CFHomePath ?: getCFHomePath() );
 		var thisCFHomePath = getCFHomePath();
-		
+
 		// Check to see if this mapping exists so we are compat with older versions of CommandBox
 		if( wirebox.getBinder().mappingExists( 'SystemSettings' ) ) {
 			var systemSettings = wirebox.getInstance( 'SystemSettings' );
 			// Swap out stuff like ${foo}
-			setMemento( systemSettings.expandDeepSystemSettings( getMemento() ) );	
+			setMemento( systemSettings.expandDeepSystemSettings( getMemento() ) );
 		}
-		
+
 		if( !len( thisCFHomePath ) ) {
 			throw 'No CF home specified to write to';
 		}
-		
+
 		var configFilePath = locateConfigFile();
-		
+
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
 			var thisConfigRaw = fileRead( configFilePath );
 		// Otherwise, start from an empty base template
 		} else {
 			var configFileTemplate = getConfigFileTemplate();
-			var thisConfigRaw = fileRead( configFileTemplate );			
+			var thisConfigRaw = fileRead( configFileTemplate );
 		}
-		
+
 		var thisConfig = XMLParse( thisConfigRaw );
-		
+
 		writeDatasources( thisConfig );
 		writeApplication( thisConfig );
 		writeScope( thisConfig );
@@ -480,25 +484,25 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeError( thisConfig );
 		writeExtensionProviders( thisConfig );
 		writeSecurity( thisConfig );
-		
+
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
 		fileWrite( configFilePath, toString( thisConfig ) );
-		
+
 		return this;
 	}
-	
-	
-	private function writeSecurity( thisConfig ) {		
+
+
+	private function writeSecurity( thisConfig ) {
 		var securitySearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/security' );
 		if( securitySearch.len() ) {
 			var security = securitySearch[1];
 		} else {
-			var security = xmlElemnew( thisConfig, 'security' );			
+			var security = xmlElemnew( thisConfig, 'security' );
 		}
-		
+
 		var config = security.XMLAttributes;
-		
+
 		if( !isNull( getAdminAccessWrite() ) ) {
 			config[ 'access_write' ] = getAdminAccessWrite() == 'closed' ? 'close' : getAdminAccessWrite();
 		}
@@ -510,23 +514,23 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			thisConfig.XMLRoot.XMLChildren.append( security );
 		}
 		var config = security.XMLAttributes;
-		
+
 	}
-	
+
 	private function writeExtensionProviders( thisConfig ) {
-		
+
 		// Only save if we have something defined
 		if( isNull( getExtensionProviders() ) ) {
 			return;
 		}
-		
+
 		var extensionProviderSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/extensions' );
 		if( extensionProviderSearch.len() ) {
 			var extensionProviders = extensionProviderSearch[1];
 		} else {
-			var extensionProviders = xmlElemnew( thisConfig, 'extensions' );			
+			var extensionProviders = xmlElemnew( thisConfig, 'extensions' );
 		}
-		
+
 		var configProviders = extensionProviders;
 		// Loop througuh and add missing providers.  We don't blow away the entire array
 		// because it's also used to store information about extensions too
@@ -552,8 +556,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					// Moving target
 					i--;
 					len--;
-				} 
-			}			
+				}
+			}
 		}
 	}
 
@@ -562,11 +566,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( compilerSearch.len() ) {
 			var compiler = compilerSearch[1];
 		} else {
-			var compiler = xmlElemnew( thisConfig, 'compiler' );			
+			var compiler = xmlElemnew( thisConfig, 'compiler' );
 		}
-		
+
 		var config = compiler.XMLAttributes;
-		
+
 		if( !isNull( getDotNotationUpperCase() ) ) { config[ 'dot-notation-upper-case' ] = getDotNotationUpperCase(); }
 		if( !isNull( getNullSupport() ) ) { config[ 'full-null-support' ] = getNullSupport(); }
 		if( !isNull( getSuppressWhitespaceBeforecfargument() ) ) { config[ 'suppress-ws-before-arg' ] = getSuppressWhitespaceBeforecfargument(); }
@@ -581,15 +585,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( charsetSearch.len() ) {
 			var charset = charsetSearch[1];
 		} else {
-			var charset = xmlElemnew( thisConfig, 'charset' );			
+			var charset = xmlElemnew( thisConfig, 'charset' );
 		}
-		
+
 		var config = charset.XMLAttributes;
-		
+
 		if( !isNull( getTemplateCharset() ) ) { config[ 'template-charset' ] = getTemplateCharset(); }
 		if( !isNull( getWebCharset() ) ) { config[ 'web-charset' ] = getWebCharset(); }
 		if( !isNull( getResourceCharset() ) ) { config[ 'resource-charset' ] = getResourceCharset(); }
-		
+
 		if( !charsetSearch.len() ) {
 			thisConfig.XMLRoot.XMLChildren.append( charset );
 		}
@@ -600,28 +604,28 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( javaSearch.len() ) {
 			var java = javaSearch[1];
 		} else {
-			var java = xmlElemnew( thisConfig, 'java' );			
+			var java = xmlElemnew( thisConfig, 'java' );
 		}
-		
+
 		var config = java.XMLAttributes;
-		
+
 		if( !isNull( getInspectTemplate() ) ) { config[ 'inspect-template' ] = getInspectTemplate(); }
 
 		if( !javaSearch.len() ) {
 			thisConfig.XMLRoot.XMLChildren.append( java );
 		}
 	}
-	
+
 	private function writeRegional( thisConfig ) {
 		var regionalSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/regional' );
 		if( regionalSearch.len() ) {
 			var regional = regionalSearch[1];
 		} else {
-			var regional = xmlElemnew( thisConfig, 'regional' );			
+			var regional = xmlElemnew( thisConfig, 'regional' );
 		}
-		
+
 		var config = regional.XMLAttributes;
-		
+
 		if( !isNull( getThisLocale() ) ) { config[ 'locale' ] = getThisLocale(); }
 		if( !isNull( getTimeServer() ) ) { config[ 'timeserver' ] = getTimeServer(); }
 		if( !isNull( getThisTimeZone() ) ) { config[ 'timezone' ] = getThisTimeZone(); }
@@ -631,18 +635,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			thisConfig.XMLRoot.XMLChildren.append( regional );
 		}
 	}
-	
+
 	private function writeDatasources( thisConfig ) {
-		
-		// Only save if we have something defined
+		var passwordManager = getLuceePasswordManager();
+
+		var datasources = xmlSearch( thisConfig, '/cfLuceeConfiguration/data-sources' )[ 1 ];
+		var config = datasources.XMLAttributes;
+		if( !isNull( getDatasourcePreserveSingleQuotes() ) ) { config[ 'psq' ] = getDatasourcePreserveSingleQuotes(); }
+
+		// Only save datasource list if we have some defined in the incoming config.
 		if( isNull( getDatasources() ) ) {
 			return;
 		}
-		
-		var passwordManager = getLuceePasswordManager();
-		// Get all datasources
-		// TODO: Add tag if it doesn't exist
-		var datasources = xmlSearch( thisConfig, '/cfLuceeConfiguration/data-sources' )[ 1 ];
+
 		datasources.XMLChildren = [];
 
 		for( var DSName in getDatasources() ?: {} ) {
@@ -658,7 +663,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			} else {
 				var DSXMLNode = xmlElemnew(thisConfig,"data-source");
 			}
-			
+
 			// Populate XML node
 			DSXMLNode.XMLAttributes[ 'name' ] = DSName;
 			if( !isNull( DSStruct.database ) ) {
@@ -675,14 +680,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.clob ) ) { DSXMLNode.XMLAttributes[ 'clob' ] = DSStruct.clob; }
 			if( !isNull( DSStruct.connectionLimit ) ) { DSXMLNode.XMLAttributes[ 'connectionLimit' ] = DSStruct.connectionLimit; }
 			if( !isNull( DSStruct.connectionTimeout ) ) { DSXMLNode.XMLAttributes[ 'connectionTimeout' ] = DSStruct.connectionTimeout; }
-			
+
 			// Always set custom, defaulting if neccessary
 			DSXMLNode.XMLAttributes[ 'custom' ] = buildDatasourceCustom( DSStruct.dbdriver, DSStruct.custom ?: '', DSStruct );
-			
+
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'dsn' ] = translateDatasourceURLToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.dsn ?: '' );
 			}
-						
+
 			// Encrypt password again as we write it.
 			if( !isNull( DSStruct.password ) ) { DSXMLNode.XMLAttributes[ 'password' ] = 'encrypted:' & passwordManager.encryptDataSource( DSStruct.password ); }
 			if( !isNull( DSStruct.host ) ) { DSXMLNode.XMLAttributes[ 'host' ] = DSStruct.host; }
@@ -691,11 +696,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.storage ) ) { DSXMLNode.XMLAttributes[ 'storage' ] = DSStruct.storage; }
 			if( !isNull( DSStruct.username ) ) { DSXMLNode.XMLAttributes[ 'username' ] = DSStruct.username; }
 			if( !isNull( DSStruct.validate ) ) { DSXMLNode.XMLAttributes[ 'validate' ] = DSStruct.validate; }
-			
+
 			// Insert into doc if this was new.
 			if( !DSXMLSearch.len() ) {
 				datasources.XMLChildren.append( DSXMLNode );
-			}			
+			}
 		}
 	}
 
@@ -703,7 +708,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// TODO: Add tag if it doesn't exist
 		var thisApplication = xmlSearch( thisConfig, '/cfLuceeConfiguration/application' )[ 1 ];
 		var config = thisApplication.XMLAttributes;
-		
+
 		if( !isNull( getRequestTimeout() ) ) { config[ 'requesttimeout' ] = getRequestTimeout(); }
 		if( !isNull( getRequestTimeoutInURL() ) ) { config[ 'allow-url-requesttimeout' ] = getRequestTimeoutInURL(); }
 		if( !isNull( getScriptProtect() ) ) { config[ 'script-protect' ] = getScriptProtect(); }
@@ -712,12 +717,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getApplicationMode() ) ) { config[ 'listener-mode' ] = ( getApplicationMode() == 'curr2driveroot' ? 'curr2root' : getApplicationMode() ); }
 		if( !isNull( getUDFTypeChecking() ) ) { config[ 'type-checking' ] = getUDFTypeChecking(); }
 	}
-	
+
 	private function writeScope( thisConfig ) {
 		// TODO: Add tag if it doesn't exist
 		var scope = xmlSearch( thisConfig, '/cfLuceeConfiguration/scope' )[ 1 ];
 		var config = scope.XMLAttributes;
-		
+
 		if( !isNull( getApplicationTimeout() ) ) { config[ 'applicationtimeout' ] = getApplicationTimeout(); }
 		if( !isNull( getSearchResultsets() ) ) { config[ 'cascade-to-resultset' ] = getSearchResultsets(); }
 		if( !isNull( getScopeCascading() ) ) { config[ 'cascading' ] = getScopeCascading(); }
@@ -732,7 +737,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSessionStorage() ) ) {config[ 'sessionstorage' ] = getSessionStorage(); }
 		if( !isNull( getClientStorage() ) ) {
 			var thisClientStorage = getClientStorage();
-			
+
 			// This Adobe value isn't valid on Lucee, so swap to memory instead
 			if( thisClientStorage == 'registry' ) {
 				thisClientStorage = 'memory';
@@ -743,22 +748,22 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSessionType() ) ) { config[ 'session-type' ] = getSessionType(); }
 		structDelete( config, 'client-max-age' );
 		structDelete( config, 'requesttimeout' );
-		
+
 	}
-	
+
 	private function writeMail( thisConfig ) {
-		
+
 		// Only save if we have something defined
 		if( isNull( getMailServers() ) ) {
 			return;
 		}
-		
+
 		var passwordManager = getLuceePasswordManager();
 		// Get all mail servers
 		// TODO: Add tag if it doesn't exist
 		var mailServers = xmlSearch( thisConfig, '/cfLuceeConfiguration/mail' )[ 1 ];
 		mailServers.XMLChildren = [];
-		
+
 		for( var mailServer in getMailServers() ?: [] ) {
 			// Search to see if this datasource already exists
 			var mailServerXMLSearch = xmlSearch( thisConfig, "/cfLuceeConfiguration/mail/server[translate(@smtp,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( mailServer.smtp )#']" );
@@ -769,7 +774,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				structClear( mailServerXMLNode.XMLAttributes );
 			// Create new data-source tag
 			} else {
-				var mailServerXMLNode = xmlElemnew(thisConfig,"server");				
+				var mailServerXMLNode = xmlElemnew(thisConfig,"server");
 			}
 
 			// Populate XML node
@@ -782,16 +787,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( mailServer.username ) ) { mailServerXMLNode.XMLAttributes[ 'username' ] = mailServer.username; }
 			// Encrypt password again as we write it.
 			if( !isNull( mailServer.password ) ) { mailServerXMLNode.XMLAttributes[ 'password' ] = 'encrypted:' & passwordManager.encryptDataSource( mailServer.password ); }
-			
+
 			// Insert into doc if this was new.
 			if( !mailServerXMLSearch.len() ) {
 				mailServers.XMLChildren.append( mailServerXMLNode );
-			}			
+			}
 		}
 	}
-	
+
 	private function writeMappings( thisConfig ) {
-		
+
 		// Only save if we have something defined
 		if( isNull( getCFmappings() ) ) {
 			return;
@@ -808,7 +813,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				i--;
 			}
 		}
-		
+
 		for( var virtual in getCFmappings() ?: {} ) {
 			var mappingStruct = getCFmappings()[ virtual ];
 			// Search to see if this datasource already exists
@@ -820,9 +825,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				structClear( mappingXMLNode.XMLAttributes );
 			// Create new data-source tag
 			} else {
-				var mappingXMLNode = xmlElemnew(thisConfig,"mapping");				
+				var mappingXMLNode = xmlElemnew(thisConfig,"mapping");
 			}
-			
+
 			// Populate XML node
 			mappingXMLNode.XMLAttributes[ 'virtual' ] = virtual;
 			if( !isNull( mappingStruct.physical ) ) { mappingXMLNode.XMLAttributes[ 'physical' ] = mappingStruct.physical; }
@@ -832,16 +837,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( mappingStruct.listenerType ) ) { mappingXMLNode.XMLAttributes[ 'listenerType' ] = mappingStruct.listenerType; }
 			if( !isNull( mappingStruct.primary ) ) { mappingXMLNode.XMLAttributes[ 'primary' ] = mappingStruct.primary; }
 			if( !isNull( mappingStruct.readOnly ) ) { mappingXMLNode.XMLAttributes[ 'readOnly' ] = mappingStruct.readOnly; }
-			
+
 			// Insert into doc if this was new.
 			if( !mappingXMLSearch.len() ) {
 				mappings.append( mappingXMLNode );
-			}			
+			}
 		}
 	}
-	
+
 	private function writeCustomTags( thisConfig ) {
-		
+
 		// Only save if we have something defined
 		if( isNull( getCustomTagPaths() ) ) {
 			return;
@@ -907,13 +912,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			}
 		}
 	}
-	
+
 	private function writeDebugging( thisConfig ) {
-		
+
 		// TODO: Add tag if it doesn't exist
 		var scope = xmlSearch( thisConfig, '/cfLuceeConfiguration/debugging' )[ 1 ];
 		var config = scope.XMLAttributes;
-		
+
 		if( !isNull( getDebuggingEnabled() ) ) { config[ 'debug' ] = getDebuggingEnabled(); }
 		if( !isNull( getDebuggingDBEnabled() ) ) { config[ 'database' ] = getDebuggingDBEnabled(); }
 		if( !isNull( getDebuggingExceptionsEnabled() ) ) { config[ 'exception' ] = getDebuggingExceptionsEnabled(); }
@@ -923,19 +928,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getDebuggingTimerEnabled() ) ) { config[ 'timer' ] = getDebuggingTimerEnabled(); }
 		if( !isNull( getDebuggingImplicitVariableAccessEnabled() ) ) { config[ 'implicit-access' ] = getDebuggingImplicitVariableAccessEnabled(); }
 		if( !isNull( getDebuggingMaxLoggedRequests() ) ) { config[ 'max-records-logged' ] = getDebuggingMaxLoggedRequests(); }
-		
+
 	}
-	
+
 	private function writeConfigChanges( thisConfig ) {
 		var config = thisConfig.XMLRoot.XMLAttributes;
-		
+
 		if( !isNull( getWatchConfigFilesForChangesEnabled() ) ) { config[ 'check-for-changes' ] = getWatchConfigFilesForChangesEnabled(); }
 		// Lucee doesn't support watchConfigFilesForChangesInterval or watchConfigFilesForChangesExtensions
-		
+
 	}
-	
+
 	private function writeCache( thisConfig ) {
-		
+
 		// Only save if we have something defined
 		if( isNull( getCaches() ) ) {
 			return;
@@ -943,12 +948,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// Get all caches connections
 		var cacheConnectionsSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/cache' );
 		if( cacheConnectionsSearch.len() ) {
-			var cacheConnections = cacheConnectionsSearch[ 1 ];			
+			var cacheConnections = cacheConnectionsSearch[ 1 ];
 		} else {
 			var cacheConnections = xmlElemnew( thisConfig, "cache" );
 		}
 		cacheConnections.XMLChildren = [];
-		
+
 		if( !isNull( getCacheDefaultObject() ) ) { cacheConnections.XMLAttributes[ 'default-object' ] = getCacheDefaultObject(); }
 		if( !isNull( getCacheDefaultFunction() ) ) { cacheConnections.XMLAttributes[ 'default-function' ] = getCacheDefaultFunction(); }
 		if( !isNull( getCacheDefaultTemplate() ) ) { cacheConnections.XMLAttributes[ 'default-template' ] = getCacheDefaultTemplate(); }
@@ -959,7 +964,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getCacheDefaultFile() ) ) { cacheConnections.XMLAttributes[ 'default-file' ] = getCacheDefaultFile(); }
 		if( !isNull( getCacheDefaultHTTP() ) ) { cacheConnections.XMLAttributes[ 'default-http' ] = getCacheDefaultHTTP(); }
 		if( !isNull( getCacheDefaultWebservice() ) ) { cacheConnections.XMLAttributes[ 'default-webservice' ] = getCacheDefaultWebservice(); }
-		
+
 		var thisCaches = getCaches() ?: {};
 		for( var cacheName in thisCaches ) {
 			var cacheConnection = thisCaches[ cacheName ];
@@ -972,19 +977,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				structClear( cacheConnectionXMLNode.XMLAttributes );
 			// Create new data-source tag
 			} else {
-				var cacheConnectionXMLNode = xmlElemnew( thisConfig, "connection" );				
+				var cacheConnectionXMLNode = xmlElemnew( thisConfig, "connection" );
 			}
 
 			// Populate XML node
 			cacheConnectionXMLNode.XMLAttributes[ 'name' ] = cacheName;
-			
+
 			if( !isNull( cacheConnection.class ) ) {
 				cacheConnectionXMLNode.XMLAttributes[ 'class' ] = cacheConnection.class;
 			// If there's no class and we have a type that looks familiar, create the class for them
 			} else if( !isNull( cacheConnection.type ) && translateCacheTypeToClass( cacheConnection.type ).len()  ) {
 				cacheConnectionXMLNode.XMLAttributes[ 'class' ] = translateCacheTypeToClass( cacheConnection.type );
 			}
-			
+
 			if( !isNull( cacheConnection.storage ) ) { cacheConnectionXMLNode.XMLAttributes[ 'storage' ] = cacheConnection.storage; }
 			if( !isNull( cacheConnection.readOnly ) ) { cacheConnectionXMLNode.XMLAttributes[ 'read-only' ] = cacheConnection.readOnly; }
 			if( !isNull( cacheConnection.custom ) && isStruct( cacheConnection.custom ) ) {
@@ -995,25 +1000,25 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				}
 				cacheConnectionXMLNode.XMLAttributes[ 'custom' ] = customAsString;
 			}
-			
+
 			// Insert into doc if this was new.
 			if( !cacheConnectionXMLSearch.len() ) {
 				cacheConnections.XMLChildren.append( cacheConnectionXMLNode );
-			}			
+			}
 		}
-	
+
 		// Insert into doc if this was new.
 		if( !cacheConnectionsSearch.len() ) {
 			thisConfig.XMLRoot.XMLChildren.append( cacheConnections );
-		}			
-		
+		}
+
 	}
-	
+
 	private function writeAuth( thisConfig ) {
 		// See comments in BaseConfig properties for details
 		var config = thisConfig.XMLRoot.XMLAttributes;
 		var passwordManager = getLuceePasswordManager();
-		
+
 		// We have plain text password and a salt
 		if( !isNull( getAdminPassword() ) && !isNull( getAdminSalt() ) ) {
 			config[ 'hspw' ] = passwordManager.hashAdministrator( getAdminPassword(), getAdminSalt() );
@@ -1040,7 +1045,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			structDelete( config, 'hspw' );
 			structDelete( config, 'password' );
 		}
-		
+
 		// We have plain text default password and a salt
 		if( !isNull( getAdminPasswordDefault() ) && !isNull( getAdminSalt() ) ) {
 			config[ 'default-hspw' ] = passwordManager.hashAdministrator( getAdminPasswordDefault(), getAdminSalt() );
@@ -1067,20 +1072,20 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			structDelete( config, 'default-hspw' );
 			structDelete( config, 'default-password' );
 		}
-		
+
 		if( !isNull( getAdminSalt() ) ) { config[ 'salt' ] = getAdminSalt(); }
 	}
-	
+
 	private function writeSetting( thisConfig ) {
 		var settingSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/setting' );
 		if( settingSearch.len() ) {
 			var setting = settingSearch[1];
 		} else {
-			var setting = xmlElemnew( thisConfig, 'setting' );			
+			var setting = xmlElemnew( thisConfig, 'setting' );
 		}
-		
+
 		var config = setting.XMLAttributes;
-		
+
 		if( !isNull( getCompression() ) ) { config[ 'allow-compression' ] = getCompression(); }
 		if( !isNull( getWhitespaceManagement() ) ) { config[ 'cfml-writer' ] = translateWhitespaceToLucee( getWhitespaceManagement() ); }
 		if( !isNull( getBufferTagBodyOutput() ) ) { config[ 'buffer-output' ] = getBufferTagBodyOutput(); }
@@ -1090,15 +1095,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			thisConfig.XMLRoot.XMLChildren.append( setting );
 		}
 	}
-	
+
 	private function writeLoggers( thisConfig ) {
-		
+
 		// Only save if we have something defined
 		if( isNull( getLoggers() ) ) {
 			return;
 		}
 		var loggers = xmlSearch( thisConfig, '/cfLuceeConfiguration/logging' )[ 1 ];
-		
+
 		for( var name in getLoggers() ?: {} ) {
 			var loggerStruct = getLoggers()[ name ];
 			// Search to see if this logger already exists
@@ -1116,9 +1121,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			// Populate XML node
 			loggerXMLNode.XMLAttributes[ 'name' ] = name;
 			for ( var key in [ 'appender', 'appenderClass', 'layout', 'layoutClass', 'level' ] ) {
-				if ( !isNull( loggerStruct[ key ] ) ) { 
+				if ( !isNull( loggerStruct[ key ] ) ) {
                     // replace() translates {var}Class to {var}-class
-					loggerXMLNode.XMLAttributes[ key.replace( 'C', '-c' ) ] = loggerStruct[ key ]; 
+					loggerXMLNode.XMLAttributes[ key.replace( 'C', '-c' ) ] = loggerStruct[ key ];
 				}
 			}
 			for ( var key in [ 'appenderArguments', 'layoutArguments' ] ) {
@@ -1128,7 +1133,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 						args.append( argName & ':' & loggerStruct[ key ][ argName ] );
 					}
                     // replace() translates {var}Arguments to {var}-arguments
-					loggerXMLNode.XMLAttributes[ key.replace( 'A', '-a' ) ] = args.toList( ';' ); 
+					loggerXMLNode.XMLAttributes[ key.replace( 'A', '-a' ) ] = args.toList( ';' );
 				}
 			}
 
@@ -1164,18 +1169,18 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	function locateConfigFile(){
 		var thisCFHomePath = getCFHomePath();
 		var thisConfigFileName = getConfigFileName();
-		
+
 		// If the path ends with the same extension as the config file name, just use it
 		if( right( thisCFHomePath, 4 ) == right( thisConfigFileName, 4 ) ) {
 			return thisCFHomePath;
 		}
-		
+
 		// This is where the file _should_ be.
-		return thisCFHomePath & getConfigRelativePathWithinServerHome() & thisConfigFileName;		
+		return thisCFHomePath & getConfigRelativePathWithinServerHome() & thisConfigFileName;
 	}
 
 	private function translateDatasourceDriverToLucee( required string driverName ) {
-		
+
 		if( listFindNoCase( 'MSSQL,PostgreSQL,Oracle,MySQL,DB2Firebird,H2,H2Server,HSQLDB,ODBC,Sybase', arguments.driverName ) ) {
 			return arguments.driverName;
 		} else if (arguments.driverName == 'MSSQL2') {
@@ -1184,11 +1189,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			// Adobe stores arbitrary text here
 			return 'Other';
 		}
-		
+
 	}
-	
+
 	private function translateDatasourceClassToLucee( required string driverName, required string className ) {
-		
+
 		switch( driverName ) {
 			case 'MSSQL' :
 				return 'com.microsoft.jdbc.sqlserver.SQLServerDriver';
@@ -1201,7 +1206,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( listFindNoCase( 'com.mysql.jdbc.Driver,org.gjt.mm.mysql.Driver', className ) ) {
 					return className;
 				}
-				// If the class name wasn't recognized, default to this one. 
+				// If the class name wasn't recognized, default to this one.
 				// This assumes an earlier version of the MySQL JDBC extension
 				// But have I no way to know what the user will have installed.
 				return 'com.mysql.jdbc.Driver';
@@ -1210,11 +1215,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			default :
 				return arguments.className;
 		}
-	
+
 	}
-	
+
 	private function translateCacheTypeToClass( required string type ) {
-		
+
 		switch( type ) {
 			case 'ram' :
 				return 'lucee.runtime.cache.ram.RamCache';
@@ -1223,11 +1228,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			default :
 				return '';
 		}
-	
+
 	}
-	
+
 	private function translateCacheClassToType( required string class ) {
-		
+
 		switch( class ) {
 			case 'lucee.runtime.cache.ram.RamCache' :
 				return 'RAM';
@@ -1236,11 +1241,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			default :
 				return '';
 		}
-	
+
 	}
-	
+
 	private function translateDatasourceURLToLucee( required string driverName, required string JDBCUrl ) {
-		
+
 		switch( driverName ) {
 			case 'MySQL' :
 				return 'jdbc:mysql://{host}:{port}/{database}';
@@ -1257,16 +1262,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			default :
 				return arguments.JDBCUrl;
 		}
-	
+
 	}
-	
+
 	private function buildDatasourceCustom( required string driverName, required string custom='', required struct datasourceData ) {
-		
+
 		// If a custom set of attributes are already provided, use it!
 		if( custom.trim().len() ) {
 			return custom;
 		}
-		
+
 		switch( driverName ) {
 			case 'MySQL' :
 				// TODO: make these actually dynamic and stored!
@@ -1283,15 +1288,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					return 'DATABASENAME=#datasourceData.database#&sendStringParametersAsUnicode=true&SelectMethod=direct';
 				} else {
 					return 'sendStringParametersAsUnicode=true&SelectMethod=direct';
-				}				
+				}
 			default :
 				return '';
 		}
-	
+
 	}
 
 	private function translateSharedErrorTemplateToLucee( required string templateName ) {
-		
+
 		switch( templateName ) {
 			case 'default' :
 				return '/lucee/templates/error/error.cfm';
@@ -1302,11 +1307,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			default :
 				return arguments.templateName;
 		}
-	
+
 	}
 
 	private function translateLuceeToSharedErrorTemplate( required string templateName ) {
-		
+
 		switch( templateName ) {
 			case '/lucee/templates/error/error.cfm' :
 				return 'default';
@@ -1317,9 +1322,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			default :
 				return arguments.templateName;
 		}
-	
+
 	}
-	
+
 	/**
 	* 0 Select 1
 	* 1 delete 2
@@ -1334,7 +1339,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	*/
 	private function translatePermissionsToBitMask( required struct ds ) {
 		var bitMask = 0;
-	
+
 	    if( ds.allowSelect ?: true ) { bitMask = bitMaskSet( bitMask, 1, 0, 1 ); }
 	    if( ds.allowDelete ?: true ) { bitMask = bitMaskSet( bitMask, 1, 1, 1 ); }
 	    if( ds.allowUpdate ?: true ) { bitMask = bitMaskSet( bitMask, 1, 2, 1 ); }
@@ -1346,13 +1351,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	    if( ds.allowAlter ?: true ) { bitMask = bitMaskSet( bitMask, 1, 8, 1 ); }
 	    // Lucee doesn't support stored proc
 	    // if( ds.allowStoredproc ?: true ) { bitMask = bitMaskSet( bitMask, 1, 9, 1 ); }
-	    	
-	    return bitMask;		    
+
+	    return bitMask;
 	}
-	
+
 	private function translateBitMaskToPermissions( required bitMask ) {
 		// Defaulting to true and then turning off in case a datasource doesn't have anything stored for
-		// "allow", this will give the default behavior.  
+		// "allow", this will give the default behavior.
 		var ds = {
 			'allowSelect' = true,
 		    'allowDelete' = true,
@@ -1365,12 +1370,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		    'allowAlter' = true,
 		    'allowStoredproc' = true
 		  };
-		
+
 		// If there's no setting, just assume it's all "on".
 		if( bitMask == '' ) {
 			return ds;
 		}
-	
+
 		if( !bitMaskRead( bitMask, 0, 1 ) ) { ds.allowSelect = false; }
 	    if( !bitMaskRead( bitMask, 1, 1 ) ) { ds.allowDelete = false; }
 	    if( !bitMaskRead( bitMask, 2, 1 ) ) { ds.allowUpdate = false; }
@@ -1382,12 +1387,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	    if( !bitMaskRead( bitMask, 8, 1 ) ) { ds.allowAlter = false; }
 	    // Lucee doesn't support stored proc
 	    // if( !bitMaskRead( bitMask, 9, 1 ) ) { ds.allowStoredproc = false; }
-	    
-	    return ds;		    
+
+	    return ds;
 	}
-	
+
 	private function translateWhitespaceToLucee( required string whitespaceManagement ) {
-		
+
 		switch( whitespaceManagement ) {
 			case 'off' :
 			case 'regular' :
@@ -1403,9 +1408,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 
 	}
-	
+
 	private function translateWhitespaceFromLucee( required string whitespaceManagement ) {
-		
+
 		switch( whitespaceManagement ) {
 			case 'regular' :
 				return 'off';
@@ -1416,7 +1421,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			default :
 				return 'off';
 		}
-	
+
 	}
-	
+
 }

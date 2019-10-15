@@ -45,7 +45,7 @@ component accessors="true" {
 	property name='templateCacheSize' type='numeric' _isCFConfig=true;
 	// Number of queries to keep in cache
 	property name='queryCacheSize' type='numeric' _isCFConfig=true;
-	// true/false When checked, at server level internal cache is used to store cached queries. By default, cached queries are stored in QUERY region supported by Ehcache. 
+	// true/false When checked, at server level internal cache is used to store cached queries. By default, cached queries are stored in QUERY region supported by Ehcache.
 	// Adobe-only
 	property name='QueryInternalCacheEnabled' type='boolean' _isCFConfig=true;
 	// True/false
@@ -181,6 +181,9 @@ component accessors="true" {
 	// Key is datasource name, value is struct of properties
 	property name='datasources' type='struct' _isCFConfig=true;
 
+	// Preserve single quotes (") in the SQL defined with the tag cfquery (Lucee only)
+	property name='datasourcePreserveSingleQuotes' type='boolean' _isCFConfig=true;
+
 	// Array of structs of properties.  Mail servers are uniquely identified by host
 	property name='mailServers' type='array' _isCFConfig=true;
 	/**
@@ -216,7 +219,7 @@ component accessors="true" {
 	// true/false Log all mail messages sent by ColdFusion.  Select this check box to save the To, From, and Subject fields of messages to a log file.
 	property name='mailLogEnabled' type='boolean' _isCFConfig=true;
 	// Error Log Severity. Select the type of SMTP-related error messages to log.
-	// One of the strings "debug", "information", "warning", "error" 
+	// One of the strings "debug", "information", "warning", "error"
 	property name='mailLogSeverity' type='string' _isCFConfig=true;
 
 
@@ -313,8 +316,8 @@ component accessors="true" {
 
 	// Key is cache connection name, value is struct of properties
 	property name='caches' type='struct' _isCFConfig=true;
-	
-	// Array of extension provider URLs (strings) 
+
+	// Array of extension provider URLs (strings)
 	property name='extensionProviders' type='array' _isCFConfig=true;
 
 	// name of default Object cache connection
@@ -353,8 +356,8 @@ component accessors="true" {
 	property name='weinreRemoteInspectionEnabled' type='boolean' _isCFConfig=true;
 	// Report Execution Times
 	property name='debuggingReportExecutionTimes' type='boolean' _isCFConfig=true;
-		
-	// Database Activity - Select this option to log the database activity for the SQL Query events and Stored Procedure events. - Lucee only 
+
+	// Database Activity - Select this option to log the database activity for the SQL Query events and Stored Procedure events. - Lucee only
 	property name='debuggingDBEnabled' type='boolean' _isCFConfig=true;
 	// Exceptions - Select this option to log all exceptions raised for the request. - Lucee only
 	property name='debuggingExceptionsEnabled' type='boolean' _isCFConfig=true;
@@ -368,12 +371,12 @@ component accessors="true" {
 	property name='debuggingTimerEnabled' type='boolean' _isCFConfig=true;
 	// Implicit variable Access - Select this option to log all accesses to scopes, queries and threads that happens implicit (cascaded). - Lucee only
 	property name='debuggingImplicitVariableAccessEnabled' type='boolean' _isCFConfig=true;
-	
+
 	// Maximum Logged Requests - Lucee only
 	property name='debuggingMaxLoggedRequests' type='numeric' _isCFConfig=true;
 
-	
-	
+
+
 	// Debugging Highlight templates taking longer than the following ms
 	property name='debuggingReportExecutionTimesMinimum' type='numeric' _isCFConfig=true;
 	// Debugging Use the following output mode for long template request execution times
@@ -414,14 +417,14 @@ component accessors="true" {
 	property name='debuggingShowVariableURL' type='boolean' _isCFConfig=true;
 	// Debugging IP Addresses
 	property name='debuggingIPList' type='string' _isCFConfig=true;
-	
+
 	// Monitoring Service Port (Only used by Adobe CF)
 	// The port for the monitoring service to bind to
 	property name='monitoringServicePort' type='numeric' _isCFConfig=true;
 	// The host for the monitoring service to bind to
 	// See https://tracker.adobe.com/#/view/CF-4202562
 	property name='monitoringServiceHost' type='string' _isCFConfig=true;
-	
+
 	// .NET Services (Only used by Adobe CF)
 	// Java port for .NET services
 	property name='dotNetPort' type='numeric' _isCFConfig=true;
@@ -431,20 +434,20 @@ component accessors="true" {
 	property name='dotNetInstallDir' type='string' _isCFConfig=true;
 	// Protocol for the .NET services.  Possible options: TCP, ??
 	property name='dotNetProtocol' type='string' _isCFConfig=true;
-	
+
 	// Log directory
 	property name='logDirectory' type='string' _isCFConfig=true;
 	// Maximum file size  (In KB)
 	property name='logMaxFileSize' type='numeric' _isCFConfig=true;
 	// Maximum number of archives
 	property name='logMaxArchives' type='numeric' _isCFConfig=true;
-	// Log slow pages taking longer than 
+	// Log slow pages taking longer than
 	property name='logSlowRequestsEnabled' type='boolean' _isCFConfig=true;
-	// Number of seconds threshold for logging slow pages 
+	// Number of seconds threshold for logging slow pages
 	property name='logSlowRequestsThreshold' type='numeric' _isCFConfig=true;
-	// Log all CORBA calls 
+	// Log all CORBA calls
 	property name='logCORBACalls' type='boolean' _isCFConfig=true;
-	
+
 	// TODO:
 	//property name='externalizeStrings' type='string' _isCFConfig=true;
 	//property name='restMappings' type='array' _isCFConfig=true;
@@ -524,13 +527,13 @@ component accessors="true" {
 	property name='adminAllowConcurrentLogin' type='boolean' _isCFConfig=true;
 	// Enable sandbox security
 	property name='sandboxEnabled' type='boolean' _isCFConfig=true;
-	
+
 	// define the access for reading data from the admin. One of the strings open, closed, or protected
 	property name='adminAccessWrite' type='string' _isCFConfig=true;
 	// define the access for writing data from the admin. One of the strings open, closed, or protected
 	property name='adminAccessRead' type='string' _isCFConfig=true;
-		
-	
+
+
 	// List of allowed IPs for exposed services.  Formatted like 1.2.3.4,5.6.7.*
 	property name='servicesAllowedIPList' type='string' _isCFConfig=true;
 	// List of allowed IPs for admin access.  Formatted like 1.2.3.4,5.6.7.*
@@ -990,7 +993,7 @@ component accessors="true" {
 	* @file Save output of task to this file
 	* @httpPort The port for the main task URL
 	* @httpProxyPort The port for the proxy server
-	* @interval The type of schedule. Once, Weekly, Daily, Monthly, an integer containing the number of seconds between runs 
+	* @interval The type of schedule. Once, Weekly, Daily, Monthly, an integer containing the number of seconds between runs
 	* @misfire What to do in case of a misfire.  Ignore, FireNow, invokeHander
 	* @oncomplete Comma-separated list of chained tasks to be run after the completion of the current task (task1:group1,task2:group2...)
 	* @onexception Specify what to do if a task results in error. Ignore, Pause, ReFire, InvokeHandler
@@ -1002,7 +1005,7 @@ component accessors="true" {
 	* @proxyUser Proxy server username
 	* @saveOutputToFile Save output to a file?
 	* @repeat -1 to repeat forever, otherwise integer.
-	* @requestTimeOut Number of seconds to timeout the request.  Empty string for none. 
+	* @requestTimeOut Number of seconds to timeout the request.  Empty string for none.
 	* @resolveurl When saving output of task to file, Resolve internal URLs so that links remain intact.
 	* @retrycount The number of reattempts if the task results in an error.
 	* @startDate The date to start executing the task
@@ -1046,11 +1049,11 @@ component accessors="true" {
 		) {
 
 		var scheduledTask = {};
-		
+
 		for( var arg in arguments ) {
 			if( !isNull( arguments[ arg ] ) ) { scheduledTask[ arg ] = arguments[ arg ]; };
 		}
-		
+
 		var thisScheduledTasks = getScheduledTasks() ?: {};
 		thisScheduledTasks[ arguments.group & ':' & arguments.task ] = scheduledTask;
 		setScheduledTasks( thisScheduledTasks );
@@ -1140,10 +1143,10 @@ component accessors="true" {
 				memento[ propName ] = thisValue;
 			}
 		}
-		
+
 		// Force keys to be alphabetizes for consistent serialization
 		memento = convertStructToSorted( memento );
-		
+
 		// This could be an empty struct if nothing has been set.
 		return memento;
 	}
@@ -1186,7 +1189,7 @@ component accessors="true" {
 		return configProperties;
 	}
 
-	
+
 	/*
 	* Turns all slashes in a path to forward slashes except for \\ in a Windows UNC network share
 	* Also changes double slashes to a single slash
@@ -1195,29 +1198,29 @@ component accessors="true" {
 		if( path.left( 2 ) == '\\' ) {
 			return '\\' & path.replace( '\', '/', 'all' ).right( -2 );
 		} else {
-			return path.replace( '\', '/', 'all' ).replace( '//', '/', 'all' );			
+			return path.replace( '\', '/', 'all' ).replace( '//', '/', 'all' );
 		}
 	}
 
 
 	/*
-	* Sort a structs keys alphabetically.  There is not native support for 
+	* Sort a structs keys alphabetically.  There is not native support for
 	* sorted structs in Lucee at the time I'm writing this.
-	*/	
-	function convertStructToSorted( required struct unsortedStruct ) {	
-		var sortedStruct = structNew('ordered');		
-		
+	*/
+	function convertStructToSorted( required struct unsortedStruct ) {
+		var sortedStruct = structNew('ordered');
+
 		// Sort the struct keys and insert them in that order to ordered struct
-		unsortedStruct.keyArray().sort( 'textnocase' ).each( function( i ) { 
+		unsortedStruct.keyArray().sort( 'textnocase' ).each( function( i ) {
 			// Recurse into nested structs
 			if( isStruct( unsortedStruct[ i ] ) ) {
 				sortedStruct[ i ] = convertStructToSorted( unsortedStruct[ i ] );
 			} else {
-				sortedStruct[ i ] = unsortedStruct[ i ];				
+				sortedStruct[ i ] = unsortedStruct[ i ];
 			}
 		 } );
-		
+
 		return sortedStruct;
 	}
-	
+
 }
