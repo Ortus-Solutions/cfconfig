@@ -75,8 +75,8 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			
 			it( "can export config from Adobe to JSON", function() {
 				configService.transfer(
-					from		= '/tests/resources/Adobe11/ServerHome/WEB-INF/cfusion',
-					to			= '/tests/resources/tmp/AdobeConfig.json',
+					from		= expandPath( '/tests/resources/Adobe11/ServerHome/WEB-INF/cfusion'),
+					to			= expandPath( '/tests/resources/tmp/AdobeConfig.json' ),
 					fromFormat	= 'adobe',
 					toFormat	= 'JSON',
 					fromVersion	= '11'
@@ -96,8 +96,8 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			
 			it( "can export config from JSON to Adobe", function() {
 				configService.transfer(
-					from		= '/tests/resources/.CFConfig.json',
-					to			= '/tests/resources/tmp/adobe',
+					from		= expandPath( '/tests/resources/.CFConfig.json' ),
+					to			= expandPath( '/tests/resources/tmp/adobe' ),
 					fromFormat	= 'JSON',
 					toFormat	= 'adobe',
 					toVersion	= '11'
@@ -108,16 +108,16 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			it( "can transfer config from adobe to Lucee", function() {
 				
 				configService.transfer(
-					from		= '/tests/resources/.CFConfig.json',
-					to			= '/tests/resources/tmp/adobe',
+					from		= expandPath( '/tests/resources/.CFConfig.json' ),
+					to			= expandPath( '/tests/resources/tmp/adobe' ),
 					fromFormat	= 'JSON',
 					toFormat	= 'adobe',
 					toVersion	= '11'
 				 );
 				
 				configService.transfer(
-					from		= '/tests/resources/tmp/adobe',
-					to			= '/tests/resources/tmp/lucee2',
+					from		= expandPath( '/tests/resources/tmp/adobe' ),
+					to			= expandPath( '/tests/resources/tmp/lucee2' ),
 					fromFormat	= 'adobe',
 					toFormat	= 'luceeServer',
 					fromVersion	= '11',
@@ -136,8 +136,8 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				 );
 				
 				configService.transfer(
-					from		= '/tests/resources/tmp/lucee',
-					to			= '/tests/resources/tmp/adobe2',
+					from		= expandPath( '/tests/resources/tmp/lucee' ),
+					to			= expandPath( '/tests/resources/tmp/adobe2' ),
 					fromFormat	= 'luceeServer',
 					toFormat	= 'adobe',
 					fromVersion	= '4',
