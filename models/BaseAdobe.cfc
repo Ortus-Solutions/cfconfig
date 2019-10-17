@@ -618,6 +618,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				validate = ds.keyExists("validateConnection")?ds.validateConnection:false,
 				SID = ds.urlmap.SID ?: '',
 				maintainConnections = ds.pooling ?: false,
+				sendStringParametersAsUnicode = ds.urlmap.sendStringParametersAsUnicode ?: false,
 				maxPooledStatements = ds.urlmap.maxPooledStatements ?: 100,
 				connectionTimeoutInterval = ds.interval ?: 420,
 				queryTimeout = ds.urlmap.qTimeout ?: 0,
@@ -1406,6 +1407,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					savingDS.urlmap.database = incomingDS.database;
 					savingDS.urlmap.connectionprops.database = incomingDS.database;
 					savingDS.url = savingDS.url.replaceNoCase( '{database}', incomingDS.database );
+				}
+				if( !isNull( incomingDS.sendStringParametersAsUnicode ) ) {
+					savingDS.urlmap.sendStringParametersAsUnicode = !!incomingDS.sendStringParametersAsUnicode;
+					savingDS.urlmap.connectionprops.sendStringParametersAsUnicode = !!incomingDS.sendStringParametersAsUnicode;
+					savingDS.url = savingDS.url.replaceNoCase( '{sendStringParametersAsUnicode}', !!incomingDS.sendStringParametersAsUnicode );
 				}
 				// Normalize names
 				if( !isNull( incomingDS.dbdriver ) ) { savingDS.driver = DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ); }

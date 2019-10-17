@@ -1,13 +1,249 @@
-<?xml version="1.0" encoding="utf-8"?><wddxPacket version="1.0">
-  <header/>
-  <data>
-    <array length="2">
-      <struct type="coldfusion.server.ConfigMap"/>
-      <struct type="coldfusion.server.ConfigMap">
-        <var name="maxcachecount">
-          <number>100.0</number>
-        </var>
-      </struct>
-    </array>
-  </data>
+<?xml version="1.0" encoding="utf-8"?>
+<wddxPacket version="1.0">
+    <header/>
+    <data>
+        <array length="2">
+            <struct type="coldfusion.server.ConfigMap">
+                <var name='test_dsn'>
+                    <struct type='coldfusion.server.ConfigMap'>
+                        <var name='alter'>
+                            <boolean value='false'/>
+                        </var>
+                        <var name='create'>
+                            <boolean value='false'/>
+                        </var>
+                        <var name='disable_clob'>
+                            <boolean value='false'/>
+                        </var>
+                        <var name='DRIVER'>
+                            <string>MSSQLServer</string>
+                        </var>
+                        <var name='CLASS'>
+                            <string>macromedia.jdbc.MacromediaDriver</string>
+                        </var>
+                        <var name='url'>
+                            <string>
+                                jdbc:macromedia:sqlserver://testserver:1433;databaseName=test_database;SelectMethod=direct;sendStringParametersAsUnicode=true;querytimeout=0;MaxPooledStatements=100;jdbcbehavior=0
+                            </string>
+                        </var>
+                        <var name='drop'>
+                            <boolean value='false'/>
+                        </var>
+                        <var name='clientinfo'>
+                            <struct type='coldfusion.server.ConfigMap'>
+                                <var name='ApplicationName'>
+                                    <boolean value='false'/>
+                                </var>
+                                <var name='ApplicationNamePrefix'>
+                                    <string></string>
+                                </var>
+                                <var name='ClientHostName'>
+                                    <boolean value='false'/>
+                                </var>
+                                <var name='ClientUser'>
+                                    <boolean value='false'/>
+                                </var>
+                            </struct>
+                        </var>
+                        <var name='delete'>
+                            <boolean value='true'/>
+                        </var>
+                        <var name='disable_autogenkeys'>
+                            <boolean value='false'/>
+                        </var>
+                        <var name='description'>
+                            <string></string>
+                        </var>
+                        <var name='pooling'>
+                            <boolean value='true'/>
+                        </var>
+                        <var name='username'>
+                            <string>testUser</string>
+                        </var>
+                        <var name='update'>
+                            <boolean value='true'/>
+                        </var>
+                        <var name='storedproc'>
+                            <boolean value='true'/>
+                        </var>
+                        <var name='TYPE'>
+                            <string>ddtek</string>
+                        </var>
+                        <var name='interval'>
+                            <number>420.0</number>
+                        </var>
+                        <var name='disable'>
+                            <boolean value='false'/>
+                        </var>
+                        <var name='disable_blob'>
+                            <boolean value='true'/>
+                        </var>
+                        <var name='revoke'>
+                            <boolean value='false'/>
+                        </var>
+                        <var name='validationQuery'>
+                            <string></string>
+                        </var>
+                        <var name='blob_buffer'>
+                            <number>64000.0</number>
+                        </var>
+                        <var name='buffer'>
+                            <number>64000.0</number>
+                        </var>
+                        <var name='select'>
+                            <boolean value='true'/>
+                        </var>
+                        <var name='NAME'>
+                            <string>test_dsn</string>
+                        </var>
+                        <var name='login_timeout'>
+                            <number>30.0</number>
+                        </var>
+                        <var name='grant'>
+                            <boolean value='false'/>
+                        </var>
+                        <var name='password'>
+                            <string></string>
+                        </var>
+                        <var name='ISJ2EE'>
+                            <boolean value='false'/>
+                        </var>
+                        <var name='validateConnection'>
+                            <boolean value='false'/>
+                        </var>
+                        <var name='insert'>
+                            <boolean value='true'/>
+                        </var>
+                        <var name='timeout'>
+                            <number>1200.0</number>
+                        </var>
+                        <var name='urlmap'>
+                            <struct type='coldfusion.server.ConfigMap'>
+                                <var name='_port'>
+                                    <number>1433.0</number>
+                                </var>
+                                <var name='informixServer'>
+                                    <string></string>
+                                </var>
+                                <var name='args'>
+                                    <string></string>
+                                </var>
+                                <var name='systemDatabaseFile'>
+                                    <string></string>
+                                </var>
+                                <var name='defaultusername'>
+                                    <string></string>
+                                </var>
+                                <var name='supportLinks'>
+                                    <boolean value='true'/>
+                                </var>
+                                <var name='host'>
+                                    <string>testserver</string>
+                                </var>
+                                <var name='selectMethod'>
+                                    <string>direct</string>
+                                </var>
+                                <var name='useSpyLog'>
+                                    <boolean value='false'/>
+                                </var>
+                                <var name='pageTimeout'>
+                                    <string></string>
+                                </var>
+                                <var name='CONNECTIONPROPS'>
+                                    <struct type='coldfusion.server.ConfigMap'>
+                                        <var name='SELECTMETHOD'>
+                                            <string>direct</string>
+                                        </var>
+                                        <var name='DATABASE'>
+                                            <string>test_database</string>
+                                        </var>
+                                        <var name='PORT'>
+                                            <string>1433</string>
+                                        </var>
+                                        <var name='SENDSTRINGPARAMETERSASUNICODE'>
+                                            <string>false</string>
+                                        </var>
+                                        <var name='HOST'>
+                                            <string>testserver</string>
+                                        </var>
+                                        <var name='MAXPOOLEDSTATEMENTS'>
+                                            <number>100.0</number>
+                                        </var>
+                                        <var name='QTIMEOUT'>
+                                            <number>0.0</number>
+                                        </var>
+                                        <var name='APPLICATIONINTENT'>
+                                            <string></string>
+                                        </var>
+                                        <var name='SID'>
+                                            <string></string>
+                                        </var>
+                                    </struct>
+                                </var>
+                                <var name='datasource'>
+                                    <string></string>
+                                </var>
+                                <var name='TimeStampAsString'>
+                                    <string>no</string>
+                                </var>
+                                <var name='applicationintent'>
+                                    <string></string>
+                                </var>
+                                <var name='_logintimeout'>
+                                    <number>30.0</number>
+                                </var>
+                                <var name='isnewdb'>
+                                    <string>false</string>
+                                </var>
+                                <var name='defaultpassword'>
+                                    <string></string>
+                                </var>
+                                <var name='port'>
+                                    <string>1433</string>
+                                </var>
+                                <var name='spyLogFile'>
+                                    <string></string>
+                                </var>
+                                <var name='MaxPooledStatements'>
+                                    <number>100.0</number>
+                                </var>
+                                <var name='qTimeout'>
+                                    <number>0.0</number>
+                                </var>
+                                <var name='SID'>
+                                    <string></string>
+                                </var>
+                                <var name='database'>
+                                    <string>test_database</string>
+                                </var>
+                                <var name='sendStringParametersAsUnicode'>
+                                    <string>true</string>
+                                </var>
+                                <var name='VENDOR'>
+                                    <string>sqlserver</string>
+                                </var>
+                                <var name='CF_POOLED'>
+                                    <string>true</string>
+                                </var>
+                                <var name='databaseFile'>
+                                    <string></string>
+                                </var>
+                                <var name='maxBufferSize'>
+                                    <string></string>
+                                </var>
+                                <var name='UseTrustedConnection'>
+                                    <string>false</string>
+                                </var>
+                            </struct>
+                        </var>
+                    </struct>
+                </var>
+            </struct>
+            <struct type="coldfusion.server.ConfigMap">
+                <var name="maxcachecount">
+                    <number>100.0</number>
+                </var>
+            </struct>
+        </array>
+    </data>
 </wddxPacket>

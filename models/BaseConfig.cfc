@@ -631,6 +631,7 @@ component accessors="true" {
 	* @clob Enable clob
 	* @clobBuffer Number of chars to retreive in long text fields
 	* @maintainConnections Maintain connections accross client requests
+	* @sendStringParametersAsUnicode Enable High ASCII characters and Unicode for data sources configured for non-Latin characters
 	* @connectionLimit Max number of connections. -1 means unlimimted
 	* @connectionTimeout Connectiontimeout in minutes
 	* @connectionTimeoutInterval Number of seconds connections are checked to see if they've timed out
@@ -688,6 +689,7 @@ component accessors="true" {
 			boolean clob,
 			numeric clobBuffer,
 			boolean maintainConnections,
+			boolean sendStringParametersAsUnicode,
 			numeric connectionLimit,
 			numeric connectionTimeout,
 			numeric connectionTimeoutInterval,
@@ -749,6 +751,7 @@ component accessors="true" {
 		if( !isNull( validate ) ) { ds[ 'validate' ] = validate; };
 		if( !isNull( SID ) ) { ds[ 'SID' ] = SID; };
 		if( !isNull( maintainConnections ) ) { ds[ 'maintainConnections' ] = maintainConnections; };
+		if( !isNull( sendStringParametersAsUnicode ) ) { ds[ 'sendStringParametersAsUnicode' ] = sendStringParametersAsUnicode; };
 		if( !isNull( maxPooledStatements ) ) { ds[ 'maxPooledStatements' ] = maxPooledStatements; };
 		if( !isNull( connectionTimeoutInterval ) ) { ds[ 'connectionTimeoutInterval' ] = connectionTimeoutInterval; };
 		if( !isNull( queryTimeout ) ) { ds[ 'queryTimeout' ] = queryTimeout; };
