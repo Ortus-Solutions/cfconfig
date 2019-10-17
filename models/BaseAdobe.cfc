@@ -1461,11 +1461,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isNull( incomingDS.maxPooledStatements ) ) {
 					savingDS.urlmap.maxPooledStatements = incomingDS.maxPooledStatements+0;
 					savingDS.urlmap.connectionprops.maxPooledStatements = incomingDS.maxPooledStatements+0;
+					savingDS.url = savingDS.url.replaceNoCase( '{maxPooledStatements}', incomingDS.maxPooledStatements+0 );
 				}
 				if( !isNull( incomingDS.connectionTimeoutInterval ) ) { savingDS.interval = incomingDS.connectionTimeoutInterval+0; }
 				if( !isNull( incomingDS.queryTimeout ) ) {
 					savingDS.urlmap.qTimeout = incomingDS.queryTimeout+0;
 					savingDS.urlmap.connectionprops.qTimeout = incomingDS.queryTimeout+0;
+					savingDS.url = savingDS.url.replaceNoCase( '{queryTimeout}', incomingDS.queryTimeout+0 );
 				}
 				if( !isNull( incomingDS.logActivity ) ) { savingDS.urlmap.useSpyLog = !!incomingDS.logActivity; }
 				if( !isNull( incomingDS.logActivityFile ) ) { savingDS.urlmap.spyLogFile = incomingDS.logActivityFile; }

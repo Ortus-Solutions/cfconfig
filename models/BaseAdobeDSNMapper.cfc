@@ -340,7 +340,7 @@ component accessors=true {
 		    "revoke":true,
 		    "validationQuery":"",
 		    "drop":true,
-		    "url":"jdbc:macromedia:sqlserver://{host}:{port};databaseName={database};SelectMethod=direct;sendStringParametersAsUnicode={sendStringParametersAsUnicode};querytimeout=0;MaxPooledStatements=100",
+		    "url":"jdbc:macromedia:sqlserver://{host}:{port};databaseName={database};SelectMethod=direct;sendStringParametersAsUnicode={sendStringParametersAsUnicode};querytimeout={queryTimeout};MaxPooledStatements={maxPooledStatements}",
 		    "update":true,
 		    "password":"",
 		    "DRIVER":"MSSQLServer",
