@@ -4,7 +4,7 @@
     <data>
         <array length="2">
             <struct type="coldfusion.server.ConfigMap">
-                <var name='test_dsn'>
+                <var name='mssql'>
                     <struct type='coldfusion.server.ConfigMap'>
                         <var name='alter'>
                             <boolean value='false'/>
