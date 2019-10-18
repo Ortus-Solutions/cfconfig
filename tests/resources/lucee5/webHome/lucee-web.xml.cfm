@@ -75,6 +75,24 @@ Path placeholders:
 				storage="false"
 				username="test-user"
 				validate="false"/>
+		<data-source
+				allow="511"
+				blob="false"
+				class="net.sourceforge.jtds.jdbc.Driver"
+				clob="false"
+				connectionTimeout="1"
+				custom="charset=UTF-8"
+				database="test-database"
+				dbdriver="Sybase"
+				dsn="jdbc:jtds:sybase://{host}:{port}/{database}"
+				host="test-server"
+				metaCacheTimeout="60000"
+				name="Sybase"
+				password="encrypted:043459b9243b637acbc5137775757afd"
+				port="7100"
+				storage="false"
+				username="test-user"
+				validate="false"/>
 	</data-sources>
 	
 	<resources>
