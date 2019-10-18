@@ -31,6 +31,50 @@ Path placeholders:
 <!--	or ask your database distributor 																-->
 
 	<data-sources>
+		<data-source
+				allow="511"
+				blob="false"
+				class="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+				clob="false"
+				connectionTimeout="1"
+				custom="DATABASENAME=test-database&amp;sendStringParametersAsUnicode=true&amp;SelectMethod=direct"
+				database="test-database"
+				dbdriver="MSSQL"
+				dsn="jdbc:sqlserver://{host}:{port}"
+				host="test-server"
+				id="mssql"
+				metaCacheTimeout="60000"
+				name="mssql"
+				param-delimiter=";"
+				param-leading-delimiter=";"
+				param-separator="="
+				password="encrypted:f09a1805c526c9d8c1cf246b38b66fb4"
+				port="1433"
+				storage="false"
+				username="test-user"
+				validate="false"/>
+		<data-source
+				allow="511"
+				blob="false"
+				class="org.postgresql.Driver"
+				clob="false"
+				connectionLimit="100"
+				connectionTimeout="1"
+				custom=""
+				database="test-database"
+				dbdriver="PostgreSql"
+				dsn="jdbc:postgresql://{host}:{port}/{database}"
+				host="test-server"
+				metaCacheTimeout="60000"
+				name="PostgreSQL"
+				param-delimiter="&amp;"
+				param-leading-delimiter="?"
+				param-separator="="
+				password="encrypted:16af1224b577002f629ada1cc2337c45"
+				port="5432"
+				storage="false"
+				username="test-user"
+				validate="false"/>
 	</data-sources>
 	
 	<resources>

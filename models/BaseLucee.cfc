@@ -199,6 +199,22 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		for( var ds in datasources.XMLChildren ) {
 			var params = structNew().append( ds.XMLAttributes );
+
+			// Turn custom values into struct
+			if( !isNull( params[ 'custom' ] ) ) {
+				var thisCustom = decodeForHTML( params[ 'custom' ] );
+				var thisStruct = {};
+				for( var item in thisCustom.listToArray( '&' ) ) {
+					// Turn foo=bar&baz=bum&poof= into { foo : 'bar', baz : 'bum', poof : '' }
+					// Any "=" or "&" in the key values will be URL encoded.
+					thisStruct[ URLDecode( listFirst( item, '=' ) ) ] = ( listLen( item, '=' ) ?  URLDecode( listRest( item, '=' ) ) : '' );
+				}
+
+				if ( !isNull( thisStruct[ 'sendStringParametersAsUnicode' ] ) ) {
+					params[ 'sendStringParametersAsUnicode' ] = thisStruct[ 'sendStringParametersAsUnicode' ];
+				}
+			}
+
 			var permissions = translateBitMaskToPermissions( params.allow ?: '' );
 			params.append( permissions );
 
