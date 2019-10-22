@@ -35,9 +35,11 @@
         "coldbox":"coldbox/",
         "propertyFile":"modules/propertyFile/",
         "semver":"modules/semver/",
-        "JSONPrettyPrint":"modules/JSONPrettyPrint/"
+        "JSONPrettyPrint":"modules/JSONPrettyPrint/",
+        "testbox":"testbox"
     },
     "devDependencies":{
-        "coldbox":"^4.3.0+188"
+        "coldbox":"^4.3.0+188",
+        "testbox":"^3.1.0"
     }
 }
