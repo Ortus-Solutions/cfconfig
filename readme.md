@@ -149,5 +149,5 @@ The code in this library has only been tested on Lucee and likely doesn't work o
 Individuals who would like to contribute to this library can follow the steps below to configure this tool to run independently for the purposes of extending and testing the code:
 
 1. This package currently depends on a `cfconfig.local` host entry.  You can add this to your system's `hosts` file manually or leverage a tool like [Commandbox HostUpdater](https://www.forgebox.io/view/commandbox-hostupdater) to add the host entry.
-2. Start up this project with commandBox using `server start` - this will open a browser to the test runner for this project.
+2. Start up this project with CommandBox using `server start` - this will open a browser to the test runner for this project.
 3. Happy Contributing!
