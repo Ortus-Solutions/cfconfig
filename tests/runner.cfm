@@ -18,7 +18,7 @@ Author: Brad Wood
 <cfparam name="url.propertiesSummary" 	default="false" type="boolean">
 
 <!--- Code Coverage requires FusionReactor --->
-<cfparam name="url.coverageEnabled"					default="true">
+<cfparam name="url.coverageEnabled"					default="false">
 <cfparam name="url.coveragePathToCapture"			default="#expandPath( '/root/cfconfig/models' )#">
 <cfparam name="url.coverageWhitelist"				default="">
 <cfparam name="url.coverageBlacklist"				default="">

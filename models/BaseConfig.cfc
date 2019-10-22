@@ -559,6 +559,27 @@ component accessors="true" {
 	property name='ACF11Password' type='string' _isCFConfig=true;
 	// hashed RDS password for Adobe CF11
 	property name='ACF11RDSPassword' type='string' _isCFConfig=true;
+	
+	// Automatically Check for Updates. Select to automatically check for updates at every login.
+	property name='updateCheckOnLoginEnable' type='boolean' _isCFConfig=true;
+	// Check for updates every X days Enable
+	property name='updateCheckOnScheduleEnable' type='boolean' _isCFConfig=true;
+	// Number of days between updates
+	property name='updateCheckOnScheduleDays' type='numeric' _isCFConfig=true;
+	// If updates are available, send email notification to (comma-delimited list)
+	property name='updateCheckOnScheduleToAddress' type='string' _isCFConfig=true;
+	// If updates are available, send email notification from
+	property name='updateCheckOnScheduleFromAddress' type='string' _isCFConfig=true;
+	// Update site URL
+	property name='updateSiteURL' type='string' _isCFConfig=true;
+	// Update check proxy host
+	property name='updateProxyHost' type='string' _isCFConfig=true;
+	// Update check proxy port
+	property name='updateProxyPort' type='numeric' _isCFConfig=true;
+	// Update check proxy username
+	property name='updateProxyUsername' type='string' _isCFConfig=true;
+	// Update check proxy password
+	property name='updateProxyPassword' type='string' _isCFConfig=true;
 
 	/**
 	* Constructor

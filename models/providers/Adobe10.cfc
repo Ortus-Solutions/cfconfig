@@ -32,6 +32,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setJettyConfigTemplate( expandPath( '/cfconfig-services/resources/adobe10/jetty.xml' ) );
 		setDotNetConfigTemplate( expandPath( '/cfconfig-services/resources/adobe10/neo-dotnet.xml' ) );
 		setLoggingConfigTemplate( expandPath( '/cfconfig-services/resources/adobe10/neo-logging.xml' ) );
+		setUpdateConfigTemplate( expandPath( '/cfconfig-services/resources/adobe10/neo_updates.xml' ) );
 		setVersion( '10' );
 		
 		return this;

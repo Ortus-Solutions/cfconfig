@@ -61,6 +61,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	property name='loggingConfigPath' type='string';
 	property name='loggingConfigTemplate' type='string';
+
+	property name='updateConfigPath' type='string';
+	property name='updateConfigTemplate' type='string';
 	
 	
 	property name='AdminRDSLoginRequiredBoolean' type='boolean' default="false" ;
@@ -89,6 +92,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setJettyConfigPath( '/lib/jetty.xml' );
 		setDotNetConfigPath( '/lib/neo-dotnet.xml' );
 		setLoggingConfigPath( '/lib/neo-logging.xml' );
+		setUpdateConfigPath( '/lib/neo_updates.xml' );
 		
 		// CF 10+ stors as a string.  CF9 will override this.
 		setAdminRDSLoginRequiredBoolean( false );
@@ -138,6 +142,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readJetty();
 		readDotNet();
 		readLogging();
+		readUpdate();
 
 		return this;
 	}
@@ -678,6 +683,25 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	}
 
+	private function readUpdate() {
+		var thisConfig = readXMLConfigFile( getCFHomePath().listAppend( getUpdateConfigPath(), '/' ) ).settings;
+		
+		if( !isNull( thisConfig.update.url.XMLText ) ) { setUpdateSiteURL( thisConfig.update.url.XMLText ); }
+		
+		if( !isNull( thisConfig.update.XMLAttributes.autocheck ) ) { setUpdateCheckOnLoginEnable( thisConfig.update.XMLAttributes.autocheck ); }
+		
+		if( !isNull( thisConfig.update.XMLAttributes.checkperiodically ) ) { setUpdateCheckOnScheduleEnable( thisConfig.update.XMLAttributes.checkperiodically ); }
+		if( !isNull( thisConfig.update.XMLAttributes.checkinterval ) ) { setUpdateCheckOnScheduleDays( thisConfig.update.XMLAttributes.checkinterval ); }
+		if( !isNull( thisConfig.update.notification.emaillist.XMLText ) ) { setUpdateCheckOnScheduleToAddress( thisConfig.update.notification.emaillist.XMLText ); }
+		if( !isNull( thisConfig.update.notification.fromemail.XMLText ) ) { setUpdateCheckOnScheduleFromAddress( thisConfig.update.notification.fromemail.XMLText ); }
+		
+		if( !isNull( thisConfig.proxy.hostname.XMLText ) ) { setUpdateProxyHost( thisConfig.proxy.hostname.XMLText ); }
+		if( !isNull( thisConfig.proxy.port.XMLText ) ) { setUpdateProxyPort( val( thisConfig.proxy.port.XMLText ) ); }
+		if( !isNull( thisConfig.proxy.username.XMLText ) ) { setUpdateProxyUsername( thisConfig.proxy.username.XMLText ); }
+		if( !isNull( thisConfig.proxy.password.XMLText ) ) { setUpdateProxyPassword( thisConfig.proxy.password.XMLText ); }
+		
+	}
+
 
 	/**
 	* I write out config from a base JSON format
@@ -716,6 +740,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeWebsocket();
 		writeJetty();
 		writeDotNet();
+		writeUpdate();
 
 		return this;
 	}
@@ -1565,6 +1590,78 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
 
+	}
+
+	private function writeUpdate() {
+		var configFilePath = getCFHomePath().listAppend( getUpdateConfigPath(), '/' );
+
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readXMLConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readXMLConfigFile( getUpdateConfigTemplate() );
+		}
+				
+		if( isNull( thisConfig.settings.update ) ) {
+			var XMLNode = xmlElemnew(thisConfig,"update");
+			XMLNode.XMLAttributes['sendupdate'] = true;
+			XMLNode.XMLAttributes['checkperiodically'] = false;
+			XMLNode.XMLAttributes['checkinterval'] = 10;
+			XMLNode.XMLAttributes['autocheck'] = false;
+			thisConfig.settings.XMLChildren.append( XMLNode );	
+		}
+		if( isNull( thisConfig.settings.update.url ) ) {
+			var XMLNode = xmlElemnew(thisConfig,"url");		
+			thisConfig.settings.update.XMLChildren.append( XMLNode );	
+		}
+		if( isNull( thisConfig.settings.update.notification ) ) {
+			var XMLNode = xmlElemnew(thisConfig,"notification");		
+			thisConfig.settings.update.XMLChildren.append( XMLNode );	
+		}
+		if( isNull( thisConfig.settings.update.notification.emaillist ) ) {
+			var XMLNode = xmlElemnew(thisConfig,"emaillist");		
+			thisConfig.settings.update.notification.XMLChildren.append( XMLNode );	
+		}
+		if( isNull( thisConfig.settings.update.notification.fromemail ) ) {
+			var XMLNode = xmlElemnew(thisConfig,"fromemail");		
+			thisConfig.settings.update.notification.XMLChildren.append( XMLNode );	
+		}
+		if( isNull( thisConfig.settings.proxy ) ) {
+			var XMLNode = xmlElemnew(thisConfig,"proxy");		
+			thisConfig.settings.XMLChildren.append( XMLNode );	
+		}
+		if( isNull( thisConfig.settings.proxy.hostname ) ) {
+			var XMLNode = xmlElemnew(thisConfig,"hostname");		
+			thisConfig.settings.proxy.XMLChildren.append( XMLNode );	
+		}
+		if( isNull( thisConfig.settings.proxy.port ) ) {
+			var XMLNode = xmlElemnew(thisConfig,"port");
+			XMLNode.XMLText=0;
+			thisConfig.settings.proxy.XMLChildren.append( XMLNode );	
+		}
+		if( isNull( thisConfig.settings.proxy.username ) ) {
+			var XMLNode = xmlElemnew(thisConfig,"username");		
+			thisConfig.settings.proxy.XMLChildren.append( XMLNode );	
+		}
+		if( isNull( thisConfig.settings.proxy.password ) ) {
+			var XMLNode = xmlElemnew(thisConfig,"password");		
+			thisConfig.settings.proxy.XMLChildren.append( XMLNode );	
+		}
+		
+		if( !isNull( getUpdateSiteURL() ) ) { thisConfig.settings.update.url.XMLText = getUpdateSiteURL(); }
+		if( !isNull( getUpdateCheckOnLoginEnable() ) ) { thisConfig.settings.update.XMLAttributes.autocheck = !!getUpdateCheckOnLoginEnable(); }
+		if( !isNull( getUpdateCheckOnScheduleEnable() ) ) { thisConfig.settings.update.XMLAttributes.checkperiodically = !!getUpdateCheckOnScheduleEnable(); }
+		if( !isNull( getUpdateCheckOnScheduleDays() ) ) { thisConfig.settings.update.XMLAttributes.checkinterval = getUpdateCheckOnScheduleDays()+0; }
+		if( !isNull( getUpdateCheckOnScheduleToAddress() ) ) { thisConfig.settings.update.notification.emaillist.XMLText = getUpdateCheckOnScheduleToAddress(); }
+		if( !isNull( getUpdateCheckOnScheduleFromAddress() ) ) { thisConfig.settings.update.notification.fromemail.XMLText = getUpdateCheckOnScheduleFromAddress(); }
+		if( !isNull( getUpdateProxyHost() ) ) { thisConfig.settings.proxy.hostname.XMLText = getUpdateProxyHost(); }
+		if( !isNull( getUpdateProxyPort() ) ) { thisConfig.settings.proxy.port.XMLText = val(  getUpdateProxyPort() ); }
+		if( !isNull( getUpdateProxyUsername() ) ) { thisConfig.settings.proxy.username.XMLText = getUpdateProxyUsername(); }
+		if( !isNull( getUpdateProxyPassword() ) ) { thisConfig.settings.proxy.password.XMLText = getUpdateProxyPassword(); }
+		
+		writeXMLConfigFile( thisConfig, configFilePath );
+		
 	}
 
 	private function ensureSeedProperties( required string seedPropertiesPath ) {

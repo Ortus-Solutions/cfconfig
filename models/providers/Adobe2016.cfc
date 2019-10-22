@@ -31,6 +31,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setJettyConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/jetty.xml' ) );
 		setDotNetConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-dotnet.xml' ) );
 		setLoggingConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo-logging.xml' ) );
+		setUpdateConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2016/neo_updates.xml' ) );
 		setVersion( '2016' );
 		
 		return this;
