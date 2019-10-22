@@ -43,8 +43,8 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			it( "can export to JSON", function(){
 				var configService = getInstance( 'CFConfigService@cfconfig-services' );
 					configService.transfer(
-					from		= '/tests/resources/adobe9/ServerHome/WEB-INF/cfusion',
-					to			= '/tests/resources/tmp/Adobe9Config.json',
+					from		= expandPath ( '/tests/resources/adobe9/ServerHome/WEB-INF/cfusion' ),
+					to			= expandPath ( '/tests/resources/tmp/Adobe9Config.json' ),
 					fromFormat	= 'adobe',
 					toFormat	= 'JSON',
 					fromVersion	= '9'

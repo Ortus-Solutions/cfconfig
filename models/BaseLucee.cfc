@@ -199,6 +199,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		for( var ds in datasources.XMLChildren ) {
 			var params = structNew().append( ds.XMLAttributes );
+
+			if( !isNull( params[ 'custom' ] ) ) {
+				var customStruct = datasourceCustomToStruct( params[ 'custom' ] );
+				if ( !isNull( customStruct[ 'sendStringParametersAsUnicode' ] ) ) {
+					params[ 'sendStringParametersAsUnicode' ] = customStruct[ 'sendStringParametersAsUnicode' ];
+				}
+			}
+
 			var permissions = translateBitMaskToPermissions( params.allow ?: '' );
 			params.append( permissions );
 
@@ -682,7 +690,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.connectionTimeout ) ) { DSXMLNode.XMLAttributes[ 'connectionTimeout' ] = DSStruct.connectionTimeout; }
 
 			// Always set custom, defaulting if neccessary
-			DSXMLNode.XMLAttributes[ 'custom' ] = buildDatasourceCustom( DSStruct.dbdriver, DSStruct.custom ?: '', DSStruct );
+			DSXMLNode.XMLAttributes[ 'custom' ] = buildDatasourceCustom( DSStruct.dbdriver, datasourceCustomToStruct( DSStruct.custom ?: '' ), DSStruct );
 
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'dsn' ] = translateDatasourceURLToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.dsn ?: '' );
@@ -1265,32 +1273,56 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	}
 
-	private function buildDatasourceCustom( required string driverName, required string custom='', required struct datasourceData ) {
-
-		// If a custom set of attributes are already provided, use it!
-		if( custom.trim().len() ) {
-			return custom;
+	private struct function datasourceCustomToStruct( required string custom) {
+		var thisCustom = decodeForHTML( arguments.custom );
+		var thisStruct = {};
+		for( var item in thisCustom.listToArray( '&' ) ) {
+			// Turn foo=bar&baz=bum&poof= into { foo : 'bar', baz : 'bum', poof : '' }
+			// Any "=" or "&" in the key values will be URL encoded.
+			thisStruct[ URLDecode( listFirst( item, '=' ) ) ] = ( listLen( item, '=' ) ?  URLDecode( listRest( item, '=' ) ) : '' );
 		}
 
+		return thisStruct;
+	}
+
+	private function buildDatasourceCustom( required string driverName, required struct custom={}, required struct datasourceData ) {
 		switch( driverName ) {
 			case 'MySQL' :
 				// TODO: make these actually dynamic and stored!
-				return 'useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true';
+				return (!isNull( datasourceData.custom ) && datasourceData.custom.len() ) ? datasourceData.custom : 'useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true';
 			case 'Oracle' :
 				// TODO: make this actually dynamic and stored!
-				return 'drivertype=thin';
+				return (!isNull( datasourceData.custom ) && datasourceData.custom.len() ) ? datasourceData.custom : 'drivertype=thin';
 			case 'PostgreSql' :
-				return '';
+				return (!isNull( datasourceData.custom ) && datasourceData.custom.len() ) ? datasourceData.custom : '';
 			case 'MSSQL' :
+                var custom = '';
 				// Add in datasource if it's there
-				// TODO: make the rest of these actually dynamic and stored!
 				if( !isNull( datasourceData.database ) && datasourceData.database.len() ) {
-					return 'DATABASENAME=#datasourceData.database#&sendStringParametersAsUnicode=true&SelectMethod=direct';
-				} else {
-					return 'sendStringParametersAsUnicode=true&SelectMethod=direct';
+					custom = listAppend( custom, 'DATABASENAME=#datasourceData.database#', '&' );
+				} else if( !isNull( custom.DATABASENAME ) && custom.DATABASENAME.len() ) {
+					custom = listAppend( custom, 'DATABASENAME=#custom.DATABASENAME#', '&' );
 				}
+
+				if( !isNull( datasourceData.sendStringParametersAsUnicode ) ) {
+					custom = listAppend( custom, 'sendStringParametersAsUnicode=#datasourceData.sendStringParametersAsUnicode#', '&' );
+				} else if( !isNull( custom.sendStringParametersAsUnicode ) ) {
+					custom = listAppend( custom, 'sendStringParametersAsUnicode=#custom.sendStringParametersAsUnicode#', '&' );
+				} else {
+					custom = listAppend( custom, 'sendStringParametersAsUnicode=false', '&' );
+				}
+
+				if( !isNull( datasourceData.SelectMethod ) ) {
+					custom = listAppend( custom, 'SelectMethod=#datasourceData.SelectMethod#', '&' );
+				} else if( !isNull( custom.SelectMethod ) ) {
+					custom = listAppend( custom, 'SelectMethod=#custom.SelectMethod#', '&' );
+				} else {
+					custom = listAppend( custom, 'SelectMethod=direct', '&' );
+				}
+
+				return custom;
 			default :
-				return '';
+				return (!isNull( datasourceData.custom ) && datasourceData.custom.len() ) ? datasourceData.custom : '';
 		}
 
 	}

@@ -33,8 +33,8 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			it( "can export to JSON", function(){
 				var configService = getInstance( 'CFConfigService@cfconfig-services' );
 				configService.transfer(
-					from		= '/tests/resources/Adobe2016/ServerHome/WEB-INF/cfusion',
-					to			= '/tests/resources/tmp/Adobe2016Config.json',
+					from		= expandPath( '/tests/resources/Adobe2016/ServerHome/WEB-INF/cfusion' ),
+					to			= expandPath( '/tests/resources/tmp/Adobe2016Config.json' ),
 					toFormat	= 'JSON',
 					fromFormat	= 'adobe',
 					fromVersion	= '2016'
@@ -49,8 +49,8 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			it( "can read from JSON", function(){
 				var configService = getInstance( 'CFConfigService@cfconfig-services' );
 				configService.transfer(
-					to			= '/tests/resources/tmp/Adobe2016/',
-					from		= '/tests/resources/tmp/Adobe2016Config.json',
+					to			= expandPath ( '/tests/resources/tmp/Adobe2016/' ),
+					from		= expandPath( '/tests/resources/tmp/Adobe2016Config.json' ),
 					fromFormat	= 'JSON',
 					toFormat	= 'adobe',
 					toVersion	= '2016'

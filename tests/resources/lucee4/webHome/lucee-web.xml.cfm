@@ -31,6 +31,42 @@ Path placeholders:
 <!--	or ask your database distributor 																-->
 
 	<data-sources>
+		<data-source
+				allow="511"
+				blob="false"
+				class="com.microsoft.jdbc.sqlserver.SQLServerDriver"
+				clob="false"
+				connectionTimeout="1"
+				custom="DATABASENAME=test-database&amp;sendStringParametersAsUnicode=true&amp;SelectMethod=direct"
+				database="test-database"
+				dbdriver="MSSQL"
+				dsn="jdbc:sqlserver://{host}:{port}"
+				host="test-server"
+				metaCacheTimeout="60000"
+				name="mssql"
+				password="encrypted:559f4b44eb393a20584fc866b8825a8f"
+				port="1433"
+				storage="false"
+				username="test-user"
+				validate="false"/>
+		<data-source
+				allow="511"
+				blob="false"
+				class="net.sourceforge.jtds.jdbc.Driver"
+				clob="false"
+				connectionTimeout="1"
+				custom="charset=UTF-8"
+				database="test-database"
+				dbdriver="Sybase"
+				dsn="jdbc:jtds:sybase://{host}:{port}/{database}"
+				host="test-server"
+				metaCacheTimeout="60000"
+				name="Sybase"
+				password="encrypted:043459b9243b637acbc5137775757afd"
+				port="7100"
+				storage="false"
+				username="test-user"
+				validate="false"/>
 	</data-sources>
 	
 	<resources>

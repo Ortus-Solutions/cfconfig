@@ -235,7 +235,7 @@
               <boolean value="true"/>
             </var>
             <var name="url">
-              <string>jdbc:macromedia:sqlserver://localhost:1433;databaseName=test;SelectMethod=direct;sendStringParametersAsUnicode=false;querytimeout=0;MaxPooledStatements=100</string>
+              <string>jdbc:macromedia:sqlserver://localhost:1433;databaseName=test;SelectMethod=direct;sendStringParametersAsUnicode=true;querytimeout=0;MaxPooledStatements=100</string>
             </var>
             <var name="update">
               <boolean value="true"/>
@@ -302,7 +302,7 @@
                       <string/>
                     </var>
                     <var name="SENDSTRINGPARAMETERSASUNICODE">
-                      <string>false</string>
+                      <string>true</string>
                     </var>
                     <var name="HOST">
                       <string>localhost</string>
@@ -367,7 +367,7 @@
                   <string>sqlserver</string>
                 </var>
                 <var name="sendStringParametersAsUnicode">
-                  <string>false</string>
+                  <string>true</string>
                 </var>
                 <var name="database">
                   <string>test</string>
