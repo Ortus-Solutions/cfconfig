@@ -1412,6 +1412,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					savingDS.urlmap.sendStringParametersAsUnicode = !!incomingDS.sendStringParametersAsUnicode;
 					savingDS.urlmap.connectionprops.sendStringParametersAsUnicode = !!incomingDS.sendStringParametersAsUnicode;
 					savingDS.url = savingDS.url.replaceNoCase( '{sendStringParametersAsUnicode}', !!incomingDS.sendStringParametersAsUnicode );
+				} else if (structKeyExists(savingDS.urlmap.connectionprops, "sendStringParametersAsUnicode")) {
+					savingDS.url = savingDS.url.replaceNoCase( '{sendStringParametersAsUnicode}', !!savingDS.urlmap.connectionprops.sendStringParametersAsUnicode );
 				}
 				// Normalize names
 				if( !isNull( incomingDS.dbdriver ) ) { savingDS.driver = DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ); }
@@ -1462,12 +1464,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					savingDS.urlmap.maxPooledStatements = incomingDS.maxPooledStatements+0;
 					savingDS.urlmap.connectionprops.maxPooledStatements = incomingDS.maxPooledStatements+0;
 					savingDS.url = savingDS.url.replaceNoCase( '{maxPooledStatements}', incomingDS.maxPooledStatements+0 );
+				} else if (structKeyExists(savingDS.urlmap.connectionprops, "maxPooledStatements")) {
+					savingDS.url = savingDS.url.replaceNoCase( '{maxPooledStatements}', savingDS.urlmap.connectionprops.maxPooledStatements+0 );
 				}
 				if( !isNull( incomingDS.connectionTimeoutInterval ) ) { savingDS.interval = incomingDS.connectionTimeoutInterval+0; }
 				if( !isNull( incomingDS.queryTimeout ) ) {
 					savingDS.urlmap.qTimeout = incomingDS.queryTimeout+0;
 					savingDS.urlmap.connectionprops.qTimeout = incomingDS.queryTimeout+0;
 					savingDS.url = savingDS.url.replaceNoCase( '{queryTimeout}', incomingDS.queryTimeout+0 );
+				} else if (structKeyExists(savingDS.urlmap.connectionprops, "qTimeout")) {
+					savingDS.url = savingDS.url.replaceNoCase( '{queryTimeout}', savingDS.urlmap.connectionprops.qTimeout+0 );
 				}
 				if( !isNull( incomingDS.logActivity ) ) { savingDS.urlmap.useSpyLog = !!incomingDS.logActivity; }
 				if( !isNull( incomingDS.logActivityFile ) ) { savingDS.urlmap.spyLogFile = incomingDS.logActivityFile; }
