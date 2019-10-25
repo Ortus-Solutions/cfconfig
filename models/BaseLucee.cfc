@@ -690,7 +690,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.connectionTimeout ) ) { DSXMLNode.XMLAttributes[ 'connectionTimeout' ] = DSStruct.connectionTimeout; }
 
 			// Always set custom, defaulting if neccessary
-			DSXMLNode.XMLAttributes[ 'custom' ] = buildDatasourceCustom( DSStruct.dbdriver, datasourceCustomToStruct( DSStruct.custom ?: '' ), DSStruct );
+			DSXMLNode.XMLAttributes[ 'custom' ] = buildDatasourceCustom( DSStruct.dbdriver, DSStruct.custom ?: '', DSStruct );
 
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'dsn' ] = translateDatasourceURLToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.dsn ?: '' );
@@ -1285,46 +1285,49 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		return thisStruct;
 	}
 
-	private function buildDatasourceCustom( required string driverName, required struct custom={}, required struct datasourceData ) {
+	private string function buildDatasourceCustom( required string driverName, required string custom, required struct datasourceData ) {
+		// first deconstruct the custom sting into a struct
+		var customStruct = datasourceCustomToStruct( arguments.custom );
+
+		// update and add values to the custom struct
 		switch( driverName ) {
 			case 'MySQL' :
 				// TODO: make these actually dynamic and stored!
-				return (!isNull( datasourceData.custom ) && datasourceData.custom.len() ) ? datasourceData.custom : 'useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true';
+				customStruct['useUnicode']=true;
+				customStruct['characterEncoding']='UTF8';
+				customStruct['useLegacyDatetimeCode']=true;
+				break;
 			case 'Oracle' :
 				// TODO: make this actually dynamic and stored!
-				return (!isNull( datasourceData.custom ) && datasourceData.custom.len() ) ? datasourceData.custom : 'drivertype=thin';
+				customStruct['drivertype']='thin';
+				break;
 			case 'PostgreSql' :
-				return (!isNull( datasourceData.custom ) && datasourceData.custom.len() ) ? datasourceData.custom : '';
+				break;
 			case 'MSSQL' :
-                var custom = '';
 				// Add in datasource if it's there
 				if( !isNull( datasourceData.database ) && datasourceData.database.len() ) {
-					custom = listAppend( custom, 'DATABASENAME=#datasourceData.database#', '&' );
-				} else if( !isNull( custom.DATABASENAME ) && custom.DATABASENAME.len() ) {
-					custom = listAppend( custom, 'DATABASENAME=#custom.DATABASENAME#', '&' );
+					customStruct['DATABASENAME']=datasourceData.database;
 				}
-
 				if( !isNull( datasourceData.sendStringParametersAsUnicode ) ) {
-					custom = listAppend( custom, 'sendStringParametersAsUnicode=#datasourceData.sendStringParametersAsUnicode#', '&' );
-				} else if( !isNull( custom.sendStringParametersAsUnicode ) ) {
-					custom = listAppend( custom, 'sendStringParametersAsUnicode=#custom.sendStringParametersAsUnicode#', '&' );
+					// set specified value
+					customStruct['sendStringParametersAsUnicode']=datasourceData.sendStringParametersAsUnicode;
 				} else {
-					custom = listAppend( custom, 'sendStringParametersAsUnicode=false', '&' );
+					// set default value
+					customStruct['sendStringParametersAsUnicode']=false;
 				}
-
-				if( !isNull( datasourceData.SelectMethod ) ) {
-					custom = listAppend( custom, 'SelectMethod=#datasourceData.SelectMethod#', '&' );
-				} else if( !isNull( custom.SelectMethod ) ) {
-					custom = listAppend( custom, 'SelectMethod=#custom.SelectMethod#', '&' );
-				} else {
-					custom = listAppend( custom, 'SelectMethod=direct', '&' );
-				}
-
-				return custom;
+				customStruct['SelectMethod']='direct';
+				break;
 			default :
-				return (!isNull( datasourceData.custom ) && datasourceData.custom.len() ) ? datasourceData.custom : '';
+				// do nothing
 		}
 
+		// reconstruct the custom string
+		var returnString='';
+		for (var key in customStruct) {
+			returnString=listAppend(returnString, key & "=" & customStruct[key], "&");
+		}
+
+		return returnString;
 	}
 
 	private function translateSharedErrorTemplateToLucee( required string templateName ) {
