@@ -261,7 +261,7 @@ component accessors=true {
 		    "revoke":true,
 		    "validationQuery":"",
 		    "drop":true,
-		    "url":"jdbc:macromedia:oracle://{host}:{port};SID={SID};AuthenticationMethod=userIDPassword;sendStringParametersAsUnicode=false;querytimeout=0;MaxPooledStatements=100",
+		    "url":"jdbc:macromedia:oracle://{host}:{port};SID={SID};AuthenticationMethod=userIDPassword;sendStringParametersAsUnicode={sendStringParametersAsUnicode};querytimeout={querytimeout};MaxPooledStatements={MaxPooledStatements}",
 		    "update":true,
 		    "password":"",
 		    "DRIVER":"Oracle",
