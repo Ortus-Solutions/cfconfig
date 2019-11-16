@@ -1663,7 +1663,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			thisConfig.settings.proxy.XMLChildren.append( XMLNode );	
 		}
 		
-		if( !isNull( getUpdateSiteURL() ) ) { thisConfig.settings.update.url.XMLText = getUpdateSiteURL(); }
+		// Ignore Lucee URLs if transerring from an Lucee server to a Adobe server		
+		if( !isNull( getUpdateSiteURL() ) && !(getUpdateSiteURL() contains 'lucee' ) ) {
+			thisConfig.settings.update.url.XMLText = getUpdateSiteURL();
+		}
+		
 		if( !isNull( getUpdateCheckOnLoginEnable() ) ) { thisConfig.settings.update.XMLAttributes.autocheck = !!getUpdateCheckOnLoginEnable(); }
 		if( !isNull( getUpdateCheckOnScheduleEnable() ) ) { thisConfig.settings.update.XMLAttributes.checkperiodically = !!getUpdateCheckOnScheduleEnable(); }
 		if( !isNull( getUpdateCheckOnScheduleDays() ) ) { thisConfig.settings.update.XMLAttributes.checkinterval = getUpdateCheckOnScheduleDays()+0; }

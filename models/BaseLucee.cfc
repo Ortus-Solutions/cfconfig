@@ -116,6 +116,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var security = xmlSearch( thisConfig, '/cfLuceeConfiguration/security' );
     	if( security.len() ){ readSecurity( security[ 1 ] ); }
 
+		var update = xmlSearch( thisConfig, '/cfLuceeConfiguration/update' );
+    	if( update.len() ){ readUpdate( update[ 1 ] ); }
+
 		readAuth( thisConfig.XMLRoot );
 
 		readConfigChanges( thisConfig.XMLRoot );
@@ -150,6 +153,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		if( !isNull( config[ 'access_write' ] ) ) { setAdminAccessWrite( config[ 'access_write' ] ); }
 		if( !isNull( config[ 'access_read' ] ) ) { setAdminAccessRead( config[ 'access_read' ] ); }
+	}
+
+	private function readUpdate( update ) {
+		var config = update.XMLAttributes;
+		if( !isNull( config[ 'location' ] ) ) { setUpdateSiteURL( config[ 'location' ] ); }
 	}
 
 	private function readExtensionProviders( extensionProviders ) {
@@ -492,6 +500,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeError( thisConfig );
 		writeExtensionProviders( thisConfig );
 		writeSecurity( thisConfig );
+		writeUpdate( thisConfig );
 
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
@@ -521,7 +530,28 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !securitySearch.len() ) {
 			thisConfig.XMLRoot.XMLChildren.append( security );
 		}
-		var config = security.XMLAttributes;
+
+	}
+
+
+	private function writeUpdate( thisConfig ) {
+		var updateSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/update' );
+		if( updateSearch.len() ) {
+			var update = updateSearch[1];
+		} else {
+			var update = xmlElemnew( thisConfig, 'update' );
+		}
+
+		var config = update.XMLAttributes;
+
+		// Ignore Adobe URLs if transerring from an Adobe server to a Lucee server
+		if( !isNull( getUpdateSiteURL() ) && !( getUpdateSiteURL() contains 'adobe' ) ) {
+			config[ 'location' ] = getUpdateSiteURL();
+		}
+
+		if( !updateSearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( update );
+		}
 
 	}
 
