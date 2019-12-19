@@ -541,6 +541,10 @@ component accessors="true" {
 	// Enable secure profile.  Note, fipping this flag doesn't actually change any of the security settings.  It really just tracks the fact that you've enabled it at some point.
 	property name='secureProfileEnabled' type='boolean' _isCFConfig=true;
 
+	// System output streams - Lucee only
+	// values are strings indicating target stream (default,null,class:<class>,file:<file>)
+	property name='systemOut' type='string' _isCFConfig=true;
+	property name='systemErr' type='string' _isCFConfig=true;
 
 	// TODO: adminUsers array (AuthorizedUsers)
 	// TODO: sandboxes (contexts)
