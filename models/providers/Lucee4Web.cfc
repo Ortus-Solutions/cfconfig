@@ -30,5 +30,9 @@ component accessors=true extends='cfconfig-services.models.BaseLucee' {
 		
 		return this;
 	}
-	
+
+	// system out and err do not apply to web contexts
+	private function readSystem( thisConfig ) {}
+	private function writeSystem( thisConfig ) {}
+
 }

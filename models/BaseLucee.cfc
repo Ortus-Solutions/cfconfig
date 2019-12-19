@@ -1222,7 +1222,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSystemOut() ) ) { system.XMLAttributes[ 'out' ] = getSystemOut(); }
 		if( !isNull( getSystemErr() ) ) { system.XMLAttributes[ 'err' ] = getSystemErr(); }
 
-		if( !systemSearch.len() && ( !isNull( getSystemOut() || !isNull( getSystemErr() ) ) {
+		if( !systemSearch.len() ) {
 			thisConfig.XMLRoot.XMLChildren.append( system );
 		}
 	}
