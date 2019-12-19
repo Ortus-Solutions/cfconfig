@@ -119,6 +119,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var update = xmlSearch( thisConfig, '/cfLuceeConfiguration/update' );
     	if( update.len() ){ readUpdate( update[ 1 ] ); }
 
+		var system = xmlSearch( thisConfig, '/cfLuceeConfiguration/system' );
+		if( system.len() ){ readSystem( system[ 1 ] ); }
+
 		readAuth( thisConfig.XMLRoot );
 
 		readConfigChanges( thisConfig.XMLRoot );
@@ -448,6 +451,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	    if( !isNull( config[ 'template-500' ] ) ) { setGeneralErrorTemplate( translateLuceeToSharedErrorTemplate( config[ 'template-500' ] ) ); }
 	}
 
+	private function readSystem( system ) {
+		var config = system.XMLAttributes;
+		if( !isNull( config[ 'out' ] ) ) { setSystemOut( config[ 'out' ] ); }
+		if( !isNull( config[ 'err' ] ) ) { setSystemErr( config[ 'err' ] ); }
+	}
+
 	/**
 	* I write out config
 	*
@@ -501,6 +510,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeExtensionProviders( thisConfig );
 		writeSecurity( thisConfig );
 		writeUpdate( thisConfig );
+		writeSystem( thisConfig );
 
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
@@ -1199,6 +1209,22 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	    if( !errorSearch.len() ) {
 	    	thisConfig.XMLRoot.XMLChildren.append( error );
 	    }
+	}
+
+	private function writeSystem( thisConfig ) {
+		var systemSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/system' );
+		if( systemSearch.len() ) {
+			var system = systemSearch[1];
+		} else {
+			var system = xmlElemnew( thisConfig, 'system' );
+		}
+
+		if( !isNull( getSystemOut() ) ) { system.XMLAttributes[ 'out' ] = getSystemOut(); }
+		if( !isNull( getSystemErr() ) ) { system.XMLAttributes[ 'err' ] = getSystemErr(); }
+
+		if( !systemSearch.len() && ( !isNull( getSystemOut() || !isNull( getSystemErr() ) ) {
+			thisConfig.XMLRoot.XMLChildren.append( system );
+		}
 	}
 
 	/**
