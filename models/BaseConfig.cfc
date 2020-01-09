@@ -692,6 +692,7 @@ component accessors="true" {
 	* @clientApplicationName Client Information - Application name
 	* @clientApplicationNamePrefix Client Information - Application name prefix
 	* @description Description of this datasource.  Informational only.
+	* @requestExclusive Exclusive connections for request
 	*
 	* logActivity notes
 	* ;SpyAttributes=(log=(file)C:/foobar.txt; linelimit=80;logTName=yes;timestamp=yes)</
@@ -743,7 +744,8 @@ component accessors="true" {
 			boolean clientUsername,
 			boolean clientApplicationName,
 			string clientApplicationNamePrefix,
-			string description
+			string description,
+			boolean requestExclusive
 		) {
 		var ds = {};
 		if( !isNull( database ) ) { ds[ 'database' ] = database; };
@@ -794,7 +796,8 @@ component accessors="true" {
 		if( !isNull( clientApplicationName ) ) { ds[ 'clientApplicationName' ] = clientApplicationName; };
 		if( !isNull( clientApplicationNamePrefix ) ) { ds[ 'clientApplicationNamePrefix' ] = clientApplicationNamePrefix; };
 		if( !isNull( description ) ) { ds[ 'description' ] = description; };
-
+		if( !isNull( requestExclusive ) ) { ds[ 'requestExclusive' ] = requestExclusive; };
+		
 		var thisDatasources = getDataSources() ?: {};
 		thisDatasources[ arguments.name ] = ds;
 		setDatasources( thisDatasources );

@@ -744,7 +744,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.storage ) ) { DSXMLNode.XMLAttributes[ 'storage' ] = DSStruct.storage; }
 			if( !isNull( DSStruct.username ) ) { DSXMLNode.XMLAttributes[ 'username' ] = DSStruct.username; }
 			if( !isNull( DSStruct.validate ) ) { DSXMLNode.XMLAttributes[ 'validate' ] = DSStruct.validate; }
-
+			if( !isNull( DSStruct.requestExclusive ) ) { DSXMLNode.XMLAttributes[ 'request-exclusive' ] = DSStruct.requestExclusive; }
+			
 			// Insert into doc if this was new.
 			if( !DSXMLSearch.len() ) {
 				datasources.XMLChildren.append( DSXMLNode );
