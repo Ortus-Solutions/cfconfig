@@ -225,6 +225,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( params.password ) ) {
 				params.password = passwordManager.decryptDataSource( replaceNoCase( params.password, 'encrypted:', '' ) );
 			}
+			
+			if( !isNull( params[ 'request-exclusive' ] ) ) {
+				params[ 'requestExclusive' ] = params[ 'request-exclusive' ];
+			}
+			
 			addDatasource( argumentCollection = params );
 		}
 	}
