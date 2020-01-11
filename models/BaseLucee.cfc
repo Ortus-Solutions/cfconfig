@@ -272,11 +272,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function readMail( mailServers ) {
 		var passwordManager = getLuceePasswordManager();
+		var config = mailServers.XMLAttributes;
 
-		/* TODO:
-		mailDefaultEncoding
-		mailSpoolEnable
-		mailConnectionTimeout*/
+		if( !isNull( config[ 'spool-enable' ] ) ) { setMailSpoolEnable( config[ 'spool-enable' ] ); }
+		if( !isNull( config[ 'default-encoding' ] ) ) { setMailDefaultEncoding( config[ 'default-encoding' ] ); }
+		if( !isNull( config[ 'timeout' ] ) ) { setMailConnectionTimeout( config[ 'timeout' ] ); }
 
 		for( var mailServer in mailServers.XMLChildren ) {
 			var params = structNew().append( mailServer.XMLAttributes );
@@ -806,16 +806,21 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeMail( thisConfig ) {
+		// Get all mail config
+		// TODO: Add tag if it doesn't exist
+		var mailServers = xmlSearch( thisConfig, '/cfLuceeConfiguration/mail' )[ 1 ];
+		var config = mailServers.XMLAttributes;
 
-		// Only save if we have something defined
+		if( !isNull( getMailSpoolEnable() ) ) { config[ 'spool-enable' ] = getMailSpoolEnable(); }
+		if( !isNull( getMailDefaultEncoding() ) ) { config[ 'default-encoding' ] = getMailDefaultEncoding(); }
+		if( !isNull( getMailConnectionTimeout() ) ) { config[ 'timeout' ] = getMailConnectionTimeout(); }
+
+		// Only save main servers if we have something defined
 		if( isNull( getMailServers() ) ) {
 			return;
 		}
 
 		var passwordManager = getLuceePasswordManager();
-		// Get all mail servers
-		// TODO: Add tag if it doesn't exist
-		var mailServers = xmlSearch( thisConfig, '/cfLuceeConfiguration/mail' )[ 1 ];
 		mailServers.XMLChildren = [];
 
 		for( var mailServer in getMailServers() ?: [] ) {
