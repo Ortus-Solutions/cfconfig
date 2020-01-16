@@ -1278,7 +1278,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return 'oracle.jdbc.driver.OracleDriver';
 			case 'MySQL' :
 				// If one of the known Lucee MySQL class names are in use, stick with it
-				if( listFindNoCase( 'com.mysql.jdbc.Driver,org.gjt.mm.mysql.Driver', className ) ) {
+				var knownMySQLClasses = arrayToList( [
+				    'com.mysql.jdbc.Driver',
+				    'org.gjt.mm.mysql.Driver',
+				    'com.mysql.cj.jdbc.Driver'
+				] );
+				if( listFindNoCase( knownMySQLClasses, className ) ) {
 					return className;
 				}
 				// If the class name wasn't recognized, default to this one.
