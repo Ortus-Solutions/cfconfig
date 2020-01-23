@@ -13,8 +13,60 @@ component accessors=true {
 	/**
 	* Constructor
 	*/
-	function init() {			
+	function init() {
 		return this;
+	}
+	
+	/**
+	* Take string in the form of foo=bar&baz=bum and convert to a struct of name/value pairs
+	*/
+	struct function parseCustom( string dbdriver, string custom ) {
+		var returnStruct = {};
+		
+		// Not accounting for any escapes here.  Adjust if neccessary
+		for( var prop in custom.listToArray( '&' ) ) {
+			returnStruct[ prop.listFirst( '=' ) ] = prop.listRest( '=' );
+		}
+		
+		return returnStruct;	
+	}
+	
+	/**
+	* Take a struct of name/value pairs and convert to string in the form of foo=bar&baz=bum or foo=bar;baz=bum depending on the DB type.
+	*/
+	string function assembleCustom( string dbdriver, struct custom ) {
+		var returnString = '';
+		var URLDelim = customURLDelimiter( dbdriver );
+		
+		// Not accounting for any escapes here.  Adjust if neccessary
+		for( var prop in custom ) {
+			returnString = returnString.listAppend( '#prop#=#custom[ prop ]#', URLDelim );
+		}
+		
+		return returnString;	
+	}
+
+	string function customURLDelimiter( string dbdriver ) {
+		
+		switch( dbdriver ) {
+			case 'MySQL' :
+			case 'PostgreSQL' :
+				return '&';
+			case 'MSSQL' :
+			case 'MSSQL2' : // jTDS driver
+			case 'Oracle' :
+			case 'DB2' :
+			case 'Sybase' :
+			case 'ODBC' :			
+			case 'HSQLDB' :			
+			case 'H2Server' :
+			case 'H2' :
+				return ';';	
+			case 'Firebird' :
+			default :
+				return '';
+		}
+		
 	}
 
 	// Every datasource type seems to store a slightly different set of properties.  

@@ -641,7 +641,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				clientApplicationName = ds.clientinfo.ApplicationName ?: false,
 				clientApplicationNamePrefix = ds.clientinfo.ApplicationNamePrefix ?: '',
 				description = ds.description ?: '',
-				custom = ds.urlmap.args ?: ''
+				// Convert foo=bar;baz=bum to foo=bar&baz=bum if neccessary.  CFConfig always uses &
+				custom = listChangeDelims( ds.urlmap.args ?: '', '&', DSNUtil.customURLDelimiter( DSNUtil.translateDatasourceDriverToGeneric( ds.driver ) ) )
 			);
 		} // end loop over datasource
 				
@@ -1515,9 +1516,23 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isNull( incomingDS.clientApplicationNamePrefix ) ) { savingDS.clientinfo.ApplicationNamePrefix = incomingDS.clientApplicationNamePrefix; }
 				if( !isNull( incomingDS.description ) ) { savingDS.description = incomingDS.description; }
 				if( !isNull( incomingDS.custom ) ) {
-					savingDS.urlmap.args = incomingDS.custom;
-					// Also save to savingDS.urlmap.connectionProps
-					// need to parse values and break out brad=wood as savingDS.urlmap.connectionProps.brad=wood
+					// Append in custom URL like foo=bar&baz=bum as struct keys into connectionprops 
+					var customAsStruct = DSNUtil.parseCustom( incomingDS.dbdriver ?: 'Other', incomingDS.custom );
+					savingDS.urlmap.connectionprops.append( customAsStruct, false );
+					if( len( incomingDS.custom ) ) {
+						// TODO: possibly check for duplicate items specified both in a dedicated arg as well as in the custom URL.  
+						// Not sure which one to honor though
+						var delim = DSNUtil.customURLDelimiter( incomingDS.dbdriver ?: 'Other' );
+						var DBSpecificCustomURL = DSNUtil.assembleCustom( incomingDS.dbdriver ?: 'Other', customAsStruct )
+						if( savingDS.url.endsWith( delim ) ) {
+							savingDS.url = savingDS.url.left( -1 )
+						}
+						if( DBSpecificCustomURL.startsWith( delim ) ) {
+							DBSpecificCustomURL = DBSpecificCustomURL.right( -1 )
+						}
+						savingDS.url = savingDS.url & delim & DBSpecificCustomURL;
+						savingDS.urlmap.args = DBSpecificCustomURL;
+					}
 				}
 	
 			} // end loop over datasources
