@@ -228,7 +228,7 @@ component accessors="true" {
 	property name='CFMappings' type='struct' _isCFConfig=true;
 	// Key is log name, value is struct of properties
 	property name='loggers' type='struct' _isCFConfig=true;
-	// True/false
+	// Enable HTTP status codes.  ColdFusion sets an error status code of 404 if the template is not found and an error status code of 500 for server errors.
 	property name='errorStatusCode' type='boolean' _isCFConfig=true;
 	// True/false
 	property name='disableInternalCFJavaComponents' type='boolean' _isCFConfig=true;
