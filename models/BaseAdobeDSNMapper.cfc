@@ -239,7 +239,7 @@ component accessors=true {
 		    "revoke":true,
 		    "validationQuery":"",
 		    "drop":true,
-		    "url":"jdbc:postgresql://{host}:{port}/{database}",
+		    "url":"jdbc:postgresql://{host}:{port}/{database}?",
 		    "update":true,
 		    "password":"",
 		    "DRIVER":"PostgreSql",

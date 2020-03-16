@@ -1530,7 +1530,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 						if( DBSpecificCustomURL.startsWith( delim ) ) {
 							DBSpecificCustomURL = DBSpecificCustomURL.right( -1 )
 						}
-						savingDS.url = savingDS.url & delim & DBSpecificCustomURL;
+						if( savingDS.url.endsWith( '?' ) ) {
+							savingDS.url = savingDS.url & DBSpecificCustomURL;
+						} else {
+							savingDS.url = savingDS.url & delim & DBSpecificCustomURL;	
+						}
 						savingDS.urlmap.args = DBSpecificCustomURL;
 					}
 				}
