@@ -24,8 +24,10 @@ Path placeholders:
 			- null (write no output)
 			- class:<class> (class that implements java.io.PrintWriter)
 			- file:<file> (file to write in)
+			
+		<system err="default" out="null"/>	
 	-->
-	<system err="default" out="null"/>
+	
 
 
 <!--	definition of all database used inside your application. 										-->
