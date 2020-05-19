@@ -1161,7 +1161,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( isNull( getLoggers() ) ) {
 			return;
 		}
-		var loggers = xmlSearch( thisConfig, '/cfLuceeConfiguration/logging' )[ 1 ];
+		var loggersXMLSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/logging' );
+	    if( loggersXMLSearch.len() ) {
+	    	var loggers = loggersXMLSearch[1];
+	    } else {
+	    	var loggers = xmlElemnew( thisConfig, 'logging' );
+	    }
 
 		for( var name in getLoggers() ?: {} ) {
 			var loggerStruct = getLoggers()[ name ];
@@ -1201,6 +1206,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				loggers.XMLChildren.append( loggerXMLNode );
 			}
 		}
+		
+	    if( !loggersXMLSearch.len() ) {
+	    	thisConfig.XMLRoot.XMLChildren.append( loggers );
+	    }
+		
 	}
 
 	private function writeError( thisConfig ) {
