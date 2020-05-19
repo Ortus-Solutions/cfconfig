@@ -14,10 +14,7 @@
         "adobe-password-util":"^1.0.0",
         "propertyFile":"^1.0.7",
         "semver":"^1.0.0",
-        "JSONPrettyPrint":"^1.2.6",
-        "ortus-redis-cache-1.4.0":"lex:https://downloads.ortussolutions.com/ortussolutions/lucee-extensions/ortus-redis-cache/1.4.0/ortus-redis-cache-1.4.0.lex",
-        "5C558CC6-1E67-4776-96A60F9726D580F1":"^1.4.0+2303",
-        "cfpdfform-extension":"lex:https://github.com/MitrahSoft/lucee-cfpdfform/blob/master/target/cfpdfform.extension-0.0.0.37.lex"
+        "JSONPrettyPrint":"^1.2.6"
     },
     "scripts":{
         "postVersion":"package set location='Ortus-Solutions/cfconfig#v`package version`'",
@@ -39,8 +36,7 @@
         "propertyFile":"modules/propertyFile/",
         "semver":"modules/semver/",
         "JSONPrettyPrint":"modules/JSONPrettyPrint/",
-        "testbox":"testbox/",
-        "cfpdfform-extension":"foo/bar/"
+        "testbox":"testbox/"
     },
     "devDependencies":{
         "coldbox":"^4.3.0+188",
