@@ -660,6 +660,7 @@ component accessors="true" {
 	* @connectionLimit Max number of connections. -1 means unlimimted
 	* @connectionTimeout Connectiontimeout in minutes
 	* @connectionTimeoutInterval Number of seconds connections are checked to see if they've timed out
+	* @alwaysSetTimeout If true, sets the timeout to the connection string
 	* @maxPooledStatements Max pooled statements if maintain connections is on.
 	* @queryTimeout Max time in seconds a query is allowed to run.  Set to 0 to disable
 	* @disableConnections Suspend all client connections
@@ -719,6 +720,7 @@ component accessors="true" {
 			numeric connectionLimit,
 			numeric connectionTimeout,
 			numeric connectionTimeoutInterval,
+			boolean alwaysSetTimeout,
 			numeric maxPooledStatements,
 			numeric queryTimeout,
 			numeric loginTimeout,
@@ -767,6 +769,7 @@ component accessors="true" {
 		if( !isNull( clob ) ) { ds[ 'clob' ] = clob; };
 		if( !isNull( connectionLimit ) ) { ds[ 'connectionLimit' ] = connectionLimit; };
 		if( !isNull( connectionTimeout ) ) { ds[ 'connectionTimeout' ] = connectionTimeout; };
+		if( !isNull( alwaysSetTimeout ) ) { ds[ 'alwaysSetTimeout' ] = alwaysSetTimeout; };
 		if( !isNull( custom ) ) { ds[ 'custom' ] = custom; };
 		if( !isNull( dsn ) ) { ds[ 'dsn' ] = dsn; };
 		if( !isNull( password ) ) { ds[ 'password' ] = password; };
