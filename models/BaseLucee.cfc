@@ -230,6 +230,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				params[ 'requestExclusive' ] = params[ 'request-exclusive' ];
 			}
 			
+			if( !isNull( params[ 'always-set-timeout' ] ) ) {
+				params[ 'alwaysSetTimeout' ] = params[ 'always-set-timeout' ];
+			}
+			
 			addDatasource( argumentCollection = params );
 		}
 	}
@@ -733,7 +737,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.clob ) ) { DSXMLNode.XMLAttributes[ 'clob' ] = DSStruct.clob; }
 			if( !isNull( DSStruct.connectionLimit ) ) { DSXMLNode.XMLAttributes[ 'connectionLimit' ] = DSStruct.connectionLimit; }
 			if( !isNull( DSStruct.connectionTimeout ) ) { DSXMLNode.XMLAttributes[ 'connectionTimeout' ] = DSStruct.connectionTimeout; }
-			if( !isNull( DSStruct.alwaysSetTimeout ) ) { DSXMLNode.XMLAttributes[ 'alwaysSetTimeout' ] = DSStruct.alwaysSetTimeout; }
+			if( !isNull( DSStruct.alwaysSetTimeout ) ) { DSXMLNode.XMLAttributes[ 'always-set-timeout' ] = DSStruct.alwaysSetTimeout; }
 
 			// Always set custom, defaulting if neccessary
 			DSXMLNode.XMLAttributes[ 'custom' ] = buildDatasourceCustom( DSStruct.dbdriver, DSStruct.custom ?: '', DSStruct );
