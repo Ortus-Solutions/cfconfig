@@ -169,7 +169,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setSessionMaximumTimeout( thisConfig[ 7 ].session.maximum_timeout );
 		setSessionType( thisConfig[ 7 ].session.usej2eesession ? 'j2ee' : 'cfml' );
 
-		setApplicationMangement( thisConfig[ 7 ].application.enable );
+		setApplicationManagement( thisConfig[ 7 ].application.enable );
 		setApplicationTimeout( thisConfig[ 7 ].application.timeout );
 		setApplicationMaximumTimeout( thisConfig[ 7 ].application.maximum_timeout );
 
@@ -788,7 +788,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSessionMaximumTimeout() ) ) { thisConfig[ 7 ].session.maximum_timeout = getSessionMaximumTimeout(); }
 		if( !isNull( getSessionType() ) ) { thisConfig[ 7 ].session.usej2eesession = ( getSessionType() == 'j2ee' ); }
 
-		if( !isNull( getApplicationMangement() ) ) { thisConfig[ 7 ].application.enable = ( getApplicationMangement() ? true : false ); }
+		if( !isNull( getApplicationManagement() ) ) { thisConfig[ 7 ].application.enable = ( getApplicationManagement() ? true : false ); }
 		if( !isNull( getApplicationTimeout() ) ) { thisConfig[ 7 ].application.timeout = getApplicationTimeout(); }
 		if( !isNull( getApplicationMaximumTimeout() ) ) { thisConfig[ 7 ].application.maximum_timeout = getApplicationMaximumTimeout(); }
 

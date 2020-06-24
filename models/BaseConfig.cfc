@@ -86,7 +86,7 @@ component accessors="true" {
 	// True/false
 	property name='mergeURLAndForm' type='boolean' _isCFConfig=true;
 	// True/false
-	property name='applicationMangement' type='boolean' _isCFConfig=true;
+	property name='applicationManagement' type='boolean' _isCFConfig=true;
 	// True/false
 	property name='sessionManagement' type='boolean' _isCFConfig=true;
 	// True/false

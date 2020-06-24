@@ -53,10 +53,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		var thisConfig = deserializeJSON( thisConfigRaw );
 		
-		// Auto-fix mispelled name.
+		// Auto-fix mispelled names
 		if( thisConfig.keyExists( 'sessionMangement' ) && !thisConfig.keyExists( 'sessionManagement' ) ) {
 			thisConfig.sessionManagement = thisConfig.sessionMangement;
 			thisConfig.delete( 'sessionMangement' );
+		}
+		if( thisConfig.keyExists( 'applicationMangement' ) && !thisConfig.keyExists( 'applicationManagement' ) ) {
+			thisConfig.applicationManagement = thisConfig.applicationMangement;
+			thisConfig.delete( 'applicationMangement' );
 		}
 		
 		setMemento( thisConfig );
