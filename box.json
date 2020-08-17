@@ -2,7 +2,7 @@
     "name":"CFConfig Services",
     "version":"1.7.8",
     "author":"Brad Wood",
-    "location":"Ortus-Solutions/cfconfig#v1.7.8",
+    "location":"forgeboxstorage",
     "homepage":"https://github.com/Ortus-Solutions/cfconfig",
     "slug":"cfconfig-services",
     "shortDescription":"A library to read/write/store CF engine configs.  This project is just the service layer, not the CLI component.",
@@ -17,10 +17,8 @@
         "JSONPrettyPrint":"^1.2.6"
     },
     "scripts":{
-        "postVersion":"package set location='Ortus-Solutions/cfconfig#v`package version`'",
         "onRelease":"publish",
-        "postPublish":"!git push --follow-tags",
-        "install":"install ID=C:\\Users\\Brad.development\\Documents\\GitHub\\cfconfig directory=\"D:\\.Command Box\\cfml\\modules\\commandbox-cfconfig\\modules\" --force"
+        "postPublish":"!git push --follow-tags"
     },
     "ignore":[
         "**/.*",
