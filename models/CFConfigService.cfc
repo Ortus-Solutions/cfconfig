@@ -91,11 +91,7 @@ component accessors=true singleton {
 		var maxVersion = '0';
 		var matchedProviderPath = '';
 		// Loop over all providers
-		for( var thisProvider in getProviderRegistry() ) {
-			systemoutput('checking #thisProvider.format#@#thisProvider.version#', 1 );
-
-			if( arguments.format == thisProvider.format ) 	systemoutput('semanticVersion.isNew( #maxVersion#, #thisProvider.version# ) #semanticVersion.isNew( maxVersion, thisProvider.version  )#', 1 );
-			
+		for( var thisProvider in getProviderRegistry() ) {			
 			// If this provider matches the format AND is newer than any previously-found provider, then it's our man.... for now.
 			if( arguments.format == thisProvider.format
 				&& ( thisProvider.version == '*' ||
