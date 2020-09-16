@@ -122,6 +122,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var system = xmlSearch( thisConfig, '/cfLuceeConfiguration/system' );
 		if( system.len() ){ readSystem( system[ 1 ] ); }
 
+		var theComponent = xmlSearch( thisConfig, '/cfLuceeConfiguration/component' );
+		if( theComponent.len() ){ readComponent( theComponent[ 1 ] ); }
+
 		readAuth( thisConfig.XMLRoot );
 
 		readConfigChanges( thisConfig.XMLRoot );
@@ -466,6 +469,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( config[ 'err' ] ) ) { setSystemErr( config[ 'err' ] ); }
 	}
 
+	private function readComponent( theComponent ) {
+		var config = theComponent.XMLAttributes;
+		if( !isNull( config[ 'base-cfml' ] ) ) { setBaseComponent( config[ 'base-cfml' ] ); }
+	}
+
 	/**
 	* I write out config
 	*
@@ -507,6 +515,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeCustomTags( thisConfig );
 		writeDebugging( thisConfig );
 		writeAuth( thisConfig );
+		writeComponent( thisConfig );
 		writeCompiler( thisConfig );
 		writeCharset( thisConfig );
 		writeJava( thisConfig );
@@ -520,6 +529,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeSecurity( thisConfig );
 		writeUpdate( thisConfig );
 		writeSystem( thisConfig );
+		writeComponent( thisConfig );
 
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
@@ -1250,6 +1260,21 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		if( !systemSearch.len() ) {
 			thisConfig.XMLRoot.XMLChildren.append( system );
+		}
+	}
+
+	private function writeComponent( thisConfig ) {
+		var componentSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/component' );
+		if( componentSearch.len() ) {
+			var theComponent = componentSearch[1];
+		} else {
+			var theComponent = xmlElemnew( thisConfig, 'component' );
+		}
+
+		if( !isNull( getBaseComponent() ) ) { theComponent.XMLAttributes[ 'base-cfml' ] = getBaseComponent(); }
+
+		if( !componentSearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( theComponent );
 		}
 	}
 

@@ -65,6 +65,9 @@ component accessors="true" {
 	// True/false
 	property name='searchResultsets' type='boolean' _isCFConfig=true;
 
+	property name='baseComponent' type='string' _isCFConfig=true;
+	
+
 	// Ex: en_US
 	property name='thisLocale' type='string' _isCFConfig=true;
 	// Ex: 	America/Chicago
