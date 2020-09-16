@@ -55,6 +55,13 @@ component accessors=true singleton {
 	* @throws cfconfigNoProviderFound if a provider isn't found that matches the format and version provided
 	*/	
 	function determineProvider( required string format, required string version ) {
+		
+		// If there is no version, just grab the latest for this format.
+		if( trim( format ).len() &&  ( !trim( version ).len() || version == '0' ) ) {
+			return getLastestProvider( format );
+		}
+		
+		// Otherwise, loop over all providers and find the first match.
 		for( var thisProvider in getProviderRegistry() ) {
 			// Remove prerelease id so non-stable engines can still match our provider ranges.
 			var cleanedVersionStruct = semanticVersion.parseVersion( arguments.version );
@@ -70,6 +77,35 @@ component accessors=true singleton {
 		// We couldn't find a match
 		throw( message="Sorry, no config provider could be found for [#format#@#version#].  Please be more specific or check your spelling.", type="cfconfigNoProviderFound" ); 
 		
+	}
+	
+	/**
+	* Find the config provider for the given format with the highest version.
+	*
+	* @format Name of format such as 'adobe', 'luceeWeb', or 'luceeServer'
+	* 
+	* @returns A concerete Config class such as JSONConfig, Adobe11, or Lucee5Server.
+	* @throws cfconfigNoProviderFound if a provider isn't found that matches the format and version provided
+	*/	
+	function getLastestProvider( required string format ) {
+		var maxVersion = '0';
+		var matchedProviderPath = '';
+		// Loop over all providers
+		for( var thisProvider in getProviderRegistry() ) {
+			// If this provider matches the format AND is newer than any previously-found provider, then it's our man.... for now.
+			if( arguments.format == thisProvider.format
+				&& semanticVersion.isNew( maxVersion, thisProvider.version  ) ) {
+					matchedProviderPath = thisProvider.invocationPath;
+					maxVersion = thisProvider.version;
+				}
+		}
+		
+		// We couldn't find a match
+		if( !len( matchedProviderPath ) ) {
+			throw( message="Sorry, no config provider could be found for [#format#].  Please be more specific or check your spelling.", type="cfconfigNoProviderFound" );	
+		}
+		
+		return wirebox.getInstance( matchedProviderPath );		
 	}
 	
 	/**
