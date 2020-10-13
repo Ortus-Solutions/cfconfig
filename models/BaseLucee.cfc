@@ -415,7 +415,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			// Turn custom values into struct
 			if( !isNull( params[ 'custom' ] ) ) {
 				var thisCustom = params[ 'custom' ];
-				var thisStruct = {};
+				var thisStruct = [:];
 				for( var item in thisCustom.listToArray( '&' ) ) {
 					// Turn foo=bar&baz=bum&poof= into { foo : 'bar', baz : 'bum', poof : '' }
 					// Any "=" or "&" in the key values will be URL encoded.
@@ -717,7 +717,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		datasources.XMLChildren = [];
 
-		for( var DSName in getDatasources() ?: {} ) {
+		for( var DSName in getDatasources() ?: [:] ) {
 			DSStruct = getDatasources()[ dsName ];
 			// Search to see if this datasource already exists
 			var DSXMLSearch = xmlSearch( thisConfig, "/cfLuceeConfiguration/data-sources/data-source[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( DSName )#']" );
@@ -888,7 +888,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			}
 		}
 
-		for( var virtual in getCFmappings() ?: {} ) {
+		for( var virtual in getCFmappings() ?: [:] ) {
 			var mappingStruct = getCFmappings()[ virtual ];
 			// Search to see if this datasource already exists
 			var mappingXMLSearch = xmlSearch( thisConfig, "/cfLuceeConfiguration/mappings/mapping[translate(@virtual,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( virtual )#']" );
@@ -1039,7 +1039,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getCacheDefaultHTTP() ) ) { cacheConnections.XMLAttributes[ 'default-http' ] = getCacheDefaultHTTP(); }
 		if( !isNull( getCacheDefaultWebservice() ) ) { cacheConnections.XMLAttributes[ 'default-webservice' ] = getCacheDefaultWebservice(); }
 
-		var thisCaches = getCaches() ?: {};
+		var thisCaches = getCaches() ?: [:];
 		for( var cacheName in thisCaches ) {
 			var cacheConnection = thisCaches[ cacheName ];
 			// Search to see if this datasource already exists
@@ -1183,7 +1183,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	    	var loggers = xmlElemnew( thisConfig, 'logging' );
 	    }
 
-		for( var name in getLoggers() ?: {} ) {
+		for( var name in getLoggers() ?: [:] ) {
 			var loggerStruct = getLoggers()[ name ];
 			// Search to see if this logger already exists
 			var loggerXMLSearch = xmlSearch( thisConfig, "/cfLuceeConfiguration/logging/logger[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( name )#']" );
@@ -1386,8 +1386,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private struct function datasourceCustomToStruct( required string custom) {
-		var thisCustom = decodeForHTML( arguments.custom );
-		var thisStruct = {};
+		var thisCustom = arguments.custom;
+		var thisStruct = [:];
 		for( var item in thisCustom.listToArray( '&' ) ) {
 			// Turn foo=bar&baz=bum&poof= into { foo : 'bar', baz : 'bum', poof : '' }
 			// Any "=" or "&" in the key values will be URL encoded.
