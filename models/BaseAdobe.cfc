@@ -1433,6 +1433,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					savingDS.urlmap.database = incomingDS.database;
 					savingDS.urlmap.connectionprops.database = incomingDS.database;
 					savingDS.url = savingDS.url.replaceNoCase( '{database}', incomingDS.database );
+				} else {
+					// Database is not required.  
+					// Need to turn jdbc:mysql://127.0.0.1/{database} into jdbc:mysql://127.0.0.1/
+					// And jdbc:macromedia:sqlserver://{host}:{port};databaseName={database};SelectMethod=direct; into jdbc:macromedia:sqlserver://{host}:{port};SelectMethod=direct;
+					savingDS.url = savingDS.url.replaceNoCase( 'databaseName={database};', '' );
+					savingDS.url = savingDS.url.replaceNoCase( '{database}', '' );					
 				}
 				if( !isNull( incomingDS.sendStringParametersAsUnicode ) ) {
 					savingDS.urlmap.sendStringParametersAsUnicode = !!incomingDS.sendStringParametersAsUnicode;
