@@ -65,49 +65,49 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		// dump( thisConfig );abort;
 		
-		var compiler = xmlSearch( thisConfig, '/cfRailoConfiguration/compiler' );
+		var compiler = xmlSearch( thisConfig, '/railo-configuration/compiler' );
 		if( compiler.len() ){ readCompiler( compiler[ 1 ] ); }
 		
-		var charset = xmlSearch( thisConfig, '/cfRailoConfiguration/charset' );
+		var charset = xmlSearch( thisConfig, '/railo-configuration/charset' );
 		if( charset.len() ){ readCharset( charset[ 1 ] ); }
 		
-		var java = xmlSearch( thisConfig, '/cfRailoConfiguration/java' );
+		var java = xmlSearch( thisConfig, '/railo-configuration/java' );
 		if( java.len() ){ readJava( java[ 1 ] ); }
 		
-		var regional = xmlSearch( thisConfig, '/cfRailoConfiguration/regional' );
+		var regional = xmlSearch( thisConfig, '/railo-configuration/regional' );
 		if( regional.len() ){ readRegional( regional[ 1 ] ); }
 		
-		var datasources = xmlSearch( thisConfig, '/cfRailoConfiguration/data-sources' );
+		var datasources = xmlSearch( thisConfig, '/railo-configuration/data-sources' );
 		if( datasources.len() ){ readDatasources( datasources[ 1 ] ); }
 		
-		var thisApplication = xmlSearch( thisConfig, '/cfRailoConfiguration/application' );
+		var thisApplication = xmlSearch( thisConfig, '/railo-configuration/application' );
 		if( thisApplication.len() ){ readApplication( thisApplication[ 1 ] ); }
 		
-		var scope = xmlSearch( thisConfig, '/cfRailoConfiguration/scope' );
+		var scope = xmlSearch( thisConfig, '/railo-configuration/scope' );
 		if( scope.len() ){ readScope( scope[ 1 ] ); }
 		
-		var mail = xmlSearch( thisConfig, '/cfRailoConfiguration/mail' );
+		var mail = xmlSearch( thisConfig, '/railo-configuration/mail' );
 		if( mail.len() ){ readMail( mail[ 1 ] ); }
 		
-		var mappings = xmlSearch( thisConfig, '/cfRailoConfiguration/mappings' );
+		var mappings = xmlSearch( thisConfig, '/railo-configuration/mappings' );
 		if( mappings.len() ){ readMappings( mappings[ 1 ] ); }
 		
-		var customTags = xmlSearch( thisConfig, '/cfRailoConfiguration/custom-tag' );
+		var customTags = xmlSearch( thisConfig, '/railo-configuration/custom-tag' );
 		if( customTags.len() ){ readCustomTags( customTags[ 1 ] ); }
 		
-		var debugging = xmlSearch( thisConfig, '/cfRailoConfiguration/debugging' );
+		var debugging = xmlSearch( thisConfig, '/railo-configuration/debugging' );
 		if( debugging.len() ){ readDebugging( debugging[ 1 ] ); }
 		
-		var setting = xmlSearch( thisConfig, '/cfRailoConfiguration/setting' );
+		var setting = xmlSearch( thisConfig, '/railo-configuration/setting' );
 		if( setting.len() ){ readSetting( setting[ 1 ] ); }
 		
-		var thisCache = xmlSearch( thisConfig, '/cfRailoConfiguration/cache' );
+		var thisCache = xmlSearch( thisConfig, '/railo-configuration/cache' );
 		if( thisCache.len() ){ readCache( thisCache[ 1 ] ); }
 		
-		var logging = xmlSearch( thisConfig, '/cfRailoConfiguration/logging' );
+		var logging = xmlSearch( thisConfig, '/railo-configuration/logging' );
 		if( logging.len() ){ readLoggers( logging[ 1 ] ); }
 
-		var error = xmlSearch( thisConfig, '/cfRailoConfiguration/error' );
+		var error = xmlSearch( thisConfig, '/railo-configuration/error' );
     	if( error.len() ){ readError( error[ 1 ] ); }
 
 		readAuth( thisConfig.XMLRoot );
@@ -413,7 +413,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeCompiler( thisConfig ) {
-		var compilerSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/compiler' );
+		var compilerSearch = xmlSearch( thisConfig, '/railo-configuration/compiler' );
 		if( compilerSearch.len() ) {
 			var compiler = compilerSearch[1];
 		} else {
@@ -432,7 +432,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeCharset( thisConfig ) {
-		var charsetSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/charset' );
+		var charsetSearch = xmlSearch( thisConfig, '/railo-configuration/charset' );
 		if( charsetSearch.len() ) {
 			var charset = charsetSearch[1];
 		} else {
@@ -451,7 +451,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeJava( thisConfig ) {
-		var javaSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/java' );
+		var javaSearch = xmlSearch( thisConfig, '/railo-configuration/java' );
 		if( javaSearch.len() ) {
 			var java = javaSearch[1];
 		} else {
@@ -468,7 +468,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeRegional( thisConfig ) {
-		var regionalSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/regional' );
+		var regionalSearch = xmlSearch( thisConfig, '/railo-configuration/regional' );
 		if( regionalSearch.len() ) {
 			var regional = regionalSearch[1];
 		} else {
@@ -496,13 +496,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var passwordManager = getLuceePasswordManager();
 		// Get all datasources
 		// TODO: Add tag if it doesn't exist
-		var datasources = xmlSearch( thisConfig, '/cfRailoConfiguration/data-sources' )[ 1 ];
+		var datasources = xmlSearch( thisConfig, '/railo-configuration/data-sources' )[ 1 ];
 		datasources.XMLChildren = [];
 
 		for( var DSName in getDatasources() ?: {} ) {
 			DSStruct = getDatasources()[ dsName ];
 			// Search to see if this datasource already exists
-			var DSXMLSearch = xmlSearch( thisConfig, "/cfRailoConfiguration/data-sources/data-source[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( DSName )#']" );
+			var DSXMLSearch = xmlSearch( thisConfig, "/railo-configuration/data-sources/data-source[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( DSName )#']" );
 			// DS already exists
 			if( DSXMLSearch.len() ) {
 				DSXMLNode = DSXMLSearch[ 1 ];
@@ -557,7 +557,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function writeApplication( thisConfig ) {
 		// TODO: Add tag if it doesn't exist
-		var thisApplication = xmlSearch( thisConfig, '/cfRailoConfiguration/application' )[ 1 ];
+		var thisApplication = xmlSearch( thisConfig, '/railo-configuration/application' )[ 1 ];
 		var config = thisApplication.XMLAttributes;
 		
 		if( !isNull( getRequestTimeout() ) ) { config[ 'requesttimeout' ] = getRequestTimeout(); }
@@ -571,7 +571,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	private function writeScope( thisConfig ) {
 		// TODO: Add tag if it doesn't exist
-		var scope = xmlSearch( thisConfig, '/cfRailoConfiguration/scope' )[ 1 ];
+		var scope = xmlSearch( thisConfig, '/railo-configuration/scope' )[ 1 ];
 		var config = scope.XMLAttributes;
 		
 		if( !isNull( getApplicationTimeout() ) ) { config[ 'applicationtimeout' ] = getApplicationTimeout(); }
@@ -612,12 +612,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var passwordManager = getLuceePasswordManager();
 		// Get all mail servers
 		// TODO: Add tag if it doesn't exist
-		var mailServers = xmlSearch( thisConfig, '/cfRailoConfiguration/mail' )[ 1 ];
+		var mailServers = xmlSearch( thisConfig, '/railo-configuration/mail' )[ 1 ];
 		mailServers.XMLChildren = [];
 		
 		for( var mailServer in getMailServers() ?: [] ) {
 			// Search to see if this datasource already exists
-			var mailServerXMLSearch = xmlSearch( thisConfig, "/cfRailoConfiguration/mail/server[translate(@smtp,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( mailServer.smtp )#']" );
+			var mailServerXMLSearch = xmlSearch( thisConfig, "/railo-configuration/mail/server[translate(@smtp,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( mailServer.smtp )#']" );
 			// mail server already exists
 			if( mailServerXMLSearch.len() ) {
 				mailServerXMLNode = mailServerXMLSearch[ 1 ];
@@ -656,7 +656,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var ignores = [ '/lucee-server/' , '/lucee/', '/lucee/doc', '/lucee/admin' ];
 		// Get all mappings
 		// TODO: Add tag if it doesn't exist
-		var mappings = xmlSearch( thisConfig, '/cfRailoConfiguration/mappings' )[ 1 ].XMLChildren;
+		var mappings = xmlSearch( thisConfig, '/railo-configuration/mappings' )[ 1 ].XMLChildren;
 		var i = 0;
 		while( ++i<= mappings.len() ) {
 			var thisMapping = mappings[ i ];
@@ -669,7 +669,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		for( var virtual in getCFmappings() ?: {} ) {
 			var mappingStruct = getCFmappings()[ virtual ];
 			// Search to see if this datasource already exists
-			var mappingXMLSearch = xmlSearch( thisConfig, "/cfRailoConfiguration/mappings/mapping[translate(@virtual,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( virtual )#']" );
+			var mappingXMLSearch = xmlSearch( thisConfig, "/railo-configuration/mappings/mapping[translate(@virtual,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( virtual )#']" );
 			// mapping already exists
 			if( mappingXMLSearch.len() ) {
 				mappingXMLNode = mappingXMLSearch[ 1 ];
@@ -719,7 +719,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 		
 		// Get all caches connections
-		var cacheConnectionsSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/cache' );
+		var cacheConnectionsSearch = xmlSearch( thisConfig, '/railo-configuration/cache' );
 		
 		if( cacheConnectionsSearch.len() ) {
 			var cacheConnections = cacheConnectionsSearch[ 1 ];			
@@ -743,7 +743,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		for( var cacheName in thisCaches ) {
 			var cacheConnection = thisCaches[ cacheName ];
 			// Search to see if this datasource already exists
-			var cacheConnectionXMLSearch = xmlSearch( thisConfig, "/cfRailoConfiguration/cache/connection[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( cacheName )#']" );
+			var cacheConnectionXMLSearch = xmlSearch( thisConfig, "/railo-configuration/cache/connection[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( cacheName )#']" );
 			// mail server already exists
 			if( cacheConnectionXMLSearch.len() ) {
 				cacheConnectionXMLNode = cacheConnectionXMLSearch[ 1 ];
@@ -851,7 +851,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeSetting( thisConfig ) {
-		var settingSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/setting' );
+		var settingSearch = xmlSearch( thisConfig, '/railo-configuration/setting' );
 		if( settingSearch.len() ) {
 			var setting = settingSearch[1];
 		} else {
@@ -877,13 +877,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			return;
 		}
 		
-		var loggers = xmlSearch( thisConfig, '/cfRailoConfiguration/logging' )[ 1 ];
+		var loggers = xmlSearch( thisConfig, '/railo-configuration/logging' )[ 1 ];
 		loggers.XMLChildren = [];
 		
 		for( var name in getLoggers() ?: {} ) {
 			var loggerStruct = getLoggers()[ name ];
 			// Search to see if this logger already exists
-			var loggerXMLSearch = xmlSearch( thisConfig, "/cfRailoConfiguration/logging/logger[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( name )#']" );
+			var loggerXMLSearch = xmlSearch( thisConfig, "/railo-configuration/logging/logger[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( name )#']" );
 			// logger already exists
 			if( loggerXMLSearch.len() ) {
 				loggerXMLNode = loggerXMLSearch[ 1 ];
@@ -921,7 +921,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeError( thisConfig ) {
-	    var errorSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/error' );
+	    var errorSearch = xmlSearch( thisConfig, '/railo-configuration/error' );
 	    if( errorSearch.len() ) {
 	    	var error = errorSearch[1];
 	    } else {
