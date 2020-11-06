@@ -450,7 +450,13 @@ component accessors="true" {
 	property name='logSlowRequestsThreshold' type='numeric' _isCFConfig=true;
 	// Log all CORBA calls
 	property name='logCORBACalls' type='boolean' _isCFConfig=true;
-
+	
+	// Array of disabled log file names (Adobe CF only)
+	property name='logFilesDisabled' type='array' _isCFConfig=true;
+	
+	// PDF Service Managers (Adobe CF only)
+	property name='PDFServiceManagers' type='struct' _isCFConfig=true;
+	
 	// TODO:
 	//property name='externalizeStrings' type='string' _isCFConfig=true;
 	//property name='restMappings' type='array' _isCFConfig=true;
@@ -609,6 +615,45 @@ component accessors="true" {
 	////////////////////////////////////////
 
 	/**
+	* Add a single PDF Service Manager to the config
+	*
+	* @name name of the PDF Service Manager to save or update
+	* @hostname The host of the PDF service
+	* @port The port of the PDF service
+	* @isHTTPS True/false whether the remote service is using HTTPS
+	* @weight A number to set the weight for this service
+	* @isLocal True for local host
+	*/
+	function addPDFServiceManager(
+		required string name,
+		required string hostname,
+		required string port,
+		boolean isHTTPS=false,
+		numeric weight=2,
+		boolean isLocal
+	) {
+		
+		if( isNull( arguments.isLocal ) ) {
+			if( arguments.hostname == '127.0.0.1' || arguments.hostname == 'localhost' ) {
+				arguments.isLocal = true;
+			} else {
+				arguments.isLocal = false;
+			}
+		}
+		
+		var PDFServiceManager = {};
+		PDFServiceManager[ 'hostname' ] = hostname;
+		PDFServiceManager[ 'port' ] = port;
+		PDFServiceManager[ 'isHTTPS' ] = isHTTPS;
+		PDFServiceManager[ 'weight' ] = weight;
+		PDFServiceManager[ 'isLocal' ] = isLocal;
+
+		var thisPDFServiceManagers = getPDFServiceManagers() ?: {};
+		thisPDFServiceManagers[ arguments.name ] = PDFServiceManager;
+		setPDFServiceManagers( thisPDFServiceManagers );
+		return this;
+	}
+	/**
 	* Add a single cache to the config
 	*
 	* @name name of the cache to save or update
@@ -638,7 +683,7 @@ component accessors="true" {
 		setCaches( thisCaches );
 		return this;
 	}
-
+	
 	/**
 	* Add a single datasource to the config
 	*

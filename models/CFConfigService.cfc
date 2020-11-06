@@ -288,7 +288,8 @@ component accessors=true singleton {
 			'restMappings',
 			'scheduledTasks',
 			'eventGatewayInstances',
-			'eventGatewayConfigurations'
+			'eventGatewayConfigurations',
+			'PDFServiceManagers'
 		];
 		
 		compareStructs( qryResult, fromData, toData, configProps, specialColumns );
@@ -372,13 +373,13 @@ component accessors=true singleton {
 	 		} else if(  (!isNull( toData[ prop ] ) && isArray( toData[ prop ] ) )
 		 		|| (!isNull( fromData[ prop ] ) && isArray( fromData[ prop ] ) ) ) {
 		 		
-		 		if( !ignoredKeys.findNoCase( prop ) ) {
-		 			qryResult.addRow( row );
-		 		}
+		 		var arrayRow = row;
 
 		 		// Prepare the new from and to structs
 				var fromArr = fromData[ prop ] ?: [];
 				var toArr = toData[ prop ] ?: [];
+				
+				var arrayWasDirty=false;
 				
 				// Loop as many times as the longest arrary
 				var i=0;
@@ -402,6 +403,7 @@ component accessors=true singleton {
 							generateDefaultStructName( fromValue, prop ),
 							generateDefaultStructName( toValue, prop )
 						);
+						
 						qryResult.addRow( row );
 
 						// Get combined list of properties between both structs.
@@ -417,7 +419,7 @@ component accessors=true singleton {
 						var row = getDefaultRow( '#prefix##prop#-#numberFormat( i, "09" )#' );
 
 						// Compare a simple value in the array
-						somethingWasDirty = compareValues(
+						tmp = compareValues(
 							row,
 							fromArr,
 							toArr,
@@ -425,10 +427,19 @@ component accessors=true singleton {
 							fromValue,
 							toValue
 						);
+						arrayWasDirty = arrayWasDirty || tmp;
 						qryResult.addRow( row );
 					}
 					
-				}
+				} // End loop over array
+					
+		 		if( !ignoredKeys.findNoCase( prop ) ) {
+	 				if( arrayWasDirty ) {
+						arrayRow.valuesMatch = 0;
+						arrayRow.valuesDiffer = 1;
+					}		 			
+		 			qryResult.addRow( arrayRow );
+		 		}
 					
 	 		} else if( !ignoredKeys.findNoCase( prop ) ) {					
 				qryResult.addRow( row );					
@@ -452,7 +463,7 @@ component accessors=true singleton {
 	 	// Doesn't exist in either.
 	 	if( isNull( fromData[ prop ] ) && isNull( toData[ prop ] ) ) {
 	 		row.bothEmpty = 1;
-	 		somethingWasDirty = true;
+	 		somethingWasDirty = false;
 	 	// Exists in both
 	 	} else if( !isNull( fromData[ prop ] ) && !isNull( toData[ prop ] ) ) {
 	 		row.bothPopulated = 1;
