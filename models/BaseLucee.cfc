@@ -1162,7 +1162,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			return;
 		}
 		var loggers = xmlSearch( thisConfig, '/cfLuceeConfiguration/logging' )[ 1 ];
-
+		setLoggers(loggers);
+		
 		for( var name in getLoggers() ?: {} ) {
 			var loggerStruct = getLoggers()[ name ];
 			// Search to see if this logger already exists
