@@ -55,6 +55,13 @@ component accessors=true singleton {
 	* @throws cfconfigNoProviderFound if a provider isn't found that matches the format and version provided
 	*/	
 	function determineProvider( required string format, required string version ) {
+		
+		// If there is no version, just grab the latest for this format.
+		if( trim( format ).len() &&  ( !trim( version ).len() || version == '0' ) ) {
+			return getLastestProvider( format );
+		}
+		
+		// Otherwise, loop over all providers and find the first match.
 		for( var thisProvider in getProviderRegistry() ) {
 			// Remove prerelease id so non-stable engines can still match our provider ranges.
 			var cleanedVersionStruct = semanticVersion.parseVersion( arguments.version );
@@ -70,6 +77,36 @@ component accessors=true singleton {
 		// We couldn't find a match
 		throw( message="Sorry, no config provider could be found for [#format#@#version#].  Please be more specific or check your spelling.", type="cfconfigNoProviderFound" ); 
 		
+	}
+	
+	/**
+	* Find the config provider for the given format with the highest version.
+	*
+	* @format Name of format such as 'adobe', 'luceeWeb', or 'luceeServer'
+	* 
+	* @returns A concerete Config class such as JSONConfig, Adobe11, or Lucee5Server.
+	* @throws cfconfigNoProviderFound if a provider isn't found that matches the format and version provided
+	*/	
+	function getLastestProvider( required string format ) {
+		var maxVersion = '0';
+		var matchedProviderPath = '';
+		// Loop over all providers
+		for( var thisProvider in getProviderRegistry() ) {			
+			// If this provider matches the format AND is newer than any previously-found provider, then it's our man.... for now.
+			if( arguments.format == thisProvider.format
+				&& ( thisProvider.version == '*' ||
+				 semanticVersion.isNew( maxVersion, thisProvider.version  ) ) ) {
+					matchedProviderPath = thisProvider.invocationPath;
+					maxVersion = thisProvider.version;
+				}
+		}
+		
+		// We couldn't find a match
+		if( !len( matchedProviderPath ) ) {
+			throw( message="Sorry, no config provider could be found for [#format#].  Please be more specific or check your spelling.", type="cfconfigNoProviderFound" );	
+		}
+		
+		return wirebox.getInstance( matchedProviderPath );		
 	}
 	
 	/**
@@ -251,7 +288,8 @@ component accessors=true singleton {
 			'restMappings',
 			'scheduledTasks',
 			'eventGatewayInstances',
-			'eventGatewayConfigurations'
+			'eventGatewayConfigurations',
+			'PDFServiceManagers'
 		];
 		
 		compareStructs( qryResult, fromData, toData, configProps, specialColumns );
@@ -335,13 +373,13 @@ component accessors=true singleton {
 	 		} else if(  (!isNull( toData[ prop ] ) && isArray( toData[ prop ] ) )
 		 		|| (!isNull( fromData[ prop ] ) && isArray( fromData[ prop ] ) ) ) {
 		 		
-		 		if( !ignoredKeys.findNoCase( prop ) ) {
-		 			qryResult.addRow( row );
-		 		}
+		 		var arrayRow = row;
 
 		 		// Prepare the new from and to structs
 				var fromArr = fromData[ prop ] ?: [];
 				var toArr = toData[ prop ] ?: [];
+				
+				var arrayWasDirty=false;
 				
 				// Loop as many times as the longest arrary
 				var i=0;
@@ -365,6 +403,7 @@ component accessors=true singleton {
 							generateDefaultStructName( fromValue, prop ),
 							generateDefaultStructName( toValue, prop )
 						);
+						
 						qryResult.addRow( row );
 
 						// Get combined list of properties between both structs.
@@ -380,7 +419,7 @@ component accessors=true singleton {
 						var row = getDefaultRow( '#prefix##prop#-#numberFormat( i, "09" )#' );
 
 						// Compare a simple value in the array
-						somethingWasDirty = compareValues(
+						tmp = compareValues(
 							row,
 							fromArr,
 							toArr,
@@ -388,10 +427,19 @@ component accessors=true singleton {
 							fromValue,
 							toValue
 						);
+						arrayWasDirty = arrayWasDirty || tmp;
 						qryResult.addRow( row );
 					}
 					
-				}
+				} // End loop over array
+					
+		 		if( !ignoredKeys.findNoCase( prop ) ) {
+	 				if( arrayWasDirty ) {
+						arrayRow.valuesMatch = 0;
+						arrayRow.valuesDiffer = 1;
+					}		 			
+		 			qryResult.addRow( arrayRow );
+		 		}
 					
 	 		} else if( !ignoredKeys.findNoCase( prop ) ) {					
 				qryResult.addRow( row );					
@@ -415,7 +463,7 @@ component accessors=true singleton {
 	 	// Doesn't exist in either.
 	 	if( isNull( fromData[ prop ] ) && isNull( toData[ prop ] ) ) {
 	 		row.bothEmpty = 1;
-	 		somethingWasDirty = true;
+	 		somethingWasDirty = false;
 	 	// Exists in both
 	 	} else if( !isNull( fromData[ prop ] ) && !isNull( toData[ prop ] ) ) {
 	 		row.bothPopulated = 1;

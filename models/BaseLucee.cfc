@@ -122,6 +122,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var system = xmlSearch( thisConfig, '/cfLuceeConfiguration/system' );
 		if( system.len() ){ readSystem( system[ 1 ] ); }
 
+		var theComponent = xmlSearch( thisConfig, '/cfLuceeConfiguration/component' );
+		if( theComponent.len() ){ readComponent( theComponent[ 1 ] ); }
+
 		readAuth( thisConfig.XMLRoot );
 
 		readConfigChanges( thisConfig.XMLRoot );
@@ -228,6 +231,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			
 			if( !isNull( params[ 'request-exclusive' ] ) ) {
 				params[ 'requestExclusive' ] = params[ 'request-exclusive' ];
+			}
+			
+			if( !isNull( params[ 'always-set-timeout' ] ) ) {
+				params[ 'alwaysSetTimeout' ] = params[ 'always-set-timeout' ];
 			}
 			
 			addDatasource( argumentCollection = params );
@@ -408,7 +415,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			// Turn custom values into struct
 			if( !isNull( params[ 'custom' ] ) ) {
 				var thisCustom = params[ 'custom' ];
-				var thisStruct = {};
+				var thisStruct = [:];
 				for( var item in thisCustom.listToArray( '&' ) ) {
 					// Turn foo=bar&baz=bum&poof= into { foo : 'bar', baz : 'bum', poof : '' }
 					// Any "=" or "&" in the key values will be URL encoded.
@@ -462,6 +469,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( config[ 'err' ] ) ) { setSystemErr( config[ 'err' ] ); }
 	}
 
+	private function readComponent( theComponent ) {
+		var config = theComponent.XMLAttributes;
+		if( !isNull( config[ 'base-cfml' ] ) ) { setBaseComponent( config[ 'base-cfml' ] ); }
+	}
+
 	/**
 	* I write out config
 	*
@@ -503,6 +515,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeCustomTags( thisConfig );
 		writeDebugging( thisConfig );
 		writeAuth( thisConfig );
+		writeComponent( thisConfig );
 		writeCompiler( thisConfig );
 		writeCharset( thisConfig );
 		writeJava( thisConfig );
@@ -516,6 +529,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeSecurity( thisConfig );
 		writeUpdate( thisConfig );
 		writeSystem( thisConfig );
+		writeComponent( thisConfig );
 
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
@@ -703,7 +717,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		datasources.XMLChildren = [];
 
-		for( var DSName in getDatasources() ?: {} ) {
+		for( var DSName in getDatasources() ?: [:] ) {
 			DSStruct = getDatasources()[ dsName ];
 			// Search to see if this datasource already exists
 			var DSXMLSearch = xmlSearch( thisConfig, "/cfLuceeConfiguration/data-sources/data-source[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( DSName )#']" );
@@ -733,6 +747,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.clob ) ) { DSXMLNode.XMLAttributes[ 'clob' ] = DSStruct.clob; }
 			if( !isNull( DSStruct.connectionLimit ) ) { DSXMLNode.XMLAttributes[ 'connectionLimit' ] = DSStruct.connectionLimit; }
 			if( !isNull( DSStruct.connectionTimeout ) ) { DSXMLNode.XMLAttributes[ 'connectionTimeout' ] = DSStruct.connectionTimeout; }
+			if( !isNull( DSStruct.alwaysSetTimeout ) ) { DSXMLNode.XMLAttributes[ 'always-set-timeout' ] = DSStruct.alwaysSetTimeout; }
 
 			// Always set custom, defaulting if neccessary
 			DSXMLNode.XMLAttributes[ 'custom' ] = buildDatasourceCustom( DSStruct.dbdriver, DSStruct.custom ?: '', DSStruct );
@@ -873,7 +888,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			}
 		}
 
-		for( var virtual in getCFmappings() ?: {} ) {
+		for( var virtual in getCFmappings() ?: [:] ) {
 			var mappingStruct = getCFmappings()[ virtual ];
 			// Search to see if this datasource already exists
 			var mappingXMLSearch = xmlSearch( thisConfig, "/cfLuceeConfiguration/mappings/mapping[translate(@virtual,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( virtual )#']" );
@@ -1024,7 +1039,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getCacheDefaultHTTP() ) ) { cacheConnections.XMLAttributes[ 'default-http' ] = getCacheDefaultHTTP(); }
 		if( !isNull( getCacheDefaultWebservice() ) ) { cacheConnections.XMLAttributes[ 'default-webservice' ] = getCacheDefaultWebservice(); }
 
-		var thisCaches = getCaches() ?: {};
+		var thisCaches = getCaches() ?: [:];
 		for( var cacheName in thisCaches ) {
 			var cacheConnection = thisCaches[ cacheName ];
 			// Search to see if this datasource already exists
@@ -1161,10 +1176,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( isNull( getLoggers() ) ) {
 			return;
 		}
-		var loggers = xmlSearch( thisConfig, '/cfLuceeConfiguration/logging' )[ 1 ];
-		setLoggers(loggers);
-		
-		for( var name in getLoggers() ?: {} ) {
+		var loggersXMLSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/logging' );
+	    if( loggersXMLSearch.len() ) {
+	    	var loggers = loggersXMLSearch[1];
+	    } else {
+	    	var loggers = xmlElemnew( thisConfig, 'logging' );
+	    }
+
+		for( var name in getLoggers() ?: [:] ) {
 			var loggerStruct = getLoggers()[ name ];
 			// Search to see if this logger already exists
 			var loggerXMLSearch = xmlSearch( thisConfig, "/cfLuceeConfiguration/logging/logger[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( name )#']" );
@@ -1202,6 +1221,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				loggers.XMLChildren.append( loggerXMLNode );
 			}
 		}
+		
+	    if( !loggersXMLSearch.len() ) {
+	    	thisConfig.XMLRoot.XMLChildren.append( loggers );
+	    }
+		
 	}
 
 	private function writeError( thisConfig ) {
@@ -1236,6 +1260,21 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		if( !systemSearch.len() ) {
 			thisConfig.XMLRoot.XMLChildren.append( system );
+		}
+	}
+
+	private function writeComponent( thisConfig ) {
+		var componentSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/component' );
+		if( componentSearch.len() ) {
+			var theComponent = componentSearch[1];
+		} else {
+			var theComponent = xmlElemnew( thisConfig, 'component' );
+		}
+
+		if( !isNull( getBaseComponent() ) ) { theComponent.XMLAttributes[ 'base-cfml' ] = getBaseComponent(); }
+
+		if( !componentSearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( theComponent );
 		}
 	}
 
@@ -1347,8 +1386,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private struct function datasourceCustomToStruct( required string custom) {
-		var thisCustom = decodeForHTML( arguments.custom );
-		var thisStruct = {};
+		var thisCustom = arguments.custom;
+		var thisStruct = [:];
 		for( var item in thisCustom.listToArray( '&' ) ) {
 			// Turn foo=bar&baz=bum&poof= into { foo : 'bar', baz : 'bum', poof : '' }
 			// Any "=" or "&" in the key values will be URL encoded.

@@ -33,6 +33,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setDotNetConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-dotnet.xml' ) );
 		setLoggingConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-logging.xml' ) );
 		setUpdateConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo_updates.xml' ) );
+		setDocumentConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-document.xml' ) );
 		setVersion( '11' );
 		
 		return this;

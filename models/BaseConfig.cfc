@@ -65,6 +65,9 @@ component accessors="true" {
 	// True/false
 	property name='searchResultsets' type='boolean' _isCFConfig=true;
 
+	property name='baseComponent' type='string' _isCFConfig=true;
+	
+
 	// Ex: en_US
 	property name='thisLocale' type='string' _isCFConfig=true;
 	// Ex: 	America/Chicago
@@ -86,7 +89,7 @@ component accessors="true" {
 	// True/false
 	property name='mergeURLAndForm' type='boolean' _isCFConfig=true;
 	// True/false
-	property name='applicationMangement' type='boolean' _isCFConfig=true;
+	property name='applicationManagement' type='boolean' _isCFConfig=true;
 	// True/false
 	property name='sessionManagement' type='boolean' _isCFConfig=true;
 	// True/false
@@ -447,7 +450,13 @@ component accessors="true" {
 	property name='logSlowRequestsThreshold' type='numeric' _isCFConfig=true;
 	// Log all CORBA calls
 	property name='logCORBACalls' type='boolean' _isCFConfig=true;
-
+	
+	// Array of disabled log file names (Adobe CF only)
+	property name='logFilesDisabled' type='array' _isCFConfig=true;
+	
+	// PDF Service Managers (Adobe CF only)
+	property name='PDFServiceManagers' type='struct' _isCFConfig=true;
+	
 	// TODO:
 	//property name='externalizeStrings' type='string' _isCFConfig=true;
 	//property name='restMappings' type='array' _isCFConfig=true;
@@ -606,6 +615,45 @@ component accessors="true" {
 	////////////////////////////////////////
 
 	/**
+	* Add a single PDF Service Manager to the config
+	*
+	* @name name of the PDF Service Manager to save or update
+	* @hostname The host of the PDF service
+	* @port The port of the PDF service
+	* @isHTTPS True/false whether the remote service is using HTTPS
+	* @weight A number to set the weight for this service
+	* @isLocal True for local host
+	*/
+	function addPDFServiceManager(
+		required string name,
+		required string hostname,
+		required string port,
+		boolean isHTTPS=false,
+		numeric weight=2,
+		boolean isLocal
+	) {
+		
+		if( isNull( arguments.isLocal ) ) {
+			if( arguments.hostname == '127.0.0.1' || arguments.hostname == 'localhost' ) {
+				arguments.isLocal = true;
+			} else {
+				arguments.isLocal = false;
+			}
+		}
+		
+		var PDFServiceManager = {};
+		PDFServiceManager[ 'hostname' ] = hostname;
+		PDFServiceManager[ 'port' ] = port;
+		PDFServiceManager[ 'isHTTPS' ] = isHTTPS;
+		PDFServiceManager[ 'weight' ] = weight;
+		PDFServiceManager[ 'isLocal' ] = isLocal;
+
+		var thisPDFServiceManagers = getPDFServiceManagers() ?: {};
+		thisPDFServiceManagers[ arguments.name ] = PDFServiceManager;
+		setPDFServiceManagers( thisPDFServiceManagers );
+		return this;
+	}
+	/**
 	* Add a single cache to the config
 	*
 	* @name name of the cache to save or update
@@ -635,7 +683,7 @@ component accessors="true" {
 		setCaches( thisCaches );
 		return this;
 	}
-
+	
 	/**
 	* Add a single datasource to the config
 	*
@@ -660,6 +708,7 @@ component accessors="true" {
 	* @connectionLimit Max number of connections. -1 means unlimimted
 	* @connectionTimeout Connectiontimeout in minutes
 	* @connectionTimeoutInterval Number of seconds connections are checked to see if they've timed out
+	* @alwaysSetTimeout If true, sets the timeout to the connection string
 	* @maxPooledStatements Max pooled statements if maintain connections is on.
 	* @queryTimeout Max time in seconds a query is allowed to run.  Set to 0 to disable
 	* @disableConnections Suspend all client connections
@@ -719,6 +768,7 @@ component accessors="true" {
 			numeric connectionLimit,
 			numeric connectionTimeout,
 			numeric connectionTimeoutInterval,
+			boolean alwaysSetTimeout,
 			numeric maxPooledStatements,
 			numeric queryTimeout,
 			numeric loginTimeout,
@@ -767,6 +817,7 @@ component accessors="true" {
 		if( !isNull( clob ) ) { ds[ 'clob' ] = clob; };
 		if( !isNull( connectionLimit ) ) { ds[ 'connectionLimit' ] = connectionLimit; };
 		if( !isNull( connectionTimeout ) ) { ds[ 'connectionTimeout' ] = connectionTimeout; };
+		if( !isNull( alwaysSetTimeout ) ) { ds[ 'alwaysSetTimeout' ] = alwaysSetTimeout; };
 		if( !isNull( custom ) ) { ds[ 'custom' ] = custom; };
 		if( !isNull( dsn ) ) { ds[ 'dsn' ] = dsn; };
 		if( !isNull( password ) ) { ds[ 'password' ] = password; };

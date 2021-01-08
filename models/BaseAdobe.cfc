@@ -64,6 +64,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	property name='updateConfigPath' type='string';
 	property name='updateConfigTemplate' type='string';
+
+	property name='documentConfigPath' type='string';
+	property name='documentConfigTemplate' type='string';
 	
 	
 	property name='AdminRDSLoginRequiredBoolean' type='boolean' default="false" ;
@@ -93,6 +96,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setDotNetConfigPath( '/lib/neo-dotnet.xml' );
 		setLoggingConfigPath( '/lib/neo-logging.xml' );
 		setUpdateConfigPath( '/lib/neo_updates.xml' );
+		setDocumentConfigPath( '/lib/neo-document.xml' );
 		
 		// CF 10+ stors as a string.  CF9 will override this.
 		setAdminRDSLoginRequiredBoolean( false );
@@ -143,6 +147,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readDotNet();
 		readLogging();
 		readUpdate();
+		readDocument();
 
 		return this;
 	}
@@ -169,7 +174,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setSessionMaximumTimeout( thisConfig[ 7 ].session.maximum_timeout );
 		setSessionType( thisConfig[ 7 ].session.usej2eesession ? 'j2ee' : 'cfml' );
 
-		setApplicationMangement( thisConfig[ 7 ].application.enable );
+		setApplicationManagement( thisConfig[ 7 ].application.enable );
 		setApplicationTimeout( thisConfig[ 7 ].application.timeout );
 		setApplicationMaximumTimeout( thisConfig[ 7 ].application.maximum_timeout );
 
@@ -678,6 +683,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	private function readLogging() {
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getLoggingConfigPath(), '/' ) );
 
+		if( !isNull( thisConfig[ 1 ] ) && isArray( thisConfig[ 1 ] ) ) {
+			setLogFilesDisabled( thisConfig[ 1 ] );
+		}
+
 		if( !isNull( thisConfig[ 2 ].logDirectory ) ) { setLogDirectory( thisConfig[ 2 ].logDirectory ); }
 		// Setting is in KB, but storage is in B. Factor of 1000, not 1024.  Thanks, Adobe.
 		if( !isNull( thisConfig[ 2 ].maxFileSize ) ) { setLogMaxFileSize( thisConfig[ 2 ].maxFileSize/1000 ); }
@@ -704,6 +713,23 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 	}
 
+	private function readDocument() {
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDocumentConfigPath(), '/' ) );
+		var PDFServices = thisConfig[ 4 ] ?: {};
+
+		for( var PDFServiceName in PDFServices ) {
+			var PDFService = PDFServices[ PDFServiceName ];
+
+			addPDFServiceManager(
+				name = PDFServiceName,
+				hostname = PDFService.hostname ?: '',
+				port = PDFService.port ?: 0,
+				isHTTPS = PDFService.isHTTPS ?: false,
+				weight = PDFService.weight ?: 2,
+				isLocal = PDFService.isLocal ?: false
+			);
+		}
+	}
 
 	/**
 	* I write out config from a base JSON format
@@ -743,6 +769,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeJetty();
 		writeDotNet();
 		writeUpdate();
+		writeDocument();
 
 		return this;
 	}
@@ -788,7 +815,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSessionMaximumTimeout() ) ) { thisConfig[ 7 ].session.maximum_timeout = getSessionMaximumTimeout(); }
 		if( !isNull( getSessionType() ) ) { thisConfig[ 7 ].session.usej2eesession = ( getSessionType() == 'j2ee' ); }
 
-		if( !isNull( getApplicationMangement() ) ) { thisConfig[ 7 ].application.enable = ( getApplicationMangement() ? true : false ); }
+		if( !isNull( getApplicationManagement() ) ) { thisConfig[ 7 ].application.enable = ( getApplicationManagement() ? true : false ); }
 		if( !isNull( getApplicationTimeout() ) ) { thisConfig[ 7 ].application.timeout = getApplicationTimeout(); }
 		if( !isNull( getApplicationMaximumTimeout() ) ) { thisConfig[ 7 ].application.maximum_timeout = getApplicationMaximumTimeout(); }
 
@@ -1433,6 +1460,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					savingDS.urlmap.database = incomingDS.database;
 					savingDS.urlmap.connectionprops.database = incomingDS.database;
 					savingDS.url = savingDS.url.replaceNoCase( '{database}', incomingDS.database );
+				} else {
+					// Database is not required.  
+					// Need to turn jdbc:mysql://127.0.0.1/{database} into jdbc:mysql://127.0.0.1/
+					// And jdbc:macromedia:sqlserver://{host}:{port};databaseName={database};SelectMethod=direct; into jdbc:macromedia:sqlserver://{host}:{port};SelectMethod=direct;
+					savingDS.url = savingDS.url.replaceNoCase( 'databaseName={database};', '' );
+					savingDS.url = savingDS.url.replaceNoCase( '{database}', '' );					
 				}
 				if( !isNull( incomingDS.sendStringParametersAsUnicode ) ) {
 					savingDS.urlmap.sendStringParametersAsUnicode = !!incomingDS.sendStringParametersAsUnicode;
@@ -1616,6 +1649,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var thisConfig = readWDDXConfigFile( getLoggingConfigTemplate() );
 		}
 
+		if( !isNull( getLogFilesDisabled() ) ) {
+			thisConfig[ 1 ] = getLogFilesDisabled();
+		}
+
 		if( !isNull( getLogDirectory() ) ) { thisConfig[ 2 ].logDirectory = getLogDirectory(); }
 		// Setting is in KB, but storage is in B. Factor of 1000, not 1024.  Thanks, Adobe.
 		if( !isNull( getLogMaxFileSize() ) ) { thisConfig[ 2 ].maxFileSize = getLogMaxFileSize()*1000; }
@@ -1699,6 +1736,43 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		writeXMLConfigFile( thisConfig, configFilePath );
 		
+	}
+
+	private function writeDocument() {
+		var configFilePath = getCFHomePath().listAppend( getDocumentConfigPath(), '/' );
+
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getDocumentConfigTemplate() );
+		}
+		
+		if( !isNull( getPDFServiceManagers() ) ) {
+	
+			thisConfig[ 4 ] = {};
+	
+			var PDFServices = getPDFServiceManagers();
+	
+			for( var PDFServiceName in PDFServices ) {
+				var incomingPDFService = PDFServices[ PDFServiceName ];
+				thisConfig[ 4 ][ PDFServiceName ] = thisConfig[ 4 ][ PDFServiceName ] ?: {};
+				var savingPDFService = thisConfig[ 4 ][ PDFServiceName ];
+	
+				savingPDFService[ 'name' ] = PDFServiceName;
+	
+				if( !isNull( incomingPDFService.hostname ) ) { savingPDFService[ 'hostname' ] = incomingPDFService.hostname; }
+				if( !isNull( incomingPDFService.port ) ) { savingPDFService[ 'port' ] = incomingPDFService.port+0; }
+				if( !isNull( incomingPDFService.isHTTPS ) ) { savingPDFService[ 'isHTTPS' ] = !!incomingPDFService.isHTTPS; }
+				if( !isNull( incomingPDFService.weight ) ) { savingPDFService[ 'weight' ] = incomingPDFService.weight+0; }
+				if( !isNull( incomingPDFService.isLocal ) ) { savingPDFService[ 'isLocal' ] = !!incomingPDFService.isLocal; }
+
+			} // end loop over datasources
+			
+		} // end if datasources is null
+
+		writeWDDXConfigFile( thisConfig, configFilePath );
 	}
 
 	private function ensureSeedProperties( required string seedPropertiesPath ) {
