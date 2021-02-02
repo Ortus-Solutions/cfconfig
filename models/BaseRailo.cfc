@@ -234,6 +234,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readCustomTags( customTags ) {
+		var ignores = [ '{railo-config}/customtags/' , '{railo-server}/customtags/' , '{railo-web}/customtags/' ];
+		for( var customTag in customTags.XMLChildren ) {
+			var params = structNew().append( customTag.XMLAttributes );
+
+			if( ignores.findNoCase( params.physical ) ) {
+				continue;
+			}
+			addCustomTagPath( argumentCollection = params );
+		}
 	}
 	
 	private function readDebugging( debugging ) {
@@ -698,6 +707,50 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeCustomTags( thisConfig ) {
+		// Only save if we have something defined
+		if( isNull( getCustomTagPaths() ) ) {
+			return;
+		}
+		
+		var ignores = [ '{railo-config}/customtags/' , '{railo-server}/customtags/' , '{railo-web}/customtags/' ];
+		// Get all paths
+		// TODO: Add tag if it doesn't exist
+		var mappings = xmlSearch( thisConfig, '/cfRailoConfiguration/custom-tag | /railo-configuration/custom-tag' )[ 1 ].XMLChildren;
+		var i = 0;
+		while( ++i<= mappings.len() ) {
+			var thisMapping = mappings[ i ];
+			if( !ignores.findNoCase( thisMapping.XMLAttributes.physical ) ) {
+				arrayDeleteAt( mappings, i );
+				i--;
+			}
+		}
+		
+		for( var currentMapping in getCustomTagPaths() ?: [] ) {
+			// Search to see if this path already exists
+			var mappingXMLSearch = xmlSearch( thisConfig, "//custom-tag/mapping[translate(@physical,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( currentMapping.physical )#']" );
+			// mapping already exists
+			if( mappingXMLSearch.len() ) {
+				mappingXMLNode = mappingXMLSearch[ 1 ];
+				// Wipe out old attributes for this mapping
+				structClear( mappingXMLNode.XMLAttributes );
+			// Create new data-source tag
+			} else {
+				var mappingXMLNode = xmlElemnew(thisConfig,"mapping");				
+			}
+			
+			// Populate XML node
+			mappingXMLNode.XMLAttributes[ 'physical' ] = currentMapping.physical;
+			if( !isNull( currentMapping.archive ) ) { mappingXMLNode.XMLAttributes[ 'archive' ] = currentMapping.archive; }
+			if( !isNull( currentMapping.name ) ) { mappingXMLNode.XMLAttributes[ 'name' ] = currentMapping.name; }
+			if( !isNull( currentMapping.inspectTemplate ) ) { mappingXMLNode.XMLAttributes[ 'inspectTemplate' ] = currentMapping.inspectTemplate; }
+			if( !isNull( currentMapping.primary ) ) { mappingXMLNode.XMLAttributes[ 'primary' ] = currentMapping.primary; }
+			if( !isNull( currentMapping.trusted ) ) { mappingXMLNode.XMLAttributes[ 'trusted' ] = currentMapping.trusted; }
+			
+			// Insert into doc if this was new.
+			if( !mappingXMLSearch.len() ) {
+				mappings.append( mappingXMLNode );
+			}			
+		}
 	}
 	
 	private function writeDebugging( thisConfig ) {
