@@ -1332,6 +1332,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return 'com.mysql.jdbc.Driver';
 			case 'H2' :
 				return 'org.h2.Driver';
+			case 'PostgreSQL' :
+				return 'org.postgresql.Driver';
 			default :
 				return arguments.className;
 		}

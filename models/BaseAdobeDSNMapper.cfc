@@ -152,6 +152,8 @@ component accessors=true {
 				return 'macromedia.jdbc.MacromediaDriver';
 			case 'MySQL5' :
 				return 'com.mysql.jdbc.Driver';
+			case 'PostgreSQL' :
+				return 'org.postgresql.Driver';				
 			default :
 				return arguments.className;
 		}

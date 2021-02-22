@@ -726,7 +726,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				port = PDFService.port ?: 0,
 				isHTTPS = PDFService.isHTTPS ?: false,
 				weight = PDFService.weight ?: 2,
-				isLocal = PDFService.isLocal ?: false
+				isLocal = PDFService.isLocal ?: false,
+				isEnabled = PDFService.isEnabled ?: true
 			);
 		}
 	}
@@ -1764,10 +1765,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 				if( !isNull( incomingPDFService.hostname ) ) { savingPDFService[ 'hostname' ] = incomingPDFService.hostname; }
 				if( !isNull( incomingPDFService.port ) ) { savingPDFService[ 'port' ] = incomingPDFService.port+0; }
-				if( !isNull( incomingPDFService.isHTTPS ) ) { savingPDFService[ 'isHTTPS' ] = !!incomingPDFService.isHTTPS; }
+				if( !isNull( incomingPDFService.isHTTPS ) ) { savingPDFService[ 'ishttps' ] = !!incomingPDFService.isHTTPS; }
 				if( !isNull( incomingPDFService.weight ) ) { savingPDFService[ 'weight' ] = incomingPDFService.weight+0; }
-				if( !isNull( incomingPDFService.isLocal ) ) { savingPDFService[ 'isLocal' ] = !!incomingPDFService.isLocal; }
-
+				if( !isNull( incomingPDFService.isLocal ) ) { savingPDFService[ 'islocal' ] = !!incomingPDFService.isLocal; }
+				// Default this to true for backwards compat
+				incomingPDFService.isEnabled = incomingPDFService.isEnabled ?: true;
+				savingPDFService[ 'isenabled' ] = !!incomingPDFService.isEnabled;
+				
 			} // end loop over datasources
 			
 		} // end if datasources is null

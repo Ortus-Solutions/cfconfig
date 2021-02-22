@@ -623,6 +623,7 @@ component accessors="true" {
 	* @isHTTPS True/false whether the remote service is using HTTPS
 	* @weight A number to set the weight for this service
 	* @isLocal True for local host
+	* @isEnabled True for enabled	
 	*/
 	function addPDFServiceManager(
 		required string name,
@@ -630,7 +631,8 @@ component accessors="true" {
 		required string port,
 		boolean isHTTPS=false,
 		numeric weight=2,
-		boolean isLocal
+		boolean isLocal,
+		boolean isEnabled=true
 	) {
 		
 		if( isNull( arguments.isLocal ) ) {
@@ -647,6 +649,7 @@ component accessors="true" {
 		PDFServiceManager[ 'isHTTPS' ] = isHTTPS;
 		PDFServiceManager[ 'weight' ] = weight;
 		PDFServiceManager[ 'isLocal' ] = isLocal;
+		PDFServiceManager[ 'isEnabled' ] = isEnabled;		
 
 		var thisPDFServiceManagers = getPDFServiceManagers() ?: {};
 		thisPDFServiceManagers[ arguments.name ] = PDFServiceManager;
