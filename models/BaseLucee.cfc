@@ -1058,7 +1058,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			cacheConnectionXMLNode.XMLAttributes[ 'name' ] = cacheName;
 
 			if( !isNull( cacheConnection.class ) ) {
-				cacheConnectionXMLNode.XMLAttributes[ 'class' ] = cacheConnection.class;
+				cacheConnectionXMLNode.XMLAttributes[ ‘class’ ] = cacheConnection.class;
+				if( !isNull( cacheConnection.bundleName ) ) {
+					cacheConnectionXMLNode.XMLAttributes[ ‘bundle-name’ ] = cacheConnection.bundleName;
+				}
+				if( !isNull( cacheConnection.bundleVersion ) ) {
+					cacheConnectionXMLNode.XMLAttributes[ ‘bundle-version’ ] = cacheConnection.bundleVersion;
+				}
 			// If there's no class and we have a type that looks familiar, create the class for them
 			} else if( !isNull( cacheConnection.type ) && translateCacheTypeToClass( cacheConnection.type ).len()  ) {
 				cacheConnectionXMLNode.XMLAttributes[ 'class' ] = translateCacheTypeToClass( cacheConnection.type );
