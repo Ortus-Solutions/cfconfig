@@ -110,11 +110,43 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var error = xmlSearch( thisConfig, '/cfRailoConfiguration/error | /railo-configuration/error' );
     	if( error.len() ){ readError( error[ 1 ] ); }
 
+		var security = xmlSearch( thisConfig, '/cfRailoConfiguration/security | /railo-configuration/security' );
+    	if( security.len() ){ readSecurity( security[ 1 ] ); }
+
 		readAuth( thisConfig.XMLRoot );
 		
 		readConfigChanges( thisConfig.XMLRoot );
 		
 		return this;
+	}
+
+	private function readSecurity( security ) {
+		var config = security.XMLAttributes;
+
+		/*cache
+		mapping
+		orm
+		search
+		tag_registry
+		tag_object
+		tag_import
+		tag_execute
+		setting
+		scheduled_task
+		remote
+		mail
+		gateway
+		file
+		direct_java_access
+		debugging
+		datasource
+		custom_tag
+		cfx_usage
+		cfx_setting
+		*/
+
+		if( !isNull( config[ 'access_write' ] ) ) { setAdminAccessWrite( config[ 'access_write' ] ); }
+		if( !isNull( config[ 'access_read' ] ) ) { setAdminAccessRead( config[ 'access_read' ] ); }
 	}
 	
 	private function readCompiler( compiler ) {
@@ -234,6 +266,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function readCustomTags( customTags ) {
+		var ignores = [ '{railo-config}/customtags/' , '{railo-server}/customtags/' , '{railo-web}/customtags/' ];
+		for( var customTag in customTags.XMLChildren ) {
+			var params = structNew().append( customTag.XMLAttributes );
+
+			if( ignores.findNoCase( params.physical ) ) {
+				continue;
+			}
+			addCustomTagPath( argumentCollection = params );
+		}
 	}
 	
 	private function readDebugging( debugging ) {
@@ -276,11 +317,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	private function readSetting( settings ) {
 		var config = settings.XMLAttributes;
-				
 		if( !isNull( config[ 'allow-compression' ] ) ) { setCompression( config[ 'allow-compression' ] ); }
-		if( !isNull( config[ 'cfml-writer' ] ) ) { setWhitespaceManagement( config[ 'cfml-writer' ] ); }
+		if( !isNull( config[ 'cfml-writer' ] ) ) { setWhitespaceManagement( translateWhitespaceFromRailo( config[ 'cfml-writer' ] ) ); }
 		if( !isNull( config[ 'buffer-output' ] ) ) { setBufferTagBodyOutput( config[ 'buffer-output' ] ); }
-		if( !isNull( config[ 'suppress-content' ] ) ) { setSupressContentForCFCRemoting( config[ 'suppress-content' ] ); }			
+		if( !isNull( config[ 'suppress-content' ] ) ) { setSupressContentForCFCRemoting( config[ 'suppress-content' ] ); }
+		//Version 2.0
+		if( !isNull( config[ 'suppress-whitespace' ] ) ) { setWhitespaceManagement( translateWhitespaceFromRailo(config[ 'suppress-whitespace' ] ) ); }		
 	}
 	
 	private function readCache( thisCache ) {
@@ -404,12 +446,36 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeCache( thisConfig );
 		writeLoggers( thisConfig );
 		writeError( thisConfig );
+		writeSecurity( thisConfig )
 		
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
 		fileWrite( configFilePath, toString( thisConfig ) );
 		
 		return this;
+	}
+
+	private function writeSecurity( thisConfig ) {
+		var securitySearch = xmlSearch( thisConfig, '/cfRailoConfiguration/security | /railo-configuration/security' );
+		if( securitySearch.len() ) {
+			var security = securitySearch[1];
+		} else {
+			var security = xmlElemnew( thisConfig, 'security' );
+		}
+
+		var config = security.XMLAttributes;
+
+		if( !isNull( getAdminAccessWrite() ) ) {
+			config[ 'access_write' ] = getAdminAccessWrite() == 'closed' ? 'close' : getAdminAccessWrite();
+		}
+		if( !isNull( getAdminAccessRead() ) ) {
+			config[ 'access_read' ] = getAdminAccessRead() == 'closed' ? 'close' : getAdminAccessRead();
+		}
+
+		if( !securitySearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( security );
+		}
+
 	}
 
 	private function writeCompiler( thisConfig ) {
@@ -518,7 +584,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.database ) ) {
 				DSXMLNode.XMLAttributes[ 'database' ] = DSStruct.database;
 				// Set default custom string for MSSQL
-				if( DSStruct.dbdriver == 'MSSQL' ) {
+				if( ListFindNoCase(DSStruct.class, "sqlserver", ".") ) {
 					// This will be overwritten below if there is a custom key for this datasource
 					DSXMLNode.XMLAttributes[ 'custom' ] = 'DATABASENAME=#DSStruct.database#&sendStringParametersAsUnicode=true&SelectMethod=direct';
 				}
@@ -527,6 +593,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.blob ) ) { DSXMLNode.XMLAttributes[ 'blob' ] = DSStruct.blob; }
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'class' ] = translateDatasourceClassToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.class ?: '' );
+			 } else {
+				DSXMLNode.XMLAttributes[ 'class' ] =  DSStruct.class;
 			 }
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'dbdriver' ] = translateDatasourceDriverToLucee( DSStruct.dbdriver );
@@ -537,6 +605,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.custom ) ) { DSXMLNode.XMLAttributes[ 'custom' ] = DSStruct.custom; }
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'dsn' ] = translateDatasourceURLToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.dsn ?: '' );
+			} else {
+				DSXMLNode.XMLAttributes[ 'dsn' ] = DSStruct.dsn;
 			}
 						
 			// Encrypt password again as we write it.
@@ -698,6 +768,50 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeCustomTags( thisConfig ) {
+		// Only save if we have something defined
+		if( isNull( getCustomTagPaths() ) ) {
+			return;
+		}
+		
+		var ignores = [ '{railo-config}/customtags/' , '{railo-server}/customtags/' , '{railo-web}/customtags/' ];
+		// Get all paths
+		// TODO: Add tag if it doesn't exist
+		var mappings = xmlSearch( thisConfig, '/cfRailoConfiguration/custom-tag | /railo-configuration/custom-tag' )[ 1 ].XMLChildren;
+		var i = 0;
+		while( ++i<= mappings.len() ) {
+			var thisMapping = mappings[ i ];
+			if( !ignores.findNoCase( thisMapping.XMLAttributes.physical ) ) {
+				arrayDeleteAt( mappings, i );
+				i--;
+			}
+		}
+		
+		for( var currentMapping in getCustomTagPaths() ?: [] ) {
+			// Search to see if this path already exists
+			var mappingXMLSearch = xmlSearch( thisConfig, "//custom-tag/mapping[translate(@physical,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( currentMapping.physical )#']" );
+			// mapping already exists
+			if( mappingXMLSearch.len() ) {
+				mappingXMLNode = mappingXMLSearch[ 1 ];
+				// Wipe out old attributes for this mapping
+				structClear( mappingXMLNode.XMLAttributes );
+			// Create new data-source tag
+			} else {
+				var mappingXMLNode = xmlElemnew(thisConfig,"mapping");				
+			}
+			
+			// Populate XML node
+			mappingXMLNode.XMLAttributes[ 'physical' ] = currentMapping.physical;
+			if( !isNull( currentMapping.archive ) ) { mappingXMLNode.XMLAttributes[ 'archive' ] = currentMapping.archive; }
+			if( !isNull( currentMapping.name ) ) { mappingXMLNode.XMLAttributes[ 'name' ] = currentMapping.name; }
+			if( !isNull( currentMapping.inspectTemplate ) ) { mappingXMLNode.XMLAttributes[ 'inspectTemplate' ] = currentMapping.inspectTemplate; }
+			if( !isNull( currentMapping.primary ) ) { mappingXMLNode.XMLAttributes[ 'primary' ] = currentMapping.primary; }
+			if( !isNull( currentMapping.trusted ) ) { mappingXMLNode.XMLAttributes[ 'trusted' ] = currentMapping.trusted; }
+			
+			// Insert into doc if this was new.
+			if( !mappingXMLSearch.len() ) {
+				mappings.append( mappingXMLNode );
+			}			
+		}
 	}
 	
 	private function writeDebugging( thisConfig ) {
@@ -805,9 +919,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			structDelete( config, 'password' );
 		// Plain text password and no salt
 		} else if( !isNull( getAdminPassword() ) ) {
-			config[ 'pw' ] = passwordManager.hashAdministrator( getAdminPassword() );
+			if(config[ 'version' ] == "2.0") {		
+				config[ 'password' ] = passwordManager.encryptAdministrator( getAdminPassword() );
+				structDelete( config, 'pw' );
+			} else {
+				config[ 'pw' ] = passwordManager.hashAdministrator( getAdminPassword() );
+				structDelete( config, 'password' );
+			}
 			structDelete( config, 'hspw' );
-			structDelete( config, 'password' );
 		// pre-salted hashed password
 		} else if( !isNull( getHspw() ) ) {
 			config[ 'hspw' ] = getHspw();
@@ -832,9 +951,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			structDelete( config, 'default-password' );
 		// Plain text default password and no salt
 		} else if( !isNull( getAdminPasswordDefault() ) ) {
-			config[ 'default-pw' ] = passwordManager.hashAdministrator( getAdminPasswordDefault() );
+			if(config[ 'version' ] == "2.0") {		
+				config[ 'default-password' ] = passwordManager.encryptAdministrator( getAdminPasswordDefault() );
+				structDelete( config, 'default-pw' );
+			} else {
+				config[ 'default-pw' ] = passwordManager.hashAdministrator( getAdminPasswordDefault() );
+				structDelete( config, 'default-password' );
+			}
 			structDelete( config, 'default-hspw' );
-			structDelete( config, 'default-password' );
 		// pre-salted hashed default password
 		} else if( !isNull( getDefaultHspw() ) ) {
 			config[ 'default-hspw' ] = getDefaultHspw();
@@ -851,6 +975,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeSetting( thisConfig ) {
+		var rootConfig = thisConfig.XMLRoot.XMLAttributes;
 		var settingSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/setting | /railo-configuration/setting' );
 		if( settingSearch.len() ) {
 			var setting = settingSearch[1];
@@ -861,7 +986,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var config = setting.XMLAttributes;
 		
 		if( !isNull( getCompression() ) ) { config[ 'allow-compression' ] = getCompression(); }
-		if( !isNull( getWhitespaceManagement() ) ) { config[ 'cfml-writer' ] = getWhitespaceManagement(); }
+		if(rootConfig[ 'version' ] == "2.0") {	
+			if( !isNull( getWhitespaceManagement() ) ) { config[ 'suppress-whitespace' ] = translateWhitespaceToRailo( getWhitespaceManagement() ) ; }
+		} else {
+			if( !isNull( getWhitespaceManagement() ) ) { config[ 'cfml-writer' ] = getWhitespaceManagement(); }
+		}
 		if( !isNull( getBufferTagBodyOutput() ) ) { config[ 'buffer-output' ] = getBufferTagBodyOutput(); }
 		if( !isNull( getSupressContentForCFCRemoting() ) ) { config[ 'suppress-content' ] = getSupressContentForCFCRemoting(); }
 
@@ -877,7 +1006,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			return;
 		}
 		
-		var loggers = xmlSearch( thisConfig, '/cfRailoConfiguration/logging | /railo-configuration/logging' )[ 1 ];
+		var loggersSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/logging | /railo-configuration/logging' );
+		if( loggersSearch.len() ) {
+			var loggers = loggersSearch[1];
+		} else {
+			var loggers = xmlElemnew( thisConfig, 'logging' );			
+		}
 		loggers.XMLChildren = [];
 		
 		for( var name in getLoggers() ?: {} ) {
@@ -1133,6 +1267,37 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	    // if( !bitMaskRead( bitMask, 9, 1 ) ) { ds.allowStoredproc = false; }
 	    
 	    return ds;		    
+	}
+
+	private function translateWhitespaceToRailo( required string whitespaceManagement ) {
+		
+		switch( whitespaceManagement ) {
+			case 'off' :
+			case 'regular' :
+				return false;
+			case 'simple' :
+			case 'white-space' :
+				return true;
+			case 'smart' :
+			case 'white-space-pref' :
+				return true;
+			default :
+				return false;
+		}
+
+	}
+	
+	private function translateWhitespaceFromRailo( required string whitespaceManagement ) {
+		
+		switch( whitespaceManagement ) {
+			case false :
+				return 'off';
+			case true :
+				return 'smart';
+			default :
+				return 'off';
+		}
+	
 	}
 	
 }
