@@ -665,6 +665,8 @@ component accessors="true" {
 	* @readOnly No idea what this does
 	* @storage Is this cache used for session or client scope storage?
 	* @custom A struct of settings that are meaningful to this cache provider.
+	* @bundleName OSGI bundle name to load the class from
+	* @bundleVersion OSGI bundle version to load the class from
 	*/
 	function addCache(
 		required string name,
@@ -672,7 +674,9 @@ component accessors="true" {
 		string class,
 		boolean readOnly,
 		boolean storage,
-		struct custom
+		struct custom,
+		string bundleName,
+		string bundleVersion		
 	) {
 		var cacheConnection = {};
 		if( !isNull( class ) ) { cacheConnection[ 'class' ] = class; };
@@ -680,6 +684,8 @@ component accessors="true" {
 		if( !isNull( readOnly ) ) { cacheConnection[ 'readOnly' ] = readOnly; };
 		if( !isNull( storage ) ) { cacheConnection[ 'storage' ] = storage; };
 		if( !isNull( custom ) ) { cacheConnection[ 'custom' ] = custom; };
+		if( !isNull( bundleName ) ) { cacheConnection[ 'bundleName' ] = bundleName; };
+		if( !isNull( bundleVersion ) ) { cacheConnection[ 'bundleVersion' ] = bundleVersion; };
 
 		var thisCaches = getCaches() ?: {};
 		thisCaches[ arguments.name ] = cacheConnection;
@@ -745,6 +751,8 @@ component accessors="true" {
 	* @clientApplicationNamePrefix Client Information - Application name prefix
 	* @description Description of this datasource.  Informational only.
 	* @requestExclusive Exclusive connections for request
+	* @bundleName OSGI bundle name to load the class from
+	* @bundleVersion OSGI bundle version to load the class from
 	*
 	* logActivity notes
 	* ;SpyAttributes=(log=(file)C:/foobar.txt; linelimit=80;logTName=yes;timestamp=yes)</
@@ -798,7 +806,9 @@ component accessors="true" {
 			boolean clientApplicationName,
 			string clientApplicationNamePrefix,
 			string description,
-			boolean requestExclusive
+			boolean requestExclusive,
+			string bundleName,
+			string bundleVersion
 		) {
 		var ds = {};
 		if( !isNull( database ) ) { ds[ 'database' ] = database; };
@@ -851,6 +861,8 @@ component accessors="true" {
 		if( !isNull( clientApplicationNamePrefix ) ) { ds[ 'clientApplicationNamePrefix' ] = clientApplicationNamePrefix; };
 		if( !isNull( description ) ) { ds[ 'description' ] = description; };
 		if( !isNull( requestExclusive ) ) { ds[ 'requestExclusive' ] = requestExclusive; };
+		if( !isNull( bundleName ) ) { ds[ 'bundleName' ] = bundleName; };
+		if( !isNull( bundleVersion ) ) { ds[ 'bundleVersion' ] = bundleVersion; };
 		
 		var thisDatasources = getDataSources() ?: {};
 		thisDatasources[ arguments.name ] = ds;

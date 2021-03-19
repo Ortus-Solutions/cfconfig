@@ -213,6 +213,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		for( var ds in datasources.XMLChildren ) {
 			var params = structNew().append( ds.XMLAttributes );
+			
+			// Rename some params that use hyphenated names
+			if( !isNull( params[ 'request-exclusive' ] ) ) { params[ 'requestExclusive' ] = params[ 'request-exclusive' ]; }
+			if( !isNull( params[ 'always-set-timeout' ] ) ) { params[ 'alwaysSetTimeout' ] = params[ 'always-set-timeout' ]; }
+			if( !isNull( params[ 'bundle-name' ] ) ) { params[ 'bundleName' ] = params[ 'bundle-name' ]; }
+			if( !isNull( params[ 'bundle-version' ] ) ) { params[ 'bundleVersion' ] = params[ 'bundle-version' ]; }
 
 			if( !isNull( params[ 'custom' ] ) ) {
 				var customStruct = datasourceCustomToStruct( params[ 'custom' ] );
@@ -227,14 +233,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			// Decrypt datasource password
 			if( !isNull( params.password ) ) {
 				params.password = passwordManager.decryptDataSource( replaceNoCase( params.password, 'encrypted:', '' ) );
-			}
-			
-			if( !isNull( params[ 'request-exclusive' ] ) ) {
-				params[ 'requestExclusive' ] = params[ 'request-exclusive' ];
-			}
-			
-			if( !isNull( params[ 'always-set-timeout' ] ) ) {
-				params[ 'alwaysSetTimeout' ] = params[ 'always-set-timeout' ];
 			}
 			
 			addDatasource( argumentCollection = params );
@@ -409,8 +407,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		for( var connection in thisCache.XMLChildren ) {
 			var params = structNew().append( connection.XMLAttributes );
 
-			// Rename read-only to readOnly
+			// Rename some params that use hyphenated names
 			if( !isNull( params[ 'read-only' ] ) ) { params[ 'readOnly' ] = params[ 'read-only' ]; }
+			if( !isNull( params[ 'bundle-name' ] ) ) { params[ 'bundleName' ] = params[ 'bundle-name' ]; }
+			if( !isNull( params[ 'bundle-version' ] ) ) { params[ 'bundleVersion' ] = params[ 'bundle-version' ]; }
 
 			// Turn custom values into struct
 			if( !isNull( params[ 'custom' ] ) ) {
@@ -740,7 +740,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.blob ) ) { DSXMLNode.XMLAttributes[ 'blob' ] = DSStruct.blob; }
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'class' ] = translateDatasourceClassToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.class ?: '' );
-			 }
+			}			
+			if( !isNull( DSStruct.bundleName ) ) {
+				DSXMLNode.XMLAttributes[ 'bundle-name' ] = DSStruct.bundleName;
+			}
+			if( !isNull( DSStruct.bundleVersion ) ) {
+				DSXMLNode.XMLAttributes[ 'bundle-version' ] = DSStruct.bundleVersion;
+			}			
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'dbdriver' ] = translateDatasourceDriverToLucee( DSStruct.dbdriver );
 			}
@@ -1063,7 +1069,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			} else if( !isNull( cacheConnection.type ) && translateCacheTypeToClass( cacheConnection.type ).len()  ) {
 				cacheConnectionXMLNode.XMLAttributes[ 'class' ] = translateCacheTypeToClass( cacheConnection.type );
 			}
-
+			if( !isNull( cacheConnection.bundleName ) ) {
+				cacheConnectionXMLNode.XMLAttributes[ 'bundle-name' ] = cacheConnection.bundleName;
+			}
+			if( !isNull( cacheConnection.bundleVersion ) ) {
+				cacheConnectionXMLNode.XMLAttributes[ 'bundle-version' ] = cacheConnection.bundleVersion;
+			}
 			if( !isNull( cacheConnection.storage ) ) { cacheConnectionXMLNode.XMLAttributes[ 'storage' ] = cacheConnection.storage; }
 			if( !isNull( cacheConnection.readOnly ) ) { cacheConnectionXMLNode.XMLAttributes[ 'read-only' ] = cacheConnection.readOnly; }
 			if( !isNull( cacheConnection.custom ) && isStruct( cacheConnection.custom ) ) {
