@@ -110,11 +110,43 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var error = xmlSearch( thisConfig, '/cfRailoConfiguration/error | /railo-configuration/error' );
     	if( error.len() ){ readError( error[ 1 ] ); }
 
+		var security = xmlSearch( thisConfig, '/cfRailoConfiguration/security | /railo-configuration/security' );
+    	if( security.len() ){ readSecurity( security[ 1 ] ); }
+
 		readAuth( thisConfig.XMLRoot );
 		
 		readConfigChanges( thisConfig.XMLRoot );
 		
 		return this;
+	}
+
+	private function readSecurity( security ) {
+		var config = security.XMLAttributes;
+
+		/*cache
+		mapping
+		orm
+		search
+		tag_registry
+		tag_object
+		tag_import
+		tag_execute
+		setting
+		scheduled_task
+		remote
+		mail
+		gateway
+		file
+		direct_java_access
+		debugging
+		datasource
+		custom_tag
+		cfx_usage
+		cfx_setting
+		*/
+
+		if( !isNull( config[ 'access_write' ] ) ) { setAdminAccessWrite( config[ 'access_write' ] ); }
+		if( !isNull( config[ 'access_read' ] ) ) { setAdminAccessRead( config[ 'access_read' ] ); }
 	}
 	
 	private function readCompiler( compiler ) {
@@ -147,6 +179,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	private function readDatasources( datasources ) {
 		var passwordManager = getLuceePasswordManager();
+
+		var config = datasources.XMLAttributes;
+		if( !isNull( config[ 'psq' ] ) ) { setDatasourcePreserveSingleQuotes( config[ 'psq' ] ); }
+
 		for( var ds in datasources.XMLChildren ) {
 			var params = structNew().append( ds.XMLAttributes );
 			var permissions = translateBitMaskToPermissions( params.allow ?: '' );
@@ -285,11 +321,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 	private function readSetting( settings ) {
 		var config = settings.XMLAttributes;
-				
 		if( !isNull( config[ 'allow-compression' ] ) ) { setCompression( config[ 'allow-compression' ] ); }
-		if( !isNull( config[ 'cfml-writer' ] ) ) { setWhitespaceManagement( config[ 'cfml-writer' ] ); }
+		if( !isNull( config[ 'cfml-writer' ] ) ) { setWhitespaceManagement( translateWhitespaceFromRailo( config[ 'cfml-writer' ] ) ); }
 		if( !isNull( config[ 'buffer-output' ] ) ) { setBufferTagBodyOutput( config[ 'buffer-output' ] ); }
-		if( !isNull( config[ 'suppress-content' ] ) ) { setSupressContentForCFCRemoting( config[ 'suppress-content' ] ); }			
+		if( !isNull( config[ 'suppress-content' ] ) ) { setSupressContentForCFCRemoting( config[ 'suppress-content' ] ); }
+		//Version 2.0
+		if( !isNull( config[ 'suppress-whitespace' ] ) ) { setWhitespaceManagement( translateWhitespaceFromRailo(config[ 'suppress-whitespace' ] ) ); }		
 	}
 	
 	private function readCache( thisCache ) {
@@ -413,12 +450,36 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeCache( thisConfig );
 		writeLoggers( thisConfig );
 		writeError( thisConfig );
+		writeSecurity( thisConfig )
 		
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
 		fileWrite( configFilePath, toString( thisConfig ) );
 		
 		return this;
+	}
+
+	private function writeSecurity( thisConfig ) {
+		var securitySearch = xmlSearch( thisConfig, '/cfRailoConfiguration/security | /railo-configuration/security' );
+		if( securitySearch.len() ) {
+			var security = securitySearch[1];
+		} else {
+			var security = xmlElemnew( thisConfig, 'security' );
+		}
+
+		var config = security.XMLAttributes;
+
+		if( !isNull( getAdminAccessWrite() ) ) {
+			config[ 'access_write' ] = getAdminAccessWrite() == 'closed' ? 'close' : getAdminAccessWrite();
+		}
+		if( !isNull( getAdminAccessRead() ) ) {
+			config[ 'access_read' ] = getAdminAccessRead() == 'closed' ? 'close' : getAdminAccessRead();
+		}
+
+		if( !securitySearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( security );
+		}
+
 	}
 
 	private function writeCompiler( thisConfig ) {
@@ -496,17 +557,22 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 	}
 	
-	private function writeDatasources( thisConfig ) {
-		
+	private function writeDatasources( thisConfig ) {	
 		// Only save if we have something defined
 		if( isNull( getDatasources() ) ) {
 			return;
 		}
 		var passwordManager = getLuceePasswordManager();
-		// Get all datasources
-		// TODO: Add tag if it doesn't exist
-		var datasources = xmlSearch( thisConfig, '/cfRailoConfiguration/data-sources | /railo-configuration/data-sources' )[ 1 ];
+		// Get element
+		var datasourceSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/data-sources | /railo-configuration/data-sources' );
+		if( datasourceSearch.len() ) {
+			var datasources = datasourceSearch[1];
+		} else {
+			var datasources = xmlElemnew( thisConfig, 'data-sources' );			
+		}
 		datasources.XMLChildren = [];
+		var config = datasources.XMLAttributes;
+		if( !isNull( getDatasourcePreserveSingleQuotes() ) ) { config[ 'psq' ] = getDatasourcePreserveSingleQuotes(); }
 
 		for( var DSName in getDatasources() ?: {} ) {
 			DSStruct = getDatasources()[ dsName ];
@@ -527,7 +593,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.database ) ) {
 				DSXMLNode.XMLAttributes[ 'database' ] = DSStruct.database;
 				// Set default custom string for MSSQL
-				if( DSStruct.dbdriver == 'MSSQL' ) {
+				if( ListFindNoCase(DSStruct.class, "sqlserver", ".") ) {
 					// This will be overwritten below if there is a custom key for this datasource
 					DSXMLNode.XMLAttributes[ 'custom' ] = 'DATABASENAME=#DSStruct.database#&sendStringParametersAsUnicode=true&SelectMethod=direct';
 				}
@@ -536,6 +602,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.blob ) ) { DSXMLNode.XMLAttributes[ 'blob' ] = DSStruct.blob; }
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'class' ] = translateDatasourceClassToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.class ?: '' );
+			 } else {
+				DSXMLNode.XMLAttributes[ 'class' ] =  DSStruct.class;
 			 }
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'dbdriver' ] = translateDatasourceDriverToLucee( DSStruct.dbdriver );
@@ -546,6 +614,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.custom ) ) { DSXMLNode.XMLAttributes[ 'custom' ] = DSStruct.custom; }
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'dsn' ] = translateDatasourceURLToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.dsn ?: '' );
+			} else {
+				DSXMLNode.XMLAttributes[ 'dsn' ] = DSStruct.dsn;
 			}
 						
 			// Encrypt password again as we write it.
@@ -565,8 +635,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeApplication( thisConfig ) {
-		// TODO: Add tag if it doesn't exist
-		var thisApplication = xmlSearch( thisConfig, '/cfRailoConfiguration/application | /railo-configuration/application' )[ 1 ];
+		var thisApplicationSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/application | /railo-configuration/application' );
+		if( thisApplicationSearch.len() ) {
+			var thisApplication = thisApplicationSearch[1];
+		} else {
+			var thisApplication = xmlElemnew( thisConfig, 'application' );			
+		}
 		var config = thisApplication.XMLAttributes;
 		
 		if( !isNull( getRequestTimeout() ) ) { config[ 'requesttimeout' ] = getRequestTimeout(); }
@@ -579,8 +653,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 	
 	private function writeScope( thisConfig ) {
-		// TODO: Add tag if it doesn't exist
-		var scope = xmlSearch( thisConfig, '/cfRailoConfiguration/scope | /railo-configuration/scope' )[ 1 ];
+		var scopeSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/scope | /railo-configuration/scope' );
+		if( scopeSearch.len() ) {
+			var scope = scopeSearch[1];
+		} else {
+			var scope = xmlElemnew( thisConfig, 'scope' );			
+		}
 		var config = scope.XMLAttributes;
 		
 		if( !isNull( getApplicationTimeout() ) ) { config[ 'applicationtimeout' ] = getApplicationTimeout(); }
@@ -620,8 +698,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		var passwordManager = getLuceePasswordManager();
 		// Get all mail servers
-		// TODO: Add tag if it doesn't exist
-		var mailServers = xmlSearch( thisConfig, '/cfRailoConfiguration/mail | /railo-configuration/mail' )[ 1 ];
+		var mailServersSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/mail | /railo-configuration/mail' );
+		if( mailServersSearch.len() ) {
+			var mailServers = mailServersSearch[1];
+		} else {
+			var mailServers = xmlElemnew( thisConfig, 'mail' );			
+		}
 		mailServers.XMLChildren = [];
 		
 		for( var mailServer in getMailServers() ?: [] ) {
@@ -662,10 +744,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			return;
 		}
 		
-		var ignores = [ '/lucee-server/' , '/lucee/', '/lucee/doc', '/lucee/admin' ];
+		var ignores = [ '/railo-context/','/railo-server-context/','/lucee-server/' , '/lucee/', '/lucee/doc', '/lucee/admin' ];
 		// Get all mappings
-		// TODO: Add tag if it doesn't exist
-		var mappings = xmlSearch( thisConfig, '/cfRailoConfiguration/mappings | /railo-configuration/mappings' )[ 1 ].XMLChildren;
+		var mappingsSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/mappings | /railo-configuration/mappings' );
+		if( mappingsSearch.len() ) {
+			var mappings = mappingsSearch[1].XMLChildren;
+		} else {
+			var mappings = xmlElemnew( thisConfig, 'mappings' ).XMLChildren;			
+		}
 		var i = 0;
 		while( ++i<= mappings.len() ) {
 			var thisMapping = mappings[ i ];
@@ -714,8 +800,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		var ignores = [ '{railo-config}/customtags/' , '{railo-server}/customtags/' , '{railo-web}/customtags/' ];
 		// Get all paths
-		// TODO: Add tag if it doesn't exist
-		var mappings = xmlSearch( thisConfig, '/cfRailoConfiguration/custom-tag | /railo-configuration/custom-tag' )[ 1 ].XMLChildren;
+		var mappingsSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/custom-tag | /railo-configuration/custom-tag' );
+		if( mappingsSearch.len() ) {
+			var mappings = mappingsSearch[1].XMLChildren;
+		} else {
+			var mappings = xmlElemnew( thisConfig, 'custom-tag' ).XMLChildren;			
+		}
 		var i = 0;
 		while( ++i<= mappings.len() ) {
 			var thisMapping = mappings[ i ];
@@ -858,9 +948,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			structDelete( config, 'password' );
 		// Plain text password and no salt
 		} else if( !isNull( getAdminPassword() ) ) {
-			config[ 'pw' ] = passwordManager.hashAdministrator( getAdminPassword() );
+			if(config[ 'version' ] == "2.0") {		
+				config[ 'password' ] = passwordManager.encryptAdministrator( getAdminPassword() );
+				structDelete( config, 'pw' );
+			} else {
+				config[ 'pw' ] = passwordManager.hashAdministrator( getAdminPassword() );
+				structDelete( config, 'password' );
+			}
 			structDelete( config, 'hspw' );
-			structDelete( config, 'password' );
 		// pre-salted hashed password
 		} else if( !isNull( getHspw() ) ) {
 			config[ 'hspw' ] = getHspw();
@@ -885,9 +980,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			structDelete( config, 'default-password' );
 		// Plain text default password and no salt
 		} else if( !isNull( getAdminPasswordDefault() ) ) {
-			config[ 'default-pw' ] = passwordManager.hashAdministrator( getAdminPasswordDefault() );
+			if(config[ 'version' ] == "2.0") {		
+				config[ 'default-password' ] = passwordManager.encryptAdministrator( getAdminPasswordDefault() );
+				structDelete( config, 'default-pw' );
+			} else {
+				config[ 'default-pw' ] = passwordManager.hashAdministrator( getAdminPasswordDefault() );
+				structDelete( config, 'default-password' );
+			}
 			structDelete( config, 'default-hspw' );
-			structDelete( config, 'default-password' );
 		// pre-salted hashed default password
 		} else if( !isNull( getDefaultHspw() ) ) {
 			config[ 'default-hspw' ] = getDefaultHspw();
@@ -899,11 +999,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			structDelete( config, 'default-hspw' );
 			structDelete( config, 'default-password' );
 		}
-		
-		if( !isNull( getAdminSalt() ) ) { config[ 'salt' ] = getAdminSalt(); }
+		if(config[ 'version' ] != "2.0" && !isNull( getAdminSalt() )) {
+			{ config[ 'salt' ] = getAdminSalt(); }
+		}
 	}
 	
 	private function writeSetting( thisConfig ) {
+		var rootConfig = thisConfig.XMLRoot.XMLAttributes;
 		var settingSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/setting | /railo-configuration/setting' );
 		if( settingSearch.len() ) {
 			var setting = settingSearch[1];
@@ -914,7 +1016,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var config = setting.XMLAttributes;
 		
 		if( !isNull( getCompression() ) ) { config[ 'allow-compression' ] = getCompression(); }
-		if( !isNull( getWhitespaceManagement() ) ) { config[ 'cfml-writer' ] = getWhitespaceManagement(); }
+		if(rootConfig[ 'version' ] == "2.0") {	
+			if( !isNull( getWhitespaceManagement() ) ) { config[ 'suppress-whitespace' ] = translateWhitespaceToRailo( getWhitespaceManagement() ) ; }
+		} else {
+			if( !isNull( getWhitespaceManagement() ) ) { config[ 'cfml-writer' ] = getWhitespaceManagement(); }
+		}
 		if( !isNull( getBufferTagBodyOutput() ) ) { config[ 'buffer-output' ] = getBufferTagBodyOutput(); }
 		if( !isNull( getSupressContentForCFCRemoting() ) ) { config[ 'suppress-content' ] = getSupressContentForCFCRemoting(); }
 
@@ -930,7 +1036,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			return;
 		}
 		
-		var loggers = xmlSearch( thisConfig, '/cfRailoConfiguration/logging | /railo-configuration/logging' )[ 1 ];
+		var loggersSearch = xmlSearch( thisConfig, '/cfRailoConfiguration/logging | /railo-configuration/logging' );
+		if( loggersSearch.len() ) {
+			var loggers = loggersSearch[1];
+		} else {
+			var loggers = xmlElemnew( thisConfig, 'logging' );			
+		}
 		loggers.XMLChildren = [];
 		
 		for( var name in getLoggers() ?: {} ) {
@@ -1186,6 +1297,37 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	    // if( !bitMaskRead( bitMask, 9, 1 ) ) { ds.allowStoredproc = false; }
 	    
 	    return ds;		    
+	}
+
+	private function translateWhitespaceToRailo( required string whitespaceManagement ) {
+		
+		switch( whitespaceManagement ) {
+			case 'off' :
+			case 'regular' :
+				return false;
+			case 'simple' :
+			case 'white-space' :
+				return true;
+			case 'smart' :
+			case 'white-space-pref' :
+				return true;
+			default :
+				return false;
+		}
+
+	}
+	
+	private function translateWhitespaceFromRailo( required string whitespaceManagement ) {
+		
+		switch( whitespaceManagement ) {
+			case false :
+				return 'off';
+			case true :
+				return 'smart';
+			default :
+				return 'off';
+		}
+	
 	}
 	
 }
