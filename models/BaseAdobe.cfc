@@ -1952,6 +1952,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		wddx action='cfml2wddx' input=data output='local.thisConfigRaw';
 		thisConfigRaw = thisConfigRaw.replaceNoCase( '<struct>', '<struct type="coldfusion.server.ConfigMap">', 'all' );
+		// Adobe started erroring out if the conenctionProps struct was of type ConfigMap.
+		thisConfigRaw = thisConfigRaw.replaceNoCase( '<var name=''CONNECTIONPROPS''><struct type="coldfusion.server.ConfigMap">', '<var name=''CONNECTIONPROPS''><struct>', 'all' );
+        local.thisConfigXML = XMLParse( thisConfigRaw );
 
 		writeXMLConfigFile( thisConfigRaw, configFilePath );
 	}
