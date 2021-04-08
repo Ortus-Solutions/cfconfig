@@ -99,14 +99,17 @@ component accessors="true" {
 	// True/false
 	property name='clientCookies' type='boolean' _isCFConfig=true;
 
-	// Number of seconds
+	// Cookie Timeout - Number of seconds
 	property name='sessionCookieTimeout' type='numeric' _isCFConfig=true;
 	// True/false
 	property name='sessionCookieHTTPOnly' type='boolean' _isCFConfig=true;
 	// True/false
 	property name='sessionCookieSecure' type='boolean' _isCFConfig=true;
-	// True/false
+	// Disable updating ColdFusion internal cookies using ColdFusion tags/functions - True/false
 	property name='sessionCookieDisableUpdate' type='boolean' _isCFConfig=true;
+	// Cookie Samesite default value - Strict, Lax, None, or empty string
+	property name='sessionCookieSamesite' type='string' _isCFConfig=true;
+
 
 	// One of the strings "classic", "modern"
 	property name='localScopeMode' type='string' _isCFConfig=true;

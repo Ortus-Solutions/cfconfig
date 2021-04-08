@@ -298,7 +298,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if(!isNull(thisConfig[ 16 ].internalCookiesDisableUpdate)){
 			setSessionCookieDisableUpdate( thisConfig[ 16 ].internalCookiesDisableUpdate );
 		}
-		
+		if(!isNull(thisConfig[ 16 ].sessionCookieSamesite)){
+			setSessionCookieSamesite( thisConfig[ 16 ].sessionCookieSamesite );
+		}
+
 		if( !isNull( thisConfig[ 16 ][ 'blockedExtForFileUpload' ] ) ) { setBlockedExtForFileUpload( thisConfig[ 16 ][ 'blockedExtForFileUpload' ] ); }
 		if( !isNull( thisConfig[ 16 ][ 'enableNullSupport' ] ) ) { setNullSupport( thisConfig[ 16 ][ 'enableNullSupport' ] ); }
 
@@ -935,6 +938,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSessionCookieHTTPOnly() ) ) { thisConfig[ 16 ].httpOnlySessionCookie = ( getSessionCookieHTTPOnly() ? true : false ); }
 		if( !isNull( getSessionCookieSecure() ) ) { thisConfig[ 16 ].secureSessionCookie = ( getSessionCookieSecure() ? true : false ); }
 		if( !isNull( getSessionCookieDisableUpdate() ) ) { thisConfig[ 16 ].internalCookiesDisableUpdate = ( getSessionCookieDisableUpdate() ? true : false ); }
+		if( !isNull( getSessionCookieSamesite() ) ) { thisConfig[ 16 ].sessionCookieSamesite = ( getSessionCookieSamesite() ); }
 		if( !isNull( getBlockedExtForFileUpload() ) ) { thisConfig[ 16 ].blockedExtForFileUpload = getBlockedExtForFileUpload(); }
 		if( !isNull( getNullSupport() ) ) { thisConfig[ 16 ].enableNullSupport = !!getNullSupport(); }
 		if( !isNull( getFlashRemotingEnable() ) ) { thisConfig[ 16 ].enableFlashRemoting = !!getFlashRemotingEnable(); }
