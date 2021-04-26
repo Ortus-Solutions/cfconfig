@@ -308,6 +308,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( ignores.findNoCase( params.virtual ) ) {
 				continue;
 			}
+			// Translate key name from Lucee XML config to CFConfig format
+			if( !isNull( params[ 'inspect-template' ] ) ) {
+				params[ 'inspectTemplate' ] = params[ 'inspect-template' ];
+			}
 			addCFMapping( argumentCollection = params );
 		}
 	}
@@ -912,7 +916,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			mappingXMLNode.XMLAttributes[ 'virtual' ] = virtual;
 			if( !isNull( mappingStruct.physical ) ) { mappingXMLNode.XMLAttributes[ 'physical' ] = mappingStruct.physical; }
 			if( !isNull( mappingStruct.archive ) ) { mappingXMLNode.XMLAttributes[ 'archive' ] = mappingStruct.archive; }
-			if( !isNull( mappingStruct.inspectTemplate ) ) { mappingXMLNode.XMLAttributes[ 'inspectTemplate' ] = mappingStruct.inspectTemplate; }
+			if( !isNull( mappingStruct.inspectTemplate ) ) { mappingXMLNode.XMLAttributes[ 'inspect-template' ] = mappingStruct.inspectTemplate; }
 			if( !isNull( mappingStruct.listenerMode ) ) { mappingXMLNode.XMLAttributes[ 'listenerMode' ] = mappingStruct.listenerMode; }
 			if( !isNull( mappingStruct.listenerType ) ) { mappingXMLNode.XMLAttributes[ 'listenerType' ] = mappingStruct.listenerType; }
 			if( !isNull( mappingStruct.primary ) ) { mappingXMLNode.XMLAttributes[ 'primary' ] = mappingStruct.primary; }
