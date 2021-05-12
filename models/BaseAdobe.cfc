@@ -1522,7 +1522,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					savingDS.urlmap.delete( 'SERVICENAME' );
 					savingDS.urlmap.connectionprops.delete( 'SERVICENAME' );
 				} else {
-					// If there is no SID or serviceName, then just remove both of these.  
+					// If there is no SID or serviceName, then just remove both of these.
+					// This is technically not valid as the CF admin throws this error if you try to create a datasource with no SID and no serviceName
+					// "Both SID Name and Service Name cannot be empty"
 					savingDS.url = savingDS.url.replaceNoCase( 'SID={SID};', '' );
 					savingDS.url = savingDS.url.replaceNoCase( 'ServiceName={serviceName};', '' );
 				}
