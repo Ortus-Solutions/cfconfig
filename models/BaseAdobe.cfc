@@ -630,6 +630,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				username = ds.username,
 				validate = ds.keyExists("validateConnection")?ds.validateConnection:false,
 				SID = ds.urlmap.SID ?: '',
+				serviceName = ds.urlmap.serviceName ?: '',
 				maintainConnections = ds.pooling ?: false,
 				sendStringParametersAsUnicode = ds.urlmap.sendStringParametersAsUnicode ?: false,
 				maxPooledStatements = ds.urlmap.maxPooledStatements ?: 100,
@@ -1501,14 +1502,29 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 				if( !isNull( incomingDS.username ) ) { savingDS.username = incomingDS.username; }
 				if( !isNull( incomingDS.validate ) ) { savingDS.validateConnection = !!incomingDS.validate; }
-				if( !isNull( incomingDS.SID ) ) {
+				
+				// Check for Oracle Servicename
+				if( !isNull( incomingDS.serviceName ) && len( incomingDS.serviceName ) ) {
+					savingDS.urlmap.serviceName = incomingDS.serviceName;
+					savingDS.urlmap.connectionprops.serviceName = incomingDS.serviceName;
+					savingDS.url = savingDS.url.replaceNoCase( '{serviceName}', incomingDS.serviceName );
+					// Remove SID in this case
+					savingDS.url = savingDS.url.replaceNoCase( 'SID={SID};', '' );
+					savingDS.urlmap.delete( 'SID' );
+					savingDS.urlmap.connectionprops.delete( 'SID' );
+				// Check for Oracle SID
+				} else if( !isNull( incomingDS.SID ) && len( incomingDS.SID ) ) {
 					savingDS.urlmap.SID = incomingDS.SID;
 					savingDS.urlmap.connectionprops.SID = incomingDS.SID;
 					savingDS.url = savingDS.url.replaceNoCase( '{SID}', incomingDS.SID );
+					// Remove service name in this case
+					savingDS.url = savingDS.url.replaceNoCase( 'ServiceName={serviceName};', '' );
+					savingDS.urlmap.delete( 'SERVICENAME' );
+					savingDS.urlmap.connectionprops.delete( 'SERVICENAME' );
 				} else {
-					// I think SID may be optional for Oracle, so completely remove if there isn't one.
-					// This shouldn't affect other datasources at all
+					// If there is no SID or serviceName, then just remove both of these.  
 					savingDS.url = savingDS.url.replaceNoCase( 'SID={SID};', '' );
+					savingDS.url = savingDS.url.replaceNoCase( 'ServiceName={serviceName};', '' );
 				}
 				// All the datasource templates default to true for all permissions, so a new datasource will have all permissions turned on by default.
 				// When saving an existing datasource, default to whatever is there.
