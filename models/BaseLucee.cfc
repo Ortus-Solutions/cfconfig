@@ -269,8 +269,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( config.sessiontimeout ) ) { setSessionTimeout( config.sessiontimeout ); };
 		if( !isNull( config.setclientcookies ) ) { setClientCookies( config.setclientcookies ); };
 		if( !isNull( config.setdomaincookie ) ) { setDomainCookies( config.setdomaincookie ); };
-		if( !isNull( config.sessionStorage ) ) { setSessionStorage( config.sessionStorage ); };
-		if( !isNull( config.clientStorage ) ) { setClientStorage( config.clientStorage ); };
+		if( !isNull( config.sessionstorage ) ) { setSessionStorage( config.sessionstorage ); };
+		if( !isNull( config.clientstorage ) ) { setClientStorage( config.clientstorage ); };
 		if( !isNull( config[ 'local-mode' ] ) ) { setLocalScopeMode( config[ 'local-mode' ] ); };
 		if( !isNull( config[ 'session-type' ] ) ) { setSessionType( config[ 'session-type' ] ); };
 	}
@@ -821,7 +821,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( thisClientStorage == 'registry' ) {
 				thisClientStorage = 'memory';
 			}
-			config[ 'clientStorage' ] = thisClientStorage;
+			config[ 'clientstorage' ] = thisClientStorage;
 		}
 		if( !isNull( getLocalScopeMode() ) ) { config[ 'local-mode' ] = getLocalScopeMode(); }
 		if( !isNull( getSessionType() ) ) { config[ 'session-type' ] = getSessionType(); }
