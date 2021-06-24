@@ -6,5 +6,8 @@
     "name":"cfconfigadobe11",
     "web":{
         "host":"cfconfigadobe11.local"
+    },
+    "JVM":{
+        "javaVersion":"openjdk8"
     }
 }
