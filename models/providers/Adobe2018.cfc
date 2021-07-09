@@ -33,6 +33,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setLoggingConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2018/neo-logging.xml' ) );
 		setUpdateConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2018/neo_updates.xml' ) );
 		setDocumentConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2018/neo-document.xml' ) );
+		setGraphConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2018/neo-graphing.xml' ) );
 		setVersion( '2018' );
 		
 		return this;

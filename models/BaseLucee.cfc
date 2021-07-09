@@ -533,7 +533,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeSecurity( thisConfig );
 		writeUpdate( thisConfig );
 		writeSystem( thisConfig );
-		writeComponent( thisConfig );
 
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );

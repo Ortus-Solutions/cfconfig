@@ -66,7 +66,15 @@ component accessors="true" {
 	property name='searchResultsets' type='boolean' _isCFConfig=true;
 
 	property name='baseComponent' type='string' _isCFConfig=true;
-	
+
+	// Charts can be cached either in memory or to disk. In memory caching is faster, but more memory intensive. (0 = memory cache, 1 = disk cache)
+	property name='chartCacheType' type='numeric' _isCFConfig=true;
+	// Time-to-Live of each chart in seconds
+	property name='chartCacheTTL' type='numeric' _isCFConfig=true;
+	// Maximum number of cached images
+	property name='chartCacheSize' type='numeric' _isCFConfig=true;
+	// Disk cache location.  When caching to disk, specifies the directory in which to store the generated charts.
+	property name='chartCacheDiskLocation' type='string' _isCFConfig=true;	
 
 	// Ex: en_US
 	property name='thisLocale' type='string' _isCFConfig=true;

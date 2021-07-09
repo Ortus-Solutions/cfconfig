@@ -34,6 +34,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setLoggingConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-logging.xml' ) );
 		setUpdateConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo_updates.xml' ) );
 		setDocumentConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-document.xml' ) );
+		setGraphConfigTemplate( expandPath( '/cfconfig-services/resources/adobe11/neo-graphing.xml' ) );
 		setVersion( '11' );
 		
 		return this;

@@ -33,6 +33,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setLoggingConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2020/neo-logging.xml' ) );
 		setUpdateConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2020/neo_updates.xml' ) );
 		setDocumentConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2020/neo-document.xml' ) );
+		setGraphConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2020/neo-graphing.xml' ) );
 		setVersion( '2020' );
 		
 		return this;

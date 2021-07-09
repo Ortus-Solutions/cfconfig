@@ -67,6 +67,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	property name='documentConfigPath' type='string';
 	property name='documentConfigTemplate' type='string';
+
+	property name='graphConfigPath' type='string';
+	property name='graphConfigTemplate' type='string';
 	
 	
 	property name='AdminRDSLoginRequiredBoolean' type='boolean' default="false" ;
@@ -97,6 +100,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setLoggingConfigPath( '/lib/neo-logging.xml' );
 		setUpdateConfigPath( '/lib/neo_updates.xml' );
 		setDocumentConfigPath( '/lib/neo-document.xml' );
+		setGraphConfigPath( '/lib/neo-graphing.xml' );
 		
 		// CF 10+ stors as a string.  CF9 will override this.
 		setAdminRDSLoginRequiredBoolean( false );
@@ -148,6 +152,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readLogging();
 		readUpdate();
 		readDocument();
+		readGraph();
 
 		return this;
 	}
@@ -736,6 +741,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 	}
 
+	private function readGraph() {
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getGraphConfigPath(), '/' ) );
+		
+		if( !isNull( thisConfig[1].CacheType ) ) { setChartCacheType( thisConfig[1].CacheType ); }
+		if( !isNull( thisConfig[1].TimeToLive ) ) { setChartCacheTTL( thisConfig[1].TimeToLive ); }
+		if( !isNull( thisConfig[1].CacheSize ) ) { setChartCacheSize( thisConfig[1].CacheSize ); }
+		if( !isNull( thisConfig[1].CACHEPATH ) ) { setChartCacheDiskLocation( thisConfig[1].CACHEPATH ); }
+		
+	}
+	
 	/**
 	* I write out config from a base JSON format
 	*
@@ -775,7 +790,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeDotNet();
 		writeUpdate();
 		writeDocument();
-
+		writeGraph();
+		
 		return this;
 	}
 
@@ -1799,6 +1815,26 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		} // end if datasources is null
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
+	}
+
+	private function writeGraph() {
+		var configFilePath = getCFHomePath().listAppend( getGraphConfigPath(), '/' );
+
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getGraphConfigTemplate() );
+		}
+		
+		if( !isNull( getChartCacheType() ) ) { thisConfig[ 1 ].CacheType = getChartCacheType()+0; }
+		if( !isNull( getChartCacheTTL() ) ) { thisConfig[ 1 ].TimeToLive = getChartCacheTTL()+0; }
+		if( !isNull( getChartCacheSize() ) ) { thisConfig[ 1 ].CacheSize = getChartCacheSize()+0; }
+		if( !isNull( getChartCacheDiskLocation() ) ) { thisConfig[ 1 ].CACHEPATH = getChartCacheDiskLocation(); }
+
+		writeWDDXConfigFile( thisConfig, configFilePath );
+
 	}
 
 	private function ensureSeedProperties( required string seedPropertiesPath ) {
