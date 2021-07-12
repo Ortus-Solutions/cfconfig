@@ -12,6 +12,8 @@ component accessors=true singleton {
 	// DI	
 	property name='semanticVersion' inject='semanticVersion@semver';
 	property name='wirebox' inject='wirebox';
+	property name='shell' inject='shell';
+	property name='parser' inject='parser';
 	
 	function init() {
 		setProviderRegistry( [] );
@@ -224,6 +226,12 @@ component accessors=true singleton {
 	* @toFormat The format to write to, or "JSON"
 	* @fromVersion The version of the fromFormat to target
 	* @toVersion The version of the toFormat to target
+	* @pauseTasks Set to try to pause all scheduled tasks on import
+	* @includeList List of properties to include in transfer
+	* @excludeList List of properties to exclude from transfer
+	* @replace A struct of regex/replacement matches to swap data with env var expansions
+	* @dotenvFile Absolute path to .env file for replace feature. Empty string turns off feature.
+	* @append Append config to destination instead of overwriting
 	*/	
 	function transfer( 
 		required string from,
@@ -232,15 +240,234 @@ component accessors=true singleton {
 		required string toFormat,
 		string fromVersion='0',
 		string toVersion='0',
-		pauseTasks=false
+		boolean pauseTasks=false,
+		string includeList='',
+		string excludeList='',
+		struct replace={},
+		string dotenvFile='',
+		boolean append=false
 	) {
 		 var oFrom = determineProvider( fromFormat, fromVersion ).read( from );
+		 var oTo = determineProvider( toFormat, toVersion );
 		 
-		 var oTo = determineProvider( toFormat, toVersion )
-		 	.setMemento( oFrom.getMemento() )
-		 	.write( to, pauseTasks );
+		 if( oTo.getFormat() != 'JSON' && replace.count() ) {
+		 	throw( message='You can only use "replace" when your "to" destination is JSON.', type='cfconfigException' );
+		 }
 		 
+		 var memento = oFrom.getMemento();
+		 
+		 // Skip this logic if we're not using it
+		 if( len( includeList ) || len( excludeList ) || replace.count() ) {
+		 	var includes = includeList.listToArray().map( (e)=>'^' & escapeRegex( toBracketNotation( e ) ).replace( '**', '__deep_match__', 'all' ).replace( '*', '[^\[]*', 'all' ).replace( '__deep_match__', '.*', 'all' ) );
+		 	// excludes must be full match, so we include $ at the end of the regex
+		 	var excludes = excludeList.listToArray().map( (e)=>'^' & escapeRegex( toBracketNotation( e ) ).replace( '**', '__deep_match__', 'all' ).replace( '*', '[^\[]*', 'all' ).replace( '__deep_match__', '.*', 'all' ) & '$' );
+		 	var JSONExpansions = replace;
+		 	var envVars = {};
+		 	// Do a single recursive traversal of data, and pricess includes, excludes and env var replacements all at once.
+		 	memento = processFilters( memento, includes, excludes, JSONExpansions, envVars );
+		 	// If we have env vars, write them out to the .env file (appending if it exists)
+		 	if( envVars.count() && len( dotenvFile ) ) {
+		 		var pf = wirebox.getInstance( 'propertyFile@propertyFile' );		 		
+				if( fileExists( dotenvFile ) ){
+					pf.load( dotenvFile );
+				}			
+		 		structAppend( pf, envVars, true );
+		 		pf.store( dotenvFile );
+		 	}
+		 	
+		 }
+		 // Append loads config on top of existing config (if it exists)
+		 if( append && oTo.CFHomePathExists( to ) ) {
+		 	oTo
+		 	.read( to )
+		 	.mergeMemento( memento );
+		 // non-append does a full overwrite
+		 } else {
+		 	oTo.setMemento( memento );	
+		 }
+		 
+		 oTo.write( to, pauseTasks );		 
 	}
+	
+	/**
+	* Apply includes and excludes to a memento struct.
+	*
+	* @memento struct of config
+	* @includes list of properties to include
+	* @excludes list of properties to exclude
+	*
+	* @returns query
+	*/	
+	function processFilters(
+		required memento,
+		includes=[],
+		excludes=[],
+		JSONExpansions={},
+		envVars={},
+		safeProp='',
+		prop=''
+	) {
+		// If this is a struct, loop over each key
+		if( isStruct( memento ) ) {
+			var newMemento={};
+			for( var theProp in memento ) {
+				// Build up a recursive property like ['foo']['bar']
+				var thisSafeProp = "#safeProp#['#theProp#']";
+				var thisProp = prop.listAppend( theProp, '.' );
+				// Check to see if this propery should be included, and if so find it's inner value.
+				if( var includeFlag = includeProp( thisSafeProp, memento[ theProp ], includes, excludes ) ) {
+					newMemento[ theProp ] = processFilters( memento[ theProp ], includes, excludes, JSONExpansions, envVars, thisSafeProp, thisProp );	
+				}
+				// If this key was included presumptuously, but all inner keys were excluded, remove this propery
+				if( includeFlag == 2 && ( isStruct( newMemento[ theProp ] ) || isArray( newMemento[ theProp ] ) ) && isEmpty( newMemento[ theProp ] ) ) {
+					newMemento.delete( theProp );
+				}
+			}
+			return newMemento;
+		}
+		// If this is an array, loop over each element
+		if( isArray( memento ) ) {
+			var newMemento=[];
+			var i = 0;
+			while( ++i <= memento.len() ) {
+				// Build up a recursive property like ['foo']['1']
+				var thisSafeProp = "#safeProp#['#i#']";
+				var thisProp = "#prop#[#i#]";
+				// Check to see if this propery should be included, and if so find it's inner value.
+				if( var includeFlag = includeProp( thisSafeProp, memento[ i ], includes, excludes ) ) {
+					newMemento.append( processFilters( memento[ i ], includes, excludes, JSONExpansions, envVars, thisSafeProp, thisProp ) );
+				}
+				// If this key was included presumptuously, but all inner keys were excluded, remove this propery
+				if( includeFlag == 2 && ( isStruct( newMemento.last() ) || isArray( newMemento.last() ) ) && isEmpty( newMemento.last() ) ) {
+					newMemento.deleteAt( newMemento.len() );
+				}
+			}
+			return newMemento;
+		}
+		
+		// Simple values-- not an array or a struct
+		return replaceProp( prop, memento, JSONExpansions, envVars );
+	}
+	
+	/**
+	* Decide whether to include a propery based on include and excludes.
+	* @returns 0 if excluded, 1 if explicitly included, 2 if presumptuously included due to matching a leading portion of an include rule
+	*/
+	private function includeProp( safeProp, value, includes, excludes ) {
+		
+		// If we match an exclude rule, stop here.
+		if( excludes.len() ) {
+			for( var exclude in excludes ) {
+				if( reFindNoCase( exclude, safeProp ) ) {
+					return 0;
+				}
+			}
+		}
+		// If we have includes, let's check them
+		if( includes.len() ) {
+			safeProp = lcase( safeProp );
+			for( var include in includes ) {
+				// An explicit match for a full rule
+				if( reFindNoCase( include, safeProp ) ) {
+					return 1; 
+				}
+				// Look for partial matches to presumptuously include. This key will be deleted later if it doesn't produce any nested data.
+				while( !isSimpleValue( value ) && findNoCase( "']\['", include ) ) {
+					var pos = include.reverse().findNoCase( "'[\]'" );
+					// Strip off the last match group and try again.
+					include = include.reverse().right( -(pos+2) ).reverse() & '$';
+					if( reFindNoCase( include, safeProp ) ) {
+						return 2; 
+					}
+				}
+			}
+			// If we have include rules and we didn't match anything, then don't use
+			return 0;
+		}
+		// If there were no explicit includes, then allow
+		return 1;
+		
+	}
+
+	/**
+	* Replace value with an env var expansion based on regex mappings
+	*/
+	private function replaceProp( prop, memento, JSONExpansions, envVars ) {
+		if( !JSONExpansions.count() ) {
+			return memento;
+		}
+		for( var expansion in JSONExpansions ) {
+			var replacement = JSONExpansions[ expansion ];
+			expansion = '^' & expansion & '$';
+			if( reFindNoCase( expansion, prop ) ) {
+				// If the user didn't supply an env var name, make up a convincing one
+				if( !len( replacement ) ) {
+					var newValue = prop
+						// turn foo.bar into FOO_BAR
+						.replace( '.', '_', 'all' )
+						// Turn foo[1].bar into FOO_BAR
+						.reReplace( '\[([0-9]+)]', '_\1', 'all' )
+						// turn fooBar into FOO_BAR
+						.reReplace( '([a-z])([A-Z])', '\1_\2', 'all' )
+						// Shorten some common use cases
+						.replaceNoCase( 'datasources_', 'DB_', 'all' )
+						.replaceNoCase( 'mailservers_', 'mail_', 'all' )
+						.replaceNoCase( 'caches_', 'cache_', 'all' )
+						.replaceNoCase( 'customTagPaths_', 'customTag_', 'all' )
+						// Upper case it all!
+						.uCase();
+					envVars[ newValue ] = memento;
+					return '${' & newValue & '}';
+				// Otherwise, use what the user gave us
+				} else {
+					var newValue = reReplaceNoCase( prop, expansion, replacement ).ucase();
+					envVars[ newValue.listFirst( ':' ) ] = memento;
+					return '${' & newValue & '}';	
+				}
+				
+			}
+			
+		}
+		return memento;		
+	}
+
+	/**
+	* Escape regex metacharacters in a string so it's safe
+	* We're note esacping "*" since that means something special and we'll handle it later
+	*/	
+	function escapeRegex( required string str ) {
+		// Escape any regex metacharacters in the pattern
+		str = replace( str, '\', '\\', 'all' );
+		str = replace( str, '.', '\.', 'all' );
+		str = replace( str, '(', '\(', 'all' );
+		str = replace( str, ')', '\)', 'all' );
+		str = replace( str, '^', '\^', 'all' );
+		str = replace( str, '$', '\$', 'all' );
+		str = replace( str, '|', '\|', 'all' );
+		str = replace( str, '+', '\+', 'all' );
+		str = replace( str, '{', '\{', 'all' );
+		str = replace( str, '[', '\[', 'all' );
+		return replace( str, '}', '\}', 'all' );
+	}
+	
+	// Convert foo.bar-baz['1'] to ['foo']['bar-baz']['1']
+	private function toBracketNotation( required string property ) {
+		var tmpProperty = replace( arguments.property, '[', '.[', 'all' );
+		tmpProperty = replace( tmpProperty, ']', '].', 'all' );
+		var fullPropertyName = '';
+		for( var item in listToArray( tmpProperty, '.' ) ) {
+			if( item.startsWith( '[' ) && item.endsWith( ']' ) ) {
+				var innerItem = item.right(-1).left(-1);
+				// ensure foo[bar] becomes foo["bar"] and foo["bar"] stays that way
+				innerItem = parser.unwrapQuotes( trim( innerItem ) );
+				fullPropertyName &= "['#innerItem#']";
+			} else {
+				fullPropertyName &= "['#item#']";
+			}
+		}
+		return fullPropertyName;
+	}
+	
 	
 	/**
 	* Diff configs between two locations

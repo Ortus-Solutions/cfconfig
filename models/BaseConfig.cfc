@@ -621,6 +621,22 @@ component accessors="true" {
 		return this;
 	}
 
+	/**
+	* Check if CF home dir exists.
+	* Individual providers can override this if they want a more specific check.
+	*/
+	boolean function CFHomePathExists( string CFHomePath=getCFHomePath() ) {
+		if( !len( arguments.CFHomePath ) ) {
+			throw( message="No CF Home provided.", type="cfconfigException" ); 
+		}
+		if( directoryExists( arguments.CFHomePath ) ) {
+			return true;
+		} else if( fileExists( arguments.CFHomePath ) ) {
+			return true;
+		} 
+		return false;
+	}
+
 	////////////////////////////////////////
 	// Custom Setters for complex types
 	////////////////////////////////////////
@@ -1275,6 +1291,52 @@ component accessors="true" {
 	*/
 	function setMemento( required struct memento ){
 		variables.append( memento, true );
+		return this;
+	}
+
+	/**
+	* Merge a memento into the current settings.  Simple settings will overwrite.
+	* Complex settings like datasources will be merged via name.
+	*
+	* @memento The config data to set
+	*/
+	function mergeMemento( required struct memento ){
+		
+		// For array configs, here is the name of the nested key in the struct to compare to determin uniqueness.
+		// An empty string means the array is just a simple array of strings to compare direclty, not a struct.
+		var arrayMap = {
+			'mailServers' : 'smtp',
+			'customTagPaths' : 'physical',
+			'extensionProviders' : '',
+			'logFilesDisabled' : '',
+			'eventGatewayInstances' : 'gatewayId',
+			'eventGatewayConfigurations' : 'type'
+		};
+		
+		for( var prop in memento ) {
+			var setting = memento[ prop ];
+			if( isSimpleValue( setting ) ) {
+				variables[ prop ] = setting;
+			} else if( isStruct( setting ) ) {
+				structAppend( variables[ prop ], setting, true );
+			} else if( isArray( setting ) ) {
+				if( !arrayMap.keyExists( prop ) ) {
+					throw( message='Array config type [#prop#] not mapped for merging.  Please report this as a bug.', type='cfconfigException' );
+				}
+				var uniqueKey = arrayMap[ prop ];
+				for( var item in setting ) {
+					if( uniqueKey == '' ) {
+						var exists = variables[ prop ].containsNoCase( item );
+					} else {
+						var exists = variables[ prop ].find( (p)=>p[ uniqueKey ] == item[ uniqueKey ] );						
+					}
+					if( !exists ) {
+						variables[ prop ].append( item );
+					}
+				}
+			} 
+			
+		}
 		return this;
 	}
 
