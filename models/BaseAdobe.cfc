@@ -413,7 +413,18 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isNull( thisTask.retryCount ) ) { params[ 'retryCount' ] = thisTask.retryCount; }
 				if( !isNull( thisTask.start_date ) ) { params[ 'startDate' ] = thisTask.start_date; }
 				if( !isNull( thisTask.start_time ) ) { params[ 'startTime' ] = thisTask.start_time; }
-				if( !isNull( thisTask.status ) ) { params[ 'status' ] = thisTask.status; }
+				
+				if( !isNull( thisTask.status ) ) {
+					params[ 'status' ] = thisTask.status;
+				// Fall back for CF9
+				} else if( !isNull( thisTask.paused ) ) {
+					if( thisTask.paused ) {
+						params[ 'status' ] = 'Paused';
+					} else {
+						params[ 'status' ] = 'Running';
+					}
+				}
+
 				if( !isNull( thisTask.task ) ) { params[ 'task' ] = thisTask.task; }
 				if( !isNull( thisTask.URL ) ) { params[ 'URL' ] = thisTask.URL; }
 				if( !isNull( thisTask.username ) ) { params[ 'username' ] = thisTask.username; }
@@ -783,7 +794,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeLogging();
 		writeSecurity();
 		writeDebug();
-		writescheduler( pauseTasks );
+		writeScheduler( pauseTasks );
 		writeEventGateway();
 		writeWebsocket();
 		writeJetty();
