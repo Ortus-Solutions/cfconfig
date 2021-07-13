@@ -39,6 +39,18 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	/**
+	* Check if CF home dir exists.
+	*/
+	boolean function CFHomePathExists( string CFHomePath=getCFHomePath() ) {
+		if( !len( arguments.CFHomePath ) ) {
+			throw( message="No CF Home provided.", type="cfconfigException" ); 
+		}
+		setCFHomePath( arguments.CFHomePath ?: getCFHomePath() );
+		var configFilePath = locateConfigFile();
+		return fileExists( configFilePath );	
+	}
+	
+	/**
 	* I read in config
 	*
 	* @CFHomePath The server home directory
