@@ -116,6 +116,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var thisCache = xmlSearch( thisConfig, '/cfLuceeConfiguration/cache' );
 		if( thisCache.len() ){ readCache( thisCache[ 1 ] ); }
 
+		var thisGateway = xmlSearch( thisConfig, '/cfLuceeConfiguration/gateways' );
+		if( thisGateway.len() ){ readGateway( thisGateway[ 1 ] ); }
+
 		var logging = xmlSearch( thisConfig, '/cfLuceeConfiguration/logging' );
 		if( logging.len() ){ readLoggers( logging[ 1 ] ); }
 
@@ -406,6 +409,34 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( config[ 'suppress-content' ] ) ) { setSupressContentForCFCRemoting( config[ 'suppress-content' ] ); }
 	}
 
+	private function readGateway( thisGateway ) {
+
+		for( var gateway in thisGateway.XMLChildren ) {
+			var params = {};
+
+			params[ 'gatewayId' ] = gateway.XMLAttributes[ 'id' ];
+			if( !isNull( gateway.XMLAttributes[ 'cfc-path' ] ) ) { params[ 'CFCPath' ] = gateway.XMLAttributes[ 'cfc-path' ]; }
+			if( !isNull( gateway.XMLAttributes[ 'listener-cfc-path' ] ) ) { params[ 'listenerCFCPath' ] = gateway.XMLAttributes[ 'listener-cfc-path' ]; }
+			if( !isNull( gateway.XMLAttributes[ 'startup-mode' ] ) ) { params[ 'startupMode' ] = gateway.XMLAttributes[ 'startup-mode' ]; }
+
+			// Turn custom values into struct
+			if( !isNull( gateway.XMLAttributes[ 'custom' ] ) ) {
+				var thisCustom = gateway.XMLAttributes[ 'custom' ];
+				var thisStruct = [:];
+				for( var item in thisCustom.listToArray( '&' ) ) {
+					// Turn foo=bar&baz=bum&poof= into { foo : 'bar', baz : 'bum', poof : '' }
+					// Any "=" or "&" in the key values will be URL encoded.
+					thisStruct[ URLDecode( listFirst( item, '=' ) ) ] = ( listLen( item, '=' ) ?  URLDecode( listRest( item, '=' ) ) : '' );
+				}
+				// Overwrite original string with struct
+				params[ 'custom' ] = thisStruct;
+			}
+
+			addGatewayLucee( argumentCollection = params );
+		}
+
+	}
+	
 	private function readCache( thisCache ) {
 		var config = thisCache.XMLAttributes;
 
@@ -539,6 +570,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeSetting( thisConfig );
 		writeConfigChanges( thisConfig );
 		writeCache( thisConfig );
+		writeGateway( thisConfig );
 		writeLoggers( thisConfig );
 		writeError( thisConfig );
 		writeExtensionProviders( thisConfig );
@@ -1034,6 +1066,52 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	}
 
+	private function writeGateway( thisConfig ) {
+
+		// Only save if we have something defined
+		if( isNull( getEventGatewaysLucee() ) ) {
+			return;
+		}
+		// Get all gateways
+		var gatewaysSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/gateways' );
+		if( gatewaysSearch.len() ) {
+			var gateways = gatewaysSearch[ 1 ];
+		} else {
+			var gateways = xmlElemnew( thisConfig, "gateways" );
+		}
+		gateways.XMLChildren = [];
+
+		var thisGateways = getEventGatewaysLucee() ?: [:];
+		for( var gatewayID in thisGateways ) {
+			var gateway = thisGateways[ gatewayID ];
+			var gatewayXMLNode = xmlElemnew( thisConfig, "gateway" );
+
+			// Populate XML node
+			gatewayXMLNode.XMLAttributes[ 'id' ] = gatewayID;
+
+			
+			if( !isNull( gateway.CFCPath ) ) { gatewayXMLNode.XMLAttributes[ 'cfc-path' ] = gateway.CFCPath; }
+			if( !isNull( gateway.listenerCFCPath ) ) { gatewayXMLNode.XMLAttributes[ 'listener-cfc-path' ] = gateway.listenerCFCPath; }
+			if( !isNull( gateway.startupMode ) ) { gatewayXMLNode.XMLAttributes[ 'startup-mode' ] = gateway.startupMode; }
+			if( !isNull( gateway.custom ) && isStruct( gateway.custom ) ) {
+				var customAsString = '';
+				// turn { foo : 'bar', baz : 'bum' } into foo=bar&baz=bum
+				for( var key in gateway.custom ) {
+					customAsString = customAsString.listAppend( '#URLEncode( key )#=#URLEncode( gateway.custom[ key ] )#', '&' );
+				}
+				gatewayXMLNode.XMLAttributes[ 'custom' ] = customAsString;
+			}
+
+			gateways.XMLChildren.append( gatewayXMLNode );
+		}
+
+		// Insert into doc if this was new.
+		if( !gatewaysSearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( gateways );
+		}
+
+	}
+	
 	private function writeCache( thisConfig ) {
 
 		// Only save if we have something defined

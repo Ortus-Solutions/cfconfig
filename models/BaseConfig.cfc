@@ -495,6 +495,9 @@ component accessors="true" {
 	property name='eventGatewayThreadpoolSize' type='numeric' _isCFConfig=true;
 	// Event Gateways > Gateway Instances
 	property name='eventGatewayInstances' type='array' _isCFConfig=true;
+	// Services > Event Gateway - Lucee specific
+	// Lucee and Adobe event gateways are very different and cannot be transfered between engines.  As such, they are stored separatley 
+	property name='eventGatewaysLucee' type='struct' _isCFConfig=true;
 	// Event Gateways > Gateway Types
 	property name='eventGatewayConfigurations' type='array' _isCFConfig=true;
 
@@ -1187,6 +1190,33 @@ component accessors="true" {
 		return this;
 	}
 
+	/**
+	* Add a single Gateway (Lucee) to the config
+	* @gatewayId An event gateway ID to identify the specific event gateway instance.
+	* @CFCPath Component path (dot delimieted) to the gateway CFC
+	* @ListenerCFCPath Component path (dot delimieted) to the listener CFC
+	* @custom A struct of additional configuration for this gateway
+	* @startupMode The startup mode of the gateway.  Values: manual, automatic, disabled
+	*/
+	function addGatewayLucee(required string gatewayID,
+								required string CFCPath,
+								string listenerCFCPath,
+								struct custom={},
+								string startupMode="automatic")
+	{
+		var gatewayInstance={};
+
+		for (var arg in arguments) {
+			if (!isNull(arguments[ arg ])) { gatewayInstance[ arg ]=arguments[ arg ]; };
+		}
+
+		var thisEventGatewayInstances=getEventGatewaysLucee() ?: {};
+		thisEventGatewayInstances[ gatewayID ]=gatewayInstance;
+		setEventGatewaysLucee(thisEventGatewayInstances);
+
+		return this;
+	}
+	
 	/**
 	* Add a single Gateway instance to the config
 	* @gatewayId An event gateway ID to identify the specific event gateway instance.
