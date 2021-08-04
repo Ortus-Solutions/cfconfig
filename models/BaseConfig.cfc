@@ -1207,7 +1207,7 @@ component accessors="true" {
 		var gatewayInstance={};
 
 		for (var arg in arguments) {
-			if (!isNull(arguments[ arg ])) { gatewayInstance[ arg ]=arguments[ arg ]; };
+			if (!isNull(arguments[ arg ]) && arg != 'gatewayID' ) { gatewayInstance[ arg ]=arguments[ arg ]; };
 		}
 
 		var thisEventGatewayInstances=getEventGatewaysLucee() ?: {};
