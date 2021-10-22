@@ -12,8 +12,6 @@ component accessors=true singleton {
 	// DI	
 	property name='semanticVersion' inject='semanticVersion@semver';
 	property name='wirebox' inject='wirebox';
-	property name='shell' inject='shell';
-	property name='parser' inject='parser';
 	
 	function init() {
 		setProviderRegistry( [] );
@@ -459,7 +457,7 @@ component accessors=true singleton {
 			if( item.startsWith( '[' ) && item.endsWith( ']' ) ) {
 				var innerItem = item.right(-1).left(-1);
 				// ensure foo[bar] becomes foo["bar"] and foo["bar"] stays that way
-				innerItem = parser.unwrapQuotes( trim( innerItem ) );
+				innerItem = unwrapQuotes( trim( innerItem ) );
 				fullPropertyName &= "['#innerItem#']";
 			} else {
 				fullPropertyName &= "['#item#']";
@@ -487,7 +485,8 @@ component accessors=true singleton {
 		required string fromFormat,
 		required string toFormat,
 		string fromVersion='0',
-		string toVersion='0'
+		string toVersion='0',
+		boolean emptyIsUndefined=false
 	) {
 		// Get data for from server
 		var fromData = determineProvider( fromFormat, fromVersion )
@@ -519,7 +518,7 @@ component accessors=true singleton {
 			'PDFServiceManagers'
 		];
 		
-		compareStructs( qryResult, fromData, toData, configProps, specialColumns );
+		compareStructs( qryResult, fromData, toData, configProps, specialColumns, '', emptyIsUndefined );
 		
 		return qryResult;
 		 
@@ -543,7 +542,8 @@ component accessors=true singleton {
 		required struct toData,
 		required array configProps,
 		required array ignoredKeys,
-		string prefix='' ) {
+		string prefix='',
+		boolean emptyIsUndefined=false ) {
 		var somethingWasDirty = false;
 
 		for( var prop in configProps ) {
@@ -558,7 +558,8 @@ component accessors=true singleton {
 					toData,
 					prop,
 					isSimpleValue( fromData[ prop ] ?: '' ) ? fromData[ prop ] ?: '' : prop,
-					isSimpleValue( toData[ prop ] ?: '' ) ? toData[ prop ] ?: '' : prop
+					isSimpleValue( toData[ prop ] ?: '' ) ? toData[ prop ] ?: '' : prop,
+					emptyIsUndefined
 				);
 				somethingWasDirty = somethingWasDirty || tmp;
 			 	
@@ -576,7 +577,7 @@ component accessors=true singleton {
 				var combinedProps = {}.append( fromValue ).append( toValue ).keyArray();
 				
 				// Call back to myself.  This will add another record to the query for each key in these nested structs
-				var tmp = compareStructs( qryResult, fromValue, toValue, combinedProps, [], prefix & prop & '-' );
+				var tmp = compareStructs( qryResult, fromValue, toValue, combinedProps, [], prefix & prop & '-', emptyIsUndefined );
 				somethingWasDirty = somethingWasDirty || tmp;
 				
 				if( somethingWasDirty ) {
@@ -628,7 +629,8 @@ component accessors=true singleton {
 							toArr,
 							i,
 							generateDefaultStructName( fromValue, prop ),
-							generateDefaultStructName( toValue, prop )
+							generateDefaultStructName( toValue, prop ),
+							emptyIsUndefined
 						);
 						
 						qryResult.addRow( row );
@@ -638,7 +640,7 @@ component accessors=true singleton {
 						var combinedProps = {}.append( fromValue ).append( toValue ).keyArray();
 
 						// Call back to myself.  This will add another record to the query for each key in these nested structs
-						var tmp = compareStructs( qryResult, fromValue, toValue, combinedProps, [], '#prop#-#numberFormat( i, "09" )#-' );
+						var tmp = compareStructs( qryResult, fromValue, toValue, combinedProps, [], '#prop#-#numberFormat( i, "09" )#-', emptyIsUndefined );
 						somethingWasDirty = somethingWasDirty || tmp;
 
 					} else if( isSimpleValue( toValue ) && isSimpleValue( fromValue ) ) {
@@ -652,7 +654,8 @@ component accessors=true singleton {
 							toArr,
 							i,
 							fromValue,
-							toValue
+							toValue,
+							emptyIsUndefined
 						);
 						arrayWasDirty = arrayWasDirty || tmp;
 						qryResult.addRow( row );
@@ -683,7 +686,8 @@ component accessors=true singleton {
 		required any toData,
 		required string prop,
 		required string fromName,
-		required string toName
+		required string toName,
+		boolean emptyIsUndefined=false
 	 ) {
 	 	var somethingWasDirty = true;
 		 	
@@ -712,14 +716,28 @@ component accessors=true singleton {
 			 }
 		// From only
 	 	} else if( !isNull( fromData[ prop ] ) ) {
-	 		// if the value isn't simple, just add the property name instead ( mapping or datasource names)
-		 	row.fromValue = fromName;
-	 		row.fromOnly = 1;
+	 		
+	 		if( emptyIsUndefined && isSimpleValue( fromData[ prop ] ) && trim( fromData[ prop ] ) == '' ) {
+		 		row.valuesMatch = 1;
+				somethingWasDirty = false;
+	 		} else {
+		 		// if the value isn't simple, just add the property name instead ( mapping or datasource names)
+			 	row.fromValue = fromName;
+		 		row.fromOnly = 1;	
+	 		}
+	 		
 		// To only
 	 	} else if( !isNull( toData[ prop ] ) ) {
-	 		// if the value isn't simple, just add the property name instead ( mapping or datasource names)
-		 	row.toValue = toName;
-	 		row.toOnly = 1;	
+	 		
+	 		if( emptyIsUndefined && isSimpleValue( toData[ prop ] ) && trim( toData[ prop ] ) == '' ) {
+		 		row.valuesMatch = 1;
+				somethingWasDirty = false;
+	 		} else {
+		 		// if the value isn't simple, just add the property name instead ( mapping or datasource names)
+			 	row.toValue = toName;
+		 		row.toOnly = 1;	
+	 		}
+	 			
 	 	}
 	 	return somethingWasDirty;
 	}
@@ -752,4 +770,22 @@ component accessors=true singleton {
 			return 'N/A';
 		}
 	}
+	
+	function unwrapQuotes( theString ) {
+		// If the value is wrapped with backticks, leave them be.  That is a signal to the CommandService
+		// that the string is special and needs to be evaluated as an expression.
+
+		// If the string begins with a matching single or double quote, strip it.
+		var startChar = left( theString, 1 );
+		if(  startChar == '"' || startChar == "'" ) {
+			theString =  mid( theString, 2, len( theString ) - 1 );
+			// Strip any matching single or double ending quote
+			// Missing ending quotes are invalid but will be ignored
+			if( right( theString, 1 ) == startChar ) {
+				return mid( theString, 1, len( theString ) - 1 );
+			}
+		}
+		return theString;
+	}
+	
 }
