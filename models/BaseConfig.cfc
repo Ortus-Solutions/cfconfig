@@ -989,6 +989,7 @@ component accessors="true" {
 	* @listenerType
 	* @primary Strings containing one of "physical", "archive"
 	* @readOnly True/false
+	* @toplevel Defines whether a mapping is a top level mapping. If yes it can be called over the URL. True/false
 	*/
 	function addCFMapping(
 			required string virtual,
@@ -998,7 +999,8 @@ component accessors="true" {
 			string listenerMode,
 			string listenerType,
 			string primary,
-			boolean readOnly
+			boolean readOnly,
+			boolean toplevel
 		) {
 
 		var mapping = {};
@@ -1009,6 +1011,8 @@ component accessors="true" {
 		if( !isNull( database ) ) { mapping.listenerType = listenerType; };
 		if( !isNull( primary ) ) { mapping.primary = primary; };
 		if( !isNull( readOnly ) ) { mapping.readOnly = readOnly; };
+		if( !isNull( toplevel ) ) { mapping.toplevel = toplevel; };
+		
 
 		var thisCFMappings = getCFMappings() ?: {};
 		thisCFMappings[ arguments.virtual ] = mapping;
