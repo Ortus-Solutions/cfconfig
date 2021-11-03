@@ -964,6 +964,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( mappingStruct.listenerType ) ) { mappingXMLNode.XMLAttributes[ 'listenerType' ] = mappingStruct.listenerType; }
 			if( !isNull( mappingStruct.primary ) ) { mappingXMLNode.XMLAttributes[ 'primary' ] = mappingStruct.primary; }
 			if( !isNull( mappingStruct.readOnly ) ) { mappingXMLNode.XMLAttributes[ 'readOnly' ] = mappingStruct.readOnly; }
+			if( !isNull( mappingStruct.toplevel ) ) { mappingXMLNode.XMLAttributes[ 'toplevel' ] = mappingStruct.toplevel; }
 
 			// Insert into doc if this was new.
 			if( !mappingXMLSearch.len() ) {
