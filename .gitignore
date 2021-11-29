@@ -12,17 +12,3 @@ settings.xml
 
 
 /tests/resources/**
-!/tests/resources/*/
-!/tests/resources/**lucee-server.xml
-!/tests/resources/**lucee-web.xml.cfm
-!/tests/resources/**railo-server.xml
-!/tests/resources/**railo-web.xml.cfm
-!/tests/resources/**/lib/neo-*.xml
-!/tests/resources/**/lib/jetty.xml
-!/tests/resources/**/lib/seed.properties
-!/tests/resources/**/lib/license.properties
-!/tests/resources/**/lib/password.properties
-!/tests/resources/**/bin/cf-init.sh
-!/tests/resources/.CFConfig.json
-!/tests/resources/.CFConfig2.json
-!/tests/resources/**/server.json
