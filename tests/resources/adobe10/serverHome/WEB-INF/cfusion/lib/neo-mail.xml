@@ -11,6 +11,9 @@
       <var name="usetls">
         <boolean value="false"/>
       </var>
+      <var name="maxthreads">
+        <number>10.0</number>
+      </var>
       <var name="undeliverdir">
         <string>{neo.rootdir}/Mail/Undelivr</string>
       </var>
