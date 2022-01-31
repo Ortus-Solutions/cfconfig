@@ -235,7 +235,8 @@ component accessors="true" {
 	// Error Log Severity. Select the type of SMTP-related error messages to log.
 	// One of the strings "debug", "information", "warning", "error"
 	property name='mailLogSeverity' type='string' _isCFConfig=true;
-
+	// Number of mail delivery threads
+	property name='mailMaxThreads' type='numeric' _isCFConfig=true;
 
 
 	// Key is virtual path, value is struct of properties
