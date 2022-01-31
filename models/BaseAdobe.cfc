@@ -1421,7 +1421,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getMailSignKeyPassword() ) ) { thisConfig.keypassword = passwordManager.encryptMailServer( getMailSignKeyPassword() ); }
 		if( !isNull( getMailLogEnabled() ) ) { thisConfig.mailsentloggingenable = getMailLogEnabled() ? true : false; }
 		if( !isNull( getMailLogSeverity() ) ) { thisConfig.severity = getMailLogSeverity(); }
-		if( !isNull( getMailMaxThreads() ) ) { thisConfig.maxthreads = getMailMaxThreads(); }
+		if( !isNull( getMailMaxThreads() ) ) { thisConfig.maxthreads = getMailMaxThreads()+0; }
 
 
 		// Adobe can only store 1 mail server, so ignore any others.
