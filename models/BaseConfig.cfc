@@ -74,7 +74,7 @@ component accessors="true" {
 	// Maximum number of cached images
 	property name='chartCacheSize' type='numeric' _isCFConfig=true;
 	// Disk cache location.  When caching to disk, specifies the directory in which to store the generated charts.
-	property name='chartCacheDiskLocation' type='string' _isCFConfig=true;	
+	property name='chartCacheDiskLocation' type='string' _isCFConfig=true;
 
 	// Ex: en_US
 	property name='thisLocale' type='string' _isCFConfig=true;
@@ -462,13 +462,13 @@ component accessors="true" {
 	property name='logSlowRequestsThreshold' type='numeric' _isCFConfig=true;
 	// Log all CORBA calls
 	property name='logCORBACalls' type='boolean' _isCFConfig=true;
-	
+
 	// Array of disabled log file names (Adobe CF only)
 	property name='logFilesDisabled' type='array' _isCFConfig=true;
-	
+
 	// PDF Service Managers (Adobe CF only)
 	property name='PDFServiceManagers' type='struct' _isCFConfig=true;
-	
+
 	// TODO:
 	//property name='externalizeStrings' type='string' _isCFConfig=true;
 	//property name='restMappings' type='array' _isCFConfig=true;
@@ -497,7 +497,7 @@ component accessors="true" {
 	// Event Gateways > Gateway Instances
 	property name='eventGatewayInstances' type='array' _isCFConfig=true;
 	// Services > Event Gateway - Lucee specific
-	// Lucee and Adobe event gateways are very different and cannot be transfered between engines.  As such, they are stored separatley 
+	// Lucee and Adobe event gateways are very different and cannot be transfered between engines.  As such, they are stored separatley
 	property name='eventGatewaysLucee' type='struct' _isCFConfig=true;
 	// Event Gateways > Gateway Types
 	property name='eventGatewayConfigurations' type='array' _isCFConfig=true;
@@ -587,7 +587,7 @@ component accessors="true" {
 	property name='ACF11Password' type='string' _isCFConfig=true;
 	// hashed RDS password for Adobe CF11
 	property name='ACF11RDSPassword' type='string' _isCFConfig=true;
-	
+
 	// Automatically Check for Updates. Select to automatically check for updates at every login.
 	property name='updateCheckOnLoginEnable' type='boolean' _isCFConfig=true;
 	// Check for updates every X days Enable
@@ -631,13 +631,13 @@ component accessors="true" {
 	*/
 	boolean function CFHomePathExists( string CFHomePath=getCFHomePath() ) {
 		if( !len( arguments.CFHomePath ) ) {
-			throw( message="No CF Home provided.", type="cfconfigException" ); 
+			throw( message="No CF Home provided.", type="cfconfigException" );
 		}
 		if( directoryExists( arguments.CFHomePath ) ) {
 			return true;
 		} else if( fileExists( arguments.CFHomePath ) ) {
 			return true;
-		} 
+		}
 		return false;
 	}
 
@@ -654,7 +654,7 @@ component accessors="true" {
 	* @isHTTPS True/false whether the remote service is using HTTPS
 	* @weight A number to set the weight for this service
 	* @isLocal True for local host
-	* @isEnabled True for enabled	
+	* @isEnabled True for enabled
 	*/
 	function addPDFServiceManager(
 		required string name,
@@ -665,7 +665,7 @@ component accessors="true" {
 		boolean isLocal,
 		boolean isEnabled=true
 	) {
-		
+
 		if( isNull( arguments.isLocal ) ) {
 			if( arguments.hostname == '127.0.0.1' || arguments.hostname == 'localhost' ) {
 				arguments.isLocal = true;
@@ -673,14 +673,14 @@ component accessors="true" {
 				arguments.isLocal = false;
 			}
 		}
-		
+
 		var PDFServiceManager = {};
 		PDFServiceManager[ 'hostname' ] = hostname;
 		PDFServiceManager[ 'port' ] = port;
 		PDFServiceManager[ 'isHTTPS' ] = isHTTPS;
 		PDFServiceManager[ 'weight' ] = weight;
 		PDFServiceManager[ 'isLocal' ] = isLocal;
-		PDFServiceManager[ 'isEnabled' ] = isEnabled;		
+		PDFServiceManager[ 'isEnabled' ] = isEnabled;
 
 		var thisPDFServiceManagers = getPDFServiceManagers() ?: {};
 		thisPDFServiceManagers[ arguments.name ] = PDFServiceManager;
@@ -707,7 +707,7 @@ component accessors="true" {
 		boolean storage,
 		struct custom,
 		string bundleName,
-		string bundleVersion		
+		string bundleVersion
 	) {
 		var cacheConnection = {};
 		if( !isNull( class ) ) { cacheConnection[ 'class' ] = class; };
@@ -723,7 +723,7 @@ component accessors="true" {
 		setCaches( thisCaches );
 		return this;
 	}
-	
+
 	/**
 	* Add a single datasource to the config
 	*
@@ -897,7 +897,7 @@ component accessors="true" {
 		if( !isNull( requestExclusive ) ) { ds[ 'requestExclusive' ] = requestExclusive; };
 		if( !isNull( bundleName ) ) { ds[ 'bundleName' ] = bundleName; };
 		if( !isNull( bundleVersion ) ) { ds[ 'bundleVersion' ] = bundleVersion; };
-		
+
 		var thisDatasources = getDataSources() ?: {};
 		thisDatasources[ arguments.name ] = ds;
 		setDatasources( thisDatasources );
@@ -1013,7 +1013,7 @@ component accessors="true" {
 		if( !isNull( primary ) ) { mapping.primary = primary; };
 		if( !isNull( readOnly ) ) { mapping.readOnly = readOnly; };
 		if( !isNull( toplevel ) ) { mapping.toplevel = toplevel; };
-		
+
 
 		var thisCFMappings = getCFMappings() ?: {};
 		thisCFMappings[ arguments.virtual ] = mapping;
@@ -1221,7 +1221,7 @@ component accessors="true" {
 
 		return this;
 	}
-	
+
 	/**
 	* Add a single Gateway instance to the config
 	* @gatewayId An event gateway ID to identify the specific event gateway instance.
@@ -1336,7 +1336,7 @@ component accessors="true" {
 	* @memento The config data to set
 	*/
 	function mergeMemento( required struct memento ){
-		
+
 		// For array configs, here is the name of the nested key in the struct to compare to determin uniqueness.
 		// An empty string means the array is just a simple array of strings to compare direclty, not a struct.
 		var arrayMap = {
@@ -1347,7 +1347,7 @@ component accessors="true" {
 			'eventGatewayInstances' : 'gatewayId',
 			'eventGatewayConfigurations' : 'type'
 		};
-		
+
 		for( var prop in memento ) {
 			var setting = memento[ prop ];
 			if( isSimpleValue( setting ) ) {
@@ -1363,14 +1363,14 @@ component accessors="true" {
 					if( uniqueKey == '' ) {
 						var exists = variables[ prop ].containsNoCase( item );
 					} else {
-						var exists = variables[ prop ].find( (p)=>p[ uniqueKey ] == item[ uniqueKey ] );						
+						var exists = variables[ prop ].find( (p)=>p[ uniqueKey ] == item[ uniqueKey ] );
 					}
 					if( !exists ) {
 						variables[ prop ].append( item );
 					}
 				}
-			} 
-			
+			}
+
 		}
 		return this;
 	}

@@ -43,13 +43,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	*/
 	boolean function CFHomePathExists( string CFHomePath=getCFHomePath() ) {
 		if( !len( arguments.CFHomePath ) ) {
-			throw( message="No CF Home provided.", type="cfconfigException" ); 
+			throw( message="No CF Home provided.", type="cfconfigException" );
 		}
 		setCFHomePath( arguments.CFHomePath ?: getCFHomePath() );
 		var configFilePath = locateConfigFile();
-		return fileExists( configFilePath );	
+		return fileExists( configFilePath );
 	}
-	
+
 	/**
 	* I read in config
 	*
@@ -228,7 +228,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		for( var ds in datasources.XMLChildren ) {
 			var params = structNew().append( ds.XMLAttributes );
-			
+
 			// Rename some params that use hyphenated names
 			if( !isNull( params[ 'request-exclusive' ] ) ) { params[ 'requestExclusive' ] = params[ 'request-exclusive' ]; }
 			if( !isNull( params[ 'always-set-timeout' ] ) ) { params[ 'alwaysSetTimeout' ] = params[ 'always-set-timeout' ]; }
@@ -249,7 +249,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( params.password ) ) {
 				params.password = passwordManager.decryptDataSource( replaceNoCase( params.password, 'encrypted:', '' ) );
 			}
-			
+
 			addDatasource( argumentCollection = params );
 		}
 	}
@@ -436,7 +436,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 
 	}
-	
+
 	private function readCache( thisCache ) {
 		var config = thisCache.XMLAttributes;
 
@@ -787,13 +787,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.blob ) ) { DSXMLNode.XMLAttributes[ 'blob' ] = DSStruct.blob; }
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'class' ] = translateDatasourceClassToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.class ?: '' );
-			}			
+			}
 			if( !isNull( DSStruct.bundleName ) ) {
 				DSXMLNode.XMLAttributes[ 'bundle-name' ] = DSStruct.bundleName;
 			}
 			if( !isNull( DSStruct.bundleVersion ) ) {
 				DSXMLNode.XMLAttributes[ 'bundle-version' ] = DSStruct.bundleVersion;
-			}			
+			}
 			if( !isNull( DSStruct.dbdriver ) ) {
 				DSXMLNode.XMLAttributes[ 'dbdriver' ] = translateDatasourceDriverToLucee( DSStruct.dbdriver );
 			}
@@ -818,7 +818,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.username ) ) { DSXMLNode.XMLAttributes[ 'username' ] = DSStruct.username; }
 			if( !isNull( DSStruct.validate ) ) { DSXMLNode.XMLAttributes[ 'validate' ] = DSStruct.validate; }
 			if( !isNull( DSStruct.requestExclusive ) ) { DSXMLNode.XMLAttributes[ 'request-exclusive' ] = DSStruct.requestExclusive; }
-			
+
 			// Insert into doc if this was new.
 			if( !DSXMLSearch.len() ) {
 				datasources.XMLChildren.append( DSXMLNode );
@@ -1090,7 +1090,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			// Populate XML node
 			gatewayXMLNode.XMLAttributes[ 'id' ] = gatewayID;
 
-			
+
 			if( !isNull( gateway.CFCPath ) ) { gatewayXMLNode.XMLAttributes[ 'cfc-path' ] = gateway.CFCPath; }
 			if( !isNull( gateway.listenerCFCPath ) ) { gatewayXMLNode.XMLAttributes[ 'listener-cfc-path' ] = gateway.listenerCFCPath; }
 			if( !isNull( gateway.startupMode ) ) { gatewayXMLNode.XMLAttributes[ 'startup-mode' ] = gateway.startupMode; }
@@ -1112,7 +1112,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 
 	}
-	
+
 	private function writeCache( thisConfig ) {
 
 		// Only save if we have something defined
@@ -1326,11 +1326,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				loggers.XMLChildren.append( loggerXMLNode );
 			}
 		}
-		
+
 	    if( !loggersXMLSearch.len() ) {
 	    	thisConfig.XMLRoot.XMLChildren.append( loggers );
 	    }
-		
+
 	}
 
 	private function writeError( thisConfig ) {
