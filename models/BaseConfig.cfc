@@ -285,6 +285,9 @@ component accessors="true" {
 	// Your Google maps API key
 	property name='googleMapKey' type='string' _isCFConfig=true;
 
+	// Your Lucee API key (Lucee doesn't use it, but ForgeBox will since it's passed to extension providers)
+	property name='APIKey' type='string' _isCFConfig=true;
+
 	// True/false
 	property name='serverCFCEenabled' type='boolean' _isCFConfig=true;
 	// Specify the absolute path to a CFC having onServerStart() method, like "c:\server.cfc". Or specify a dot delimited CFC path under webroot, like "a.b.server". By default, ColdFusion will look for server.cfc under webroot.

@@ -398,6 +398,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			setWatchConfigFilesForChangesInterval( 60 );
 			setWatchConfigFilesForChangesExtensions( 'xml,properties' );
 		}
+
+		if( !isNull( config.XmlAttributes[ 'api-key' ] ) ) { setAPIKey( ( config.XmlAttributes[ 'api-key' ] ) ); }
+
 	}
 
 	private function readSetting( settings ) {
@@ -1065,6 +1068,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getWatchConfigFilesForChangesEnabled() ) ) { config[ 'check-for-changes' ] = getWatchConfigFilesForChangesEnabled(); }
 		// Lucee doesn't support watchConfigFilesForChangesInterval or watchConfigFilesForChangesExtensions
 
+		if( !isNull( getAPIKey() ) ) { config[ 'api-key' ] = getAPIKey(); }
 	}
 
 	private function writeGateway( thisConfig ) {
