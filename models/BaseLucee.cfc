@@ -1033,7 +1033,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			mappingXMLNode.XMLAttributes[ 'virtual' ] = virtual;
 			if( !isNull( customTagPath.physical ) ) { mappingXMLNode.XMLAttributes[ 'physical' ] = customTagPath.physical; }
 			if( !isNull( customTagPath.archive ) ) { mappingXMLNode.XMLAttributes[ 'archive' ] = customTagPath.archive; }
-			if( !isNull( customTagPath.inspectTemplate ) ) { mappingXMLNode.XMLAttributes[ 'inspectTemplate' ] = customTagPath.inspectTemplate; }
+			if( !isNull( customTagPath.inspectTemplate ) ) { mappingXMLNode.XMLAttributes[ 'inspect-template' ] = customTagPath.inspectTemplate; }
 			if( !isNull( customTagPath.primary ) ) { mappingXMLNode.XMLAttributes[ 'primary' ] = customTagPath.primary; }
 			if( !isNull( customTagPath.trusted ) ) { mappingXMLNode.XMLAttributes[ 'trusted' ] = customTagPath.trusted ? "yes" : "no"; }
 
