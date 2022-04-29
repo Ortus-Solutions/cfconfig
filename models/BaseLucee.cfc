@@ -346,6 +346,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( Len( virtual ) > 1 && not reFindNoCase( "^/[0-9a-f]{32}$", virtual ) ) {
 				params.name = Mid(virtual, 2, Len( virtual ));
 			}
+			if( !isNull( params[ 'inspect-template' ] ) ) {
+				params[ 'inspectTemplate' ] = params[ 'inspect-template' ];
+			}
 			addCustomTagPath( argumentCollection = params );
 
 		}
