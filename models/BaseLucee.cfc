@@ -1294,6 +1294,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		for( var name in getLoggers() ?: [:] ) {
 			var loggerStruct = getLoggers()[ name ];
+			// Loggers require an appender type, or Lucee will ignore the log
+			loggerStruct.appender = loggerStruct.appender ?: 'resource';
+			// Loggers require a layout, or Lucee throws an NPE
+			loggerStruct.layout = loggerStruct.layout ?: 'classic';
+			// Default the path if there are no args, or Lucee will ignore the log.  This is also so an override setting like cfconfig_loggers_deploy_level=trace will create valid config.
+			loggerStruct.appenderArguments = loggerStruct.appenderArguments ?: { 'path' : '{lucee-config}/logs/#name#.log' };
+			
 			// Search to see if this logger already exists
 			var loggerXMLSearch = xmlSearch( thisConfig, "/cfLuceeConfiguration/logging/logger[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( name )#']" );
 			// logger already exists
