@@ -52,9 +52,9 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				expect( stConfig.debuggingQueryUsageEnabled ).toBeTypeOf("boolean");
 				expect( stConfig.debuggingTimerEnabled ).toBeTypeOf("boolean");
 				expect( stConfig.debuggingTracingEnabled ).toBeTypeOf("boolean");
-				expect( stConfig ).toHaveKey("debuggingEntries");
+				expect( stConfig ).toHaveKey("debuggingTemplates");
 
-				expect( stConfig.debuggingEntries ).toBeTypeOf("struct");
+				expect( stConfig.debuggingTemplates ).toBeTypeOf("struct");
 
 
 			});
