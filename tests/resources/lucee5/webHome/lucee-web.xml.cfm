@@ -204,14 +204,17 @@ Path placeholders:
 	<!--
 		enable and disable debugging
 	 -->
-	<debugging template="/lucee/templates/debugging/debugging.cfm"/>
-		
-	<application cache-directory="{lucee-web}/cache/" cache-directory-max-size="100mb"/>
-		
-		
-		
-		
-<!--
+	 <debugging database="true" debug="true" dump="false" exception="false" implicit-access="false" query-usage="true" template="" templenabled="true" timer="false" tracing="false">
+		<debug-entry custom="general=Enabled&amp;timeFormat=standard&amp;highlight=250000&amp;scopes=Enabled&amp;minimal=0" fullname="lucee-server.admin.debug.ServerSpeedDebug" id="ca425b88f047ce8ec45ee90e813ada91" iprange="*" label="Pants" path="/lucee-server/admin/debug/ServerSpeedDebug.cfc" type="lucee-marky" />
+		<debug-entry custom="general=true&amp;bgcolor=white&amp;color=black&amp;highlight=250000&amp;scopes=Application%2CCGI%2CClient%2CCookie%2CForm%2CRequest%2CServer%2CSession%2CURL&amp;size=medium&amp;minimal=0&amp;font=Times%20New%20Roman%2C%20Times%2C%20serif" fullname="lucee-server.admin.debug.Classic" id="f3d64714d1f6e7f71558d4252e84ab58" iprange="*" label="Classic" path="/lucee-server/admin/debug/Classic.cfc" type="lucee-classic" />
+		<debug-entry custom="tab_Reference=Enabled&amp;colorHighlight=Enabled&amp;tab_Metrics=Enabled&amp;general=Enabled&amp;expression=Enabled&amp;callStack=Enabled&amp;highlight=250000&amp;displayPercentages=Enabled&amp;minimal=0&amp;sessionSize=100" fullname="lucee-server.admin.debug.Modern" id="ae74ea4e2e865ed3fd60c18a06e69c65" iprange="*" label="Modern" path="/lucee-server/admin/debug/Modern.cfc" type="lucee-modern" />
+
+	</debugging>
+
+	<application cache-directory="{lucee-web}/cache/" cache-directory-max-size="100mb" />
+
+
+	<!--
 LOGGING
 ===========================
 
