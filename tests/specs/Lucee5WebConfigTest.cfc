@@ -39,7 +39,6 @@ component extends="tests.BaseTest" appMapping="/tests" {
 					.read( expandPath( '/tests/resources/lucee5/WebHome' ) );
 				
 				debug(Lucee5WebConfig.getMemento());
-				debug(Lucee5WebConfig);
 				expect( Lucee5WebConfig.getMemento() ).toBeStruct();				
 
 				var stConfig = Lucee5WebConfig.getMemento();
@@ -52,9 +51,9 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				expect( stConfig.debuggingQueryUsageEnabled ).toBeTypeOf("boolean");
 				expect( stConfig.debuggingTimerEnabled ).toBeTypeOf("boolean");
 				expect( stConfig.debuggingTracingEnabled ).toBeTypeOf("boolean");
-				expect( stConfig ).toHaveKey("debuggingEntries");
+				expect( stConfig ).toHaveKey("debuggingTemplates");
 
-				expect( stConfig.debuggingEntries ).toBeTypeOf("struct");
+				expect( stConfig.debuggingTemplates ).toBeTypeOf("struct");
 
 
 			});
@@ -78,7 +77,13 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				var debugging = aDebugging[1];
 				debug(debugging);
 				expect( debugging.XmlChildren ).toBeTypeOf("array");
-				expect( debugging.Len() ).toBeTrue();
+				expect( debugging.XmlChildren.Len() ).toBeTrue();
+
+				// Get some of the strings. They should have &amp; rather than & 
+				for(var template in debugging.XmlChildren){
+					// dump(template);
+					expect( template.XMLAttributes.custom ).NotToInclude("%26");
+				}
 				
 			});
 

@@ -395,7 +395,7 @@ component accessors="true" {
 
 
 	// Debugging Templates - Lucee only
-	property name='debuggingEntries' type='struct' _isCFConfig=true;
+	property name='debuggingTemplates' type='struct' _isCFConfig=true;
 
 	// Debugging Highlight templates taking longer than the following ms
 	property name='debuggingReportExecutionTimesMinimum' type='numeric' _isCFConfig=true;
