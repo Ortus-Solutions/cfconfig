@@ -395,7 +395,7 @@ component accessors="true" {
 
 
 	// Debugging Templates - Lucee only
-	property name='debuggingEntries' type='struct' _isCFConfig=true;
+	property name='debuggingTemplates' type='struct' _isCFConfig=true;
 
 	// Debugging Highlight templates taking longer than the following ms
 	property name='debuggingReportExecutionTimesMinimum' type='numeric' _isCFConfig=true;
@@ -692,6 +692,7 @@ component accessors="true" {
 		setPDFServiceManagers( thisPDFServiceManagers );
 		return this;
 	}
+	
 	/**
 	* Add a single cache to the config
 	*
@@ -726,6 +727,42 @@ component accessors="true" {
 		var thisCaches = getCaches() ?: {};
 		thisCaches[ arguments.name ] = cacheConnection;
 		setCaches( thisCaches );
+		return this;
+	}
+	
+	/**
+	* Add a single debugging template to the config
+	*
+	* @label Custom name of this template
+	* @type Type of debugging template. i.e. lucee-classic
+	* @iprange A comma separated list of strings of ip definitions
+	* @fullname CFC invocation path to the component that declares the fields for this template (defaulted for known types)
+	* @path File system path to component that declares the fields for this template (defaulted for known types)
+	* @id Id of Template
+	* @custom A struct of settings that are meaningful to this debug template.
+	*/
+	function addDebuggingTemplate(
+		required string label,
+		required string type,
+		string id,
+		string fullname,
+		string iprange,
+		string path,
+		struct custom	
+	) {
+		var debuggingTemplate = {
+			'label' : arguments.label,
+			'type' : arguments.type
+		};
+		if( !isNull( id ) ) { debuggingTemplate[ 'id' ] = id; };
+		if( !isNull( fullname ) ) { debuggingTemplate[ 'fullname' ] = fullname; };
+		if( !isNull( iprange ) ) { debuggingTemplate[ 'iprange' ] = iprange; };
+		if( !isNull( path ) ) { debuggingTemplate[ 'path' ] = path; };
+		if( !isNull( custom ) ) { debuggingTemplate[ 'custom' ] = custom; };
+
+		var thisDebuggingTemplates = getDebuggingTemplates() ?: {};
+		thisDebuggingTemplates[ arguments.label ] = debuggingTemplate;
+		setDebuggingTemplates( thisDebuggingTemplates );
 		return this;
 	}
 
