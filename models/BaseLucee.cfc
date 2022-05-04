@@ -1724,19 +1724,23 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var defaultTemplates = {
 			'lucee-classic' : {
 				path : '/lucee-server/admin/debug/Classic.cfc',
-				fullname : 'lucee-server.admin.debug.Classic'
+				fullname : 'lucee-server.admin.debug.Classic',
+				custom : 'general=true&bgcolor=white&color=black&highlight=250000&scopes=Application%2CCGI%2CClient%2CCookie%2CForm%2CRequest%2CServer%2CSession%2CURL&size=medium&minimal=0&font=Times%20New%20Roman%2C%20Times%2C%20serif'
 			},
 			'lucee-comment' : {
 				path : '/lucee-server/admin/debug/Comment.cfc',
-				fullname : 'lucee-server.admin.debug.Comment'
+				fullname : 'lucee-server.admin.debug.Comment',
+				custom : 'general=true&scopes=Application%2CCGI%2CClient%2CCookie%2CForm%2CRequest%2CServer%2CSession%2CURL&unit=millisecond&minimal=0'
 			},
 			'lucee-modern' : {
 				path : '/lucee-server/admin/debug/Modern.cfc',
-				fullname : 'lucee-server.admin.debug.Modern'
+				fullname : 'lucee-server.admin.debug.Modern',
+				custom : 'tab_Reference=Enabled&colorHighlight=Enabled&tab_Metrics=Enabled&general=Enabled&expression=Enabled&callStack=Enabled&highlight=250000&displayPercentages=Enabled&minimal=0&sessionSize=100'
 			},
 			'lucee-simple' : {
 				path : '/lucee-server/admin/debug/Simple.cfc',
-				fullname : 'lucee-server.admin.debug.Simple'
+				fullname : 'lucee-server.admin.debug.Simple',
+				custom : 'general=Enabled&timeFormat=standard&highlight=250000&scopes=Enabled&minimal=0'
 			}
 		}
 		// Backfill missing path
@@ -1753,6 +1757,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				entry[ 'fullname' ] = defaultTemplates[ entry.type ].fullname;
 			} else {
 				throw( message="Debugging template [#entry.label#] did not provide a fullname and the type [#entry.type#] is not recognized so we cannot default it.", detail="Default debugging template types are [#defaultTemplates.keyList().replace( 'lucee-', '', 'all' )#]", type="cfconfigException" );
+			}
+		}
+		// Backfill missing custom
+		if( isNull( entry.custom ) || !len( entry.custom ) ) {
+			if( defaultTemplates.keyExists( entry.type ) ) {
+				entry[ 'custom' ] = defaultTemplates[ entry.type ].custom;
 			}
 		}
 		if( !isNull( entry.custom ) && isStruct( entry.custom ) ) {
