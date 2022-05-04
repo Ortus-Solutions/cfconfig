@@ -1759,12 +1759,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				throw( message="Debugging template [#entry.label#] did not provide a fullname and the type [#entry.type#] is not recognized so we cannot default it.", detail="Default debugging template types are [#defaultTemplates.keyList().replace( 'lucee-', '', 'all' )#]", type="cfconfigException" );
 			}
 		}
-		// Backfill missing custom
-		if( isNull( entry.custom ) || !len( entry.custom ) ) {
-			if( defaultTemplates.keyExists( entry.type ) ) {
-				entry[ 'custom' ] = defaultTemplates[ entry.type ].custom;
-			}
+		// All known types get defaulted (not overwriting any explicit custom config)
+		if( defaultTemplates.keyExists( entry.type ) ) {
+			entry[ 'custom' ] = entry[ 'custom' ] ?: [:];
+			structAppend( entry[ 'custom' ], translateURLCodedPairsToStruct( defaultTemplates[ entry.type ].custom ), false );
 		}
+		// Convert struct to URL encoded key/value string
 		if( !isNull( entry.custom ) && isStruct( entry.custom ) ) {
 			entry[ 'custom' ] = translateStructToURLCodedPairs( entry.custom );
 		}
