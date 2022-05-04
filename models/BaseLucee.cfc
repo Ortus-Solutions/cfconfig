@@ -236,7 +236,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( params[ 'bundle-version' ] ) ) { params[ 'bundleVersion' ] = params[ 'bundle-version' ]; }
 
 			if( !isNull( params[ 'custom' ] ) ) {
-				var customStruct = datasourceCustomToStruct( params[ 'custom' ] );
+				var customStruct = translateURLCodedPairsToStruct( params[ 'custom' ] );
 				if ( !isNull( customStruct[ 'sendStringParametersAsUnicode' ] ) ) {
 					params[ 'sendStringParametersAsUnicode' ] = customStruct[ 'sendStringParametersAsUnicode' ];
 				}
@@ -371,20 +371,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// if we have debugging enries we should add them 
 		if (!isNull(debugging.XmlChildren) ){
 
-			var stEntries = {};
-			for(var entry in debugging.XmlChildren) {
-
-				var stEntry = {};
-
-				for( var prop in entry.XMLAttributes){
-					stEntry[prop] = entry.XMLAttributes[prop];
-					if(prop EQ "custom"){
-						stEntry[prop] = urlStringToStruct( entry.XMLAttributes[prop] );  
-					}
+			for( var entry in debugging.XmlChildren ) {
+				var params = {}.append( entry.XMLAttributes );
+				// Turn custom values into struct
+				if( !isNull( params[ 'custom' ] ) ) {
+					// Overwrite original string with struct
+					params[ 'custom' ] = translateURLCodedPairsToStruct( params[ 'custom' ] );
 				}
-				stEntries[entry.XMLAttributes[ 'label' ]] = stEntry;
+				
+				addDebuggingTemplate( argumentCollection=params );				
 			}
-			setDebuggingTemplates(stEntries);
 		}
 
 	}
@@ -448,15 +444,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 			// Turn custom values into struct
 			if( !isNull( gateway.XMLAttributes[ 'custom' ] ) ) {
-				var thisCustom = gateway.XMLAttributes[ 'custom' ];
-				var thisStruct = [:];
-				for( var item in thisCustom.listToArray( '&' ) ) {
-					// Turn foo=bar&baz=bum&poof= into { foo : 'bar', baz : 'bum', poof : '' }
-					// Any "=" or "&" in the key values will be URL encoded.
-					thisStruct[ URLDecode( listFirst( item, '=' ) ) ] = ( listLen( item, '=' ) ?  URLDecode( listRest( item, '=' ) ) : '' );
-				}
 				// Overwrite original string with struct
-				params[ 'custom' ] = thisStruct;
+				params[ 'custom' ] = translateURLCodedPairsToStruct( gateway.XMLAttributes[ 'custom' ] );
 			}
 
 			addGatewayLucee( argumentCollection = params );
@@ -488,15 +477,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 			// Turn custom values into struct
 			if( !isNull( params[ 'custom' ] ) ) {
-				var thisCustom = params[ 'custom' ];
-				var thisStruct = [:];
-				for( var item in thisCustom.listToArray( '&' ) ) {
-					// Turn foo=bar&baz=bum&poof= into { foo : 'bar', baz : 'bum', poof : '' }
-					// Any "=" or "&" in the key values will be URL encoded.
-					thisStruct[ URLDecode( listFirst( item, '=' ) ) ] = ( listLen( item, '=' ) ?  URLDecode( listRest( item, '=' ) ) : '' );
-				}
-				// Overwrite original string with struct
-				params[ 'custom' ] = thisStruct;
+				params[ 'custom' ] = translateURLCodedPairsToStruct( params[ 'custom' ] );
 			}
 
 			// If we have a class and we recognize it, generate the human-readable type
@@ -1086,17 +1067,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		// Write the templates
 		var entries = getDebuggingTemplates();
-		if( !isNull( entries ) && entries.Len() ){
-			for( var entry in entries ){
+		if( !isNull( entries ) ){
+			scope.XMLChildren = [];
+			for( var label in entries ){
+				var entry = entries[ label ];
+				entry[ 'label' ] = label;
 				var xmlEntry = xmlElemnew( scope, "debug-entry" );
-				for( var key in entries[entry] ){
-
-					if(key EQ "custom"){
-						xmlEntry.XMLAttributes[ key ] = structToUrlString(entries[entry][key]);
-					}
-					else {
-						xmlEntry.XMLAttributes[ key ] = entries[entry][key] ;
-					}
+				validateAndDefaultDebuggingTemplate( entry );
+				for( var key in entry ){
+					xmlEntry.XMLAttributes[ key ] = entry[key] ;
 				}
 				scope.XMLChildren.append(xmlEntry);
 			}
@@ -1140,12 +1119,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( gateway.listenerCFCPath ) ) { gatewayXMLNode.XMLAttributes[ 'listener-cfc-path' ] = gateway.listenerCFCPath; }
 			if( !isNull( gateway.startupMode ) ) { gatewayXMLNode.XMLAttributes[ 'startup-mode' ] = gateway.startupMode; }
 			if( !isNull( gateway.custom ) && isStruct( gateway.custom ) ) {
-				var customAsString = '';
-				// turn { foo : 'bar', baz : 'bum' } into foo=bar&baz=bum
-				for( var key in gateway.custom ) {
-					customAsString = customAsString.listAppend( '#URLEncode( key )#=#URLEncode( gateway.custom[ key ] )#', '&' );
-				}
-				gatewayXMLNode.XMLAttributes[ 'custom' ] = customAsString;
+				gatewayXMLNode.XMLAttributes[ 'custom' ] = translateStructToURLCodedPairs( gateway.custom );
 			}
 
 			gateways.XMLChildren.append( gatewayXMLNode );
@@ -1217,12 +1191,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( cacheConnection.storage ) ) { cacheConnectionXMLNode.XMLAttributes[ 'storage' ] = cacheConnection.storage; }
 			if( !isNull( cacheConnection.readOnly ) ) { cacheConnectionXMLNode.XMLAttributes[ 'read-only' ] = cacheConnection.readOnly; }
 			if( !isNull( cacheConnection.custom ) && isStruct( cacheConnection.custom ) ) {
-				var customAsString = '';
-				// turn { foo : 'bar', baz : 'bum' } into foo=bar&baz=bum
-				for( var key in cacheConnection.custom ) {
-					customAsString = customAsString.listAppend( '#URLEncode( key )#=#URLEncode( cacheConnection.custom[ key ] )#', '&' );
-				}
-				cacheConnectionXMLNode.XMLAttributes[ 'custom' ] = customAsString;
+				cacheConnectionXMLNode.XMLAttributes[ 'custom' ] = translateStructToURLCodedPairs( cacheConnection.custom );
 			}
 
 			// Insert into doc if this was new.
@@ -1544,21 +1513,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	}
 
-	private struct function datasourceCustomToStruct( required string custom) {
-		var thisCustom = arguments.custom;
-		var thisStruct = [:];
-		for( var item in thisCustom.listToArray( '&' ) ) {
-			// Turn foo=bar&baz=bum&poof= into { foo : 'bar', baz : 'bum', poof : '' }
-			// Any "=" or "&" in the key values will be URL encoded.
-			thisStruct[ URLDecode( listFirst( item, '=' ) ) ] = ( listLen( item, '=' ) ?  URLDecode( listRest( item, '=' ) ) : '' );
-		}
-
-		return thisStruct;
-	}
-
 	private string function buildDatasourceCustom( required string driverName, required string custom, required struct datasourceData ) {
 		// first deconstruct the custom sting into a struct
-		var customStruct = datasourceCustomToStruct( arguments.custom );
+		var customStruct = translateURLCodedPairsToStruct( arguments.custom );
 
 		// update and add values to the custom struct
 		switch( driverName ) {
@@ -1729,24 +1686,89 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 
 	}
-
-	private Struct function urlStringToStruct(required string queryParams){
-		var ret = {};
-
-		var queries = ListToArray(queryParams, "&");
-		queries.each(function(item){
-			ret[ListFirst(item, "=")] = UrlDecode(ListLast(item, "="));		
-		});
-		return ret;
+	
+	// Turn custom values into struct
+	private function translateURLCodedPairsToStruct( required string custom ) {
+		var thisStruct = [:];
+		for( var item in arguments.custom.listToArray( '&' ) ) {
+			// Turn foo=bar&baz=bum&poof= into { foo : 'bar', baz : 'bum', poof : '' }
+			// Any "=" or "&" in the key values will be URL encoded.
+			thisStruct[ URLDecode( listFirst( item, '=' ) ) ] = ( listLen( item, '=' ) ?  URLDecode( listRest( item, '=' ) ) : '' );
+		}
+		return thisStruct;
+	}
+	
+	// Turn custom values into string
+	private function translateStructToURLCodedPairs( required struct custom ) {
+		var customAsString = '';
+		// turn { foo : 'bar', baz : 'bum' } into foo=bar&baz=bum
+		for( var key in arguments.custom ) {
+			customAsString = customAsString.listAppend( '#URLEncode( key )#=#URLEncode( arguments.custom[ key ] )#', '&' );
+		}
+		return customAsString;
 	}
 
-	private String function structToUrlString(required struct structParams){
-		//do the inverse of urlStringToStruct
-		var ret = [];
-		for(var key in structParams){
-			ret.append("#key#=#structParams[key]#");
+	private function validateAndDefaultDebuggingTemplate( required struct entry ) {
+		entry.type = lCase( entry.type );
+		// Turn "Classic" into "lucee-classic"
+		if( listFindNoCase( 'classic,comment,modern,simple', entry.type ) ) {
+			entry.type = 'lucee-' & entry.type;
 		}
-		return ret.ToList("&amp;");
+		// Backfill missing IDs
+		if( isNull( entry.id ) || !len( entry.id ) ) {
+			entry[ 'id' ]= createUUID().replace( '-', '', 'all' ).lCase();
+		}
+		// Backfill missing iprange 
+		if( isNull( entry.iprange ) || !len( entry.iprange ) ) {
+			entry[ 'iprange' ] = '*';
+		}
+		var defaultTemplates = {
+			'lucee-classic' : {
+				path : '/lucee-server/admin/debug/Classic.cfc',
+				fullname : 'lucee-server.admin.debug.Classic',
+				custom : 'general=true&bgcolor=white&color=black&highlight=250000&scopes=Application%2CCGI%2CClient%2CCookie%2CForm%2CRequest%2CServer%2CSession%2CURL&size=medium&minimal=0&font=Times%20New%20Roman%2C%20Times%2C%20serif'
+			},
+			'lucee-comment' : {
+				path : '/lucee-server/admin/debug/Comment.cfc',
+				fullname : 'lucee-server.admin.debug.Comment',
+				custom : 'general=true&scopes=Application%2CCGI%2CClient%2CCookie%2CForm%2CRequest%2CServer%2CSession%2CURL&unit=millisecond&minimal=0'
+			},
+			'lucee-modern' : {
+				path : '/lucee-server/admin/debug/Modern.cfc',
+				fullname : 'lucee-server.admin.debug.Modern',
+				custom : 'tab_Reference=Enabled&colorHighlight=Enabled&tab_Metrics=Enabled&general=Enabled&expression=Enabled&callStack=Enabled&highlight=250000&displayPercentages=Enabled&minimal=0&sessionSize=100'
+			},
+			'lucee-simple' : {
+				path : '/lucee-server/admin/debug/Simple.cfc',
+				fullname : 'lucee-server.admin.debug.Simple',
+				custom : 'general=Enabled&timeFormat=standard&highlight=250000&scopes=Enabled&minimal=0'
+			}
+		}
+		// Backfill missing path
+		if( isNull( entry.path ) || !len( entry.path ) ) {
+			if( defaultTemplates.keyExists( entry.type ) ) {
+				entry[ 'path' ] = defaultTemplates[ entry.type ].path;
+			} else {
+				throw( message="Debugging template [#entry.label#] did not provide a path and the type [#entry.type#] is not recognized so we cannot default it.", detail="Default debugging template types are [#defaultTemplates.keyList().replace( 'lucee-', '', 'all' )#]", type="cfconfigException" );
+			}
+		}
+		// Backfill missing fullname
+		if( isNull( entry.fullname ) || !len( entry.fullname ) ) {
+			if( defaultTemplates.keyExists( entry.type ) ) {
+				entry[ 'fullname' ] = defaultTemplates[ entry.type ].fullname;
+			} else {
+				throw( message="Debugging template [#entry.label#] did not provide a fullname and the type [#entry.type#] is not recognized so we cannot default it.", detail="Default debugging template types are [#defaultTemplates.keyList().replace( 'lucee-', '', 'all' )#]", type="cfconfigException" );
+			}
+		}
+		// All known types get defaulted (not overwriting any explicit custom config)
+		if( defaultTemplates.keyExists( entry.type ) ) {
+			entry[ 'custom' ] = entry[ 'custom' ] ?: [:];
+			structAppend( entry[ 'custom' ], translateURLCodedPairsToStruct( defaultTemplates[ entry.type ].custom ), false );
+		}
+		// Convert struct to URL encoded key/value string
+		if( !isNull( entry.custom ) && isStruct( entry.custom ) ) {
+			entry[ 'custom' ] = translateStructToURLCodedPairs( entry.custom );
+		}
 	}
 
 }
