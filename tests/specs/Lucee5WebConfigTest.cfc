@@ -90,6 +90,57 @@ component extends="tests.BaseTest" appMapping="/tests" {
 		});
 
 
+		describe( "Lucee 5 Web config - ComponentPaths", function(){
+			
+			it( "can read ComponentPaths config", function() {
+				
+				var Lucee5ServerConfig = getInstance( 'Lucee5Web@cfconfig-services' )
+					.read( expandPath( '/tests/resources/lucee5/WebHome' ) );
+				
+				expect( Lucee5ServerConfig.getMemento() ).toBeStruct();				
+
+				var config = Lucee5ServerConfig.getMemento();
+				debug(config);
+
+				expect( config ).toHaveKey( "componentPaths" );
+				expect( config.componentPaths ).toBeTypeOf( "struct" );
+
+				expect( config.componentPaths ).toHaveKey( "exampleComponentPath" );
+				
+				var exampleComponent = config.componentPaths.exampleComponentPath;
+				
+				expect( exampleComponent ).toHaveKey( "name" );
+				expect( exampleComponent ).toHaveKey( "physical" );
+				expect( exampleComponent ).toHaveKey( "archive" );
+				expect( exampleComponent ).toHaveKey( "primary" );
+				expect( exampleComponent ).toHaveKey( "inspectTemplate" );
+				expect( exampleComponent ).toHaveKey( "readonly" );
+			
+
+			});
+			
+			it( "can write ComponentPaths config", function() {
+				
+				var Lucee5ServerConfig = getInstance( 'Lucee5Web@cfconfig-services' )
+					.read( expandPath( '/tests/resources/lucee5/WebHome' ) );
+
+					expect( Lucee5ServerConfig.getMemento()  ).toHaveKey("componentPaths");
+					debug( Lucee5ServerConfig.getMemento() );
+
+					// Write it back out. 
+					Lucee5ServerConfig.write(  expandPath( '/tests/resources/tmp' ) );
+
+				expect( fileExists( '/tests/resources/tmp/lucee-web.xml.cfm' ) ).toBeTrue();
+				expect( isXML( fileRead( '/tests/resources/tmp/lucee-web.xml.cfm' ) ) ).toBeTrue();
+
+				var config = XMLParse( fileRead( '/tests/resources/tmp/lucee-web.xml.cfm' ) );
+				debug( config.XmlRoot.component );
+				expect( config.XmlRoot.component.XMLChildren.len() ).toBe( 1 );
+
+			});
+		});
+
+
 	}
 
 }

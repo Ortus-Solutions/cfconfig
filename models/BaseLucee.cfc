@@ -106,6 +106,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		var customTags = xmlSearch( thisConfig, '/cfLuceeConfiguration/custom-tag' );
 		if( customTags.len() ){ readCustomTags( customTags[ 1 ] ); }
+		
+		var compoentPaths = xmlSearch( thisConfig, '/cfLuceeConfiguration/custom-tag' );
+		if( customTags.len() ){ readCustomTags( customTags[ 1 ] ); }
+
+
+
 
 		var debugging = xmlSearch( thisConfig, '/cfLuceeConfiguration/debugging' );
 		if( debugging.len() ){ readDebugging( debugging[ 1 ] ); }
@@ -138,7 +144,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( system.len() ){ readSystem( system[ 1 ] ); }
 
 		var theComponent = xmlSearch( thisConfig, '/cfLuceeConfiguration/component' );
-		if( theComponent.len() ){ readComponent( theComponent[ 1 ] ); }
+		if( theComponent.len() ){ readComponent( theComponent[ 1 ] ); } //we only read the first one??
 
 		readAuth( thisConfig.XMLRoot );
 
@@ -527,6 +533,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	private function readComponent( theComponent ) {
 		var config = theComponent.XMLAttributes;
 		if( !isNull( config[ 'base-cfml' ] ) ) { setBaseComponent( config[ 'base-cfml' ] ); }
+
+
+		for(var componentPath in theComponent.XMLChildren ){
+			var params = {
+				"name": componentPath.XMLAttributes["virtual"],
+				"physical": componentPath.XMLAttributes["physical"],
+				"archive": componentPath.XMLAttributes["archive"] ?: "",
+				"primary": componentPath.XMLAttributes["primary"],
+				"inspectTemplate": componentPath.XMLAttributes["inspect-template"],
+				"readOnly": componentPath.XMLAttributes["readonly"] ?: false
+			};
+			addComponentPath(argumentCollection=params);
+		}
 	}
 
 	/**
@@ -560,6 +579,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var thisConfigRaw = fileRead( configFileTemplate );
 		}
 
+
+		
 		var thisConfig = XMLParse( thisConfigRaw );
 
 		writeDatasources( thisConfig );
@@ -1396,12 +1417,69 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		} else {
 			var theComponent = xmlElemnew( thisConfig, 'component' );
 		}
-
 		if( !isNull( getBaseComponent() ) ) { theComponent.XMLAttributes[ 'base-cfml' ] = getBaseComponent(); }
 
+
+		// Now we append the component paths!
+		if( isNull( getComponentPaths() ) ) {
+			return;
+		}
+	
+
+		var paths = theComponent.XMLChildren;
+
+		//Clear the non-lucee componentPaths 
+		if(paths.len() gt 0){
+			loop from="#paths.len()#" to="1" index="i" {
+				paths[i].XmlAttributes['readonly'] = paths[i].XmlAttributes.readonly ?: false;
+				// Ignore readonly paths
+				if(paths[i].XmlAttributes['readonly']){
+					continue;
+				}
+				// If they are built in paths, also ignore.
+				if( listFindNoCase("{lucee-web}/components/,{lucee-web}/components/", paths[i].XmlAttributes['physical']) ){
+					continue;
+				}
+				arrayDeleteAt( paths, i );
+			}
+		}
+
+
+		var newPaths = getComponentPaths() ?: {} ;
+		for(var path in newPaths ){
+			// Same logic as clearning, we dont touch these built in paths.
+			// Ignore readonly paths
+
+			var mapping = newPaths[path];
+				mapping['readonly'] = mapping['readonly'] ?: false;
+				mapping['virtual'] = mapping['name'] ?: path;
+				mapping['inspect-template'] = mapping['inspectTemplate'] ?: "never";
+				structDelete(mapping, "name");
+				structDelete(mapping, "inspectTemplate");
+
+			
+			if(mapping['readonly']){
+				continue;
+			}
+			// If they are built in paths, also ignore.
+			if( listFindNoCase("{lucee-web}/components/,{lucee-web}/components/", mapping['physical']) ){
+				continue;
+			}
+			
+			
+			var xmlMapping = xmlElemnew( theComponent, 'mapping' );
+			xmlMapping.XmlAttributes = mapping;
+			theComponent.XMLChildren.append(xmlMapping);
+		}
+
+
+	
 		if( !componentSearch.len() ) {
 			thisConfig.XMLRoot.XMLChildren.append( theComponent );
-		}
+		}	
+
+	
+
 	}
 
 	/**

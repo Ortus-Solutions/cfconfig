@@ -214,7 +214,10 @@ Path placeholders:
 	-->
 	<component base-cfml="/lucee/Component.cfc" base-lucee="/lucee/Component.lucee" data-member-default-access="public" dump-template="/lucee/component-dump.cfm">
   		<mapping inspect-template="never" physical="{lucee-web}/components/" primary="physical" virtual="/default"/>
-	<mapping inspect-template="never" physical="{lucee-server}/components/" primary="physical" readonly="true" virtual="/default-server"/></component>
+		<mapping inspect-template="never" physical="{lucee-server}/components/" primary="physical" readonly="true" virtual="/default-server"/>
+		<mapping inspect-template="never" physical="/some/Component/Path" primary="physical" virtual="exampleComponentPath" />
+	</component>
+
 	
 	<!--
 	cache handlers:
