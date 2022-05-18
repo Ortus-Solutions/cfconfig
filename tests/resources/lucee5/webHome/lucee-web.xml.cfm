@@ -186,6 +186,7 @@ Path placeholders:
 		use-shadow: if true component variable scope has a second scope, not only the this scope
 	-->
 	<component base="/lucee/Component.cfc" data-member-default-access="public" use-shadow="yes"> 
+		<mapping inspect-template="never" physical="/some/Component/Path" primary="physical" virtual="exampleComponentPath" />
 	</component>
 	
 	<!--

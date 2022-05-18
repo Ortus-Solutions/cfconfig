@@ -210,6 +210,10 @@ component accessors="true" {
 	 */
 	// Array of tag paths ( value struct of properties )
 	property name='customTagPaths' type='array' _isCFConfig=true;
+	
+	// Array of comnponent paths ( value struct of properties )
+	property name='componentPaths' type='struct' _isCFConfig=true;
+
 	// Encoding to use for mail. Ex: UTF-8
 	property name='mailDefaultEncoding' type='string' _isCFConfig=true;
 	// True/false enable mail spooling
@@ -1100,6 +1104,58 @@ component accessors="true" {
 		var thisCustomTagPaths = getCustomTagPaths() ?: [];
 		thisCustomTagPaths.append( customTagPath );
 		setCustomTagPaths( thisCustomTagPaths );
+		return this;
+	}
+
+
+	/**
+	* Add a single component Path to the config
+	*
+	* @physical The physical path that the engine should search
+	* @archive Path to the Lucee/Railo archive
+	* @name Name of the Component Path
+	* @inspectTemplate String containing one of "never", "once", "always", "" (inherit)
+	* @primary Strings containing one of "physical", "archive"
+
+
+		inspect-template	
+		physical	
+		primary	
+		readonly	
+		virtual	
+
+
+	*/
+	function addComponentPath(
+			required string name,
+			string physical,
+			string archive,
+			string primary="physical",
+			string inspectTemplate
+	) {
+
+		var componentPath = {
+			"name": arguments.name,
+			"primary": arguments.primary,
+		};
+		
+		if( !IsNull( arguments["inspectTemplate"] ) ) {
+			componentPath["inspectTemplate"] =  arguments.inspectTemplate;
+		}
+
+		if( !IsNull(arguments["archive"]) ){
+			componentPath["archive"] = arguments["archive"];
+		}
+		
+		if( !IsNull(arguments["physical"]) ){
+			componentPath["physical"] = arguments["physical"];
+			componentPath["archive"]  = arguments["archive"] ?: "";
+		}
+
+
+		var thisComponentPaths = getComponentPaths() ?: {};
+		thisComponentPaths[arguments.name] = componentPath;
+		setComponentPaths( thisComponentPaths );
 		return this;
 	}
 
