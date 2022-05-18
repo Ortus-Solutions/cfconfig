@@ -107,8 +107,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var customTags = xmlSearch( thisConfig, '/cfLuceeConfiguration/custom-tag' );
 		if( customTags.len() ){ readCustomTags( customTags[ 1 ] ); }
 		
-		var compoentPaths = xmlSearch( thisConfig, '/cfLuceeConfiguration/custom-tag' );
-		if( customTags.len() ){ readCustomTags( customTags[ 1 ] ); }
 
 
 
@@ -144,7 +142,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( system.len() ){ readSystem( system[ 1 ] ); }
 
 		var theComponent = xmlSearch( thisConfig, '/cfLuceeConfiguration/component' );
-		if( theComponent.len() ){ readComponent( theComponent[ 1 ] ); } //we only read the first one??
+		if( theComponent.len() ){ readComponent( theComponent[ 1 ] ); }
 
 		readAuth( thisConfig.XMLRoot );
 
@@ -534,16 +532,33 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var config = theComponent.XMLAttributes;
 		if( !isNull( config[ 'base-cfml' ] ) ) { setBaseComponent( config[ 'base-cfml' ] ); }
 
+		// We should ignore built in component mappings
 
 		for(var componentPath in theComponent.XMLChildren ){
+
+			var physicalPath = componentPath.XMLAttributes['physical'] ?: "";
+
+			if( listFindNoCase("{lucee-web}/components/,{lucee-server}/components/", physicalPath ) ){
+				continue;
+			}
+
 			var params = {
-				"name": componentPath.XMLAttributes["virtual"],
-				"physical": componentPath.XMLAttributes["physical"],
-				"archive": componentPath.XMLAttributes["archive"] ?: "",
-				"primary": componentPath.XMLAttributes["primary"],
-				"inspectTemplate": componentPath.XMLAttributes["inspect-template"],
-				"readOnly": componentPath.XMLAttributes["readonly"] ?: false
+				"name"				: componentPath.XMLAttributes["virtual"],
+				"primary"			: componentPath.XMLAttributes["primary"],
+				"inspectTemplate"	: componentPath.XMLAttributes["inspect-template"],
 			};
+			
+			if( !IsNull(componentPath.XMLAttributes["archive"]) ){
+				params["archive"] = componentPath.XMLAttributes["archive"];
+			}
+			
+			if( !IsNull(componentPath.XMLAttributes["physical"]) ){
+				params["physical"] = componentPath.XMLAttributes["physical"];
+				params["archive"]  = componentPath.XMLAttributes["archive"] ?: "";
+			}
+
+			// There should be either an archive or physical. TODO: check one or the other exists. 
+
 			addComponentPath(argumentCollection=params);
 		}
 	}
@@ -1431,13 +1446,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		//Clear the non-lucee componentPaths 
 		if(paths.len() gt 0){
 			loop from="#paths.len()#" to="1" index="i" {
-				paths[i].XmlAttributes['readonly'] = paths[i].XmlAttributes.readonly ?: false;
-				// Ignore readonly paths
-				if(paths[i].XmlAttributes['readonly']){
-					continue;
-				}
-				// If they are built in paths, also ignore.
-				if( listFindNoCase("{lucee-web}/components/,{lucee-web}/components/", paths[i].XmlAttributes['physical']) ){
+				// paths[i].XmlAttributes['readonly'] = paths[i].XmlAttributes.readonly ?: false;
+				var physicalPath = paths[i].XmlAttributes['physical'] ?: "";
+				if( listFindNoCase("{lucee-web}/components/,{lucee-server}/components/", physicalPath) ){
 					continue;
 				}
 				arrayDeleteAt( paths, i );
@@ -1447,28 +1458,22 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		var newPaths = getComponentPaths() ?: {} ;
 		for(var path in newPaths ){
-			// Same logic as clearning, we dont touch these built in paths.
-			// Ignore readonly paths
-
+			
 			var mapping = newPaths[path];
-				mapping['readonly'] = mapping['readonly'] ?: false;
 				mapping['virtual'] = mapping['name'] ?: path;
-				mapping['inspect-template'] = mapping['inspectTemplate'] ?: "never";
+				mapping['inspect-template'] = mapping['inspectTemplate'] ?: "";
 				structDelete(mapping, "name");
 				structDelete(mapping, "inspectTemplate");
 
-			
-			if(mapping['readonly']){
-				continue;
-			}
-			// If they are built in paths, also ignore.
-			if( listFindNoCase("{lucee-web}/components/,{lucee-web}/components/", mapping['physical']) ){
+			var physicalPath = mapping['physical'] ?: "";
+			if( listFindNoCase("{lucee-web}/components/,{lucee-server}/components/", physicalPath) ){
 				continue;
 			}
 			
 			
 			var xmlMapping = xmlElemnew( theComponent, 'mapping' );
-			xmlMapping.XmlAttributes = mapping;
+				xmlMapping.XmlAttributes = mapping;
+
 			theComponent.XMLChildren.append(xmlMapping);
 		}
 

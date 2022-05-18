@@ -1128,21 +1128,28 @@ component accessors="true" {
 	*/
 	function addComponentPath(
 			required string name,
-			required string physical,
+			string physical,
 			string archive="",
 			string primary="physical",
-			string inspectTemplate="never",
-			boolean readOnly=false,
+			string inspectTemplate=""
 	) {
 
 		var componentPath = {
 			"name": arguments.name,
-			"physical": arguments.physical,
-			"archive": arguments.archive,
 			"primary": arguments.primary,
-			"inspectTemplate": arguments.inspectTemplate,
-			"readonly": arguments.readOnly
+			"inspectTemplate": arguments.inspectTemplate
 		};
+
+
+		if( !IsNull(arguments["archive"]) ){
+			componentPath["archive"] = arguments["archive"];
+		}
+		
+		if( !IsNull(arguments["physical"]) ){
+			componentPath["physical"] = arguments["physical"];
+			componentPath["archive"]  = arguments["archive"] ?: "";
+		}
+
 
 		var thisComponentPaths = getComponentPaths() ?: {};
 		thisComponentPaths[arguments.name] = componentPath;

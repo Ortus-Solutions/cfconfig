@@ -7,7 +7,13 @@
 */
 component extends="tests.BaseTest" appMapping="/tests" {
 		
+
+	
 	function run(){
+
+
+	
+		
 
 		describe( "Lucee 5 Server config", function(){
 			
@@ -33,6 +39,15 @@ component extends="tests.BaseTest" appMapping="/tests" {
 
 
 		describe( "Lucee 5 Server config - ComponentPaths", function(){
+
+			beforeEach(function(currentSpec, data){
+
+				if( directoryExists( expandPath( '/tests/resources/tmp' )) ){
+					DirectoryDelete( expandPath( '/tests/resources/tmp' ), true );
+				}
+				
+
+			});
 			
 			it( "can read ComponentPaths config", function() {
 				
@@ -56,7 +71,7 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				expect( exampleComponent ).toHaveKey( "archive" );
 				expect( exampleComponent ).toHaveKey( "primary" );
 				expect( exampleComponent ).toHaveKey( "inspectTemplate" );
-				expect( exampleComponent ).toHaveKey( "readonly" );
+				expect( exampleComponent ).NotToHaveKey( "readonly" );
 			
 
 			});
@@ -77,6 +92,8 @@ component extends="tests.BaseTest" appMapping="/tests" {
 
 				var config = XMLParse( fileRead( '/tests/resources/tmp/context/Lucee-Server.xml' ) );
 				debug( config.XmlRoot.component );
+
+				// This is kinda incorrect, but it's from the xml that goes in. 
 				expect( config.XmlRoot.component.XMLChildren.len() ).toBe( 3 );
 
 			});

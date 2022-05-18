@@ -216,6 +216,7 @@ Path placeholders:
   		<mapping inspect-template="never" physical="{lucee-web}/components/" primary="physical" virtual="/default"/>
 		<mapping inspect-template="never" physical="{lucee-server}/components/" primary="physical" readonly="true" virtual="/default-server"/>
 		<mapping inspect-template="never" physical="/some/Component/Path" primary="physical" virtual="exampleComponentPath" />
+		<mapping inspect-template="" archive="/some/Path/to/archive.zip" primary="archive" virtual="archiveComponentPath" />
 	</component>
 
 	
