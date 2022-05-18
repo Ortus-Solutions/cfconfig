@@ -1129,17 +1129,19 @@ component accessors="true" {
 	function addComponentPath(
 			required string name,
 			string physical,
-			string archive="",
+			string archive,
 			string primary="physical",
-			string inspectTemplate=""
+			string inspectTemplate
 	) {
 
 		var componentPath = {
 			"name": arguments.name,
 			"primary": arguments.primary,
-			"inspectTemplate": arguments.inspectTemplate
 		};
-
+		
+		if( !IsNull( arguments["inspectTemplate"] ) ) {
+			componentPath["inspectTemplate"] =  arguments.inspectTemplate;
+		}
 
 		if( !IsNull(arguments["archive"]) ){
 			componentPath["archive"] = arguments["archive"];

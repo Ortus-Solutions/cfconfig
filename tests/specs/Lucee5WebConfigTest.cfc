@@ -114,7 +114,7 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				expect( exampleComponent ).toHaveKey( "archive" );
 				expect( exampleComponent ).toHaveKey( "primary" );
 				expect( exampleComponent ).toHaveKey( "inspectTemplate" );
-				expect( exampleComponent ).toHaveKey( "readonly" );
+				expect( exampleComponent ).NotToHaveKey( "readonly" );
 			
 
 			});

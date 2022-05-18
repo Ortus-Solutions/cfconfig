@@ -545,8 +545,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var params = {
 				"name"				: componentPath.XMLAttributes["virtual"],
 				"primary"			: componentPath.XMLAttributes["primary"],
-				"inspectTemplate"	: componentPath.XMLAttributes["inspect-template"],
 			};
+			
+			if(! IsNull( componentPath.XMLAttributes["inspect-template"] ) ){
+				params["inspectTemplate"] = componentPath.XMLAttributes["inspect-template"];
+			}
 			
 			if( !IsNull(componentPath.XMLAttributes["archive"]) ){
 				params["archive"] = componentPath.XMLAttributes["archive"];
