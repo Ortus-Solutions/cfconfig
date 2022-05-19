@@ -66,9 +66,10 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				
 				var exampleComponent = config.componentPaths.exampleComponentPath;
 				
+				debug(exampleComponent)
 				expect( exampleComponent ).toHaveKey( "name" );
 				expect( exampleComponent ).toHaveKey( "physical" );
-				expect( exampleComponent ).toHaveKey( "archive" );
+				// expect( exampleComponent ).toHaveKey( "archive" );
 				expect( exampleComponent ).toHaveKey( "primary" );
 				expect( exampleComponent ).toHaveKey( "inspectTemplate" );
 				expect( exampleComponent ).NotToHaveKey( "readonly" );
