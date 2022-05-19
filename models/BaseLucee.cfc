@@ -536,31 +536,47 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		for(var componentPath in theComponent.XMLChildren ){
 
-			var physicalPath = componentPath.XMLAttributes['physical'] ?: "";
-
-			if( listFindNoCase("{lucee-web}/components/,{lucee-server}/components/", physicalPath ) ){
+			// This compnent mapping cannot be edited
+			if( componentPath.XMLAttributes['virtual'] == '/default-server' ){
+				continue;
+			}
+			
+			// Parts of this compnent mapping can be edited, but ignore it unless it has been changed from the default
+			if( componentPath.XMLAttributes['virtual'] == '/default' 
+				&&	(componentPath.XMLAttributes['physical'] ?: '') == '{lucee-web}/components/'
+				&&	(componentPath.XMLAttributes['archive'] ?: '') == ''
+				&&	(componentPath.XMLAttributes['inspect-template'] ?: '') == 'never'
+				&&	(componentPath.XMLAttributes['primary'] ?: '') == 'physical' 
+			){
 				continue;
 			}
 
 			var params = {
-				"name"				: componentPath.XMLAttributes["virtual"],
-				"primary"			: componentPath.XMLAttributes["primary"],
+				// Trim off leading `/` in name
+				"name"				: componentPath.XMLAttributes["virtual"].right( -1 )
 			};
 			
-			if(! IsNull( componentPath.XMLAttributes["inspect-template"] ) ){
-				params["inspectTemplate"] = componentPath.XMLAttributes["inspect-template"];
+			if( !isNull( componentPath.XMLAttributes["inspect-template"] ) ){
+				params["inspectTemplate"] = ucFirst( componentPath.XMLAttributes["inspect-template"] );
+				if( !len( params["inspectTemplate"] ) ) {
+					params["inspectTemplate"] = 'Inherit';
+				}
 			}
 			
-			if( !IsNull(componentPath.XMLAttributes["archive"]) ){
+			if( !isNull(componentPath.XMLAttributes["archive"]) ){
 				params["archive"] = componentPath.XMLAttributes["archive"];
 			}
 			
-			if( !IsNull(componentPath.XMLAttributes["physical"]) ){
+			if( !isNull(componentPath.XMLAttributes["physical"]) ){
 				params["physical"] = componentPath.XMLAttributes["physical"];
-				params["archive"]  = componentPath.XMLAttributes["archive"] ?: "";
 			}
-
-			// There should be either an archive or physical. TODO: check one or the other exists. 
+			
+			if( !isNull(componentPath.XMLAttributes["primary"]) ){
+				params["primary"] = ucFirst( componentPath.XMLAttributes["primary"] );
+				if( params["primary"] == 'Physical' ) {
+					params["primary"] = 'Resource';
+				}
+			}
 
 			addComponentPath(argumentCollection=params);
 		}
@@ -1439,49 +1455,60 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 
 		// Now we append the component paths!
-		if( isNull( getComponentPaths() ) ) {
-			return;
-		}
-	
-
-		var paths = theComponent.XMLChildren;
-
-		//Clear the non-lucee componentPaths 
-		if(paths.len() gt 0){
-			loop from="#paths.len()#" to="1" index="i" {
-				// paths[i].XmlAttributes['readonly'] = paths[i].XmlAttributes.readonly ?: false;
-				var physicalPath = paths[i].XmlAttributes['physical'] ?: "";
-				if( listFindNoCase("{lucee-web}/components/,{lucee-server}/components/", physicalPath) ){
-					continue;
+		if( !isNull( getComponentPaths() ) ) {		
+			var newPaths = getComponentPaths();
+			var paths = theComponent.XMLChildren;
+	 
+			if(paths.len() gt 0){
+				loop from="#paths.len()#" to="1" index="i" step="-1" {
+					// Never overwrite this one
+					if( paths[i].XmlAttributes['virtual'] == '/default-server' ){
+						continue;
+					}
+					// Overwrite this one only if we have one in our incoming config
+					if( paths[i].XmlAttributes['virtual'] == '/default' && !newPaths.keyExists( 'default' ) ){
+						continue;
+					}
+					arrayDeleteAt( paths, i );
 				}
-				arrayDeleteAt( paths, i );
 			}
-		}
 
-
-		var newPaths = getComponentPaths() ?: {} ;
-		for(var path in newPaths ){
-			
-			var mapping = newPaths[path];
-				mapping['virtual'] = mapping['name'] ?: path;
-				mapping['inspect-template'] = mapping['inspectTemplate'] ?: "";
-				structDelete(mapping, "name");
-				structDelete(mapping, "inspectTemplate");
-
-			var physicalPath = mapping['physical'] ?: "";
-			if( listFindNoCase("{lucee-web}/components/,{lucee-server}/components/", physicalPath) ){
-				continue;
-			}
-			
-			
-			var xmlMapping = xmlElemnew( theComponent, 'mapping' );
-				xmlMapping.XmlAttributes = mapping;
-
-			theComponent.XMLChildren.append(xmlMapping);
-		}
-
-
+			for( var path in newPaths ){
+				var thisPath = newPaths[path];
+				var mapping = {
+					// Put `/` back in front of virtual
+					'virtual' : '/' & thisPath.name
+				};
+				
+				if( !isNull( thisPath.archive ) ) { mapping[ 'archive' ] = thisPath.archive; }
+				if( !isNull( thisPath.physical ) ) { mapping[ 'physical' ] = thisPath.physical; }
+				
+				if( !isNull( thisPath.primary ) ) {
+					mapping[ 'primary' ] = lcase( thisPath.primary );
+					if( mapping[ 'primary' ] == 'Resource' ) {
+						mapping[ 'primary' ] = 'physical';
+					}
+				} else {
+					mapping[ 'primary' ] = 'physical';
+				}
+				
+				if( !isNull( thisPath.inspectTemplate ) ) {
+					mapping[ 'inspect-template' ] = lcase( thisPath.inspectTemplate );
+					if( mapping[ 'inspect-template' ] == 'Inherit' ) {
+						mapping[ 'inspect-template' ] = '';
+					}
+				} else {
+					mapping[ 'inspect-template' ] = '';
+				}
+				
+				var xmlMapping = xmlElemnew( theComponent, 'mapping' );
+					xmlMapping.XmlAttributes = mapping;
 	
+				theComponent.XMLChildren.append(xmlMapping);
+			}
+
+		}
+
 		if( !componentSearch.len() ) {
 			thisConfig.XMLRoot.XMLChildren.append( theComponent );
 		}	

@@ -211,7 +211,7 @@ component accessors="true" {
 	// Array of tag paths ( value struct of properties )
 	property name='customTagPaths' type='array' _isCFConfig=true;
 	
-	// Array of comnponent paths ( value struct of properties )
+	// Component search paths (Lucee only). Key is the name
 	property name='componentPaths' type='struct' _isCFConfig=true;
 
 	// Encoding to use for mail. Ex: UTF-8
@@ -1111,33 +1111,32 @@ component accessors="true" {
 	/**
 	* Add a single component Path to the config
 	*
+	* @name Name of the Component Path
 	* @physical The physical path that the engine should search
 	* @archive Path to the Lucee/Railo archive
-	* @name Name of the Component Path
-	* @inspectTemplate String containing one of "never", "once", "always", "" (inherit)
-	* @primary Strings containing one of "physical", "archive"
-
-
-		inspect-template	
-		physical	
-		primary	
-		readonly	
-		virtual	
-
-
+	* @inspectTemplate String containing one of "never", "once", "always", "inherit"
+	* @primary Strings containing one of "resource", "archive"
 	*/
 	function addComponentPath(
 			required string name,
 			string physical,
 			string archive,
-			string primary="physical",
+			string primary,
 			string inspectTemplate
 	) {
 
+
+		if( !len( physical ?: '' ) && !len( archive ?: '' ) ) {
+			error( "You must specify a physical or archive location. (or both)" );
+		}
+
 		var componentPath = {
-			"name": arguments.name,
-			"primary": arguments.primary,
+			"name": arguments.name
 		};
+		
+		if( !IsNull( arguments["primary"] ) ) {
+			componentPath["primary"] =  arguments.primary;
+		}
 		
 		if( !IsNull( arguments["inspectTemplate"] ) ) {
 			componentPath["inspectTemplate"] =  arguments.inspectTemplate;
@@ -1149,7 +1148,6 @@ component accessors="true" {
 		
 		if( !IsNull(arguments["physical"]) ){
 			componentPath["physical"] = arguments["physical"];
-			componentPath["archive"]  = arguments["archive"] ?: "";
 		}
 
 
