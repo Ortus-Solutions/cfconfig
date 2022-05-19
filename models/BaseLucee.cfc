@@ -1475,6 +1475,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 			for( var path in newPaths ){
 				var thisPath = newPaths[path];
+				// If there is no name key in the struct, use the key for the entire struct.  This allows "name" to be optional in the struct itself
+				thisPath.name = thisPath.name ?: path; 
 				var mapping = {
 					// Put `/` back in front of virtual
 					'virtual' : '/' & thisPath.name
@@ -1485,7 +1487,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				
 				if( !isNull( thisPath.primary ) ) {
 					mapping[ 'primary' ] = lcase( thisPath.primary );
-					if( mapping[ 'primary' ] == 'Resource' ) {
+					if( mapping[ 'primary' ] == 'resource' ) {
 						mapping[ 'primary' ] = 'physical';
 					}
 				} else {
@@ -1494,7 +1496,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				
 				if( !isNull( thisPath.inspectTemplate ) ) {
 					mapping[ 'inspect-template' ] = lcase( thisPath.inspectTemplate );
-					if( mapping[ 'inspect-template' ] == 'Inherit' ) {
+					if( mapping[ 'inspect-template' ] == 'inherit' ) {
 						mapping[ 'inspect-template' ] = '';
 					}
 				} else {
