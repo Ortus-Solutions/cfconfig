@@ -712,6 +712,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// Setting is in KB, but storage is in B. Factor of 1000, not 1024.  Thanks, Adobe.
 		if( !isNull( thisConfig[ 2 ].maxFileSize ) ) { setLogMaxFileSize( thisConfig[ 2 ].maxFileSize/1000 ); }
 		if( !isNull( thisConfig[ 2 ].maxFileBackup ) ) { setLogMaxArchives( thisConfig[ 2 ].maxFileBackup ); }
+		if( !isNull( thisConfig[ 2 ].enableOSLogging ) ) { setLogSysLogEnabled( thisConfig[ 2 ].enableOSLogging ); }
 	
 	}
 
@@ -1709,6 +1710,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// Setting is in KB, but storage is in B. Factor of 1000, not 1024.  Thanks, Adobe.
 		if( !isNull( getLogMaxFileSize() ) ) { thisConfig[ 2 ].maxFileSize = getLogMaxFileSize()*1000; }
 		if( !isNull( getLogMaxArchives() ) ) { thisConfig[ 2 ].maxFileBackup = getLogMaxArchives(); }
+		if( !isNull( getLogSysLogEnabled() ) ) { thisConfig[ 2 ].enableOSLogging = !!getLogSysLogEnabled(); }		
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
 

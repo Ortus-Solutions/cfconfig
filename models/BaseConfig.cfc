@@ -471,6 +471,8 @@ component accessors="true" {
 	property name='logSlowRequestsThreshold' type='numeric' _isCFConfig=true;
 	// Log all CORBA calls
 	property name='logCORBACalls' type='boolean' _isCFConfig=true;
+	// Adobe && UNIX ONLY - Use operating system logging facilities
+	property name='logSysLogEnabled' type='boolean' _isCFConfig=true;
 
 	// Array of disabled log file names (Adobe CF only)
 	property name='logFilesDisabled' type='array' _isCFConfig=true;
