@@ -508,7 +508,7 @@ component accessors="true" {
 	// Event Gateways > Gateway Instances
 	property name='eventGatewayInstances' type='array' _isCFConfig=true;
 	// Services > Event Gateway - Lucee specific
-	// Lucee and Adobe event gateways are very different and cannot be transfered between engines.  As such, they are stored separatley
+	// Lucee and Adobe event gateways are very different and cannot be transfered between engines.  As such, they are stored separately
 	property name='eventGatewaysLucee' type='struct' _isCFConfig=true;
 	// Event Gateways > Gateway Types
 	property name='eventGatewayConfigurations' type='array' _isCFConfig=true;
