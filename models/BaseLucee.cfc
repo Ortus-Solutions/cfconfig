@@ -1048,7 +1048,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var i = 0;
 		// Clear the deck
 		while( ++i<= customTagPaths.len() ) {
-			if ( isNull( customTagPaths.XMLAttributes[ 'virtual ']) ) {
+			if ( isNull( customTagPaths[i].XMLAttributes[ 'virtual']) ) {
 				// First one is lucee's reserved, trusted Custom Tag Path
 				continue;
 			}
