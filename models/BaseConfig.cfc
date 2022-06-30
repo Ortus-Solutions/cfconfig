@@ -211,6 +211,15 @@ component accessors="true" {
 	// Array of tag paths ( value struct of properties )
 	property name='customTagPaths' type='array' _isCFConfig=true;
 	
+	// Search for custom tags in subdirectories. (Lucee only)
+	property name='customTagSearchSubdirectories' type='boolean' _isCFConfig=true;
+	// Search in the caller directory for the custom tag. (Lucee only)
+	property name='customTagSearchLocal' type='boolean' _isCFConfig=true;
+	//  component path is cached and not resolved again.  (Lucee only)
+	property name='customTagCachePaths' type='boolean' _isCFConfig=true;
+	// These are the extensions used for Custom Tags, in the order they are searched. 
+	property name='customTagExtensions' type='string' _isCFConfig=true;
+	
 	// Component search paths (Lucee only). Key is the name
 	property name='componentPaths' type='struct' _isCFConfig=true;
 
@@ -487,9 +496,6 @@ component accessors="true" {
 	//property name='componentAutoImport' type='string' _isCFConfig=true;
 	//property name='componentSearchLocal' type='boolean' _isCFConfig=true;
 	//property name='componentImplicitNotation' type='boolean' _isCFConfig=true;
-	//property name='customTagSearchSubdirectories' type='boolean' _isCFConfig=true;
-	//property name='customTagSearchLocal' type='boolean' _isCFConfig=true;
-	//property name='customTagExtensions' type='string' _isCFConfig=true;
 	//property name='cfxTags' type='string' _isCFConfig=true;
 
 
@@ -1435,8 +1441,8 @@ component accessors="true" {
 	*/
 	function mergeMemento( required struct memento ){
 
-		// For array configs, here is the name of the nested key in the struct to compare to determin uniqueness.
-		// An empty string means the array is just a simple array of strings to compare direclty, not a struct.
+		// For array configs, here is the name of the nested key in the struct to compare to determine uniqueness.
+		// An empty string means the array is just a simple array of strings to compare directly, not a struct.
 		var arrayMap = {
 			'mailServers' : 'smtp',
 			'customTagPaths' : 'physical',

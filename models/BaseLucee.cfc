@@ -336,6 +336,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function readCustomTags( customTags ) {
+		var config = customTags.XMLAttributes;
+
+		if( !isNull( config[ 'custom-tag-deep-search' ] ) ) { setCustomTagSearchSubdirectories( config[ 'custom-tag-deep-search' ] ); }
+		if( !isNull( config[ 'custom-tag-local-search' ] ) ) { setCustomTagSearchLocal( config[ 'custom-tag-local-search' ] ); }
+		if( !isNull( config[ 'use-cache-path' ] ) ) { setCustomTagCachePaths( config[ 'use-cache-path' ] ); }
+		if( !isNull( config[ 'extensions' ] ) ) { setCustomTagExtensions( config[ 'extensions' ] ); }
+		
 		for( var customTagPath in customTags.XMLChildren ) {
 			var params = structNew().append( customTagPath.XMLAttributes );
 			if ( isNull( params.virtual ) ) {
@@ -1037,14 +1044,21 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeCustomTags( thisConfig ) {
+		// Get all custom tag paths
+		// TODO: Add tag if it doesn't exist
+		var customTagXML = xmlSearch( thisConfig, '/cfLuceeConfiguration/custom-tag' )[ 1 ];
+		var customTagPaths = customTagXML.XMLChildren;
+		var config = customTagXML.XMLAttributes;
+
+		if( !isNull( getCustomTagSearchSubdirectories() ) ) { config[ 'custom-tag-deep-search' ] = getCustomTagSearchSubdirectories(); }
+		if( !isNull( getCustomTagSearchLocal() ) ) { config[ 'custom-tag-local-search' ] = getCustomTagSearchLocal(); }
+		if( !isNull( getCustomTagCachePaths() ) ) { config[ 'use-cache-path' ] = getCustomTagCachePaths(); }
+		if( !isNull( getCustomTagExtensions() ) ) { config[ 'extensions' ] = getCustomTagExtensions(); }
 
 		// Only save if we have something defined
 		if( isNull( getCustomTagPaths() ) ) {
 			return;
 		}
-		// Get all custom tag paths
-		// TODO: Add tag if it doesn't exist
-		var customTagPaths = xmlSearch( thisConfig, '/cfLuceeConfiguration/custom-tag' )[ 1 ].XMLChildren;
 		var i = 0;
 		// Clear the deck
 		while( ++i<= customTagPaths.len() ) {

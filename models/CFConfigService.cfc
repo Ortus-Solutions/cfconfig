@@ -412,6 +412,8 @@ component accessors=true singleton {
 						.replaceNoCase( 'mailservers_', 'mail_', 'all' )
 						.replaceNoCase( 'caches_', 'cache_', 'all' )
 						.replaceNoCase( 'customTagPaths_', 'customTag_', 'all' )
+						.replaceNoCase( 'eventGatewaysLucee_', 'eventGateway_', 'all' )
+						.replaceNoCase( 'PDFServiceManagers_', 'PDFService_', 'all' )
 						// Upper case it all!
 						.uCase();
 					envVars[ newValue ] = memento;
@@ -502,7 +504,7 @@ component accessors=true singleton {
 		var configProps = wireBox.getInstance( 'BaseConfig@cfconfig-services' ).getConfigProperties();
 		// An empty query object to hold our results
 		var qryResult = queryNew( 'propertyName,fromValue,toValue,fromOnly,toOnly,bothPopulated,bothEmpty,valuesMatch,valuesDiffer' );
-		// Recurse into these complex properties, but don't add them directly to the query+
+		// Recurse into these complex properties, but don't add them directly to the query
 		var specialColumns = [
 			'CFMappings',
 			'datasources',
@@ -515,7 +517,11 @@ component accessors=true singleton {
 			'scheduledTasks',
 			'eventGatewayInstances',
 			'eventGatewayConfigurations',
-			'PDFServiceManagers'
+			'PDFServiceManagers',
+			'debuggingTemplates',
+			'customTagPaths',
+			'componentPaths',
+			'eventGatewaysLucee'
 		];
 		
 		compareStructs( qryResult, fromData, toData, configProps, specialColumns, '', emptyIsUndefined );
