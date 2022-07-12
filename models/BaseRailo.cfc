@@ -593,7 +593,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( DSStruct.database ) ) {
 				DSXMLNode.XMLAttributes[ 'database' ] = DSStruct.database;
 				// Set default custom string for MSSQL
-				if( ListFindNoCase(DSStruct.class, "sqlserver", ".") ) {
+				if( !isNull( DSStruct.class ) && ListFindNoCase(DSStruct.class, "sqlserver", ".") ) {
 					// This will be overwritten below if there is a custom key for this datasource
 					DSXMLNode.XMLAttributes[ 'custom' ] = 'DATABASENAME=#DSStruct.database#&sendStringParametersAsUnicode=true&SelectMethod=direct';
 				}

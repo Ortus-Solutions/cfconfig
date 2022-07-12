@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><settings>
+  <update autocheck="true" checkinterval="10" checkperiodically="false" sendupdate="true">
+    <url>http://www.adobe.com/go/coldfusion-updates</url>
+    <defaulturl>http://www.adobe.com/go/coldfusion-updates</defaulturl>
+    <notification>
+      <emaillist/>
+      <fromemail/>
+    </notification>
+  </update>
+  <proxy>
+    <hostname/>
+    <port>0</port>
+    <username/>
+    <password/>
+  </proxy>
+</settings>
