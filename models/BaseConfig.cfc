@@ -59,6 +59,8 @@ component accessors="true" {
 	// true/false
 	property name='dotNotationUpperCase' type='boolean' _isCFConfig=true;
 	// true/false
+	property name='handleUnquotedAttributeValueAsString' type='boolean' _isCFConfig=true;
+	// true/false
 	property name='suppressWhitespaceBeforecfargument' type='string' _isCFConfig=true;
 	// One of the strings "standard", "small", "strict"
 	property name='scopeCascading' type='string' _isCFConfig=true;
