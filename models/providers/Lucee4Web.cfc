@@ -24,6 +24,7 @@ component accessors=true extends='cfconfig-services.models.BaseLucee' {
 		setConfigFileName( 'lucee-web.xml.cfm' );
 		// This is where said config file is stored inside the server home
 		setConfigRelativePathWithinServerHome( '/' );
+		setHasScheduledTasks( true );
 
 		setFormat( 'luceeWeb' );
 		setVersion( '4' );

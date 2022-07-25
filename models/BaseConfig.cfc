@@ -210,16 +210,16 @@ component accessors="true" {
 	 */
 	// Array of tag paths ( value struct of properties )
 	property name='customTagPaths' type='array' _isCFConfig=true;
-	
+
 	// Search for custom tags in subdirectories. (Lucee only)
 	property name='customTagSearchSubdirectories' type='boolean' _isCFConfig=true;
 	// Search in the caller directory for the custom tag. (Lucee only)
 	property name='customTagSearchLocal' type='boolean' _isCFConfig=true;
 	//  component path is cached and not resolved again.  (Lucee only)
 	property name='customTagCachePaths' type='boolean' _isCFConfig=true;
-	// These are the extensions used for Custom Tags, in the order they are searched. 
+	// These are the extensions used for Custom Tags, in the order they are searched.
 	property name='customTagExtensions' type='string' _isCFConfig=true;
-	
+
 	// Component search paths (Lucee only). Key is the name
 	property name='componentPaths' type='struct' _isCFConfig=true;
 
@@ -704,7 +704,7 @@ component accessors="true" {
 		setPDFServiceManagers( thisPDFServiceManagers );
 		return this;
 	}
-	
+
 	/**
 	* Add a single cache to the config
 	*
@@ -741,7 +741,7 @@ component accessors="true" {
 		setCaches( thisCaches );
 		return this;
 	}
-	
+
 	/**
 	* Add a single debugging template to the config
 	*
@@ -760,7 +760,7 @@ component accessors="true" {
 		string fullname,
 		string iprange,
 		string path,
-		struct custom	
+		struct custom
 	) {
 		var debuggingTemplate = {
 			'label' : arguments.label,
@@ -1141,11 +1141,11 @@ component accessors="true" {
 		var componentPath = {
 			"name": arguments.name
 		};
-		
+
 		if( !IsNull( arguments["primary"] ) ) {
 			componentPath["primary"] =  arguments.primary;
 		}
-		
+
 		if( !IsNull( arguments["inspectTemplate"] ) ) {
 			componentPath["inspectTemplate"] =  arguments.inspectTemplate;
 		}
@@ -1153,7 +1153,7 @@ component accessors="true" {
 		if( !IsNull(arguments["archive"]) ){
 			componentPath["archive"] = arguments["archive"];
 		}
-		
+
 		if( !IsNull(arguments["physical"]) ){
 			componentPath["physical"] = arguments["physical"];
 		}
@@ -1222,23 +1222,23 @@ component accessors="true" {
 	* @task The name of the task
 	* @url The full URL to hit
 	* @group The group for the task (Adobe only)
-	* @chained Is this task chained?
-	* @clustered Is this task clustered?
-	* @crontime Schedule in Cron format
+	* @chained Is this task chained? (Adobe only)
+	* @clustered Is this task clustered? (Adobe only)
+	* @crontime Schedule in Cron format (Adobe only)
 	* @endDate Date when task will end as 1/1/2000
 	* @endTime Time when task will end as 9:57:00 AM
-	* @eventhandler Specify a dot-delimited CFC path under webroot, for example a.b.server (without the CFC extension). The CFC should implement CFIDE.scheduler.ITaskEventHandler.
-	* @exclude Comma-separated list of dates or date range for exclusion in the schedule period.
+	* @eventhandler Specify a dot-delimited CFC path under webroot, for example a.b.server (without the CFC extension). The CFC should implement CFIDE.scheduler.ITaskEventHandler. (Adobe only)
+	* @exclude Comma-separated list of dates or date range for exclusion in the schedule period. (Adobe only)
 	* @file Save output of task to this file
 	* @httpPort The port for the main task URL
 	* @httpProxyPort The port for the proxy server
 	* @interval The type of schedule. Once, Weekly, Daily, Monthly, an integer containing the number of seconds between runs
-	* @misfire What to do in case of a misfire.  Ignore, FireNow, invokeHander
-	* @oncomplete Comma-separated list of chained tasks to be run after the completion of the current task (task1:group1,task2:group2...)
-	* @onexception Specify what to do if a task results in error. Ignore, Pause, ReFire, InvokeHandler
-	* @overwrite Overwrite the log file?
+	* @misfire What to do in case of a misfire.  Ignore, FireNow, invokeHander (Adobe only)
+	* @oncomplete Comma-separated list of chained tasks to be run after the completion of the current task (task1:group1,task2:group2...) (Adobe only)
+	* @onexception Specify what to do if a task results in error. Ignore, Pause, ReFire, InvokeHandler (Adobe only)
+	* @overwrite Overwrite the log file? (Adobe only)
 	* @password Basic auth password to use when hitting URL
-	* @priority An integer that indicates the priority of the task.
+	* @priority An integer that indicates the priority of the task. (Adobe only)
 	* @proxyPassword Proxy server password
 	* @proxyServer Name of the proxy server to use
 	* @proxyUser Proxy server username
@@ -1246,16 +1246,19 @@ component accessors="true" {
 	* @repeat -1 to repeat forever, otherwise integer.
 	* @requestTimeOut Number of seconds to timeout the request.  Empty string for none.
 	* @resolveurl When saving output of task to file, Resolve internal URLs so that links remain intact.
-	* @retrycount The number of reattempts if the task results in an error.
+	* @retrycount The number of reattempts if the task results in an error. (Adobe only)
 	* @startDate The date to start executing the task
 	* @startTime The date to end excuting the task
 	* @status The current status of the task.  Running, Paused
 	* @username Basic auth username to use when hitting URL
+	* @autoDelete (Lucee only)
+	* @hidden Do not show in admin UI (Lucee only)
+	* @unique  If set run the task only once at time. Every time a task is started, it will check if still a task from previous round is running, if so no new test is started. (Lucee only)
 	*/
 	function addScheduledTask(
 		required string task,
 		string url,
-		string group='DEFAULT',
+		string group,
 		boolean chained,
 		boolean clustered,
 		string crontime,
@@ -1284,7 +1287,10 @@ component accessors="true" {
 		string startDate,
 		string startTime,
 		string status,
-		string username
+		string username,
+		string autoDelete,
+		string hidden,
+		string unique
 		) {
 
 		var scheduledTask = {};
@@ -1294,7 +1300,11 @@ component accessors="true" {
 		}
 
 		var thisScheduledTasks = getScheduledTasks() ?: {};
-		thisScheduledTasks[ arguments.group & ':' & arguments.task ] = scheduledTask;
+		var taskID = arguments.task;
+		if( !isNull( arguments.group ) && len( arguments.group ) ){
+			taskID = arguments.group & ':' & arguments.task;
+		}
+		thisScheduledTasks[ taskID ] = scheduledTask;
 		setScheduledTasks( thisScheduledTasks );
 		return this;
 	}
@@ -1457,8 +1467,10 @@ component accessors="true" {
 			if( isSimpleValue( setting ) ) {
 				variables[ prop ] = setting;
 			} else if( isStruct( setting ) ) {
+				variables[ prop ] = variables[ prop ] ?: {};
 				structAppend( variables[ prop ], setting, true );
 			} else if( isArray( setting ) ) {
+				variables[ prop ] = variables[ prop ] ?: [];
 				if( !arrayMap.keyExists( prop ) ) {
 					throw( message='Array config type [#prop#] not mapped for merging.  Please report this as a bug.', type='cfconfigException' );
 				}

@@ -13,6 +13,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	property name='configFileTemplate' type='string';
 	property name='configFileName' type='string';
 	property name='configRelativePathWithinServerHome' type='string';
+	property name='schedulerConfigFileTemplate' type='string';
+	property name='schedulerConfigFileName' type='string';
+	property name='hasScheduledTasks' type='boolean';
 	property name='luceePasswordManager' inject='PasswordManager@lucee-password-util';
 
 
@@ -24,13 +27,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		// Used when writing out a Lucee server context config file from the generic config
 		setConfigFileTemplate( expandPath( '/cfconfig-services/resources/lucee4/lucee-server-base.xml' ) );
+		setSchedulerConfigFileTemplate( expandPath( '/cfconfig-services/resources/lucee4/scheduler-base.xml' ) );
 
 		// Ex: lucee-server/context/lucee-server.xml
 
 		// This is the file name used by this config file
 		setConfigFileName( 'lucee-server.xml' );
+		setSchedulerConfigFileName( 'scheduler/scheduler.xml' );
 		// This is where said config file is stored inside the server home
 		setConfigRelativePathWithinServerHome( '/context/' );
+		setHasScheduledTasks( false );
 
 		setFormat( 'luceeServer' );
 		setVersion( '4' );
@@ -106,10 +112,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		var customTags = xmlSearch( thisConfig, '/cfLuceeConfiguration/custom-tag' );
 		if( customTags.len() ){ readCustomTags( customTags[ 1 ] ); }
-		
-
-
-
 
 		var debugging = xmlSearch( thisConfig, '/cfLuceeConfiguration/debugging' );
 		if( debugging.len() ){ readDebugging( debugging[ 1 ] ); }
@@ -147,6 +149,23 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readAuth( thisConfig.XMLRoot );
 
 		readConfigChanges( thisConfig.XMLRoot );
+
+		if( getHasScheduledTasks() ){
+
+			var configFilePath = locateSchedulerConfigFile();
+			if( fileExists( configFilePath ) ) {
+
+				var thisConfigRaw = fileRead( configFilePath );
+				if( !isXML( thisConfigRaw ) ) {
+					throw "Scheduler config file doesn't contain XML [#configFilePath#]";
+				}
+
+				var thisConfig = XMLParse( thisConfigRaw );
+
+				var theSchedule = xmlSearch( thisConfig, '/schedule' );
+				if( theSchedule.len() ){ readSchedule( theSchedule[ 1 ] ); }
+			}
+		}
 
 		return this;
 	}
@@ -342,7 +361,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( config[ 'custom-tag-local-search' ] ) ) { setCustomTagSearchLocal( config[ 'custom-tag-local-search' ] ); }
 		if( !isNull( config[ 'use-cache-path' ] ) ) { setCustomTagCachePaths( config[ 'use-cache-path' ] ); }
 		if( !isNull( config[ 'extensions' ] ) ) { setCustomTagExtensions( config[ 'extensions' ] ); }
-		
+
 		for( var customTagPath in customTags.XMLChildren ) {
 			var params = structNew().append( customTagPath.XMLAttributes );
 			if ( isNull( params.virtual ) ) {
@@ -379,7 +398,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( debugging.XmlAttributes[ 'max-records-logged' ] ) ) { setDebuggingMaxLoggedRequests( debugging.XmlAttributes[ 'max-records-logged' ] ); }
 
 
-		// if we have debugging enries we should add them 
+		// if we have debugging enries we should add them
 		if (!isNull(debugging.XmlChildren) ){
 
 			for( var entry in debugging.XmlChildren ) {
@@ -389,8 +408,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					// Overwrite original string with struct
 					params[ 'custom' ] = translateURLCodedPairsToStruct( params[ 'custom' ] );
 				}
-				
-				addDebuggingTemplate( argumentCollection=params );				
+
+				addDebuggingTemplate( argumentCollection=params );
 			}
 		}
 
@@ -547,13 +566,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( componentPath.XMLAttributes['virtual'] == '/default-server' ){
 				continue;
 			}
-			
+
 			// Parts of this compnent mapping can be edited, but ignore it unless it has been changed from the default
-			if( componentPath.XMLAttributes['virtual'] == '/default' 
+			if( componentPath.XMLAttributes['virtual'] == '/default'
 				&&	(componentPath.XMLAttributes['physical'] ?: '') == '{lucee-web}/components/'
 				&&	(componentPath.XMLAttributes['archive'] ?: '') == ''
 				&&	(componentPath.XMLAttributes['inspect-template'] ?: '') == 'never'
-				&&	(componentPath.XMLAttributes['primary'] ?: '') == 'physical' 
+				&&	(componentPath.XMLAttributes['primary'] ?: '') == 'physical'
 			){
 				continue;
 			}
@@ -562,22 +581,22 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				// Trim off leading `/` in name
 				"name"				: componentPath.XMLAttributes["virtual"].right( -1 )
 			};
-			
+
 			if( !isNull( componentPath.XMLAttributes["inspect-template"] ) ){
 				params["inspectTemplate"] = ucFirst( componentPath.XMLAttributes["inspect-template"] );
 				if( !len( params["inspectTemplate"] ) ) {
 					params["inspectTemplate"] = 'Inherit';
 				}
 			}
-			
+
 			if( !isNull(componentPath.XMLAttributes["archive"]) ){
 				params["archive"] = componentPath.XMLAttributes["archive"];
 			}
-			
+
 			if( !isNull(componentPath.XMLAttributes["physical"]) ){
 				params["physical"] = componentPath.XMLAttributes["physical"];
 			}
-			
+
 			if( !isNull(componentPath.XMLAttributes["primary"]) ){
 				params["primary"] = ucFirst( componentPath.XMLAttributes["primary"] );
 				if( params["primary"] == 'Physical' ) {
@@ -589,12 +608,60 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 	}
 
+	function readSchedule( theSchedule ) {
+
+		for(var task in theSchedule.XMLChildren ){
+			var taskAttr = task.XMLAttributes;
+
+			var params = {
+				'task'		: taskAttr.name,
+				'url'		: taskAttr.url,
+				'status'	: 'Running'
+			};
+			if( params.task.find( ':' ) ) {
+				params.group = params.task.listFirst( ':' );
+				params.task = params.task.listRest( ':' );
+			}
+			if( !isNull( taskAttr.username ) ) { params[ 'username' ] = taskAttr.username; }
+			if( !isNull( taskAttr.password ) ) { params[ 'password' ] = taskAttr.password; }
+			if( !isNull( taskAttr.port ) ) { params[ 'httpPort' ] = taskAttr.port; }
+			if( !isNull( taskAttr.unique ) ) { params[ 'unique' ] = taskAttr.unique; }
+			if( !isNull( taskAttr.hidden ) ) { params[ 'hidden' ] = taskAttr.hidden; }
+			if( !isNull( taskAttr.autoDelete ) ) { params[ 'autoDelete' ] = taskAttr.autoDelete; }
+			if( !isNull( taskAttr.interval ) ) { params[ 'interval' ] = taskAttr.interval; }
+			if( !isNull( taskAttr.paused ) ) { params[ 'status' ] = ( taskAttr.paused ? 'Paused' : 'Running' ); }
+			if( !isNull( taskAttr.proxyHost ) ) { params[ 'proxyServer' ] = taskAttr.proxyHost; }
+			if( !isNull( taskAttr.proxyUser ) ) { params[ 'proxyUser' ] = taskAttr.proxyUser; }
+			if( !isNull( taskAttr.proxyPassword ) ) { params[ 'proxyPassword' ] = taskAttr.proxyPassword; }
+			if( !isNull( taskAttr.proxyPort ) ) { params[ 'httpProxyPort' ] = taskAttr.proxyPort; }
+			if( !isNull( taskAttr.timeout ) ) { params[ 'requestTimeOut' ] = taskAttr.timeout; }
+			if( !isNull( taskAttr.resolveUrl ) ) { params[ 'resolveurl' ] = taskAttr.resolveUrl; }
+			if( !isNull( taskAttr.publish ) ) { params[ 'saveOutputToFile' ] = taskAttr.publish; }
+			if( !isNull( taskAttr.file ) ) { params[ 'file' ] = taskAttr.file; }
+
+			if( !isNull( taskAttr.startDate ) && isDate( taskAttr.startDate ) ) {
+				params[ 'startDate' ] = dateFormat( taskAttr.startDate, 'mm/dd/yyyy' );
+			}
+			if( !isNull( taskAttr.startTime ) && isDate( taskAttr.startDate ) ) {
+				params[ 'startTime' ] = timeFormat( taskAttr.startTime, 'hh:mm:ss tt' );
+			}
+			if( !isNull( taskAttr.endDate ) && isDate( taskAttr.endDate ) ) {
+				params[ 'endDate' ] = dateFormat( taskAttr.endDate, 'mm/dd/yyyy' );
+			}
+			if( !isNull( taskAttr.endTime ) && isDate( taskAttr.endTime ) ) {
+				params[ 'endTime' ] = timeFormat( taskAttr.endTime, 'hh:mm:ss tt' );
+			}
+
+			addScheduledTask(argumentCollection=params);
+		}
+	}
+
 	/**
 	* I write out config
 	*
 	* @CFHomePath The server home directory
 	*/
-	function write( string CFHomePath ){
+	function write( string CFHomePath, pauseTasks=false ){
 		setCFHomePath( arguments.CFHomePath ?: getCFHomePath() );
 		var thisCFHomePath = getCFHomePath();
 
@@ -621,7 +688,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 
 
-		
+
 		var thisConfig = XMLParse( thisConfigRaw );
 
 		writeDatasources( thisConfig );
@@ -651,6 +718,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
 		fileWrite( configFilePath, toString( thisConfig ) );
+
+		if( getHasScheduledTasks() ){
+			writeSchedule( pauseTasks );
+		}
 
 		return this;
 	}
@@ -1379,7 +1450,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			loggerStruct.layout = loggerStruct.layout ?: 'classic';
 			// Default the path if there are no args, or Lucee will ignore the log.  This is also so an override setting like cfconfig_loggers_deploy_level=trace will create valid config.
 			loggerStruct.appenderArguments = loggerStruct.appenderArguments ?: { 'path' : '{lucee-config}/logs/#name#.log' };
-			
+
 			// Search to see if this logger already exists
 			var loggerXMLSearch = xmlSearch( thisConfig, "/cfLuceeConfiguration/logging/logger[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='#lcase( name )#']" );
 			// logger already exists
@@ -1469,10 +1540,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 
 		// Now we append the component paths!
-		if( !isNull( getComponentPaths() ) ) {		
+		if( !isNull( getComponentPaths() ) ) {
 			var newPaths = getComponentPaths();
 			var paths = theComponent.XMLChildren;
-	 
+
 			if(paths.len() gt 0){
 				loop from="#paths.len()#" to="1" index="i" step="-1" {
 					// Never overwrite this one
@@ -1490,15 +1561,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			for( var path in newPaths ){
 				var thisPath = newPaths[path];
 				// If there is no name key in the struct, use the key for the entire struct.  This allows "name" to be optional in the struct itself
-				thisPath.name = thisPath.name ?: path; 
+				thisPath.name = thisPath.name ?: path;
 				var mapping = {
 					// Put `/` back in front of virtual
 					'virtual' : '/' & thisPath.name
 				};
-				
+
 				if( !isNull( thisPath.archive ) ) { mapping[ 'archive' ] = thisPath.archive; }
 				if( !isNull( thisPath.physical ) ) { mapping[ 'physical' ] = thisPath.physical; }
-				
+
 				if( !isNull( thisPath.primary ) ) {
 					mapping[ 'primary' ] = lcase( thisPath.primary );
 					if( mapping[ 'primary' ] == 'resource' ) {
@@ -1507,7 +1578,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				} else {
 					mapping[ 'primary' ] = 'physical';
 				}
-				
+
 				if( !isNull( thisPath.inspectTemplate ) ) {
 					mapping[ 'inspect-template' ] = lcase( thisPath.inspectTemplate );
 					if( mapping[ 'inspect-template' ] == 'inherit' ) {
@@ -1516,10 +1587,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				} else {
 					mapping[ 'inspect-template' ] = '';
 				}
-				
+
 				var xmlMapping = xmlElemnew( theComponent, 'mapping' );
 					xmlMapping.XmlAttributes = mapping;
-	
+
 				theComponent.XMLChildren.append(xmlMapping);
 			}
 
@@ -1527,11 +1598,88 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		if( !componentSearch.len() ) {
 			thisConfig.XMLRoot.XMLChildren.append( theComponent );
-		}	
-
-	
+		}
 
 	}
+
+
+	private function writeSchedule( boolean pauseTasks=false ) {
+
+		if( isNull( getScheduledTasks() ) ) {
+			return;
+		}
+
+		var configFilePath = locateSchedulerConfigFile();
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = XMLParse( fileRead( configFilePath ) );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = XMLParse( fileRead( getSchedulerConfigFileTemplate() ) );
+		}
+
+		thisConfig.schedule.XMLChildren = [];
+
+		for( var taskName in getScheduledTasks() ?: {} ) {
+
+			var thisTask = getScheduledTasks()[ taskName ];
+			var thisName = thisTask.task;
+			if( !isNull( thisTask.group ) && len( thisTask.group ) ) {
+				thisName = thisTask.group & ':' & thisName;
+			}
+
+			var taskXMLNode = xmlElemnew(thisConfig,"task");
+
+			taskXMLNode.XMLAttributes[ 'name' ] = thisName;
+			taskXMLNode.XMLAttributes[ 'url' ] = thisTask.url;
+			taskXMLNode.XMLAttributes[ 'paused' ] = false;
+
+			if( !isNull( thisTask.username ) ) { taskXMLNode.XMLAttributes[ 'username' ] = thisTask.username; }
+			if( !isNull( thisTask.password ) ) { taskXMLNode.XMLAttributes[ 'password' ] = thisTask.password; }
+			if( !isNull( thisTask.httpPort ) ) { taskXMLNode.XMLAttributes[ 'port' ] = thisTask.httpPort; }
+			if( !isNull( thisTask.unique ) ) { taskXMLNode.XMLAttributes[ 'unique' ] = thisTask.unique; }
+			if( !isNull( thisTask.hidden ) ) { taskXMLNode.XMLAttributes[ 'hidden' ] = thisTask.hidden; }
+			if( !isNull( thisTask.autoDelete ) ) { taskXMLNode.XMLAttributes[ 'autoDelete' ] = thisTask.autoDelete; }
+			if( !isNull( thisTask.interval ) ) { taskXMLNode.XMLAttributes[ 'interval' ] = thisTask.interval; }
+			if( !isNull( thisTask.proxyServer ) ) { taskXMLNode.XMLAttributes[ 'proxyHost' ] = thisTask.proxyServer; }
+			if( !isNull( thisTask.proxyUser ) ) { taskXMLNode.XMLAttributes[ 'proxyUser' ] = thisTask.proxyUser; }
+			if( !isNull( thisTask.proxyPassword ) ) { taskXMLNode.XMLAttributes[ 'proxyPassword' ] = thisTask.proxyPassword; }
+			if( !isNull( thisTask.proxyPort ) ) { taskXMLNode.XMLAttributes[ 'httpProxyPort' ] = thisTask.proxyPort; }
+			if( !isNull( thisTask.requestTimeOut ) ) { taskXMLNode.XMLAttributes[ 'timeout' ] = thisTask.requestTimeOut; }
+			if( !isNull( thisTask.resolveUrl ) ) { taskXMLNode.XMLAttributes[ 'resolveurl' ] = thisTask.resolveUrl; }
+			if( !isNull( thisTask.saveOutputToFile ) ) { taskXMLNode.XMLAttributes[ 'publish' ] = thisTask.saveOutputToFile; }
+			if( !isNull( thisTask.file ) ) { taskXMLNode.XMLAttributes[ 'file' ] = thisTask.file; }
+
+			// I don't know why, but Lucee's config files store in ODBC date time format by default, so we'll do that here as well
+			if( !isNull( thisTask.startDate ) && isDate( thisTask.startDate ) ) {
+				taskXMLNode.XMLAttributes[ 'startDate' ] = createodbcdate( thisTask.startDate );
+			}
+			if( !isNull( thisTask.startTime ) && isDate( thisTask.startDate ) ) {
+				taskXMLNode.XMLAttributes[ 'startTime' ] = createodbctime( thisTask.startTime );
+			}
+			if( !isNull( thisTask.endDate ) && isDate( thisTask.endDate ) ) {
+				taskXMLNode.XMLAttributes[ 'endDate' ] = createodbcdate( thisTask.endDate );
+			}
+			if( !isNull( thisTask.endTime ) && isDate( thisTask.endTime ) ) {
+				taskXMLNode.XMLAttributes[ 'endTime' ] = createodbctime( thisTask.endTime );
+			}
+
+			// User can specify all tasks to be inserted in a paused state
+			if( pauseTasks ) {
+				taskXMLNode.XMLAttributes[ 'paused' ] = true;
+			} else if( !isNull( thisTask.status ) ) {
+				taskXMLNode.XMLAttributes[ 'paused' ] = ( thisTask.status == 'Paused' );
+			}
+
+			thisConfig.schedule.XMLChildren.append( taskXMLNode );
+
+			// Ensure the parent directories exist
+			directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
+			fileWrite( configFilePath, toString( thisConfig ) );
+		}
+
+	}
+
 
 	/**
 	* I find the actual Lucee 4.x context config file
@@ -1544,6 +1692,18 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( right( thisCFHomePath, 4 ) == right( thisConfigFileName, 4 ) ) {
 			return thisCFHomePath;
 		}
+
+		// This is where the file _should_ be.
+		return thisCFHomePath & getConfigRelativePathWithinServerHome() & thisConfigFileName;
+	}
+
+
+	/**
+	* I find the actual Lucee 4.x context config file
+	*/
+	function locateSchedulerConfigFile(){
+		var thisCFHomePath = getCFHomePath();
+		var thisConfigFileName = getSchedulerConfigFileName();
 
 		// This is where the file _should_ be.
 		return thisCFHomePath & getConfigRelativePathWithinServerHome() & thisConfigFileName;
@@ -1815,7 +1975,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 
 	}
-	
+
 	// Turn custom values into struct
 	private function translateURLCodedPairsToStruct( required string custom ) {
 		var thisStruct = [:];
@@ -1826,7 +1986,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 		return thisStruct;
 	}
-	
+
 	// Turn custom values into string
 	private function translateStructToURLCodedPairs( required struct custom ) {
 		var customAsString = '';
@@ -1847,7 +2007,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( isNull( entry.id ) || !len( entry.id ) ) {
 			entry[ 'id' ]= createUUID().replace( '-', '', 'all' ).lCase();
 		}
-		// Backfill missing iprange 
+		// Backfill missing iprange
 		if( isNull( entry.iprange ) || !len( entry.iprange ) ) {
 			entry[ 'iprange' ] = '*';
 		}

@@ -4,7 +4,7 @@
 * www.ortussolutions.com
 ********************************************************************************
 * @author Brad Wood
-* 
+*
 * I represent shared behavior for all Adobe providers.  The concrete providers can override my methods and proeprties as neccessary.
 * I extend the BaseConfig class, which represents the data itself.
 */
@@ -70,8 +70,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	property name='graphConfigPath' type='string';
 	property name='graphConfigTemplate' type='string';
-	
-	
+
+
 	property name='AdminRDSLoginRequiredBoolean' type='boolean' default="false" ;
 
 
@@ -101,7 +101,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setUpdateConfigPath( '/lib/neo_updates.xml' );
 		setDocumentConfigPath( '/lib/neo-document.xml' );
 		setGraphConfigPath( '/lib/neo-graphing.xml' );
-		
+
 		// CF 10+ stors as a string.  CF9 will override this.
 		setAdminRDSLoginRequiredBoolean( false );
 
@@ -166,12 +166,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		for( var thisMapping in thisConfig[ 4 ] ) {
 			// This will remove the spurious name of the custom tag path, but on adobe, they're unnecessary anyway.
 			// Adobe only supports the physical path, all the other options are Lucee-specific
-			// Add some of the Lucee-specific ones, just in case we want to port our config...			
+			// Add some of the Lucee-specific ones, just in case we want to port our config...
 			if( !ignoredCustomTagPaths.findNoCase( normalizeSlashes( thisConfig[ 4 ][ thisMapping ] ) ) ) {
-				addCustomTagPath( physical = thisConfig[ 4 ][ thisMapping ], primary = "physical", archive = "" );	
+				addCustomTagPath( physical = thisConfig[ 4 ][ thisMapping ], primary = "physical", archive = "" );
 			}
 		}
-		
+
 		if( !isNull( thisConfig[ 1 ] ) ) { setWhitespaceManagement( translateWhitespaceFromAdobe( thisConfig[ 1 ] ) ); }
 		if( !isNull( thisConfig[ 5 ].logging ) ) { setLogCORBACalls( thisConfig[ 5 ].logging ); }
 		setSessionManagement( thisConfig[ 7 ].session.enable );
@@ -210,10 +210,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setMaxReportRequests( thisConfig[ 17 ][ 'numSimultaneousReports' ] );
 		setMaxCFThreads( thisConfig[ 16 ][ 'cfthreadpool' ] );
 		setRequestQueueTimeout( thisConfig[ 10 ][ 'queueTimeout' ] );
-		
+
 		if( !isNull( thisConfig[ 10 ][ 'logSlowRequests' ] ) ) { setLogSlowRequestsEnabled( thisConfig[ 10 ][ 'logSlowRequests' ] ); }
 		if( !isNull( thisConfig[ 10 ][ 'slowRequestTimeLimit' ] ) ) { setLogSlowRequestsThreshold( thisConfig[ 10 ][ 'slowRequestTimeLimit' ] ); }
-		
+
 		setTemplateCacheSize( thisConfig[ 11 ].templateCacheSize );
 		if( thisConfig[ 11 ].trustedCacheEnabled ) {
 			setInspectTemplate( 'never' );
@@ -225,7 +225,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setSaveClassFiles(  thisConfig[ 11 ].saveClassFiles  );
 		setComponentCacheEnabled( thisConfig[ 11 ].componentCacheEnabled );
 		if( !isNull( thisConfig[ 11 ].enableInternalQueryCache ) ) { setQueryInternalCacheEnabled( thisConfig[ 11 ].enableInternalQueryCache ); }
-		
+
 		setMailDefaultEncoding( thisConfig[ 12 ].defaultMailCharset );
 
 		setCFFormScriptDirectory( thisConfig[ 14 ].CFFormScriptSrc );
@@ -326,9 +326,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( thisConfig[ 16 ][ 'sessionStoragePassword' ] ) ) {
 			// Just in case an empty string ever makes it in here, don't try and decrypt it
 			if( len( thisConfig[ 16 ][ 'sessionStoragePassword' ] ) ) {
-				setSessionStoragePassword( passwordManager.decryptMailServer( thisConfig[ 16 ][ 'sessionStoragePassword' ] ) );	
+				setSessionStoragePassword( passwordManager.decryptMailServer( thisConfig[ 16 ][ 'sessionStoragePassword' ] ) );
 			} else {
-				setSessionStoragePassword( thisConfig[ 16 ][ 'sessionStoragePassword' ] );	
+				setSessionStoragePassword( thisConfig[ 16 ][ 'sessionStoragePassword' ] );
 			}
 		}
 		if( !isNull( thisConfig[ 16 ][ 'sessionStorageHost' ] ) ) { setSessionStorageHost( thisConfig[ 16 ][ 'sessionStorageHost' ] ); }
@@ -337,7 +337,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		setThrottleThreshold( thisConfig[ 18 ][ 'throttle-threshold' ] );
 		setTotalThrottleMemory( thisConfig[ 18 ][ 'total-throttle-memory' ] );
-		
+
 	}
 
 	private function readDebug() {
@@ -395,7 +395,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isNull( thisTask.exclude ) ) { params[ 'exclude' ] = thisTask.exclude; }
 				// Combine path and file into a full path
 				if( !isNull( thisTask.file ) && !isNull( thisTask.path ) ) { params[ 'file' ] = thisTask.path & thisTask.file; }
-				if( !isNull( thisTask.group ) ) { params[ 'group' ] = thisTask.group; }
+				params[ 'group' ] = thisTask.group ?: 'DEFAULT';
 				if( !isNull( thisTask.http_port ) ) { params[ 'httpPort' ] = thisTask.http_port; }
 				if( !isNull( thisTask.http_proxy_port ) ) { params[ 'httpProxyPort' ] = thisTask.http_proxy_port; }
 				if( !isNull( thisTask.interval ) ) { params[ 'interval' ] = thisTask.interval; }
@@ -413,7 +413,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isNull( thisTask.retryCount ) ) { params[ 'retryCount' ] = thisTask.retryCount; }
 				if( !isNull( thisTask.start_date ) ) { params[ 'startDate' ] = thisTask.start_date; }
 				if( !isNull( thisTask.start_time ) ) { params[ 'startTime' ] = thisTask.start_time; }
-				
+
 				if( !isNull( thisTask.status ) ) {
 					params[ 'status' ] = thisTask.status;
 				// Fall back for CF9
@@ -671,7 +671,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				custom = listChangeDelims( ds.urlmap.args ?: '', '&', DSNUtil.customURLDelimiter( DSNUtil.translateDatasourceDriverToGeneric( ds.driver ) ) )
 			);
 		} // end loop over datasource
-				
+
 		if( !isNull( thisConfig[ 2 ].maxcachecount ) ) { setQueryCacheSize( thisConfig[ 2 ].maxcachecount ) }
 	}
 
@@ -713,26 +713,26 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( thisConfig[ 2 ].maxFileSize ) ) { setLogMaxFileSize( thisConfig[ 2 ].maxFileSize/1000 ); }
 		if( !isNull( thisConfig[ 2 ].maxFileBackup ) ) { setLogMaxArchives( thisConfig[ 2 ].maxFileBackup ); }
 		if( !isNull( thisConfig[ 2 ].enableOSLogging ) ) { setLogSysLogEnabled( thisConfig[ 2 ].enableOSLogging ); }
-	
+
 	}
 
 	private function readUpdate() {
 		var thisConfig = readXMLConfigFile( getCFHomePath().listAppend( getUpdateConfigPath(), '/' ) ).settings;
-		
+
 		if( !isNull( thisConfig.update.url.XMLText ) ) { setUpdateSiteURL( thisConfig.update.url.XMLText ); }
-		
+
 		if( !isNull( thisConfig.update.XMLAttributes.autocheck ) ) { setUpdateCheckOnLoginEnable( thisConfig.update.XMLAttributes.autocheck ); }
-		
+
 		if( !isNull( thisConfig.update.XMLAttributes.checkperiodically ) ) { setUpdateCheckOnScheduleEnable( thisConfig.update.XMLAttributes.checkperiodically ); }
 		if( !isNull( thisConfig.update.XMLAttributes.checkinterval ) ) { setUpdateCheckOnScheduleDays( thisConfig.update.XMLAttributes.checkinterval ); }
 		if( !isNull( thisConfig.update.notification.emaillist.XMLText ) ) { setUpdateCheckOnScheduleToAddress( thisConfig.update.notification.emaillist.XMLText ); }
 		if( !isNull( thisConfig.update.notification.fromemail.XMLText ) ) { setUpdateCheckOnScheduleFromAddress( thisConfig.update.notification.fromemail.XMLText ); }
-		
+
 		if( !isNull( thisConfig.proxy.hostname.XMLText ) ) { setUpdateProxyHost( thisConfig.proxy.hostname.XMLText ); }
 		if( !isNull( thisConfig.proxy.port.XMLText ) ) { setUpdateProxyPort( val( thisConfig.proxy.port.XMLText ) ); }
 		if( !isNull( thisConfig.proxy.username.XMLText ) ) { setUpdateProxyUsername( thisConfig.proxy.username.XMLText ); }
 		if( !isNull( thisConfig.proxy.password.XMLText ) ) { setUpdateProxyPassword( thisConfig.proxy.password.XMLText ); }
-		
+
 	}
 
 	private function readDocument() {
@@ -756,14 +756,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function readGraph() {
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getGraphConfigPath(), '/' ) );
-		
+
 		if( !isNull( thisConfig[1].CacheType ) ) { setChartCacheType( thisConfig[1].CacheType ); }
 		if( !isNull( thisConfig[1].TimeToLive ) ) { setChartCacheTTL( thisConfig[1].TimeToLive ); }
 		if( !isNull( thisConfig[1].CacheSize ) ) { setChartCacheSize( thisConfig[1].CacheSize ); }
 		if( !isNull( thisConfig[1].CACHEPATH ) ) { setChartCacheDiskLocation( thisConfig[1].CACHEPATH ); }
-		
+
 	}
-	
+
 	/**
 	* I write out config from a base JSON format
 	*
@@ -804,7 +804,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeUpdate();
 		writeDocument();
 		writeGraph();
-		
+
 		return this;
 	}
 
@@ -820,7 +820,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var thisConfig = readWDDXConfigFile( getRuntimeConfigTemplate() );
 		}
 
-		// Only save custom tag paths if defined.  
+		// Only save custom tag paths if defined.
 		// i.e., an empty array means delete everything, not having a value at all means don't touch it.
 		if( !isNull( getCustomTagPaths() ) ) {
 			// Special Adobe Custom Tag path we don't want to remove
@@ -839,7 +839,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					thisConfig[ 4 ][ "/WEB-INF/customtags" & ctr ] = customTagPath[ 'physical' ];
 					ctr = ctr + 10;
 				}
-			}			
+			}
 		}
 
 		if( !isNull( getWhitespaceManagement() ) ) { thisConfig[ 1 ] = ( translateWhitespaceToAdobe( getWhitespaceManagement() ) ? true : false ); }
@@ -860,14 +860,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getRequestQueueTimeoutPage() ) ) { thisConfig[ 8 ][ 'queue_timeout' ] = getRequestQueueTimeoutPage(); }
 
 		// Only save CF Mapingsif defined.
-		if( !isNull( getCFmappings() ) ) {	
+		if( !isNull( getCFmappings() ) ) {
 			var ignoredMappings = [ '/CFIDE', '/gateway' ];
 			for( var thisMapping in thisConfig[ 9 ] ) {
 				if( !ignoredMappings.findNoCase( thisMapping ) ) {
 					structDelete( thisConfig[ 9 ], thisMapping );
 				}
 			}
-	
+
 			for( var virtual in getCFmappings() ?: {} ) {
 				if( !isNull( getCFmappings()[ virtual ][ 'physical' ] ) && len( getCFmappings()[ virtual ][ 'physical' ] ) ) {
 					var physical = getCFmappings()[ virtual ][ 'physical' ];
@@ -896,14 +896,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getMaxCFThreads() ) ) { thisConfig[ 16 ][ 'cfthreadpool' ] = getMaxCFThreads()+0; }
 		if( !isNull( getRequestQueueTimeout() ) ) { thisConfig[ 10 ][ 'queueTimeout' ] = getRequestQueueTimeout()+0; }
 		if( !isNull( getLogSlowRequestsEnabled() ) ) { thisConfig[ 10 ][ 'logSlowRequests' ] = !!getLogSlowRequestsEnabled(); }
-		if( !isNull( getLogSlowRequestsThreshold() ) ) { thisConfig[ 10 ][ 'slowRequestTimeLimit' ] = getLogSlowRequestsThreshold()+0; }		
-		
+		if( !isNull( getLogSlowRequestsThreshold() ) ) { thisConfig[ 10 ][ 'slowRequestTimeLimit' ] = getLogSlowRequestsThreshold()+0; }
+
 
 		if( !isNull( getTemplateCacheSize() ) ) { thisConfig[ 11 ].templateCacheSize = getTemplateCacheSize()+0; }
 		if( !isNull( getSaveClassFiles() ) ) { thisConfig[ 11 ].saveClassFiles = ( getSaveClassFiles() ? true : false ); }
 		if( !isNull( getComponentCacheEnabled() ) ) { thisConfig[ 11 ].componentCacheEnabled = ( getComponentCacheEnabled() ? true : false ); }
 		if( !isNull( getQueryInternalCacheEnabled() ) ) { thisConfig[ 11 ].enableInternalQueryCache = ( getQueryInternalCacheEnabled() ? true : false ); }
-		
+
 		if( !isNull( getInspectTemplate() ) ) {
 
 			switch( getInspectTemplate() ) {
@@ -1087,7 +1087,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		for( var taskName in getScheduledTasks() ?: {} ) {
 			var thisTask = getScheduledTasks()[ taskName ];
 			var thisName = thisTask.task;
-			var thisGroup = thisTask.group ?: 'DEFAULT';
+
+			var thisGroup = 'default';
+			if( !isNull( thisTask.group ) && len( thisTask.group ) ) {
+				var thisGroup = thisTask.group;
+			}
 
 			// This will ensure every task has all the default data
 			var taskData = getDefaultScheduledTaskData();
@@ -1100,7 +1104,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			taskData[ 'exclude' ] = ( thisTask.exclude ?: taskData.exclude ) & '';
 			taskData[ 'path' ] = ( getDirectoryFromPath( thisTask.file ?: taskData.file ) ) & '';
 			taskData[ 'file' ] = ( getFileFromPath( thisTask.file ?: taskData.file ) ) & '';
-			taskData[ 'group' ] = ( thisTask.group ?: taskData.group ) & '';
+			taskData[ 'group' ] = thisGroup;
 			taskData[ 'http_port' ] = ( thisTask.httpPort ?: taskData.http_port ) & '';
 			taskData[ 'http_proxy_port' ] = ( thisTask.httpProxyPort ?: taskData.http_proxy_port ) & '';
 			taskData[ 'interval' ] = ( thisTask.interval ?: taskData.interval ) & '';
@@ -1309,7 +1313,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 
 		if( !isNull( getClientStorageLocations() ) ) {
- 
+
 			// Clear out all storages locations except for for these special ones that should always be there
 			var ignoredLocations = [ 'Registry', 'Cookie' ];
 			for( var thisLocation in thisConfig[ 1 ] ) {
@@ -1317,7 +1321,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					structDelete( thisConfig[ 1 ], thisLocation );
 				}
 			}
-	
+
 			for( var storageLocation in getClientStorageLocations() ?: {} ) {
 				var thisLocation = getClientStorageLocations()[ storageLocation ];
 				var thisName = thisLocation[ 'name' ];
@@ -1330,13 +1334,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					'timeout' : ( thisLocation[ 'purgeTimeout' ] ?: 90 )+0,
 					'type' : thisLocation[ 'type' ] ?: ( listFindNoCase( 'Cookie,Registry', thisName ) ? thisName : 'JDBC' )
 				};
-	
+
 				// Add in DSN if it exists
 				if( !isNull( thisLocation[ 'DSN' ] ) ) {
 					thisConfig[ 1 ][ storageLocation ][ 'DSN' ] = thisLocation[ 'DSN' ];
 				}
-	
-			}			
+
+			}
 		}
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
@@ -1364,17 +1368,17 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSandboxEnabled() ) ) { thisConfig[ 'sbs.security.enabled' ] = !!getSandboxEnabled(); }
 		if( !isNull( getAdminAllowedIPList() ) ) { thisConfig[ 'allowedAdminIPList' ] = getAdminAllowedIPList(); }
 		if( !isNull( getServicesAllowedIPList() ) ) { thisConfig[ 'allowedIPList' ] = getServicesAllowedIPList(); }
-		
+
 		// CF9 is boolean, CF10+ is string
 		if( getAdminRDSLoginRequiredBoolean() ) {
 			// Force to boolean
-			if( !isNull( getAdminRDSLoginRequired() ) ) { thisConfig[ 'rds.security.enabled' ] = !!getAdminRDSLoginRequired(); }	
+			if( !isNull( getAdminRDSLoginRequired() ) ) { thisConfig[ 'rds.security.enabled' ] = !!getAdminRDSLoginRequired(); }
 		} else {
 			// Force to string
-			if( !isNull( getAdminRDSLoginRequired() ) ) { thisConfig[ 'rds.security.enabled' ] = getAdminRDSLoginRequired()&''; }			
+			if( !isNull( getAdminRDSLoginRequired() ) ) { thisConfig[ 'rds.security.enabled' ] = getAdminRDSLoginRequired()&''; }
 		}
-		
-		
+
+
 		if( !isNull( getAdminRDSUserIDRequired() ) ) { thisConfig[ 'rds.security.usesinglerdspassword' ] = !!getAdminRDSUserIDRequired(); }
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
@@ -1451,36 +1455,36 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		} else {
 			var thisConfig = readWDDXConfigFile( getDatasourceConfigTemplate() );
 		}
-		
+
 		if( !isNull( getQueryCacheSize() ) ) { thisConfig[ 2 ].maxcachecount = getQueryCacheSize()+0; }
-		
+
 		if( !isNull( getDatasources() ) ) {
-	
+
 			thisConfig[ 1 ] = {};
-	
+
 			var datasources = getDatasources();
-	
+
 			for( var datasource in datasources ) {
 				// For brevity
 				var incomingDS = datasources[ datasource ];
 				thisConfig[ 1 ][ datasource ] = thisConfig[ 1 ][ datasource ] ?: DSNUtil.getDefaultDatasourceStruct( DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ?: 'Other'  ) );
 				var savingDS = thisConfig[ 1 ][ datasource ];
-	
+
 				savingDS.name = datasource;
-	
+
 				// Only use the incoming JDBC URL if it exists and this is a datasource of type other or we don't have a default URL
 				// for this DB type.  This is to prevent a Lucee JDBC URL from getting imported into Adobe.
 				// Instead, the URL will be pulled from  getDefaultDatasourceStruct() above.
 				if( incomingDS.keyExists( 'dsn' ) && ( ( incomingDS.dbdriver ?: 'Other' ) == 'Other' || !savingDS.url.len() ) ) {
 						savingDS.url = incomingDS.dsn;
 				}
-	
+
 				// Invert logic
 				if( !isNull( incomingDS.blob ) ) { savingDS.disable_blob = !incomingDS.blob; }
 				if( !isNull( incomingDS.dbdriver ) ) { savingDS.class = DSNUtil.translateDatasourceClassToAdobe( DSNUtil.translateDatasourceDriverToAdobe( incomingDS.dbdriver ), incomingDS.class ?: '' ); }
 				// Invert logic
 				if( !isNull( incomingDS.clob ) ) { savingDS.disable_clob = !incomingDS.clob; }
-	
+
 				if( !isNull( incomingDS.connectionLimit ) ) {
 					// If the field is "-1" (unlimited) then remove it entirely from the config
 					if( incomingDS.connectionLimit == -1 ) {
@@ -1489,7 +1493,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 						savingDS.urlmap.maxConnections = incomingDS.connectionLimit;
 					}
 				}
-	
+
 				// Convert from minutes to seconds
 				if( !isNull( incomingDS.connectionTimeout ) ) { savingDS.timeout = incomingDS.connectionTimeout * 60; }
 				if( !isNull( incomingDS.database ) ) {
@@ -1497,11 +1501,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					savingDS.urlmap.connectionprops.database = incomingDS.database;
 					savingDS.url = savingDS.url.replaceNoCase( '{database}', incomingDS.database );
 				} else {
-					// Database is not required.  
+					// Database is not required.
 					// Need to turn jdbc:mysql://127.0.0.1/{database} into jdbc:mysql://127.0.0.1/
 					// And jdbc:macromedia:sqlserver://{host}:{port};databaseName={database};SelectMethod=direct; into jdbc:macromedia:sqlserver://{host}:{port};SelectMethod=direct;
 					savingDS.url = savingDS.url.replaceNoCase( 'databaseName={database};', '' );
-					savingDS.url = savingDS.url.replaceNoCase( '{database}', '' );					
+					savingDS.url = savingDS.url.replaceNoCase( '{database}', '' );
 				}
 				if( !isNull( incomingDS.sendStringParametersAsUnicode ) ) {
 					savingDS.urlmap.sendStringParametersAsUnicode = !!incomingDS.sendStringParametersAsUnicode;
@@ -1518,7 +1522,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					savingDS.url = savingDS.url.replaceNoCase( '{host}', incomingDS.host );
 				}
 				if( !isNull( incomingDS.password ) ) { savingDS.password = passwordManager.encryptDataSource( incomingDS.password ); }
-	
+
 				// Named SQL Server instances have no port, so remove the place holder
 				if( isNull( incomingDS.port ) || trim( incomingDS.port ) == '' ) {
 					savingDS.urlmap.port = '';
@@ -1529,10 +1533,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					savingDS.urlmap.connectionprops.port = incomingDS.port;
 					savingDS.url = savingDS.url.replaceNoCase( '{port}', incomingDS.port );
 				}
-	
+
 				if( !isNull( incomingDS.username ) ) { savingDS.username = incomingDS.username; }
 				if( !isNull( incomingDS.validate ) ) { savingDS.validateConnection = !!incomingDS.validate; }
-				
+
 				// Check for Oracle Servicename
 				if( !isNull( incomingDS.serviceName ) && len( incomingDS.serviceName ) ) {
 					savingDS.urlmap.serviceName = incomingDS.serviceName;
@@ -1570,7 +1574,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				savingDS.drop = !!(incomingDS.allowDrop ?: savingDS.drop);
 				savingDS.alter = !!(incomingDS.allowAlter ?: savingDS.alter);
 				savingDS.storedproc = !!(incomingDS.allowStoredProcs ?: savingDS.storedproc);
-	
+
 				if( !isNull( incomingDS.maintainConnections ) ) { savingDS.pooling = !!incomingDS.maintainConnections; }
 				if( !isNull( incomingDS.maxPooledStatements ) ) {
 					savingDS.urlmap.maxPooledStatements = incomingDS.maxPooledStatements+0;
@@ -1602,11 +1606,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isNull( incomingDS.clientApplicationNamePrefix ) ) { savingDS.clientinfo.ApplicationNamePrefix = incomingDS.clientApplicationNamePrefix; }
 				if( !isNull( incomingDS.description ) ) { savingDS.description = incomingDS.description; }
 				if( !isNull( incomingDS.custom ) ) {
-					// Append in custom URL like foo=bar&baz=bum as struct keys into connectionprops 
+					// Append in custom URL like foo=bar&baz=bum as struct keys into connectionprops
 					var customAsStruct = DSNUtil.parseCustom( incomingDS.dbdriver ?: 'Other', incomingDS.custom );
 					savingDS.urlmap.connectionprops.append( customAsStruct, false );
 					if( len( incomingDS.custom ) ) {
-						// TODO: possibly check for duplicate items specified both in a dedicated arg as well as in the custom URL.  
+						// TODO: possibly check for duplicate items specified both in a dedicated arg as well as in the custom URL.
 						// Not sure which one to honor though
 						var delim = DSNUtil.customURLDelimiter( incomingDS.dbdriver ?: 'Other' );
 						var DBSpecificCustomURL = DSNUtil.assembleCustom( incomingDS.dbdriver ?: 'Other', customAsStruct )
@@ -1619,14 +1623,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 						if( savingDS.url.endsWith( '?' ) ) {
 							savingDS.url = savingDS.url & DBSpecificCustomURL;
 						} else {
-							savingDS.url = savingDS.url & delim & DBSpecificCustomURL;	
+							savingDS.url = savingDS.url & delim & DBSpecificCustomURL;
 						}
 						savingDS.urlmap.args = DBSpecificCustomURL;
 					}
 				}
-	
+
 			} // end loop over datasources
-			
+
 		} // end if datasources is null
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
@@ -1710,7 +1714,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// Setting is in KB, but storage is in B. Factor of 1000, not 1024.  Thanks, Adobe.
 		if( !isNull( getLogMaxFileSize() ) ) { thisConfig[ 2 ].maxFileSize = getLogMaxFileSize()*1000; }
 		if( !isNull( getLogMaxArchives() ) ) { thisConfig[ 2 ].maxFileBackup = getLogMaxArchives(); }
-		if( !isNull( getLogSysLogEnabled() ) ) { thisConfig[ 2 ].enableOSLogging = !!getLogSysLogEnabled(); }		
+		if( !isNull( getLogSysLogEnabled() ) ) { thisConfig[ 2 ].enableOSLogging = !!getLogSysLogEnabled(); }
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
 
@@ -1726,58 +1730,58 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		} else {
 			var thisConfig = readXMLConfigFile( getUpdateConfigTemplate() );
 		}
-				
+
 		if( isNull( thisConfig.settings.update ) ) {
 			var XMLNode = xmlElemnew(thisConfig,"update");
 			XMLNode.XMLAttributes['sendupdate'] = true;
 			XMLNode.XMLAttributes['checkperiodically'] = false;
 			XMLNode.XMLAttributes['checkinterval'] = 10;
 			XMLNode.XMLAttributes['autocheck'] = false;
-			thisConfig.settings.XMLChildren.append( XMLNode );	
+			thisConfig.settings.XMLChildren.append( XMLNode );
 		}
 		if( isNull( thisConfig.settings.update.url ) ) {
-			var XMLNode = xmlElemnew(thisConfig,"url");		
-			thisConfig.settings.update.XMLChildren.append( XMLNode );	
+			var XMLNode = xmlElemnew(thisConfig,"url");
+			thisConfig.settings.update.XMLChildren.append( XMLNode );
 		}
 		if( isNull( thisConfig.settings.update.notification ) ) {
-			var XMLNode = xmlElemnew(thisConfig,"notification");		
-			thisConfig.settings.update.XMLChildren.append( XMLNode );	
+			var XMLNode = xmlElemnew(thisConfig,"notification");
+			thisConfig.settings.update.XMLChildren.append( XMLNode );
 		}
 		if( isNull( thisConfig.settings.update.notification.emaillist ) ) {
-			var XMLNode = xmlElemnew(thisConfig,"emaillist");		
-			thisConfig.settings.update.notification.XMLChildren.append( XMLNode );	
+			var XMLNode = xmlElemnew(thisConfig,"emaillist");
+			thisConfig.settings.update.notification.XMLChildren.append( XMLNode );
 		}
 		if( isNull( thisConfig.settings.update.notification.fromemail ) ) {
-			var XMLNode = xmlElemnew(thisConfig,"fromemail");		
-			thisConfig.settings.update.notification.XMLChildren.append( XMLNode );	
+			var XMLNode = xmlElemnew(thisConfig,"fromemail");
+			thisConfig.settings.update.notification.XMLChildren.append( XMLNode );
 		}
 		if( isNull( thisConfig.settings.proxy ) ) {
-			var XMLNode = xmlElemnew(thisConfig,"proxy");		
-			thisConfig.settings.XMLChildren.append( XMLNode );	
+			var XMLNode = xmlElemnew(thisConfig,"proxy");
+			thisConfig.settings.XMLChildren.append( XMLNode );
 		}
 		if( isNull( thisConfig.settings.proxy.hostname ) ) {
-			var XMLNode = xmlElemnew(thisConfig,"hostname");		
-			thisConfig.settings.proxy.XMLChildren.append( XMLNode );	
+			var XMLNode = xmlElemnew(thisConfig,"hostname");
+			thisConfig.settings.proxy.XMLChildren.append( XMLNode );
 		}
 		if( isNull( thisConfig.settings.proxy.port ) ) {
 			var XMLNode = xmlElemnew(thisConfig,"port");
 			XMLNode.XMLText=0;
-			thisConfig.settings.proxy.XMLChildren.append( XMLNode );	
+			thisConfig.settings.proxy.XMLChildren.append( XMLNode );
 		}
 		if( isNull( thisConfig.settings.proxy.username ) ) {
-			var XMLNode = xmlElemnew(thisConfig,"username");		
-			thisConfig.settings.proxy.XMLChildren.append( XMLNode );	
+			var XMLNode = xmlElemnew(thisConfig,"username");
+			thisConfig.settings.proxy.XMLChildren.append( XMLNode );
 		}
 		if( isNull( thisConfig.settings.proxy.password ) ) {
-			var XMLNode = xmlElemnew(thisConfig,"password");		
-			thisConfig.settings.proxy.XMLChildren.append( XMLNode );	
+			var XMLNode = xmlElemnew(thisConfig,"password");
+			thisConfig.settings.proxy.XMLChildren.append( XMLNode );
 		}
-		
-		// Ignore Lucee URLs if transerring from an Lucee server to a Adobe server		
+
+		// Ignore Lucee URLs if transerring from an Lucee server to a Adobe server
 		if( !isNull( getUpdateSiteURL() ) && !(getUpdateSiteURL() contains 'lucee' ) ) {
 			thisConfig.settings.update.url.XMLText = getUpdateSiteURL();
 		}
-		
+
 		if( !isNull( getUpdateCheckOnLoginEnable() ) ) { thisConfig.settings.update.XMLAttributes.autocheck = !!getUpdateCheckOnLoginEnable(); }
 		if( !isNull( getUpdateCheckOnScheduleEnable() ) ) { thisConfig.settings.update.XMLAttributes.checkperiodically = !!getUpdateCheckOnScheduleEnable(); }
 		if( !isNull( getUpdateCheckOnScheduleDays() ) ) { thisConfig.settings.update.XMLAttributes.checkinterval = getUpdateCheckOnScheduleDays()+0; }
@@ -1787,9 +1791,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getUpdateProxyPort() ) ) { thisConfig.settings.proxy.port.XMLText = val(  getUpdateProxyPort() ); }
 		if( !isNull( getUpdateProxyUsername() ) ) { thisConfig.settings.proxy.username.XMLText = getUpdateProxyUsername(); }
 		if( !isNull( getUpdateProxyPassword() ) ) { thisConfig.settings.proxy.password.XMLText = getUpdateProxyPassword(); }
-		
+
 		writeXMLConfigFile( thisConfig, configFilePath );
-		
+
 	}
 
 	private function writeDocument() {
@@ -1802,20 +1806,20 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		} else {
 			var thisConfig = readWDDXConfigFile( getDocumentConfigTemplate() );
 		}
-		
+
 		if( !isNull( getPDFServiceManagers() ) ) {
-	
+
 			thisConfig[ 4 ] = {};
-	
+
 			var PDFServices = getPDFServiceManagers();
-	
+
 			for( var PDFServiceName in PDFServices ) {
 				var incomingPDFService = PDFServices[ PDFServiceName ];
 				thisConfig[ 4 ][ PDFServiceName ] = thisConfig[ 4 ][ PDFServiceName ] ?: {};
 				var savingPDFService = thisConfig[ 4 ][ PDFServiceName ];
-	
+
 				savingPDFService[ 'name' ] = PDFServiceName;
-	
+
 				if( !isNull( incomingPDFService.hostname ) ) { savingPDFService[ 'hostname' ] = incomingPDFService.hostname; }
 				if( !isNull( incomingPDFService.port ) ) { savingPDFService[ 'port' ] = incomingPDFService.port+0; }
 				if( !isNull( incomingPDFService.isHTTPS ) ) { savingPDFService[ 'ishttps' ] = !!incomingPDFService.isHTTPS; }
@@ -1824,9 +1828,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				// Default this to true for backwards compat
 				incomingPDFService.isEnabled = incomingPDFService.isEnabled ?: true;
 				savingPDFService[ 'isenabled' ] = !!incomingPDFService.isEnabled;
-				
+
 			} // end loop over datasources
-			
+
 		} // end if datasources is null
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
@@ -1842,7 +1846,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		} else {
 			var thisConfig = readWDDXConfigFile( getGraphConfigTemplate() );
 		}
-		
+
 		if( !isNull( getChartCacheType() ) ) { thisConfig[ 1 ].CacheType = getChartCacheType()+0; }
 		if( !isNull( getChartCacheTTL() ) ) { thisConfig[ 1 ].TimeToLive = getChartCacheTTL()+0; }
 		if( !isNull( getChartCacheSize() ) ) { thisConfig[ 1 ].CacheSize = getChartCacheSize()+0; }
@@ -1878,7 +1882,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			default :
 				return arguments.templateName;
 		}
-	
+
 	}
 
 	private function translateAdobeToSharedErrorTemplate( required string templateName ) {
@@ -1893,7 +1897,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			default :
 				return arguments.templateName;
 		}
-	
+
 	}
 
 	private function getDefaultScheduledTaskData() {
@@ -2031,9 +2035,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		writeXMLConfigFile( thisConfigRaw, configFilePath );
 	}
-	
+
 	private function translateWhitespaceToAdobe( required string whitespaceManagement ) {
-		
+
 		switch( whitespaceManagement ) {
 			case 'off' :
 			case 'regular' :
@@ -2049,9 +2053,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 
 	}
-	
+
 	private function translateWhitespaceFromAdobe( required string whitespaceManagement ) {
-		
+
 		switch( whitespaceManagement ) {
 			case false :
 				return 'off';
@@ -2060,7 +2064,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			default :
 				return 'off';
 		}
-	
+
 	}
 
 }
