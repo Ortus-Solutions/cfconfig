@@ -634,7 +634,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( taskAttr.proxyUser ) ) { params[ 'proxyUser' ] = taskAttr.proxyUser; }
 			if( !isNull( taskAttr.proxyPassword ) ) { params[ 'proxyPassword' ] = taskAttr.proxyPassword; }
 			if( !isNull( taskAttr.proxyPort ) ) { params[ 'httpProxyPort' ] = taskAttr.proxyPort; }
-			if( !isNull( taskAttr.timeout ) ) { params[ 'requestTimeOut' ] = taskAttr.timeout; }
+			if( !isNull( taskAttr.timeout ) ) { params[ 'requestTimeOut' ] = taskAttr.timeout/1000; }
 			if( !isNull( taskAttr.resolveUrl ) ) { params[ 'resolveurl' ] = taskAttr.resolveUrl; }
 			if( !isNull( taskAttr.publish ) ) { params[ 'saveOutputToFile' ] = taskAttr.publish; }
 			if( !isNull( taskAttr.file ) ) { params[ 'file' ] = taskAttr.file; }
@@ -1645,7 +1645,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( thisTask.proxyUser ) ) { taskXMLNode.XMLAttributes[ 'proxyUser' ] = thisTask.proxyUser; }
 			if( !isNull( thisTask.proxyPassword ) ) { taskXMLNode.XMLAttributes[ 'proxyPassword' ] = thisTask.proxyPassword; }
 			if( !isNull( thisTask.proxyPort ) ) { taskXMLNode.XMLAttributes[ 'httpProxyPort' ] = thisTask.proxyPort; }
-			if( !isNull( thisTask.requestTimeOut ) ) { taskXMLNode.XMLAttributes[ 'timeout' ] = thisTask.requestTimeOut; }
+			if( !isNull( thisTask.requestTimeOut ) ) { taskXMLNode.XMLAttributes[ 'timeout' ] = thisTask.requestTimeOut*1000; }
 			if( !isNull( thisTask.resolveUrl ) ) { taskXMLNode.XMLAttributes[ 'resolveurl' ] = thisTask.resolveUrl; }
 			if( !isNull( thisTask.saveOutputToFile ) ) { taskXMLNode.XMLAttributes[ 'publish' ] = thisTask.saveOutputToFile; }
 			if( !isNull( thisTask.file ) ) { taskXMLNode.XMLAttributes[ 'file' ] = thisTask.file; }

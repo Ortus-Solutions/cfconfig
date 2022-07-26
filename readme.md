@@ -1,15 +1,15 @@
 ```
-   ____ _____ ____             __ _       
-  / ___|  ___/ ___|___  _ __  / _(_) __ _ 
+   ____ _____ ____             __ _
+  / ___|  ___/ ___|___  _ __  / _(_) __ _
  | |   | |_ | |   / _ \| '_ \| |_| |/ _` |
  | |___|  _|| |__| (_) | | | |  _| | (_| |
   \____|_|   \____\___/|_| |_|_| |_|\__, |
-                                    |___/ 
+                                    |___/
 ```
 
 <img src="https://www.ortussolutions.com/__media/logos/CfConfigLogo300.png" class="img-thumbnail"/>
 
->Copyright 2017 by Ortus Solutions, Corp - https://www.ortussolutions.com
+> Copyright 2017 by Ortus Solutions, Corp - https://www.ortussolutions.com
 
 This is a library for reading, writing, and storing configuration for all CF engines. This is an underlying service layer meant to have other tools built on top of it.
 
@@ -24,7 +24,7 @@ https://cfconfig.ortusbooks.com
 1. Generic JSON storage of any CF engine's settings
 2. Engine-specific mappings for all major engines to convert their config to and from the generic JSON format
 
-This does not use RDS and doesn't need the server to be running.  It just needs access to the installation folder for a server to locate its config files. 
+This does not use RDS and doesn't need the server to be running.  It just needs access to the installation folder for a server to locate its config files.
 
 ## Uses
 
@@ -47,7 +47,7 @@ The current list of supported engines is:
 * **Lucee 4, 5, 6**
 * **Railo 4**
 
-If you find a setting or feature which is not supported, please send a pull request or add a ticket so we can track it. 
+If you find a setting or feature which is not supported, please send a pull request or add a ticket so we can track it.
 
 ## Component Overview
 
@@ -55,7 +55,7 @@ Here are the main components in the project
 
 ### BaseConfig.cfc
 
-This class represents the configuration of a CF engine.  It is agnostic and doesn't contain any particular behavior for a specific engine.  
+This class represents the configuration of a CF engine.  It is agnostic and doesn't contain any particular behavior for a specific engine.
 Not all the data it stores applies to every engine though.  The `BaseConfig.cfc` is not capable of reading or writing the config, it merely holds the data in a generic manner.  If you want to read or write to/from a specific engine's format, you'll need to create one of the engine-specific subclasses, all of which extend `BaseConfig.cfc`.
 
 ### Engine-specific mappers
@@ -109,7 +109,7 @@ JSONConfig = new path.to.JSONConfig()
 lucee4ServerConfig = new path.to.Lucee4ServerConfig()
 	.setCFHomePath( expandPath( '/path/to/lucee-server' ) )
 	.read();
-	
+
 writeDump( lucee4ServerConfig.getMemento() );
 ```
 
@@ -119,27 +119,27 @@ JSONConfig = new path.to.JSONConfig()
 	.read( expandPath( '.CFConfig.json' ) );
 
 new path.to.Lucee4WebConfig()
-	.setMemento( JSONConfig.getMemento() )		
+	.setMemento( JSONConfig.getMemento() )
 	.write( expandPath( 'WEB-INF/lucee/' ) );
 ```
 
 ## Notes
 
-The `JSONConfig` will read/write to a JSON file called `.CFConfig.json` by default in the home directory you specify.  You can alternatively specify a full path to a JSON file to change the name. 
+The `JSONConfig` will read/write to a JSON file called `.CFConfig.json` by default in the home directory you specify.  You can alternatively specify a full path to a JSON file to change the name.
 
-The Lucee 4 and Lucee 5 *web* components expect the `CFHomePath` to be the folder containing the `lucee-web.xml.cfm` file.  
+The Lucee 4 and Lucee 5 *web* components expect the `CFHomePath` to be the folder containing the `lucee-web.xml.cfm` file.
 An example would be:
 ```
 <webroot>/WEB-INF/lucee/
 ```
 
-The Lucee 4 and Lucee 5 *server* components expect the `CFHomePath` to be the `lucee-server` folder containing the `/context/lucee-server.xml` file.  
+The Lucee 4 and Lucee 5 *server* components expect the `CFHomePath` to be the `lucee-server` folder containing the `/context/lucee-server.xml` file.
 An example would be:
 ```
 /opt/lucee/lib/lucee-server/
 ```
 
-The Adobe components expect the `CFHomePath` to be the `cfusion` folder that contains the `lib/neo-runtime.xml` file.  
+The Adobe components expect the `CFHomePath` to be the `cfusion` folder that contains the `lib/neo-runtime.xml` file.
 An example would be:
 ```
 C:/ColdFusion11/cfusion/
