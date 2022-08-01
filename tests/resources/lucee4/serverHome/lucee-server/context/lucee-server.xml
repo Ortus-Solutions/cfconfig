@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- 
-Path placeholders: 
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+Path placeholders:
 	{lucee-server}: path to the lucee server directory typical where the lucee.jar is located
 	{lucee-config}: same as {lucee-server} in server context and same as {lucee-web} in web context}
 	{temp-directory}: path to the temp directory of the current user of the system
@@ -12,13 +12,13 @@ Path placeholders:
 
 	<!--
 	system:
-	
+
 		out (output-stream)
 			- default (write out to default output stream)
 			- null (write no output)
 			- class:<class> (class that implements java.io.PrintWriter)
 			- file:<file> (file to write in)
-	
+
 		err (err-stream)
 			- default (write out to default output stream)
 			- null (write no output)
@@ -35,7 +35,7 @@ Path placeholders:
 <!--	 - http://sourceforge.net 																		-->
 <!--	or ask your database distributor 																-->
 	<data-sources psq="false">
-	<data-source allow="511" blob="false" class="org.postgresql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" custom="" database="Database" dbdriver="PostgreSql" dsn="jdbc:postgresql://{host}:{port}/{database}" host="Server" name="postgres" password="encrypted:a607bd3aff65633c31a9e54ccc6bd21a3cf734a4910814ca5393255b0b45e77c" port="5432" username="User name" validate="false"/><data-source allow="511" blob="false" class="com.microsoft.jdbc.sqlserver.SQLServerDriver" clob="false" connectionLimit="-1" connectionTimeout="20" custom="DATABASENAME=test&amp;sendStringParametersAsUnicode=true&amp;SelectMethod=direct" database="test" dbdriver="MSSQL" dsn="jdbc:sqlserver://{host}:{port}" host="localhost" name="sqlserver" password="encrypted:ffe88e7c962340188486678caa12e88ff3bbb4a771f5a1bc17f2a5997144527f" port="1433" username="user" validate="false"/><data-source allow="511" blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" custom="" database="" dbdriver="Other" dsn="jdbc:mysql://localhost:3306/test?tinyInt1isBit=false&amp;" host="" name="other" password="encrypted:21beeb19e79a6cd24cf943b65367c5485b2c32bfc1fa98ac081f331ef2f8d28f" port="" username="User name" validate="false"/><data-source allow="511" blob="false" class="oracle.jdbc.driver.OracleDriver" clob="false" connectionLimit="-1" connectionTimeout="20" custom="drivertype=thin" database="" dbdriver="Oracle" dsn="jdbc:oracle:{drivertype}:@{host}:{port}:{database}" host="Server" name="oracle" password="encrypted:dd872a6d2e683833083801ac981db072d3c867ab35061bd414289446329248f5" port="1521" username="User name" validate="false"/><data-source allow="511" blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" custom="useUnicode=true&amp;characterEncoding=UTF8&amp;useLegacyDatetimeCode=true" database="forgebox" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" name="forgebox" password="encrypted:d6c618deddf472c459faf1cf01a167ad" port="3306" username="root" validate="false"/><data-source allow="511" blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="87" connectionTimeout="3" custom="useUnicode=true&amp;characterEncoding=UTF8&amp;useLegacyDatetimeCode=true" database="test" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" name="test" password="encrypted:201090723c9f3a721ee65882bddcad2178e309dbbd2f94e1f2646f290aecb100" port="3306" username="test" validate="false"/><data-source allow="511" blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" custom="useUnicode=true&amp;characterEncoding=UTF8&amp;useLegacyDatetimeCode=true" database="test" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" name="thisisforreal" password="encrypted:38da88b15d09c078c2fde3a7b77f08c8" port="3306" username="root" validate="false"/></data-sources>
+	<data-source allow="511" blob="false" class="org.postgresql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" custom="" database="Database" dbdriver="PostgreSql" dsn="jdbc:postgresql://{host}:{port}/{database}" host="Server" name="postgres" password="encrypted:00ebdba67b407131f996004c375a4c8e4e66cf0d6a075f2a7b8799f4b16111f5" port="5432" username="User name" validate="false"/><data-source allow="511" blob="false" class="com.microsoft.jdbc.sqlserver.SQLServerDriver" clob="false" connectionLimit="-1" connectionTimeout="20" custom="DATABASENAME=test&amp;sendStringParametersAsUnicode=true&amp;SelectMethod=direct" database="test" dbdriver="MSSQL" dsn="jdbc:sqlserver://{host}:{port}" host="localhost" name="sqlserver" password="encrypted:28e71edab759c793bdcace4c38c5cedd3d02ac9b1d287fdf68a835040176e1e1" port="1433" username="user" validate="false"/><data-source allow="511" blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" custom="" database="" dbdriver="Other" dsn="jdbc:mysql://localhost:3306/test?tinyInt1isBit=false&amp;" host="" name="other" password="encrypted:f8576617f9e26a02feadc6592aa730eb8d3f678dde8952090cbf68793526829f" port="" username="User name" validate="false"/><data-source allow="511" blob="false" class="oracle.jdbc.driver.OracleDriver" clob="false" connectionLimit="-1" connectionTimeout="20" custom="drivertype=thin" database="" dbdriver="Oracle" dsn="jdbc:oracle:{drivertype}:@{host}:{port}:{database}" host="Server" name="oracle" password="encrypted:4fe9d52eec83b930bbd26b19dfcbfb721467bac47a7fcd88228290709fc938db" port="1521" username="User name" validate="false"/><data-source allow="511" blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" custom="useUnicode=true&amp;characterEncoding=UTF8&amp;useLegacyDatetimeCode=true" database="forgebox" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" name="forgebox" password="encrypted:00325001b0f89023c341ede15a10c3d6" port="3306" username="root" validate="false"/><data-source allow="511" blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="87" connectionTimeout="3" custom="useUnicode=true&amp;characterEncoding=UTF8&amp;useLegacyDatetimeCode=true" database="test" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" name="test" password="encrypted:67537a1da0d99e9aea1607da5fca95dc8c534e995bcf86abb03cea25ae4e1f59" port="3306" username="test" validate="false"/><data-source allow="511" blob="false" class="org.gjt.mm.mysql.Driver" clob="false" connectionLimit="-1" connectionTimeout="20" custom="useUnicode=true&amp;characterEncoding=UTF8&amp;useLegacyDatetimeCode=true" database="test" dbdriver="MySQL" dsn="jdbc:mysql://{host}:{port}/{database}" host="localhost" name="thisisforreal" password="encrypted:94bef5212ea2ae43f0ab3382da5fb4cb" port="3306" username="root" validate="false"/></data-sources>
 
 	<!--
 		deploy-directory - directory where java classes will be deployed
@@ -45,8 +45,8 @@ Path placeholders:
 	 -->
 	<file-system fld-directory="{lucee-config}/library/fld/" function-directory="{lucee-config}/library/function/" tag-directory="{lucee-config}/library/tag/" temp-directory="{lucee-config}/temp/" tld-directory="{lucee-config}/library/tld/">
 	</file-system>
-	
-	
+
+
 	<!--
 		writers you can select with attribute format at tag dump
 		name - name of the writer
@@ -56,37 +56,37 @@ Path placeholders:
 	<dump-writers>
 		<dump-writer class="lucee.runtime.dump.HTMLDumpWriter" default="browser" name="html"/>
 		<dump-writer class="lucee.runtime.dump.TextDumpWriter" default="console" name="text"/>
-		
+
 		<dump-writer class="lucee.runtime.dump.ClassicHTMLDumpWriter" name="classic"/>
 		<dump-writer class="lucee.runtime.dump.SimpleHTMLDumpWriter" name="simple"/>
 	</dump-writers>
-	
-	
+
+
 	<remote-clients directory="{lucee-config}remote-client/"/>
-	
+
     <resources>
         <!--
         arguments:
 		lock-timeout   - 	define how long a request wait for a lock
 	 	-->
     	<default-resource-provider arguments="lock-timeout:1000;" class="lucee.commons.io.res.type.file.FileResourceProvider"/>
-    		
+
     	<!--
     	arguments:
-		socket-timeout - 	With this option set to a non-zero timeout, 
-							a read call on the InputStream associated 
-							with this Socket will block for only this amount 
-							of time. 
-							If the timeout expires, a java.net.SocketTimeoutException is raised, 
-							though the Socket is still valid. 
-							The option must be enabled prior to entering the blocking operation to have effect. 
+		socket-timeout - 	With this option set to a non-zero timeout,
+							a read call on the InputStream associated
+							with this Socket will block for only this amount
+							of time.
+							If the timeout expires, a java.net.SocketTimeoutException is raised,
+							though the Socket is still valid.
+							The option must be enabled prior to entering the blocking operation to have effect.
 							The timeout must be > 0. A timeout of zero is interpreted as an infinite timeout.
 							(in milliseconds)
 		client-timeout - 	how long a conection kep established (in milliseconds)
 		lock-timeout   - 	define how long a request wait for a lock (in milliseconds)
 	 	-->
     	<resource-provider arguments="lock-timeout:20000;socket-timeout:-1;client-timeout:60000" class="lucee.commons.io.res.type.ftp.FTPResourceProvider" scheme="ftp"/>
-    		
+
     	<!--
         arguments:
 		lock-timeout	- 	define how long a request wait for a lock
@@ -94,7 +94,7 @@ Path placeholders:
 		asynchronus - 		yes or no; define if a buffer is used to synchronize data to zip file.
 							no make resource very slow
 	 	-->
-    	<resource-provider arguments="lock-timeout:1000;case-sensitive:true;" class="lucee.commons.io.res.type.zip.ZipResourceProvider" scheme="zip"/>	
+    	<resource-provider arguments="lock-timeout:1000;case-sensitive:true;" class="lucee.commons.io.res.type.zip.ZipResourceProvider" scheme="zip"/>
     	<!--
         arguments:
 		lock-timeout   - 	define how long a request wait for a lock
@@ -125,162 +125,162 @@ Path placeholders:
 		case-sensitive	-	is http handled case-sensitive or not
 	 	-->
     	<resource-provider arguments="lock-timeout:10000;" class="lucee.commons.io.res.type.s3.S3ResourceProvider" scheme="s3"/>
-    		
+
     	<!--
     	this providers uses the jcifs library. see http://jcifs.samba.org/
         arguments:
 		resolveOrder   - 	maps to jcifs.resolveOrder property, defaults to 'DNS'
 		smb.client.dfs.disabled	-	maps to jcifs.smb.client.dfs.disabled property. defaults to 'true'
 		NOTE: these defaults assume DNS lookups instead of workgroup/WINS. These settings make smb interactions faster.
-	 	
-    	<resource-provider 
+
+    	<resource-provider
     		scheme="smb"
     		class="lucee.commons.io.res.type.smb.SMBResourceProvider"
     		arguments=""/>
     	-->
     </resources>
-	
+
 
 	<!--
 	scope configuration:
-	
+
 		cascading (expanding of undefined scope)
 			- strict (argument,variables)
 			- small (argument,variables,cgi,url,form)
 			- standard (argument,variables,cgi,url,form,cookie)
-			
+
 		cascade-to-resultset: yes|no
 			when yes also allow inside "output type query" and "loop type query" call implizid call of resultset
-			
+
 		merge-url-form:yes|no
 			when yes all form and url scope are synonym for both data
-		
+
 		client-directory-max-size
 			maximum size in bytes of the client scope directory (used for default type file)
-		
+
 		client-max-age
 			the max age of the client scope in days
 	-->
 	<scope applicationtimeout="2,0,0,0" cascade-to-resultset="yes" cascading="standard" client-directory-max-size="10mb" clientmanagement="no" clienttimeout="90,0,0,0" merge-url-form="no" session-type="j2ee" sessionmanagement="true" sessiontimeout="0,0,20,0" setclientcookies="yes" setdomaincookies="no"/>
-		
+
 	<mail spool-enable="yes" spool-interval="5" timeout="30">
-	<server password="encrypted:4b9fe7662816bae4fc89db3d9c8f4145c8b412a2388536df4985a30ca6bf7e6a" port="587" smtp="smptout.secureserver.net" ssl="false" username="brad@bradwood.com"/></mail>
-	
+	<server password="encrypted:f8ba92f02e1be4b37d77db4d236b5555726281663122a87df0073eac4ca06b9b" port="587" smtp="smptout.secureserver.net" ssl="false" username="brad@bradwood.com"/></mail>
+
 	<mappings>
 	<!--
 	directory mapping:
-		
+
 		inspect-template: never|once|always|<empty-string>
 			never - when a template s loaded, lucee no longer checks for changes on that template
 			once - Lucee only once per request check if the file has changed
 			always - check for changes with every access on the file
-			<empty-string> - no mapping specific setting, inherit setting config 
-			
+			<empty-string> - no mapping specific setting, inherit setting config
+
 		virtual:
 			virtual path of the application
 			example: /somedir/
-			
-		physical: 
+
+		physical:
 			physical path to the apllication
 			example: d:/projects/app1/webroot/somedir/
-			
+
 		archive:
 			path to a archive file:
 			example: d:/projects/app1/rasfiles/somedir.ras
 		primary: archive|physical
 			define where lucee first look for a called cfml file.
 			for example when you define physical you can partiquel overwrite the archive.
- -->	
+ -->
 		<mapping archive="" inspect-template="once" listener-mode="modern" listener-type="curr2root" physical="{lucee-server}/context/" primary="physical" readonly="yes" virtual="/lucee-server/"/>
 		<mapping archive="{lucee-config}/context/lucee-context.lar" inspect-template="once" listener-mode="modern" listener-type="curr2root" physical="{lucee-config}/context/" primary="physical" readonly="yes" virtual="/lucee/"/>
 
-	<mapping physical="C:\" virtual="/fooi"/><mapping physical="D:\" virtual="/bar"/></mappings>	
-	
+	<mapping physical="C:\" virtual="/fooi"/><mapping physical="D:\" virtual="/bar"/></mappings>
+
 	<custom-tag>
 		<mapping inspect-template="never" physical="{lucee-config}/customtags/"/>
 	</custom-tag>
-	
+
 	<ext-tags>
 		<ext-tag class="lucee.cfx.example.HelloWorld" name="HelloWorld" type="java"/>
 	</ext-tags>
-	
+
 	<!--
 	component:
-		
-		base: 
-			path to base component for every component that have no base component defined 
+
+		base:
+			path to base component for every component that have no base component defined
 		data-member-default-access: remote|public|package|private
 			access type of component data member (variables in this scope)
 	-->
 	<component base="/lucee/Component.cfc" data-member-default-access="public" dump-template="/lucee/component-dump.cfm">
   		<mapping inspect-template="never" physical="{lucee-web}/components/" primary="physical" readonly="false" virtual="/default"/>
 	</component>
-	
+
 	<!--
 	regional configuration:
-		
+
 		locale: default: system locale
-			define the locale 
+			define the locale
 		timezone: default:maschine configuration
-			the ID for a TimeZone, either an abbreviation such as "PST", 
-			a full name such as "America/Los_Angeles", or a custom ID such as "GMT-8:00". 
+			the ID for a TimeZone, either an abbreviation such as "PST",
+			a full name such as "America/Los_Angeles", or a custom ID such as "GMT-8:00".
 		timeserver: [example: swisstime.ethz.ch] default:local time
 			dns of a ntp time server
 	-->
 	<regional timeserver="pool.ntp.org"/>
-	
+
 	<!--
 	orm configuration:
-		
+
 		engine-class: class that implements interface lucee.runtime.orm.ORMEngine
-		
-		
+
+
 		timezone: default:maschine configuration
-			the ID for a TimeZone, either an abbreviation such as "PST", 
-			a full name such as "America/Los_Angeles", or a custom ID such as "GMT-8:00". 
+			the ID for a TimeZone, either an abbreviation such as "PST",
+			a full name such as "America/Los_Angeles", or a custom ID such as "GMT-8:00".
 		timeserver: [example: swisstime.ethz.ch] default:local time
 			dns of a ntp time server
 	-->
 	<orm engine-class="lucee.runtime.orm.hibernate.HibernateORMEngine"/>
-	
+
 	<!--
 		enable and disable debugging
 	 -->
 	<debugging debug="no" log-memory-usage="no" show-query-usage="no" template="/lucee/templates/debugging/debugging.cfm"/>
-	
+
 		<!--
 	application:
-		
+
 		listener-type: none|classic|modern|mixed (default: mixed)
 			none:		no application listener handling
 			classic:	search only for Application.cfm
 			modern:		search only for Application.cfc
 			mixed:		search for Application.cfc and Application.cfm
-			
+
 		listener-mode: root|curr|curr2root (default:curr2root)
 			define where the Application.cfc/Application.cfm will be searched
 			root:			search only in webroot
 			current:		search only in current directory
-			curr2root:	search the App... from current directory up to root. 
+			curr2root:	search the App... from current directory up to root.
 	-->
 	<application allow-url-requesttimeout="false" listener-mode="curr2root" listener-type="mixed" requesttimeout="0,0,0,60" script-protect="FORM,URL,COOKIE,CGI" type-checking="false"/>
-	
+
 	<update location="http://stable.lucee.org" type="manual"/>
 	<!--
 	flex:
-		
+
 		configuration: xml|manual (default: xml)
 			xml:		deploy default configuration for the MessageBrokerServlet as xml to th WEB-INF directory
 			manual:		the configuration is up to the user, lucee does nothing
-			
+
 		caster-class: shortcut (modern,classic) or AMFCaster class.
 		- classic (default): Build in AMFCaster follows the implementation of other engines.
-		- modern: Build in AMFCaster based on classic AMFCaster improved in functionality.  
+		- modern: Build in AMFCaster based on classic AMFCaster improved in functionality.
 		- <class-name>: full class path of class implemeting interface AMFCaster (http://www.lucee.org/javadoc/lucee/runtime/net/amf/AMFCaster.html)
 		caster-class-arguments: init arguments provided to the AMFCaster init method, use "CSS" syntax.
 	-->
 	<flex configuration="manual"/>
-		
+
 <!--
 LOGGING
 ===========================
@@ -288,11 +288,11 @@ LOGGING
 Possible Layouts:
 - - - - - - - - - - - - - -
 
-Classic: 
+Classic:
  Same layout as with Lucee 1 - 4.1
 
-HTML: 
-a HTML table, possible arguments are 
+HTML:
+a HTML table, possible arguments are
 - locationinfo (boolean): By default, it is set to false which means there will be no location information output by this layout. If the the option is set to true, then the file name and line number of the statement at the origin of the log statement will be output.
 - title: The Title option takes a String value. This option sets the document title of the generated HTML document.
 
@@ -302,7 +302,7 @@ The output of the XMLLayout consists of a series of log4j:event elements as defi
 - properties: Sets whether MDC key-value pairs should be output, default false.
 
 Pattern:
-A flexible layout configurable with pattern string. 
+A flexible layout configurable with pattern string.
 - pattern: This is the string which controls formatting and consists of a mix of literal content and conversion specifiers. for more details see: http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html
 
 <layout-class>:
@@ -313,9 +313,9 @@ for every argument defined lucee tries to call a matching setter method
 Possible Appenders:
 - - - - - - - - - - - - - -
 
-Console: 
+Console:
 logs events to to the error or output stream
-- streamtype: "output" or "error" 
+- streamtype: "output" or "error"
 
 Resource:
 Logs error to a resource (locale file, ftp, zip, ...)
@@ -330,23 +330,23 @@ for every argument defined lucee tries to call a matching setter method
 
  -->
 	<logging>
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	<logger appender="resource" appender-arguments="path:{lucee-config}/logs/scheduler.log" layout="classic" name="scheduler"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/application.log" layout="classic" name="application"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/requesttimeout.log" layout="classic" name="requesttimeout"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/exception.log" layout="classic" name="exception"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/mapping.log" layout="classic" name="mapping"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/orm.log" layout="classic" name="orm"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/deploy.log" layout="classic" name="deploy"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/trace.log" layout="classic" name="trace"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/memory.log" layout="classic" name="memory"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/gateway.log" layout="classic" name="gateway"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/search.log" layout="classic" name="search"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/rest.log" layout="classic" name="rest"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/thread.log" layout="classic" name="thread"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/scope.log" layout="classic" name="scope"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/datasource.log" layout="classic" name="datasource"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/remoteclient.log" layout="classic" level="info" name="remoteclient"/><logger appender="resource" appender-arguments="path:{lucee-config}/logs/mail.log" layout="classic" name="mail"/></logging>
-	
+
 <datasource/><queue enable="true" max="100" timeout="0"/><compiler dot-notation-upper-case="false"/><charset/><java inspect-template="once"/><setting/><cache default-function="sdf"><connection class="lucee.runtime.cache.eh.EHCache" custom="bootstrapAsynchronously=true&amp;replicatePuts=true&amp;automatic_hostName=&amp;bootstrapType=on&amp;maxelementsinmemory=10000&amp;manual_rmiUrls=dsf%3Ddfg%26fgdfg%3De4ge&amp;automatic_multicastGroupAddress=230.0.0.1&amp;distributed=off&amp;replicatePutsViaCopy=true&amp;memoryevictionpolicy=LRU&amp;maximumChunkSizeBytes=5000000&amp;timeToIdleSeconds=86400&amp;automatic_multicastGroupPort=4446&amp;listener_socketTimeoutMillis=120000&amp;diskpersistent=true&amp;timeToLiveSeconds=86400&amp;manual_addional=&amp;replicateRemovals=true&amp;replicateUpdatesViaCopy=true&amp;automatic_addional=&amp;overflowtodisk=true&amp;replicateAsynchronously=true&amp;maxelementsondisk=10000000&amp;listener_remoteObjectPort=&amp;asynchronousReplicationIntervalMillis=1000&amp;listener_hostName=&amp;replicateUpdates=true&amp;manual_hostName=&amp;automatic_timeToLive=unrestricted&amp;listener_port=" name="sdf" read-only="false" storage="true"/><connection class="lucee.runtime.cache.ram.RamCache" custom="timeToIdleSeconds=0&amp;timeToLiveSeconds=0" name="test" read-only="false" storage="false"/></cache><error/><security/></cfLuceeConfiguration>

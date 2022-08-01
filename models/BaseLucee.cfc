@@ -470,7 +470,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		if( !isNull( config[ 'max' ] ) ) { setMaxRequests( config[ 'max' ] ); }
 		if( !isNull( config[ 'enable' ] ) ) { setRequestQueueEnable( config[ 'enable' ] ); }
-		if( !isNull( config[ 'timeout' ] ) ) { setRequestQueueTimeout( config[ 'timeout' ] ); }
+		if( !isNull( config[ 'timeout' ] ) ) { setRequestQueueTimeout( config[ 'timeout' ] / 1000 ); }
 	}
 
 	private function readGateway( thisGateway ) {
@@ -1452,7 +1452,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var config = setting.XMLAttributes;
 
 		if( !isNull( getRequestQueueEnable() ) ) { config[ 'enable' ] = getRequestQueueEnable(); }
-		if( !isNull( getMaxRequests() ) ) { config[ 'max' ] = translateWhitespaceToLucee( getMaxRequests() ); }
+		if( !isNull( getMaxRequests() ) ) { config[ 'max' ] = getMaxRequests(); }
 		if( !isNull( getRequestQueueTimeout() ) ) { config[ 'timeout' ] = getRequestQueueTimeout() * 1000; } // milliseconds
 
 		if( !settingSearch.len() ) {
