@@ -366,7 +366,7 @@ for every argument defined lucee tries to call a matching setter method
    <java inspect-template="always" />
    <compiler dot-notation-upper-case="true" externalize-string-gte="-1" full-null-support="false" handle-unquoted-attribute-value-as-string="true" suppress-ws-before-arg="true" />
    <charset resource-charset="windows-1252" template-charset="windows-1252" web-charset="UTF-8" />
-   <queue enable="false" />
+   <queue enable="true" max="20" timeout="0"/>
    <setting allow-compression="true" buffer-output="false" cfml-writer="white-space-pref" content-length="" suppress-content="true" />
    <cache default-file="sdfsdf" default-http="w3fffw" default-include="fsfasfasf" default-template="wfsaf" default-webservice="sdfsdf">
       <connection class="lucee.runtime.cache.ram.RamCache" custom="timeToIdleSeconds=0&amp;timeToLiveSeconds=0" name="fsfasfasf" read-only="false" storage="false" />
