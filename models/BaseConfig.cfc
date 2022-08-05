@@ -346,8 +346,6 @@ component accessors="true" {
 	property name='requestQueueTimeoutPage' type='string' _isCFConfig=true;
 	// Enable request queue on Lucee
 	property name='requestQueueEnable' type='boolean' _isCFConfig=true;
-	// Maximum number of concurrent requests on Lucee
-	property name='maxRequests' type='numeric' _isCFConfig=true;
 
 	// Key is cache connection name, value is struct of properties
 	property name='caches' type='struct' _isCFConfig=true;
