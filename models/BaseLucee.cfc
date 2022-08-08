@@ -119,6 +119,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var setting = xmlSearch( thisConfig, '/cfLuceeConfiguration/setting' );
 		if( setting.len() ){ readSetting( setting[ 1 ] ); }
 
+		var setting = xmlSearch( thisConfig, '/cfLuceeConfiguration/queue' );
+		if( setting.len() ){ readQueue( setting[ 1 ] ); }
+
 		var thisCache = xmlSearch( thisConfig, '/cfLuceeConfiguration/cache' );
 		if( thisCache.len() ){ readCache( thisCache[ 1 ] ); }
 
@@ -462,6 +465,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( config[ 'suppress-content' ] ) ) { setSupressContentForCFCRemoting( config[ 'suppress-content' ] ); }
 	}
 
+	private function readQueue( settings ) {
+		var config = settings.XMLAttributes;
+
+		if( !isNull( config[ 'max' ] ) ) { setMaxTemplateRequests( config[ 'max' ] ); }
+		if( !isNull( config[ 'enable' ] ) ) { setRequestQueueEnable( config[ 'enable' ] ); }
+		if( !isNull( config[ 'timeout' ] ) ) { setRequestQueueTimeout( config[ 'timeout' ] / 1000 ); }
+	}
+
 	private function readGateway( thisGateway ) {
 
 		for( var gateway in thisGateway.XMLChildren ) {
@@ -714,6 +725,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeSecurity( thisConfig );
 		writeUpdate( thisConfig );
 		writeSystem( thisConfig );
+		writeQueue( thisConfig );
 
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
@@ -1423,6 +1435,25 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getWhitespaceManagement() ) ) { config[ 'cfml-writer' ] = translateWhitespaceToLucee( getWhitespaceManagement() ); }
 		if( !isNull( getBufferTagBodyOutput() ) ) { config[ 'buffer-output' ] = getBufferTagBodyOutput(); }
 		if( !isNull( getSupressContentForCFCRemoting() ) ) { config[ 'suppress-content' ] = getSupressContentForCFCRemoting(); }
+
+		if( !settingSearch.len() ) {
+			thisConfig.XMLRoot.XMLChildren.append( setting );
+		}
+	}
+
+	private function writeQueue( thisConfig ) {
+		var settingSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/queue' );
+		if( settingSearch.len() ) {
+			var setting = settingSearch[1];
+		} else {
+			var setting = xmlElemnew( thisConfig, 'queue' );
+		}
+
+		var config = setting.XMLAttributes;
+
+		if( !isNull( getRequestQueueEnable() ) ) { config[ 'enable' ] = getRequestQueueEnable(); }
+		if( !isNull( getMaxTemplateRequests() ) ) { config[ 'max' ] = getMaxTemplateRequests(); }
+		if( !isNull( getRequestQueueTimeout() ) ) { config[ 'timeout' ] = getRequestQueueTimeout() * 1000; } // milliseconds
 
 		if( !settingSearch.len() ) {
 			thisConfig.XMLRoot.XMLChildren.append( setting );

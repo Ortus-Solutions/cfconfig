@@ -344,6 +344,8 @@ component accessors="true" {
 	property name='requestQueueTimeout' type='numeric' _isCFConfig=true;
 	// Request Queue Timeout Page
 	property name='requestQueueTimeoutPage' type='string' _isCFConfig=true;
+	// Enable request queue on Lucee
+	property name='requestQueueEnable' type='boolean' _isCFConfig=true;
 
 	// Key is cache connection name, value is struct of properties
 	property name='caches' type='struct' _isCFConfig=true;
