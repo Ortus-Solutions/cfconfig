@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><cfLuceeConfiguration salt="D158F98B-A686-4960-BDC5ED276E7B8329" version="5.1">
 
-<!-- 
+<!--
 Path placeholders:
 	{lucee-web}: path to the Lucee web directory typical "{web-root}/WEB-INF/lucee"
 	{lucee-server}: path to the Lucee server directory typical where the Lucee.jar is located
@@ -11,10 +11,10 @@ Path placeholders:
 	{system-directory}: path to thesystem directory
 	{web-context-hash}: hash of the web context
 -->
-	
-	
-	
-	
+
+
+
+
     <!--
     arguments:
 		close-connection - 	write connection-close to response header
@@ -93,8 +93,31 @@ Path placeholders:
 				storage="false"
 				username="test-user"
 				validate="false"/>
+        <data-source
+				allow="511"
+				blob="false"
+				class="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+				clob="false"
+				connectionTimeout="1"
+				custom="DATABASENAME=test-databaseWithLiveTimeout&amp;sendStringParametersAsUnicode=true&amp;SelectMethod=direct"
+				database="test-databaseWithLiveTimeout"
+				dbdriver="MSSQL"
+				dsn="jdbc:sqlserver://{host}:{port}"
+				host="test-server"
+				id="mssql"
+                liveTimeout="30"
+				metaCacheTimeout="60000"
+				name="test-databaseWithLiveTimeout"
+				param-delimiter=";"
+				param-leading-delimiter=";"
+				param-separator="="
+				password="encrypted:f09a1805c526c9d8c1cf246b38b66fb4"
+				port="1433"
+				storage="false"
+				username="test-user"
+				validate="false"/>
 	</data-sources>
-	
+
 	<resources>
     	<!--
         arguments:
@@ -102,10 +125,10 @@ Path placeholders:
 	 	-->
     	<resource-provider arguments="case-sensitive:true;lock-timeout:1000;" class="lucee.commons.io.res.type.ram.RamResourceProvider" scheme="ram"/>
     </resources>
-    
+
     <remote-clients directory="{lucee-web}remote-client/"/>
-	
-	
+
+
 	<!--
 		deploy-directory - directory where java classes will be deployed
 		custom-tag-directory - directory where the custom tags are
@@ -114,50 +137,50 @@ Path placeholders:
 	 -->
 	<file-system deploy-directory="{lucee-web}/cfclasses/" fld-directory="{lucee-web}/library/fld/" temp-directory="{lucee-web}/temp/" tld-directory="{lucee-web}/library/tld/">
 	</file-system>
-	
+
 	<!--
 	scope configuration:
-	
+
 		cascading (expanding of undefined scope)
 			- strict (argument,variables)
 			- small (argument,variables,cgi,url,form)
 			- standard (argument,variables,cgi,url,form,cookie)
-			
+
 		cascade-to-resultset: yes|no
 			when yes also allow inside "output type query" and "loop type query" call implizid call of resultset
-			
+
 		merge-url-form:yes|no
 			when yes all form and url scope are synonym for both data
-		
+
 		client-directory:path to directory where client scope values are stored
 		client-directory-max-size: max size of the client scope directory
 	-->
 	<scope client-directory="{lucee-web}/client-scope/" client-directory-max-size="100mb"/>
-		
+
 	<mail>
 	</mail>
-	
-	
+
+
 	<!--
 	define path to scedule task directory
 		directory: path
-	-->	
+	-->
 	<scheduler directory="{lucee-web}/scheduler/"/>
-	
+
 	<mappings>
 	<!--
 	directory mapping:
-		
+
 		trusted: yes|no
 			trusted cache -> recheck every time if there are changes in the called cfml file or not.
 		virtual:
 			virtual path of the application
 			example: /somedir/
-			
-		physical: 
+
+		physical:
 			physical path to the apllication
 			example: d:/projects/app1/webroot/somedir/
-			
+
 		archive:
 			path to a archive file:
 			example: d:/projects/app1/rasfiles/somedir.ras
@@ -166,42 +189,42 @@ Path placeholders:
 			for example when you define physical you can partiquel overwrite the archive.
 		-->
 		<mapping archive="{lucee-web}/context/lucee-context.lar" physical="{lucee-web}/context/" primary="physical" readonly="yes" toplevel="yes" trusted="true" virtual="/lucee/"/>
-	</mappings>	
-	
+	</mappings>
+
 	<custom-tag>
 		<mapping physical="{lucee-web}/customtags/" trusted="yes"/>
 	</custom-tag>
-	
+
 	<ext-tags>
 		<ext-tag class="lucee.cfx.example.HelloWorld" name="HelloWorld" type="java"/>
 	</ext-tags>
-	
+
 	<!--
 	component:
-		
-		base: 
-			path to base component for every component that have no base component defined 
+
+		base:
+			path to base component for every component that have no base component defined
 		data-member-default-access: remote|public|package|private
 			access type of component data member (variables in this scope)
 		use-shadow: if true component variable scope has a second scope, not only the this scope
 	-->
-	<component base="/lucee/Component.cfc" data-member-default-access="public" use-shadow="yes"> 
+	<component base="/lucee/Component.cfc" data-member-default-access="public" use-shadow="yes">
 		<mapping archive="" inspect-template="never" physical="/some/Component/Path" primary="physical" virtual="/exampleComponentPath" />
 	</component>
-	
+
 	<!--
 	regional configuration:
-		
+
 		locale: default: system locale
-			define the locale 
+			define the locale
 		timezone: default:maschine configuration
-			the ID for a TimeZone, either an abbreviation such as "PST", 
-			a full name such as "America/Los_Angeles", or a custom ID such as "GMT-8:00". 
+			the ID for a TimeZone, either an abbreviation such as "PST",
+			a full name such as "America/Los_Angeles", or a custom ID such as "GMT-8:00".
 		timeserver: [example: swisstime.ethz.ch] default:local time
 			dns of a ntp time server
 	-->
 	<regional/>
-	
+
 	<!--
 		enable and disable debugging
 	 -->
@@ -222,11 +245,11 @@ LOGGING
 Possible Layouts:
 - - - - - - - - - - - - - -
 
-Classic: 
+Classic:
  Same layout as with Lucee 1 - 4.1
 
-HTML: 
-a HTML table, possible arguments are 
+HTML:
+a HTML table, possible arguments are
 - locationinfo (boolean): By default, it is set to false which means there will be no location information output by this layout. If the the option is set to true, then the file name and line number of the statement at the origin of the log statement will be output.
 - title: The Title option takes a String value. This option sets the document title of the generated HTML document.
 
@@ -236,7 +259,7 @@ The output of the XMLLayout consists of a series of log4j:event elements as defi
 - properties: Sets whether MDC key-value pairs should be output, default false.
 
 Pattern:
-A flexible layout configurable with pattern string. 
+A flexible layout configurable with pattern string.
 - pattern: This is the string which controls formatting and consists of a mix of literal content and conversion specifiers. for more details see: http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html
 
 <layout-class>:
@@ -247,9 +270,9 @@ for every argument defined lucee tries to call a matching setter method
 Possible Appenders:
 - - - - - - - - - - - - - -
 
-Console: 
+Console:
 logs events to to the error or output stream
-- streamtype: "output" or "error" 
+- streamtype: "output" or "error"
 
 Resource:
 Logs error to a resource (locale file, ftp, zip, ...)
@@ -270,6 +293,6 @@ for every argument defined lucee tries to call a matching setter method
 		<logger appender="resource" appender-arguments="path:{lucee-config}/logs/scheduler.log" layout="classic" name="scheduler"/>
 		<logger appender="resource" appender-arguments="path:{lucee-config}/logs/trace.log" layout="classic" name="trace"/>
 		<logger appender="resource" appender-arguments="path:{lucee-config}/logs/application.log" layout="classic" level="info" name="application"/>
-		<logger appender="resource" appender-arguments="path:{lucee-config}/logs/exception.log" layout="classic" level="info" name="exception"/>	
-	</logging>		
+		<logger appender="resource" appender-arguments="path:{lucee-config}/logs/exception.log" layout="classic" level="info" name="exception"/>
+	</logging>
 <datasource/><rest/><gateways/><orm/><search/></cfLuceeConfiguration>
