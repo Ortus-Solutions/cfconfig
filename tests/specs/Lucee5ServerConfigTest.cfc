@@ -50,13 +50,11 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				expect( Lucee5ServerConfig.getMemento() ).toBeStruct();
 
                 var config = Lucee5ServerConfig.getMemento();
-
 				expect( config ).toHaveKey( "datasources" );
 				expect( config.datasources ).toBeTypeOf( "struct" );
 				expect( config.datasources ).toHaveKey( "mydatabaseWithLiveTimeout" );
 
                 var datasourceUnderTest = config.datasources.mydatabaseWithLiveTimeout;
-
                 expect( datasourceUnderTest ).toHaveKey( "liveTimeout" );
                 expect( datasourceUnderTest.liveTimeout ).toBe( 30 );
 			});
@@ -76,8 +74,8 @@ component extends="tests.BaseTest" appMapping="/tests" {
 
 				var config = XMLParse( fileRead( '/tests/resources/tmp/context/lucee-server.xml' ) );
 		        var datasourceUnderTest = xmlSearch( config, "cfLuceeConfiguration//data-sources//data-source[@name='mydatabaseWithLiveTimeout']" )[1];
-
-                expect( datasourceUnderTest ).toHaveKey( "liveTimeout" );
+                expect( datasourceUnderTest.XMLAttributes ).toHaveKey( "liveTimeout" );
+                expect( datasourceUnderTest.XMLAttributes.liveTimeout ).toBe( 30 );
             });
 
 		});
