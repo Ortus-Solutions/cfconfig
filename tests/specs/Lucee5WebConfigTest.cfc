@@ -6,40 +6,40 @@
 * @author Brad Wood
 */
 component extends="tests.BaseTest" appMapping="/tests" {
-		
+
 	function run(){
 
 		describe( "Lucee 5 Web config", function(){
-			
+
 			it( "can read config", function() {
-				
+
 				var Lucee5WebConfig = getInstance( 'Lucee5Web@cfconfig-services' )
 					.read( expandPath( '/tests/resources/lucee5/WebHome' ) );
-				
-				expect( Lucee5WebConfig.getMemento() ).toBeStruct();				
+
+				expect( Lucee5WebConfig.getMemento() ).toBeStruct();
 			});
-			
+
 			it( "can write config", function() {
-				
+
 				var Lucee5WebConfig = getInstance( 'Lucee5Web@cfconfig-services' )
 					.read( expandPath( '/tests/resources/lucee5/WebHome' ) )
 					.write( expandPath( '/tests/resources/tmp' ) );
-					
+
 				expect( fileExists( '/tests/resources/tmp/lucee-web.xml.cfm' ) ).toBeTrue();
 				expect( isXML( fileRead( '/tests/resources/tmp/lucee-web.xml.cfm' ) ) ).toBeTrue();
 			});
-		
+
 		});
 
 		describe( "Lucee 5 Web Debugging config", function(){
 
 			it( "can read debugging config", function() {
-				
+
 				var Lucee5WebConfig = getInstance( 'Lucee5Web@cfconfig-services' )
 					.read( expandPath( '/tests/resources/lucee5/WebHome' ) );
-				
+
 				debug(Lucee5WebConfig.getMemento());
-				expect( Lucee5WebConfig.getMemento() ).toBeStruct();				
+				expect( Lucee5WebConfig.getMemento() ).toBeStruct();
 
 				var stConfig = Lucee5WebConfig.getMemento();
 
@@ -59,13 +59,13 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			});
 
 			it( "can write debugging config", function() {
-				
+
 				var Lucee5WebConfig = getInstance( 'Lucee5Web@cfconfig-services' )
 					.read( expandPath( '/tests/resources/lucee5/WebHome' ) )
 					.write( expandPath( '/tests/resources/tmp' ) );
-					
+
 				expect( fileExists( '/tests/resources/tmp/lucee-web.xml.cfm' ) ).toBeTrue();
-				
+
 				var configFile =  fileRead( '/tests/resources/tmp/lucee-web.xml.cfm' ) ;
 				expect( isXML( configFile ) ).toBeTrue();
 				var xmlConfig = XMLParse(configFile);
@@ -79,25 +79,72 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				expect( debugging.XmlChildren ).toBeTypeOf("array");
 				expect( debugging.XmlChildren.Len() ).toBeTrue();
 
-				// Get some of the strings. They should have &amp; rather than & 
+				// Get some of the strings. They should have &amp; rather than &
 				for(var template in debugging.XmlChildren){
 					// dump(template);
 					expect( template.XMLAttributes.custom ).NotToInclude("%26");
 				}
-				
+
 			});
+
+		});
+
+        describe( "Lucee 5 Web config - Datasource settings", function(){
+
+            beforeEach(function(currentSpec, data){
+
+				if( directoryExists( expandPath( '/tests/resources/tmp' )) ){
+					DirectoryDelete( expandPath( '/tests/resources/tmp' ), true );
+				}
+			});
+
+			it( "can read datasource configs with liveTimeout (CFCONFIG-55)", function() {
+
+				var Lucee5WebConfig = getInstance( 'Lucee5Web@cfconfig-services' )
+					.read( expandPath( '/tests/resources/lucee5/webHome' ) );
+
+				expect( Lucee5WebConfig.getMemento() ).toBeStruct();
+
+                var config = Lucee5WebConfig.getMemento();
+				expect( config ).toHaveKey( "datasources" );
+				expect( config.datasources ).toBeTypeOf( "struct" );
+				expect( config.datasources ).toHaveKey( "test-databaseWithLiveTimeout" );
+
+                var datasourceUnderTest = config.datasources["test-databaseWithLiveTimeout"];
+                expect( datasourceUnderTest ).toHaveKey( "liveTimeout" );
+                expect( datasourceUnderTest.liveTimeout ).toBe( 30 );
+			});
+
+            it( "can write datasource configs with liveTimeout (CFCONFIG-55)", function() {
+
+				var Lucee5WebConfig = getInstance( 'Lucee5Web@cfconfig-services' )
+					.read( expandPath( '/tests/resources/lucee5/webHome' ) );
+
+				expect( Lucee5WebConfig.getMemento() ).toHaveKey( "datasources" );
+
+				// Write it back out.
+				Lucee5WebConfig.write( expandPath( '/tests/resources/tmp' ) );
+
+                expect( fileExists( '/tests/resources/tmp/lucee-web.xml.cfm' ) ).toBeTrue();
+				expect( isXML( fileRead( '/tests/resources/tmp/lucee-web.xml.cfm' ) ) ).toBeTrue();
+
+				var config = XMLParse( fileRead( '/tests/resources/tmp/lucee-web.xml.cfm' ) );
+		        var datasourceUnderTest = xmlSearch( config, "cfLuceeConfiguration//data-sources//data-source[@name='test-databaseWithLiveTimeout']" )[1];
+                expect( datasourceUnderTest.XMLAttributes ).toHaveKey( "liveTimeout" );
+                expect( datasourceUnderTest.XMLAttributes.liveTimeout ).toBe( 30 );
+            });
 
 		});
 
 
 		describe( "Lucee 5 Web config - ComponentPaths", function(){
-			
+
 			it( "can read ComponentPaths config", function() {
-				
+
 				var Lucee5ServerConfig = getInstance( 'Lucee5Web@cfconfig-services' )
 					.read( expandPath( '/tests/resources/lucee5/WebHome' ) );
-				
-				expect( Lucee5ServerConfig.getMemento() ).toBeStruct();				
+
+				expect( Lucee5ServerConfig.getMemento() ).toBeStruct();
 
 				var config = Lucee5ServerConfig.getMemento();
 				debug(config);
@@ -106,28 +153,28 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				expect( config.componentPaths ).toBeTypeOf( "struct" );
 
 				expect( config.componentPaths ).toHaveKey( "exampleComponentPath" );
-				
+
 				var exampleComponent = config.componentPaths.exampleComponentPath;
-				
+
 				expect( exampleComponent ).toHaveKey( "name" );
 				expect( exampleComponent ).toHaveKey( "physical" );
 				expect( exampleComponent ).toHaveKey( "archive" );
 				expect( exampleComponent ).toHaveKey( "primary" );
 				expect( exampleComponent ).toHaveKey( "inspectTemplate" );
 				expect( exampleComponent ).NotToHaveKey( "readonly" );
-			
+
 
 			});
-			
+
 			it( "can write ComponentPaths config", function() {
-				
+
 				var Lucee5ServerConfig = getInstance( 'Lucee5Web@cfconfig-services' )
 					.read( expandPath( '/tests/resources/lucee5/WebHome' ) );
 
 					expect( Lucee5ServerConfig.getMemento()  ).toHaveKey("componentPaths");
 					debug( Lucee5ServerConfig.getMemento() );
 
-					// Write it back out. 
+					// Write it back out.
 					Lucee5ServerConfig.write(  expandPath( '/tests/resources/tmp' ) );
 
 				expect( fileExists( '/tests/resources/tmp/lucee-web.xml.cfm' ) ).toBeTrue();
