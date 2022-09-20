@@ -803,7 +803,7 @@ component accessors="true" {
 	* @sendStringParametersAsUnicode Enable High ASCII characters and Unicode for data sources configured for non-Latin characters
 	* @connectionLimit Max number of connections. -1 means unlimimted
 	* @connectionTimeout Connection idle timeout in minutes
-    * @liveTimeout Connection timeout in minutes
+	* @liveTimeout Connection timeout in minutes
 	* @connectionTimeoutInterval Number of seconds connections are checked to see if they've timed out
 	* @alwaysSetTimeout If true, sets the timeout to the connection string
 	* @maxPooledStatements Max pooled statements if maintain connections is on.
@@ -867,7 +867,7 @@ component accessors="true" {
 			boolean sendStringParametersAsUnicode,
 			numeric connectionLimit,
 			numeric connectionTimeout,
-            numeric liveTimeout,
+			numeric liveTimeout,
 			numeric connectionTimeoutInterval,
 			boolean alwaysSetTimeout,
 			numeric maxPooledStatements,
@@ -921,7 +921,7 @@ component accessors="true" {
 		if( !isNull( clob ) ) { ds[ 'clob' ] = clob; };
 		if( !isNull( connectionLimit ) ) { ds[ 'connectionLimit' ] = connectionLimit; };
 		if( !isNull( connectionTimeout ) ) { ds[ 'connectionTimeout' ] = connectionTimeout; };
-        if( !isNull( liveTimeout ) ) { ds[ 'liveTimeout' ] = liveTimeout; };
+		if( !isNull( liveTimeout ) ) { ds[ 'liveTimeout' ] = liveTimeout; };
 		if( !isNull( alwaysSetTimeout ) ) { ds[ 'alwaysSetTimeout' ] = alwaysSetTimeout; };
 		if( !isNull( custom ) ) { ds[ 'custom' ] = custom; };
 		if( !isNull( dsn ) ) { ds[ 'dsn' ] = dsn; };
