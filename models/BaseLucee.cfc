@@ -223,6 +223,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( config[ 'dot-notation-upper-case' ] ) ) { setDotNotationUpperCase( config[ 'dot-notation-upper-case' ] ); }
 		if( !isNull( config[ 'full-null-support' ] ) ) { setNullSupport( config[ 'full-null-support' ] ); }
 		if( !isNull( config[ 'suppress-ws-before-arg' ] ) ) { setSuppressWhitespaceBeforecfargument( config[ 'suppress-ws-before-arg' ] ); }
+		if( !isNull( config[ 'handle-unquoted-attribute-value-as-string' ] ) ) { setHandleUnquotedAttributeValueAsString( config[ 'handle-unquoted-attribute-value-as-string' ] ); }
 	}
 
 	private function readCharset( charset ) {
@@ -841,6 +842,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getDotNotationUpperCase() ) ) { config[ 'dot-notation-upper-case' ] = getDotNotationUpperCase(); }
 		if( !isNull( getNullSupport() ) ) { config[ 'full-null-support' ] = getNullSupport(); }
 		if( !isNull( getSuppressWhitespaceBeforecfargument() ) ) { config[ 'suppress-ws-before-arg' ] = getSuppressWhitespaceBeforecfargument(); }
+		if( !isNull( getHandleUnquotedAttributeValueAsString() ) ) { config[ 'handle-unquoted-attribute-value-as-string' ] = getHandleUnquotedAttributeValueAsString(); }
 
 		if( !compilerSearch.len() ) {
 			thisConfig.XMLRoot.XMLChildren.append( compiler );
