@@ -630,6 +630,15 @@ component accessors="true" {
 	// Update check proxy password
 	property name='updateProxyPassword' type='string' _isCFConfig=true;
 
+	// Adobe-only - Services > Cloud credentials
+	property name='cloudCredentials' type='struct' _isCFConfig=true;
+	// Adobe-only - Services > Cloud Configuration
+	property name='cloudServices' type='struct' _isCFConfig=true;
+	// Adobe-only - Security > IDP Configuration
+	property name='SAMLIdentityProviders' type='struct' _isCFConfig=true;
+	// Adobe-only - Security > SP Configuration
+	property name='SAMLServiceProviders' type='struct' _isCFConfig=true;
+
 	/**
 	* Constructor
 	*/
@@ -732,17 +741,177 @@ component accessors="true" {
 		string bundleVersion
 	) {
 		var cacheConnection = {};
-		if( !isNull( class ) ) { cacheConnection[ 'class' ] = class; };
-		if( !isNull( type ) ) { cacheConnection[ 'type' ] = type; };
-		if( !isNull( readOnly ) ) { cacheConnection[ 'readOnly' ] = readOnly; };
-		if( !isNull( storage ) ) { cacheConnection[ 'storage' ] = storage; };
-		if( !isNull( custom ) ) { cacheConnection[ 'custom' ] = custom; };
-		if( !isNull( bundleName ) ) { cacheConnection[ 'bundleName' ] = bundleName; };
-		if( !isNull( bundleVersion ) ) { cacheConnection[ 'bundleVersion' ] = bundleVersion; };
+		if( !isNull( class ) ) { cacheConnection[ 'class' ] = class; }
+		if( !isNull( type ) ) { cacheConnection[ 'type' ] = type; }
+		if( !isNull( readOnly ) ) { cacheConnection[ 'readOnly' ] = readOnly; }
+		if( !isNull( storage ) ) { cacheConnection[ 'storage' ] = storage; }
+		if( !isNull( custom ) ) { cacheConnection[ 'custom' ] = custom; }
+		if( !isNull( bundleName ) ) { cacheConnection[ 'bundleName' ] = bundleName; }
+		if( !isNull( bundleVersion ) ) { cacheConnection[ 'bundleVersion' ] = bundleVersion; }
 
 		var thisCaches = getCaches() ?: {};
 		thisCaches[ arguments.name ] = cacheConnection;
 		setCaches( thisCaches );
+		return this;
+	}
+
+	/**
+	* Add a single cloud cred to the config
+	*
+	* @name name of the cloud cred to save or update
+	* @vendor name of the cloud cred to save or update (AZURE or AWS)
+	* @connectionString In format Example: EndPoint=sb://(namespace).servicebus.windows.net/;SharedAccessKeyName=(key);SharedAccessKey=(key)
+	* @region AWS Region
+	* @accessKey AWS Access Key
+	* @secretKey AWS Secret Key
+	*/
+	function addCloudCredential(
+		required string name,
+		required string vendor,
+		string connectionString,
+		string region,
+		string accessKey,
+		string secretKey
+	) {
+		var cloudCredential = {};
+		if( !isNull( vendor ) ) { cloudCredential[ 'vendor' ] = vendor; }
+		if( !isNull( connectionString ) ) { cloudCredential[ 'connectionString' ] = connectionString; }
+		if( !isNull( region ) ) { cloudCredential[ 'region' ] = region; }
+		if( !isNull( accessKey ) ) { cloudCredential[ 'accessKey' ] = accessKey; }
+		if( !isNull( secretKey ) ) { cloudCredential[ 'secretKey' ] = secretKey; }
+
+		var thisCloudCredentials = getCloudCredentials() ?: {};
+		thisCloudCredentials[ arguments.name ] = cloudCredential;
+		setCloudCredentials( thisCloudCredentials );
+		return this;
+	}
+
+	/**
+	* Add a single SAML Identity Provider to the config
+	*
+	* @name Name of SAML Identity Provider
+	* @description Description of SAML Identity Provider
+	* @encryptCertificate PEM encoded certificate for encryption
+	* @encryptRequests Whether to encrypt requests
+	* @entityId Entity ID
+	* @logoutResponseURL Logout Response URL
+	* @signCertificate PEM encoded certificate for signing
+	* @signRequests Whether to sign requests
+	* @SLOBinding SLO Binding (REDIRECT, or POST)
+	* @SLOURL SLO URL
+	* @SSOBinding SSO Binding (REDIRECT, or POST)
+	* @SSOURL SSO URL
+	*/
+	function addSAMLIdentityProvider(
+		required string name,
+		string description,
+		string encryptCertificate,
+		boolean encryptRequests,
+		required string entityId,
+		string logoutResponseURL,
+		string signCertificate,
+		boolean signRequests,
+		required string SLOBinding,
+		required string SLOURL,
+		string SSOBinding,
+		string SSOURL
+	) {
+		var SAMLIdentityProvider = {};
+		if( !isNull( description ) ) { SAMLIdentityProvider[ 'description' ] = description; }
+		if( !isNull( encryptCertificate ) ) { SAMLIdentityProvider[ 'encryptCertificate' ] = encryptCertificate; }
+		if( !isNull( encryptRequests ) ) { SAMLIdentityProvider[ 'encryptRequests' ] = encryptRequests; }
+		if( !isNull( entityId ) ) { SAMLIdentityProvider[ 'entityId' ] = entityId; }
+		if( !isNull( logoutResponseURL ) ) { SAMLIdentityProvider[ 'logoutResponseURL' ] = logoutResponseURL; }
+		if( !isNull( signCertificate ) ) { SAMLIdentityProvider[ 'signCertificate' ] = signCertificate; }
+		if( !isNull( signRequests ) ) { SAMLIdentityProvider[ 'signRequests' ] = signRequests; }
+		if( !isNull( SLOBinding ) ) { SAMLIdentityProvider[ 'SLOBinding' ] = SLOBinding; }
+		if( !isNull( SLOURL ) ) { SAMLIdentityProvider[ 'SLOURL' ] = SLOURL; }
+		if( !isNull( SSOBinding ) ) { SAMLIdentityProvider[ 'SSOBinding' ] = SSOBinding; }
+		if( !isNull( SSOURL ) ) { SAMLIdentityProvider[ 'SSOURL' ] = SSOURL; }
+
+		var thisSAMLIdentityProviders = getSAMLIdentityProviders() ?: {};
+		thisSAMLIdentityProviders[ arguments.name ] = SAMLIdentityProvider;
+		setSAMLIdentityProviders( thisSAMLIdentityProviders );
+		return this;
+	}
+
+	/**
+	* Add a single SAML Service Provider to the config
+	*
+	* @name Name of SAML Service Provider
+	* @ACSBinding Assertion Consumer Service binding (REDIRECT, or POST)
+	* @ACSURL Assertion Consumer Service URL
+	* @allowIdpInitiatedSSO Alow IdP Initiated SSO
+	* @description SAML Service Provider Description
+	* @entityId Entity ID
+	* @logoutResponseSigned Logout Response Signed
+	* @signKeystoreAliasSigning Keystore Alias
+	* @signKeystorePassword Signing Keystore Password
+	* @signKeystorePath Signing Keystore Path
+	* @signMetadata Sign Metadata  (No corresponding form element in web UI)
+	* @signRequests Sign Requests
+	* @SLOBinding SLO Binding (REDIRECT, or POST)
+	* @SLOURL SLO URL
+	* @stateStore Request Store (empty string (default), "redis" or "cache")
+	* @strict Strict (No corresponding form element in web UI)
+	* @wantAssertionsSigned Want Assertions Signed
+	*/
+	function addSAMLServiceProvider(
+		required string name,
+		required string ACSBinding,
+		required string ACSURL,
+		boolean allowIdpInitiatedSSO,
+		string description,
+		required string entityId,
+		boolean logoutResponseSigned,
+		string signKeystoreAlias,
+		string signKeystorePassword,
+		string signKeystorePath,
+		boolean signMetadata,
+		boolean signRequests,
+		string SLOBinding,
+		string SLOURL,
+		string stateStore,
+		boolean strict,
+		boolean wantAssertionsSigned
+	) {
+		var SAMLServiceProvider = {};
+		if( !isNull( ACSBinding ) ) { SAMLServiceProvider[ 'ACSBinding' ] = ACSBinding; }
+		if( !isNull( ACSURL ) ) { SAMLServiceProvider[ 'ACSURL' ] = ACSURL; }
+		if( !isNull( allowIdpInitiatedSso ) ) { SAMLServiceProvider[ 'allowIdpInitiatedSso' ] = allowIdpInitiatedSso; }
+		if( !isNull( description ) ) { SAMLServiceProvider[ 'description' ] = description; }
+		if( !isNull( entityId ) ) { SAMLServiceProvider[ 'entityId' ] = entityId; }
+		if( !isNull( logoutResponseSigned ) ) { SAMLServiceProvider[ 'logoutResponseSigned' ] = logoutResponseSigned; }
+		if( !isNull( signKeystoreAlias ) ) { SAMLServiceProvider[ 'signKeystoreAlias' ] = signKeystoreAlias; }
+		if( !isNull( signKeystorePassword ) ) { SAMLServiceProvider[ 'signKeystorePassword' ] = signKeystorePassword; }
+		if( !isNull( signKeystorePath ) ) { SAMLServiceProvider[ 'signKeystorePath' ] = signKeystorePath; }
+		if( !isNull( signMetadata ) ) { SAMLServiceProvider[ 'signMetadata' ] = signMetadata; }
+		if( !isNull( signRequests ) ) { SAMLServiceProvider[ 'signRequests' ] = signRequests; }
+		if( !isNull( SLOBinding ) ) { SAMLServiceProvider[ 'SLOBinding' ] = SLOBinding; }
+		if( !isNull( SLOURL ) ) { SAMLServiceProvider[ 'SLOURL' ] = SLOURL; }
+		if( !isNull( stateStore ) ) { SAMLServiceProvider[ 'stateStore' ] = stateStore; }
+		if( !isNull( strict ) ) { SAMLServiceProvider[ 'strict' ] = strict; }
+		if( !isNull( wantAssertionsSigned ) ) { SAMLServiceProvider[ 'wantAssertionsSigned' ] = wantAssertionsSigned; }
+
+		var thisSAMLServiceProviders = getSAMLServiceProviders() ?: {};
+		thisSAMLServiceProviders[ arguments.name ] = SAMLServiceProvider;
+		setSAMLServiceProviders( thisSAMLServiceProviders );
+		return this;
+	}
+
+	/**
+	* Add a single cloud service to the config
+	*
+	* @name Name of Cloud Service
+	* @config struct representing all settings for this service
+	*/
+	function addCloudService(
+		required string name,
+		required struct config,
+	) {
+		var thisCloudServices = getCloudServices() ?: {};
+		thisCloudServices[ arguments.name ] = config;
+		setCloudServices( thisCloudServices );
 		return this;
 	}
 
@@ -1426,7 +1595,6 @@ component accessors="true" {
 				memento[ propName ] = thisValue;
 			}
 		}
-
 		// Force keys to be alphabetizes for consistent serialization
 		memento = convertStructToSorted( memento );
 

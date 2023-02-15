@@ -34,6 +34,11 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setUpdateConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2023/neo_updates.xml' ) );
 		setDocumentConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2023/neo-document.xml' ) );
 		setGraphConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2023/neo-graphing.xml' ) );
+		setCloudConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2023/neo-cloud-config.xml' ) );
+		setCloudCredTemplate( expandPath( '/cfconfig-services/resources/adobe2023/neo-cloudcredential.xml' ) );
+		setSAMLTemplate( expandPath( '/cfconfig-services/resources/adobe2023/neo-saml.xml' ) );
+		setSupportsMultiCloud( true );
+
 		setVersion( '2023' );
 
 		return this;

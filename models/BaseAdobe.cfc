@@ -71,8 +71,18 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	property name='graphConfigPath' type='string';
 	property name='graphConfigTemplate' type='string';
 
+	property name='cloudConfigPath' type='string';
+	property name='cloudConfigTemplate' type='string';
+
+	property name='cloudCredPath' type='string';
+	property name='cloudCredTemplate' type='string';
+
+	property name='SAMLPath' type='string';
+	property name='SAMLTemplate' type='string';
+
 
 	property name='AdminRDSLoginRequiredBoolean' type='boolean' default="false" ;
+	property name='supportsMultiCloud' type='boolean' default=false;
 
 
 
@@ -101,9 +111,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setUpdateConfigPath( '/lib/neo_updates.xml' );
 		setDocumentConfigPath( '/lib/neo-document.xml' );
 		setGraphConfigPath( '/lib/neo-graphing.xml' );
+		setCloudConfigPath( '/lib/neo-cloud-config.xml' );
+		setSAMLPath( '/lib/neo-saml.xml' );
+		setCloudCredPath( '/lib/neo-cloudcredential.xml' );
+
 
 		// CF 10+ stors as a string.  CF9 will override this.
 		setAdminRDSLoginRequiredBoolean( false );
+		setSupportsMultiCloud( false )
 
 		setFormat( 'adobe' );
 
@@ -154,7 +169,100 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readDocument();
 		readGraph();
 
+		if( getSupportsMultiCloud() ) {
+			readCloudCred();
+			readSAML();
+			readCloudConfig();
+		}
+
 		return this;
+	}
+
+	private function readCloudCred() {
+		var passwordManager = getAdobePasswordManager();
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getCloudCredPath(), '/' ) );
+
+		for( var name in thisConfig ) {
+			var thisCloudCred = thisConfig[ name ];
+			var params = {
+				name : name
+			};
+
+			if( !isNull( thisCloudCred.vendorName ) ) { params.vendor = thisCloudCred.vendorName }
+			if( !isNull( thisCloudCred.connectionString ) ) { params.connectionString = passwordManager.decryptMailServer( thisCloudCred.connectionString ) }
+			if( !isNull( thisCloudCred.secretAccessKey ) ) { params.secretKey = passwordManager.decryptMailServer( thisCloudCred.secretAccessKey ) }
+			if( !isNull( thisCloudCred.accessKeyId ) ) { params.accessKey = passwordManager.decryptMailServer( thisCloudCred.accessKeyId ) }
+			if( !isNull( thisCloudCred.region ) ) { params.region = thisCloudCred.region }
+
+			addCloudCredential( argumentCollection = params );
+		}
+
+	}
+
+	private function readCloudConfig() {
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getCloudConfigPath(), '/' ) );
+
+		for( var name in thisConfig ) {
+			addCloudService( name=name, config=thisConfig[ name ] );
+		}
+
+	}
+
+
+	private function readSAML() {
+		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSAMLPath(), '/' ) );
+
+		if( !isNull( thisConfig.IdentityProvidersMap ) ) {
+			for( var name in thisConfig.IdentityProvidersMap ) {
+				var thisIdentityProvider = thisConfig.IdentityProvidersMap[ name ];
+				var params = {
+					name : name
+				};
+
+				if( !isNull( thisIdentityProvider.description ) ) { params.description = thisIdentityProvider.description }
+				if( !isNull( thisIdentityProvider.encryptCertificate ) ) { params.encryptCertificate = thisIdentityProvider.encryptCertificate }
+				if( !isNull( thisIdentityProvider.encryptRequests ) ) { params.encryptRequests = thisIdentityProvider.encryptRequests }
+				if( !isNull( thisIdentityProvider.entityId ) ) { params.entityId = thisIdentityProvider.entityId }
+				if( !isNull( thisIdentityProvider.logoutResponseUrl ) ) { params.logoutResponseUrl = thisIdentityProvider.logoutResponseUrl }
+				if( !isNull( thisIdentityProvider.signCertificate ) ) { params.signCertificate = thisIdentityProvider.signCertificate }
+				if( !isNull( thisIdentityProvider.signRequests ) ) { params.signRequests = thisIdentityProvider.signRequests }
+				if( !isNull( thisIdentityProvider.SLOBinding ) ) { params.SLOBinding = thisIdentityProvider.SLOBinding }
+				if( !isNull( thisIdentityProvider.SLOURL ) ) { params.SLOURL = thisIdentityProvider.SLOURL }
+				if( !isNull( thisIdentityProvider.SSOBinding ) ) { params.SSOBinding = thisIdentityProvider.SSOBinding }
+				if( !isNull( thisIdentityProvider.SSOURL ) ) { params.SSOURL = thisIdentityProvider.SSOURL }
+
+				addSAMLIdentityProvider( argumentCollection = params );
+			}
+		}
+
+		if( !isNull( thisConfig.ServiceProvidersMap ) ) {
+			for( var name in thisConfig.ServiceProvidersMap ) {
+				var thisServiceProvider = thisConfig.ServiceProvidersMap[ name ];
+				var params = {
+					name : name
+				};
+
+				if( !isNull( thisServiceProvider.ACSBinding ) ) { params.ACSBinding = thisServiceProvider.ACSBinding }
+				if( !isNull( thisServiceProvider.ACSURL ) ) { params.ACSURL = thisServiceProvider.ACSURL }
+				if( !isNull( thisServiceProvider.allowIdpInitiatedSso ) ) { params.allowIdpInitiatedSso = thisServiceProvider.allowIdpInitiatedSso }
+				if( !isNull( thisServiceProvider.description ) ) { params.description = thisServiceProvider.description }
+				if( !isNull( thisServiceProvider.entityId ) ) { params.entityId = thisServiceProvider.entityId }
+				if( !isNull( thisServiceProvider.logoutResponseSigned ) ) { params.logoutResponseSigned = thisServiceProvider.logoutResponseSigned }
+				if( !isNull( thisServiceProvider.signKeystoreAlias ) ) { params.sdfsdfsignKeystoreAliassdfsd = thisServiceProvider.signKeystoreAlias }
+				if( !isNull( thisServiceProvider.signKeystorePassword ) ) { params.signKeystorePassword = thisServiceProvider.signKeystorePassword }
+				if( !isNull( thisServiceProvider.signKeystorePath ) ) { params.signKeystorePath = thisServiceProvider.signKeystorePath }
+				if( !isNull( thisServiceProvider.signMetadata ) ) { params.signMetadata = thisServiceProvider.signMetadata }
+				if( !isNull( thisServiceProvider.signRequests ) ) { params.signRequests = thisServiceProvider.signRequests }
+				if( !isNull( thisServiceProvider.SLOBinding ) ) { params.SLOBinding = thisServiceProvider.SLOBinding }
+				if( !isNull( thisServiceProvider.SLOURL ) ) { params.SLOURL = thisServiceProvider.SLOURL }
+				if( !isNull( thisServiceProvider.stateStore ) ) { params.stateStore = thisServiceProvider.stateStore }
+				if( !isNull( thisServiceProvider.strict ) ) { params.strict = thisServiceProvider.strict }
+				if( !isNull( thisServiceProvider.wantAssertionsSigned ) ) { params.wantAssertionsSigned = thisServiceProvider.wantAssertionsSigned }
+
+				addSAMLServiceProvider( argumentCollection = params );
+			}
+		}
+
 	}
 
 	private function readRuntime() {
@@ -805,8 +913,143 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeDocument();
 		writeGraph();
 
+		if( getSupportsMultiCloud() ) {
+			writeCloudCred();
+			writeSAML();
+			writeCloudConfig();
+		}
+
 		return this;
 	}
+
+	private function writeCloudCred() {
+		// Short circuit if there's no config to import
+		if( isNull( getCloudCredentials() ) ) {
+			return;
+		}
+
+		var passwordManager = getAdobePasswordManager();
+		var configFilePath = getCFHomePath().listAppend( getCloudCredPath(), '/' );
+
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getCloudCredTemplate() );
+		}
+
+		var cloudCredentials = getCloudCredentials();
+		thisConfig = {};
+		for ( var cloudCredentialName in cloudCredentials ) {
+			var cloudCredential = cloudCredentials[ cloudCredentialName ];
+			var currentcloudCredential = {
+				'alias' : cloudCredentialName
+			};
+			if( !isNull( cloudCredential.vendor ) ) { currentcloudCredential[ 'vendorName' ] = cloudCredential.vendor }
+			if( !isNull( cloudCredential.connectionString ) ) { currentcloudCredential[ 'connectionString' ] = passwordManager.encryptMailServer( cloudCredential.connectionString ) }
+			if( !isNull( cloudCredential.secretKey ) ) { currentcloudCredential[ 'secretAccessKey' ] = passwordManager.encryptMailServer( cloudCredential.secretKey ) }
+			if( !isNull( cloudCredential.accessKey ) ) { currentcloudCredential[ 'accessKeyId' ] = passwordManager.encryptMailServer( cloudCredential.accessKey ) }
+			if( !isNull( cloudCredential.region ) ) { currentcloudCredential[ 'region' ] = cloudCredential.region }
+			thisConfig[ cloudCredentialName ] = currentcloudCredential;
+		}
+
+		writeWDDXConfigFile( thisConfig, configFilePath );
+
+	}
+
+	private function writeCloudConfig() {
+
+		// Short circuit if there's no config to import
+		if( isNull( getCloudServices() ) ) {
+			return;
+		}
+
+		var configFilePath = getCFHomePath().listAppend( getCloudConfigPath(), '/' );
+
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getCloudConfigTemplate() );
+		}
+
+		var cloudServices = getCloudServices();
+		for( var cloudServiceName in cloudServices ) {
+			thisConfig[ cloudServiceName ] = cloudServices[ cloudServiceName ];
+		}
+
+		writeWDDXConfigFile( thisConfig, configFilePath );
+
+	}
+
+
+	private function writeSAML() {
+		var configFilePath = getCFHomePath().listAppend( getSAMLPath(), '/' );
+
+		// If the target config file exists, read it in
+		if( fileExists( configFilePath ) ) {
+			var thisConfig = readWDDXConfigFile( configFilePath );
+		// Otherwise, start from an empty base template
+		} else {
+			var thisConfig = readWDDXConfigFile( getSAMLTemplate() );
+		}
+
+		if( !isNull( getSAMLIdentityProviders() ) ) {
+			var SAMLIdentityProviders = getSAMLIdentityProviders();
+			thisConfig[ 'IdentityProvidersMap' ] = {};
+			for ( var SAMLIdentityProviderName in SAMLIdentityProviders ) {
+				var SAMLIdentityProvider = SAMLIdentityProviders[ SAMLIdentityProviderName ];
+				var currentSAMLIdentityProvider = {};
+
+				if( !isNull( SAMLIdentityProvider.description ) ) { currentSAMLIdentityProvider[ 'description' ] = SAMLIdentityProvider.description }
+				if( !isNull( SAMLIdentityProvider.encryptCertificate ) ) { currentSAMLIdentityProvider[ 'encryptCertificate' ] = SAMLIdentityProvider.encryptCertificate }
+				if( !isNull( SAMLIdentityProvider.encryptRequests ) ) { currentSAMLIdentityProvider[ 'encryptRequests' ] = !!SAMLIdentityProvider.encryptRequests }
+				if( !isNull( SAMLIdentityProvider.entityId ) ) { currentSAMLIdentityProvider[ 'entityId' ] = SAMLIdentityProvider.entityId }
+				if( !isNull( SAMLIdentityProvider.logoutResponseUrl ) ) { currentSAMLIdentityProvider[ 'logoutResponseUrl' ] = SAMLIdentityProvider.logoutResponseUrl }
+				if( !isNull( SAMLIdentityProvider.signCertificate ) ) { currentSAMLIdentityProvider[ 'signCertificate' ] = SAMLIdentityProvider.signCertificate }
+				if( !isNull( SAMLIdentityProvider.signRequests ) ) { currentSAMLIdentityProvider[ 'signRequests' ] = !!SAMLIdentityProvider.signRequests }
+				if( !isNull( SAMLIdentityProvider.SLOBinding ) ) { currentSAMLIdentityProvider[ 'sloBinding' ] = SAMLIdentityProvider.SLOBinding }
+				if( !isNull( SAMLIdentityProvider.SLOURL ) ) { currentSAMLIdentityProvider[ 'sloUrl' ] = SAMLIdentityProvider.SLOURL }
+				if( !isNull( SAMLIdentityProvider.SSOBinding ) ) { currentSAMLIdentityProvider[ 'ssoBinding' ] = SAMLIdentityProvider.SSOBinding }
+				if( !isNull( SAMLIdentityProvider.SSOURL ) ) { currentSAMLIdentityProvider[ 'ssoUrl' ] = SAMLIdentityProvider.SSOURL }
+
+				thisConfig.IdentityProvidersMap[ SAMLIdentityProviderName ] = currentSAMLIdentityProvider;
+			}
+		}
+
+		if( !isNull( getSAMLServiceProviders() ) ) {
+			var SAMLServiceProviders = getSAMLServiceProviders();
+			thisConfig[ 'ServiceProvidersMap' ] = {};
+			for ( var SAMLServiceProviderName in SAMLServiceProviders ) {
+				var SAMLServiceProvider = SAMLServiceProviders[ SAMLServiceProviderName ];
+				var currentSAMLServiceProvider = {};
+
+				if( !isNull( SAMLServiceProvider.ACSBinding ) ) { currentSAMLServiceProvider[ 'acsBinding' ] = SAMLServiceProvider.ACSBinding }
+				if( !isNull( SAMLServiceProvider.ACSURL ) ) { currentSAMLServiceProvider[ 'acsUrl' ] = SAMLServiceProvider.ACSURL }
+				if( !isNull( SAMLServiceProvider.allowIdpInitiatedSso ) ) { currentSAMLServiceProvider[ 'allowIdpInitiatedSso' ] = !!SAMLServiceProvider.allowIdpInitiatedSso }
+				if( !isNull( SAMLServiceProvider.description ) ) { currentSAMLServiceProvider[ 'description' ] = SAMLServiceProvider.description }
+				if( !isNull( SAMLServiceProvider.entityId ) ) { currentSAMLServiceProvider[ 'entityId' ] = SAMLServiceProvider.entityId }
+				if( !isNull( SAMLServiceProvider.logoutResponseSigned ) ) { currentSAMLServiceProvider[ 'logoutResponseSigned' ] = !!SAMLServiceProvider.logoutResponseSigned }
+				if( !isNull( SAMLServiceProvider.signKeystoreAlias ) ) { currentSAMLServiceProvider[ 'signKeystoreAlias' ] = SAMLServiceProvider.signKeystoreAlias }
+				if( !isNull( SAMLServiceProvider.signKeystorePassword ) ) { currentSAMLServiceProvider[ 'signKeystorePassword' ] = SAMLServiceProvider.signKeystorePassword }
+				if( !isNull( SAMLServiceProvider.signKeystorePath ) ) { currentSAMLServiceProvider[ 'signKeystorePath' ] = SAMLServiceProvider.signKeystorePath }
+				if( !isNull( SAMLServiceProvider.signMetadata ) ) { currentSAMLServiceProvider[ 'signMetadata' ] = !!SAMLServiceProvider.signMetadata }
+				if( !isNull( SAMLServiceProvider.signRequests ) ) { currentSAMLServiceProvider[ 'signRequests' ] = !!SAMLServiceProvider.signRequests }
+				if( !isNull( SAMLServiceProvider.SLOBinding ) ) { currentSAMLServiceProvider[ 'sloBinding' ] = SAMLServiceProvider.SLOBinding }
+				if( !isNull( SAMLServiceProvider.SLOURL ) ) { currentSAMLServiceProvider[ 'sloUrl' ] = SAMLServiceProvider.SLOURL }
+				if( !isNull( SAMLServiceProvider.stateStore ) ) { currentSAMLServiceProvider[ 'stateStore' ] = SAMLServiceProvider.stateStore }
+				if( !isNull( SAMLServiceProvider.strict ) ) { currentSAMLServiceProvider[ 'strict' ] = !!SAMLServiceProvider.strict }
+				if( !isNull( SAMLServiceProvider.wantAssertionsSigned ) ) { currentSAMLServiceProvider[ 'wantAssertionsSigned' ] = !!SAMLServiceProvider.wantAssertionsSigned }
+
+				thisConfig.ServiceProvidersMap[ SAMLServiceProviderName ] = currentSAMLServiceProvider;
+			}
+		}
+
+		writeWDDXConfigFile( thisConfig, configFilePath );
+	}
+
 
 	private function writeRuntime() {
 		var passwordManager = getAdobePasswordManager();
@@ -1197,7 +1440,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					"CONFIGURATIONPATH" = eventGateway.configurationpath,
 					"GATEWAYID" = eventGateway.gatewayid,
 					"MODE" = eventGateway.mode,
-					"TYPE" = eventGateway.type,
+					"TYPE" = eventGateway.type
 				};
 				thisConfig[ 'INSTANCES' ].append( currentEventGateWay );
 			}
@@ -2018,7 +2261,18 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		thisConfigRaw = reReplaceNoCase( thisConfigRaw, '\s*type=["'']coldfusion\.server\.ConfigMap["'']', '', 'all' );
 		thisConfigRaw = reReplaceNoCase( thisConfigRaw, '\s*type=["'']coldfusion\.util\.FastHashtable["'']', '', 'all' );
 
+		// Check for Lucee's buggy parsing
+		// https://luceeserver.atlassian.net/browse/LDEV-4392
+		var testParse = xmlParse( thisConfigRaw );
+		// Missing or empty data will just return empty struct
+		if( !isDefined( "testParse.wddxPacket.data" ) || !testParse.wddxPacket.data.XMLChildren.len() ) {
+			return {};
+		}
+
 		wddx action='wddx2cfml' input=thisConfigRaw output='local.thisConfig';
+		if( isNull( local.thisConfig ) ) {
+			return {};
+		}
 		return local.thisConfig;
 	}
 
