@@ -1,6 +1,6 @@
 {
     "name":"CFConfig Services",
-    "version":"1.18.5",
+    "version":"1.19.0-beta",
     "author":"Brad Wood",
     "location":"forgeboxstorage",
     "homepage":"https://github.com/Ortus-Solutions/cfconfig",
