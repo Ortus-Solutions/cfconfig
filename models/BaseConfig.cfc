@@ -807,12 +807,12 @@ component accessors="true" {
 		string description,
 		string encryptCertificate,
 		boolean encryptRequests,
-		required string entityId,
+		string entityId,
 		string logoutResponseURL,
 		string signCertificate,
 		boolean signRequests,
-		required string SLOBinding,
-		required string SLOURL,
+		string SLOBinding,
+		string SLOURL,
 		string SSOBinding,
 		string SSOURL
 	) {
@@ -858,11 +858,11 @@ component accessors="true" {
 	*/
 	function addSAMLServiceProvider(
 		required string name,
-		required string ACSBinding,
-		required string ACSURL,
+		string ACSBinding,
+		string ACSURL,
 		boolean allowIdpInitiatedSSO,
 		string description,
-		required string entityId,
+		string entityId,
 		boolean logoutResponseSigned,
 		string signKeystoreAlias,
 		string signKeystorePassword,
