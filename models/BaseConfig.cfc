@@ -801,6 +801,7 @@ component accessors="true" {
 	* @SLOURL SLO URL
 	* @SSOBinding SSO Binding (REDIRECT, or POST)
 	* @SSOURL SSO URL
+	* @metadataUrl Metadata URL
 	*/
 	function addSAMLIdentityProvider(
 		required string name,
@@ -814,7 +815,8 @@ component accessors="true" {
 		string SLOBinding,
 		string SLOURL,
 		string SSOBinding,
-		string SSOURL
+		string SSOURL,
+		string metadataURL
 	) {
 		var SAMLIdentityProvider = {};
 		if( !isNull( description ) ) { SAMLIdentityProvider[ 'description' ] = description; }
@@ -828,6 +830,7 @@ component accessors="true" {
 		if( !isNull( SLOURL ) ) { SAMLIdentityProvider[ 'SLOURL' ] = SLOURL; }
 		if( !isNull( SSOBinding ) ) { SAMLIdentityProvider[ 'SSOBinding' ] = SSOBinding; }
 		if( !isNull( SSOURL ) ) { SAMLIdentityProvider[ 'SSOURL' ] = SSOURL; }
+		if( !isNull( metadataURL ) ) { SAMLIdentityProvider[ 'metadataURL' ] = metadataURL; }
 
 		var thisSAMLIdentityProviders = getSAMLIdentityProviders() ?: {};
 		thisSAMLIdentityProviders[ arguments.name ] = SAMLIdentityProvider;

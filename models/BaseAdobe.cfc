@@ -230,6 +230,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isNull( thisIdentityProvider.SLOURL ) ) { params.SLOURL = thisIdentityProvider.SLOURL }
 				if( !isNull( thisIdentityProvider.SSOBinding ) ) { params.SSOBinding = thisIdentityProvider.SSOBinding }
 				if( !isNull( thisIdentityProvider.SSOURL ) ) { params.SSOURL = thisIdentityProvider.SSOURL }
+				if( !isNull( thisIdentityProvider.metadataURL ) ) { params.metadataURL = thisIdentityProvider.metadataURL }
 
 				addSAMLIdentityProvider( argumentCollection = params );
 			}
@@ -1014,6 +1015,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isNull( SAMLIdentityProvider.SLOURL ) ) { currentSAMLIdentityProvider[ 'sloUrl' ] = SAMLIdentityProvider.SLOURL }
 				if( !isNull( SAMLIdentityProvider.SSOBinding ) ) { currentSAMLIdentityProvider[ 'ssoBinding' ] = SAMLIdentityProvider.SSOBinding }
 				if( !isNull( SAMLIdentityProvider.SSOURL ) ) { currentSAMLIdentityProvider[ 'ssoUrl' ] = SAMLIdentityProvider.SSOURL }
+				if( !isNull( SAMLIdentityProvider.metadataURL ) ) { currentSAMLIdentityProvider[ 'metadataUrl' ] = SAMLIdentityProvider.metadataURL }
 
 				thisConfig.IdentityProvidersMap[ SAMLIdentityProviderName ] = currentSAMLIdentityProvider;
 			}
@@ -2285,7 +2287,18 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		thisConfigRaw = thisConfigRaw.replaceNoCase( '<struct>', '<struct type="coldfusion.server.ConfigMap">', 'all' );
 		// Adobe started erroring out if the conenctionProps struct was of type ConfigMap.
 		thisConfigRaw = thisConfigRaw.replaceNoCase( '<var name=''CONNECTIONPROPS''><struct type="coldfusion.server.ConfigMap">', '<var name=''CONNECTIONPROPS''><struct>', 'all' );
-        local.thisConfigXML = XMLParse( thisConfigRaw );
+
+		if( configFilePath contains 'saml' ) {
+			local.thisConfigXML = XMLParse( thisConfigRaw );
+
+			var SPConfigs = xmlSearch( thisConfigXML, "/wddxPacket/data/struct/var[@name='ServiceProvidersMap']/struct/var/struct" )
+			SPConfigs.each( (node)=>node.XMLAttributes['type']='Lcoldfusion.saml.SpConfiguration;' );
+
+			var SPConfigs = xmlSearch( thisConfigXML, "/wddxPacket/data/struct/var[@name='IdentityProvidersMap']/struct/var/struct" )
+			SPConfigs.each( (node)=>node.XMLAttributes['type']='Lcoldfusion.saml.IdpConfiguration;' );
+
+			thisConfigRaw = toString( thisConfigXML );
+		}
 
 		writeXMLConfigFile( thisConfigRaw, configFilePath );
 	}
