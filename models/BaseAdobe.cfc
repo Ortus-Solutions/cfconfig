@@ -249,7 +249,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isNull( thisServiceProvider.description ) ) { params.description = thisServiceProvider.description }
 				if( !isNull( thisServiceProvider.entityId ) ) { params.entityId = thisServiceProvider.entityId }
 				if( !isNull( thisServiceProvider.logoutResponseSigned ) ) { params.logoutResponseSigned = thisServiceProvider.logoutResponseSigned }
-				if( !isNull( thisServiceProvider.signKeystoreAlias ) ) { params.sdfsdfsignKeystoreAliassdfsd = thisServiceProvider.signKeystoreAlias }
+				if( !isNull( thisServiceProvider.signKeystoreAlias ) ) { params.signKeystoreAlias = thisServiceProvider.signKeystoreAlias }
 				if( !isNull( thisServiceProvider.signKeystorePassword ) ) { params.signKeystorePassword = thisServiceProvider.signKeystorePassword }
 				if( !isNull( thisServiceProvider.signKeystorePath ) ) { params.signKeystorePath = thisServiceProvider.signKeystorePath }
 				if( !isNull( thisServiceProvider.signMetadata ) ) { params.signMetadata = thisServiceProvider.signMetadata }
