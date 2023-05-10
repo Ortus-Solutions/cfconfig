@@ -247,6 +247,8 @@ component accessors="true" {
 	property name='mailSignKeyPassword' type='string' _isCFConfig=true;
 	// true/false Log all mail messages sent by ColdFusion.  Select this check box to save the To, From, and Subject fields of messages to a log file.
 	property name='mailLogEnabled' type='boolean' _isCFConfig=true;
+	// true/false Maintain connection to mail server.  Select this check box to keep the connection to a mail server open for reuse after delivering a message (recommended).
+	property name='mailMaintainConnections' type='boolean' _isCFConfig=true;
 	// Error Log Severity. Select the type of SMTP-related error messages to log.
 	// One of the strings "debug", "information", "warning", "error"
 	property name='mailLogSeverity' type='string' _isCFConfig=true;

@@ -14,6 +14,9 @@
 		<var name='mailsentloggingenable'>
 			<boolean value='false'/>
 		</var>
+		<var name='maintainconnections'>
+			<boolean value='true'/>
+		</var>
 		<var name='timeout'>
 			<number>60.0</number>
 		</var>

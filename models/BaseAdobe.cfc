@@ -697,6 +697,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( thisConfig.keyAlias ) ) { setMailSignKeyAlias( thisConfig.keyAlias ); }
 		if( !isNull( thisConfig.keypassword ) ) { setMailSignKeyPassword( passwordManager.decryptMailServer( thisConfig.keypassword ) ); }
 		if( !isNull( thisConfig.mailsentloggingenable ) ) { setMailLogEnabled( thisConfig.mailsentloggingenable ); }
+		if( !isNull( thisConfig.maintainconnections ) ) { setMailMaintainConnections( thisConfig.maintainconnections ); }
 		if( !isNull( thisConfig.severity ) ) { setMailLogSeverity( thisConfig.severity ); }
 		if( !isNull( thisConfig.maxthreads ) ) { setMailMaxThreads( thisConfig.maxthreads ); }
 
@@ -1670,6 +1671,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getMailSignKeyAlias() ) ) { thisConfig.keyAlias = getMailSignKeyAlias(); }
 		if( !isNull( getMailSignKeyPassword() ) ) { thisConfig.keypassword = passwordManager.encryptMailServer( getMailSignKeyPassword() ); }
 		if( !isNull( getMailLogEnabled() ) ) { thisConfig.mailsentloggingenable = getMailLogEnabled() ? true : false; }
+		if( !isNull( getMailMaintainConnections() ) ) { thisConfig[ 'maintainconnections' ] = getMailMaintainConnections() ? true : false; }
 		if( !isNull( getMailLogSeverity() ) ) { thisConfig.severity = getMailLogSeverity(); }
 		if( !isNull( getMailMaxThreads() ) ) { thisConfig.maxthreads = getMailMaxThreads()+0; }
 
