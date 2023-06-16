@@ -261,6 +261,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( params[ 'always-set-timeout' ] ) ) { params[ 'alwaysSetTimeout' ] = params[ 'always-set-timeout' ]; }
 			if( !isNull( params[ 'bundle-name' ] ) ) { params[ 'bundleName' ] = params[ 'bundle-name' ]; }
 			if( !isNull( params[ 'bundle-version' ] ) ) { params[ 'bundleVersion' ] = params[ 'bundle-version' ]; }
+			// If we look to be using an Oracle service name, extract that.
+			if( params.dbdriver == 'oracle' && params.dsn.listLen( '/' ) > 1 ) {
+				params[ 'serviceName' ] = params.dsn.listLast( '/' )
+			}
+			// If we look to be using an Oracle SID, extract that.
+			if( params.dbdriver == 'oracle' && params.dsn contains 'jdbc:oracle:{drivertype}:@{host}:{port}:' && params.dsn != 'jdbc:oracle:{drivertype}:@{host}:{port}:{database}' ) {
+				params[ 'SID' ] = params.dsn.listLast( ':' )
+			}
 
 			if( !isNull( params[ 'custom' ] ) ) {
 				var customStruct = translateURLCodedPairsToStruct( params[ 'custom' ] );
@@ -962,7 +970,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			DSXMLNode.XMLAttributes[ 'custom' ] = buildDatasourceCustom( DSStruct.dbdriver, DSStruct.custom ?: '', DSStruct );
 
 			if( !isNull( DSStruct.dbdriver ) ) {
-				DSXMLNode.XMLAttributes[ 'dsn' ] = translateDatasourceURLToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.dsn ?: '' );
+				DSXMLNode.XMLAttributes[ 'dsn' ] = translateDatasourceURLToLucee( translateDatasourceDriverToLucee( DSStruct.dbdriver ), DSStruct.dsn ?: '', DSStruct.SID ?: '', DSStruct.serviceName ?: '' );
 			}
 
 			// Encrypt password again as we write it.
@@ -1815,13 +1823,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	}
 
-	private function translateDatasourceURLToLucee( required string driverName, required string JDBCUrl ) {
+	private function translateDatasourceURLToLucee( required string driverName, required string JDBCUrl, string SID='', string serviceName='' ) {
 
 		switch( driverName ) {
 			case 'MySQL' :
 				return 'jdbc:mysql://{host}:{port}/{database}';
 			case 'Oracle' :
-				return 'jdbc:oracle:{drivertype}:@{host}:{port}:{database}';
+				if( len( SID ) ) {
+					return 'jdbc:oracle:{drivertype}:@{host}:{port}:#SID#';
+				} else if( len( serviceName ) ) {
+					return 'jdbc:oracle:{drivertype}:@{host}:{port}/#serviceName#';
+				} else {
+					return 'jdbc:oracle:{drivertype}:@{host}:{port}:{database}';
+				}
 			case 'PostgreSql' :
 				return 'jdbc:postgresql://{host}:{port}/{database}';
 			case 'MSSQL' :
