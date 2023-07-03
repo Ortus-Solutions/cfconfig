@@ -261,13 +261,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( params[ 'always-set-timeout' ] ) ) { params[ 'alwaysSetTimeout' ] = params[ 'always-set-timeout' ]; }
 			if( !isNull( params[ 'bundle-name' ] ) ) { params[ 'bundleName' ] = params[ 'bundle-name' ]; }
 			if( !isNull( params[ 'bundle-version' ] ) ) { params[ 'bundleVersion' ] = params[ 'bundle-version' ]; }
-			// If we look to be using an Oracle service name, extract that.
-			if( params.dbdriver == 'oracle' && params.dsn.listLen( '/' ) > 1 ) {
-				params[ 'serviceName' ] = params.dsn.listLast( '/' )
-			}
-			// If we look to be using an Oracle SID, extract that.
-			if( params.dbdriver == 'oracle' && params.dsn contains 'jdbc:oracle:{drivertype}:@{host}:{port}:' && params.dsn != 'jdbc:oracle:{drivertype}:@{host}:{port}:{database}' ) {
-				params[ 'SID' ] = params.dsn.listLast( ':' )
+
+			if( !isNull( params[ 'dbdriver' ] ) ) {
+				// If we look to be using an Oracle service name, extract that.
+				if( params.dbdriver == 'oracle' && params.dsn.listLen( '/' ) > 1 ) {
+					params[ 'serviceName' ] = params.dsn.listLast( '/' )
+				}
+				// If we look to be using an Oracle SID, extract that.
+				if( params.dbdriver == 'oracle' && params.dsn contains 'jdbc:oracle:{drivertype}:@{host}:{port}:' && params.dsn != 'jdbc:oracle:{drivertype}:@{host}:{port}:{database}' ) {
+					params[ 'SID' ] = params.dsn.listLast( ':' )
+				}
 			}
 
 			if( !isNull( params[ 'custom' ] ) ) {
