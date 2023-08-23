@@ -142,8 +142,8 @@ component accessors=true singleton {
 				result.format = 'adobe';
 
 				// Now that we know it's Adobe, try and detect version
-				if( fileExists( CFHomePath & '/bin/cf-init.sh' ) ) {
-					var initContents = fileRead( CFHomePath & '/bin/cf-init.sh' );
+				if( fileExists( CFHomePath & '/bin/cf-init.sh' ) || fileExists( CFHomePath & '/bin/cf-init-run.sh' ) ) {
+					var initContents = fileExists( CFHomePath & '/bin/cf-init.sh' ) ? fileRead( CFHomePath & '/bin/cf-init.sh' ) : fileRead( CFHomePath & '/bin/cf-init-run.sh' );
 					var findVersion = initContents.reFind( '.*VERSION="([0-9]*)".*', 1, true );
 					if( findVersion.pos.len() > 1 && findVersion.pos[ 2 ] ) {
 						result.version = initContents.mid( findVersion.pos[ 2 ], findVersion.len[ 2 ] );
