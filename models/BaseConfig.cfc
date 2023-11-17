@@ -695,7 +695,8 @@ component accessors="true" {
 		boolean isHTTPS=false,
 		numeric weight=2,
 		boolean isLocal,
-		boolean isEnabled=true
+		boolean isEnabled=true,
+		string engine
 	) {
 
 		if( isNull( arguments.isLocal ) ) {
@@ -713,6 +714,7 @@ component accessors="true" {
 		PDFServiceManager[ 'weight' ] = weight;
 		PDFServiceManager[ 'isLocal' ] = isLocal;
 		PDFServiceManager[ 'isEnabled' ] = isEnabled;
+		PDFServiceManager[ 'engine' ] = engine ?: 'WebKit';
 
 		var thisPDFServiceManagers = getPDFServiceManagers() ?: {};
 		thisPDFServiceManagers[ arguments.name ] = PDFServiceManager;
