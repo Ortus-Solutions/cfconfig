@@ -361,5 +361,6 @@ for every argument defined lucee tries to call a matching setter method
 		<driver bundle-name="jtds" bundle-version="1.2.5" class="net.sourceforge.jtds.jdbc.Driver" label="jTDS (MSSQL,Sybase)"/>
 		<driver bundle-name="com.mysql.jdbc" bundle-version="5.1.38" class="com.mysql.jdbc.Driver" label="MySQL"/>
 	</jdbc>
-	<search engine-bundle-name="lucene.search.extension" engine-bundle-version="2.4.1.29" engine-class="org.lucee.extension.search.lucene.LuceneSearchEngine"/>
+    <search engine-bundle-name="lucene.search.extension" engine-bundle-version="2.4.1.29" engine-class="org.lucee.extension.search.lucene.LuceneSearchEngine"/>
+    <mode develop="false"/>
 </cfLuceeConfiguration>
