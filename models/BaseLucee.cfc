@@ -1673,7 +1673,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 
 		thisConfig.schedule.XMLChildren = [];
-
+		
 		for( var taskName in getScheduledTasks() ?: {} ) {
 
 			var thisTask = getScheduledTasks()[ taskName ];
@@ -1726,11 +1726,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			}
 
 			thisConfig.schedule.XMLChildren.append( taskXMLNode );
-
-			// Ensure the parent directories exist
-			directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
-			fileWrite( configFilePath, toString( thisConfig ) );
 		}
+
+		// Ensure the parent directories exist
+		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
+		fileWrite( configFilePath, toString( thisConfig ) );
+
 	}
 
 
