@@ -1694,7 +1694,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( !isNull( thisTask.unique ) ) { taskXMLNode.XMLAttributes[ 'unique' ] = thisTask.unique; }
 			if( !isNull( thisTask.hidden ) ) { taskXMLNode.XMLAttributes[ 'hidden' ] = thisTask.hidden; }
 			if( !isNull( thisTask.autoDelete ) ) { taskXMLNode.XMLAttributes[ 'autoDelete' ] = thisTask.autoDelete; }
-			if( !isNull( thisTask.interval ) ) { taskXMLNode.XMLAttributes[ 'interval' ] = thisTask.interval; }
+			if( !isNull( thisTask.interval ) && len( thisTask.interval ) && ( listFindNoCase( "once,daily,monthly,weekly", thisTask.interval ) || isNumeric( thisTask.interval ) ) ) { 
+				taskXMLNode.XMLAttributes[ 'interval' ] = thisTask.interval;
+			} else {
+				throw( "Invalid interval specified for scheduled task '" & thisName & "'.  Valid values are 'once', 'daily', 'monthly', 'weekly', or a number." );
+			}
 			if( !isNull( thisTask.proxyServer ) ) { taskXMLNode.XMLAttributes[ 'proxyHost' ] = thisTask.proxyServer; }
 			if( !isNull( thisTask.proxyUser ) ) { taskXMLNode.XMLAttributes[ 'proxyUser' ] = thisTask.proxyUser; }
 			if( !isNull( thisTask.proxyPassword ) ) { taskXMLNode.XMLAttributes[ 'proxyPassword' ] = thisTask.proxyPassword; }
