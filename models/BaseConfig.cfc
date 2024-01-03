@@ -505,6 +505,9 @@ component accessors="true" {
 	//property name='cfxTags' type='string' _isCFConfig=true;
 
 
+	// Developer Mode (Lucee only)
+	property name='developerMode' type='boolean' _isCFConfig=true;
+
 	// Enable logging for scheduled tasks
 	property name='schedulerLoggingEnabled' type='boolean' _isCFConfig=true;
 	property name='schedulerClusterDatasource' type='string' _isCFConfig=true;

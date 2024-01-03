@@ -149,6 +149,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		var theComponent = xmlSearch( thisConfig, '/cfLuceeConfiguration/component' );
 		if( theComponent.len() ){ readComponent( theComponent[ 1 ] ); }
 
+        var developerMode = xmlSearch( thisConfig, '/cfLuceeConfiguration/mode' );
+		if( developerMode.len() ){ readDeveloperMode( developerMode[ 1 ] ); }
+
 		readAuth( thisConfig.XMLRoot );
 
 		readConfigChanges( thisConfig.XMLRoot );
@@ -679,6 +682,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 	}
 
+    private function readDeveloperMode( developerMode ) {
+		var config = developerMode.XMLAttributes;
+		if( !isNull( config.develop ) ) { setDeveloperMode( config.develop ); };
+	}
+
 	/**
 	* I write out config
 	*
@@ -738,6 +746,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeUpdate( thisConfig );
 		writeSystem( thisConfig );
 		writeQueue( thisConfig );
+        writeDeveloperMode( thisConfig );
 
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
@@ -1726,6 +1735,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 
+    private function writeDeveloperMode( thisConfig ) {
+		var modeSearch = xmlSearch( thisConfig, '/cfLuceeConfiguration/mode' );
+		if( modeSearch.len() ) {
+			var mode = modeSearch[1];
+		} else {
+			var mode = xmlElemnew( thisConfig, 'mode' );
+		}
+
+		var config = mode.XMLAttributes;
+        if( !isNull( getDeveloperMode() ) ) { config[ 'develop' ] = getDeveloperMode(); }
+    }
+
+
 	/**
 	* I find the actual Lucee 4.x context config file
 	*/
@@ -2110,5 +2132,4 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			entry[ 'custom' ] = translateStructToURLCodedPairs( entry.custom );
 		}
 	}
-
 }
