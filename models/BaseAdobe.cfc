@@ -308,7 +308,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setRequestTimeoutEnabled( thisConfig[ 10 ].timeoutRequests );
 		// Convert from seconds to timespan
 		setRequestTimeout( '0,0,0,#thisConfig[ 10 ].timeoutRequestTimeLimit#' );
-		setPostParametersLimit( thisConfig[ 10 ].postParametersLimit );
+		if( !isNull( thisConfig[ 10 ].postParametersLimit ) ) { setPostParametersLimit( thisConfig[ 10 ].postParametersLimit ); }
 		setPostSizeLimit( thisConfig[ 10 ].postSizeLimit );
 
 		// Request Tuning
@@ -332,7 +332,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			setInspectTemplate( 'always' );
 		}
 		setSaveClassFiles(  thisConfig[ 11 ].saveClassFiles  );
-		setComponentCacheEnabled( thisConfig[ 11 ].componentCacheEnabled );
+		if( !isNull( thisConfig[ 11 ].componentCacheEnabled ) ) { setComponentCacheEnabled( thisConfig[ 11 ].componentCacheEnabled ); }
 		if( !isNull( thisConfig[ 11 ].enableInternalQueryCache ) ) { setQueryInternalCacheEnabled( thisConfig[ 11 ].enableInternalQueryCache ); }
 
 		setMailDefaultEncoding( thisConfig[ 12 ].defaultMailCharset );
@@ -344,7 +344,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		setPerAppSettingsEnabled( thisConfig[ 16 ].isPerAppSettingsEnabled );
 		// Adobe stores the inverse of Lucee
-		setUDFTypeChecking( !thisConfig[ 16 ].cfcTypeCheckEnabled );
+		if( !isNull( thisConfig[ 16 ].cfcTypeCheckEnabled ) ) { setUDFTypeChecking( !thisConfig[ 16 ].cfcTypeCheckEnabled ); }
 		setDisableInternalCFJavaComponents( thisConfig[ 16 ].disableServiceFactory );
 
 		// This setting CF11+
@@ -385,15 +385,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// This setting CF11+
 		if( !isNull( thisConfig[ 16 ].allowappvarincontext ) ) { setAllowApplicationVarsInServletContext( thisConfig[ 16 ].allowappvarincontext ); }
 
-		setCFaaSGeneratedFilesExpiryTime( thisConfig[ 16 ].CFaaSGeneratedFilesExpiryTime );
+		if( !isNull( thisConfig[ 16 ].CFaaSGeneratedFilesExpiryTime ) ) { setCFaaSGeneratedFilesExpiryTime( thisConfig[ 16 ].CFaaSGeneratedFilesExpiryTime ); }
 
 		if(structKeyExists(thisConfig[ 16 ], "ORMSearchIndexDirectory")){
 			setORMSearchIndexDirectory( thisConfig[ 16 ].ORMSearchIndexDirectory );
 		}
 
-		setGoogleMapKey( thisConfig[ 16 ].googleMapKey );
-		setServerCFCEenabled( thisConfig[ 16 ].enableServerCFC );
-		setServerCFC( thisConfig[ 16 ].serverCFC );
+		if( !isNull( thisConfig[ 16 ].googleMapKey ) ) { setGoogleMapKey( thisConfig[ 16 ].googleMapKey ); }
+		if( !isNull( thisConfig[ 16 ].enableServerCFC ) ) { setServerCFCEenabled( thisConfig[ 16 ].enableServerCFC ); }
+		if( !isNull( thisConfig[ 16 ].serverCFC ) ) { setServerCFC( thisConfig[ 16 ].serverCFC ); }
 
 		// This setting CF11+
 		if( !isNull( thisConfig[ 16 ].compileextforinclude ) ) { setCompileExtForCFInclude( thisConfig[ 16 ].compileextforinclude ); }
@@ -419,18 +419,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( thisConfig[ 16 ][ 'blockedExtForFileUpload' ] ) ) { setBlockedExtForFileUpload( thisConfig[ 16 ][ 'blockedExtForFileUpload' ] ); }
 		if( !isNull( thisConfig[ 16 ][ 'enableNullSupport' ] ) ) { setNullSupport( thisConfig[ 16 ][ 'enableNullSupport' ] ); }
 
-		// Map Adobe values to shared Lucee settings
-		switch( thisConfig[ 16 ].applicationCFCSearchLimit ) {
-			case '1' :
-				setApplicationMode( 'curr2driveroot' );
-				break;
-			case '2' :
-				setApplicationMode( 'curr2root' );
-				break;
-			case '3' :
-				setApplicationMode( 'currorroot' );
+		if( !isNull( thisConfig[ 16 ].applicationCFCSearchLimit ) ) {
+			// Map Adobe values to shared Lucee settings
+			switch( thisConfig[ 16 ].applicationCFCSearchLimit ) {
+				case '1' :
+					setApplicationMode( 'curr2driveroot' );
+					break;
+				case '2' :
+					setApplicationMode( 'curr2root' );
+					break;
+				case '3' :
+					setApplicationMode( 'currorroot' );
+			}
 		}
-
 		if( !isNull( thisConfig[ 16 ][ 'sessionStorage' ] ) ) { setSessionStorageLocation( thisConfig[ 16 ][ 'sessionStorage' ] ); }
 		if( !isNull( thisConfig[ 16 ][ 'sessionStoragePassword' ] ) ) {
 			// Just in case an empty string ever makes it in here, don't try and decrypt it
