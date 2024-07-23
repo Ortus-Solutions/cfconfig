@@ -43,9 +43,10 @@ CFConfig covers most of the common settings you'll find in Adobe and Lucee serve
 
 The current list of supported engines is:
 
-* **Adobe ColdFusion 9, 10, 11, 2016, 2018, 2021**
+* **Adobe ColdFusion 9, 10, 11, 2016, 2018, 2021, 2023**
 * **Lucee 4, 5, 6**
 * **Railo 4**
+* **BoxLang 1**
 
 If you find a setting or feature which is not supported, please send a pull request or add a ticket so we can track it.
 
@@ -75,6 +76,8 @@ Not all the data it stores applies to every engine though.  The `BaseConfig.cfc`
 * **Adobe2016.cfc** - Adobe Coldfusion 2016
 * **Adobe2018.cfc** - Adobe Coldfusion 2018
 * **Adobe2021.cfc** - Adobe Coldfusion 2021
+* **Adobe2023.cfc** - Adobe Coldfusion 2023
+* **BoxLang1.cfc** - BoxLang 1.0.0
 
 ## Usage
 
@@ -144,6 +147,9 @@ An example would be:
 ```
 C:/ColdFusion11/cfusion/
 ```
+
+BoxLang servers expect the `CFHomePath` to be the `config` folder containing the `boxlang.json` file.
+Ex: C:/users/brad/.boxlang/config/
 
 The code in this library has only been tested on Lucee and likely doesn't work on Adobe ColdFusion.  If anyone wants to make it compatible, feel free to try by beware of tons of use of the Elvis operator, reliance on sorted JSON structs, and some specific WDDX behavior.
 

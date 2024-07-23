@@ -27,6 +27,7 @@ component accessors="true" {
 	// The config file to read/write from/to
 	// - For adobe, it's <installDir>/cfusion
 	// - For Railo/Lucee, it's the server context or web context folder
+	// - For BoxLang, it's the config folder inside the server home
 	// - For generic JSON config, it's just the folder you want to read/write from
 	property name='CFHomePath' type='string';
 
@@ -1634,40 +1635,50 @@ component accessors="true" {
 	*
 	* @memento The config data to set
 	*/
-	function mergeMemento( required struct memento ){
+	function mergeMemento( required struct memento, target=variables ){
 
 		// For array configs, here is the name of the nested key in the struct to compare to determine uniqueness.
 		// An empty string means the array is just a simple array of strings to compare directly, not a struct.
 		var arrayMap = {
 			'mailServers' : 'smtp',
 			'customTagPaths' : 'physical',
+			'customTagMappings' : 'physical',
 			'extensionProviders' : '',
 			'logFilesDisabled' : '',
 			'eventGatewayInstances' : 'gatewayId',
-			'eventGatewayConfigurations' : 'type'
+			'eventGatewayConfigurations' : 'type',
+			'componentMappings' : 'virtual',
+			'dumpWriters' : 'name',
+			'resourceProviders' : 'scheme',
+			'extensions' : 'id',
+			'cacheClasses' : 'class'
 		};
 
 		for( var prop in memento ) {
 			var setting = memento[ prop ];
 			if( isSimpleValue( setting ) ) {
-				variables[ prop ] = setting;
+				target[ prop ] = setting;
 			} else if( isStruct( setting ) ) {
-				variables[ prop ] = variables[ prop ] ?: {};
-				structAppend( variables[ prop ], setting, true );
+				target[ prop ] = target[ prop ] ?: {};
+				structAppend( target[ prop ], setting, true );
 			} else if( isArray( setting ) ) {
-				variables[ prop ] = variables[ prop ] ?: [];
+				target[ prop ] = target[ prop ] ?: [];
 				if( !arrayMap.keyExists( prop ) ) {
 					throw( message='Array config type [#prop#] not mapped for merging.  Please report this as a bug.', type='cfconfigException' );
 				}
 				var uniqueKey = arrayMap[ prop ];
 				for( var item in setting ) {
 					if( uniqueKey == '' ) {
-						var exists = variables[ prop ].containsNoCase( item );
+						// Lucee returns the index, not a boolean
+						var exists = target[ prop ].containsNoCase( item );
 					} else {
-						var exists = variables[ prop ].find( (p)=>p[ uniqueKey ] == item[ uniqueKey ] );
+						var exists = target[ prop ].find( (p)=>p.keyExists(uniqueKey) && p[ uniqueKey ] == item[ uniqueKey ] );
 					}
 					if( !exists ) {
-						variables[ prop ].append( item );
+						target[ prop ].append( item );
+					} else {
+						// Merge the item into the existing one
+						mergeMemento( item, target[ prop ][ exists ] );
 					}
 				}
 			}
@@ -1730,6 +1741,114 @@ component accessors="true" {
 		 } );
 
 		return sortedStruct;
+	}
+
+	/**
+	* Escapes placeholders like ${foo} in all deep struct keys and array elements with \${foo}.
+	* This will recursively follow all nested structs and arrays.
+	*
+	* @dataStructure A string, struct, or array to perform deep replacement on.
+	*/
+	function escapeDeepSystemSettings( required any dataStructure ) {
+		// If it's a struct...
+		if( isStruct( dataStructure ) ) {
+			// Loop over and process each key
+			for( var key in dataStructure ) {
+				var expandedKey = escapeSystemSettings( key );
+				if( isNull( dataStructure[ key ] ) ) {
+					dataStructure[ expandedKey ] = nullValue();
+				} else {
+					dataStructure[ expandedKey ] = escapeDeepSystemSettings( dataStructure[ key ] );
+				}
+				if( expandedKey != key ) dataStructure.delete( key );
+			}
+			return dataStructure;
+		// If it's an array...
+		} else if( isArray( dataStructure ) ) {
+			var i = 0;
+			// Loop over and process each index
+			for( var item in dataStructure ) {
+				i++;
+				if( !isNull( item ) ) {
+					dataStructure[ i ] = escapeDeepSystemSettings( item );
+				}
+			}
+			return dataStructure;
+		// If it's a string...
+		} else if ( isSimpleValue( dataStructure ) ) {
+			// Just do the replacement
+			return escapeSystemSettings( dataStructure );
+		}
+		// Other complex variables like XML or CFC instance would just get skipped for now.
+		return dataStructure;
+	}
+
+
+	/**
+	* Escapes placeholders like ${foo} in a string with \${foo}.
+	*
+	* @text The string to do the replacement on
+	*/
+	function escapeSystemSettings( required string text ) {
+		// escape all system settings
+		return reReplaceNoCase( text, '(\$\{.*?})', '\\1', 'all' );
+	}
+
+	any function readJSONC( string configFilePath ) {
+		
+		if( !fileExists( configFilePath ) ) {
+			throw 'The config file #configFilePath# does not exist';
+		}
+
+		var configDataStr = fileRead(configFilePath);
+		// Remove single-line comments
+		configDataStr = reReplace(configDataStr, "(\s|\n)//.*?(\r\n|\n|\r)", "\1\2", "all");
+		// Remove multi-line and Javadoc-style comments more accurately
+		configDataStr = reReplace(configDataStr, "/\*.*?\*/", "", "all");
+		
+		try {
+		var configData = deserializeJSON(configDataStr);
+		} catch (any e) {
+			SystemOutput( configDataStr, 1 );
+			SystemOutput( 'The config file #configFilePath# is not valid JSON, or the comments weren''t removed properly.', 1 );
+			rethrow;
+		}
+		return configData;
+	}
+
+
+	/**
+	* Merges data from source into target
+	*/
+	function mergeData( any target, any source ) {
+
+		// If it's a struct...
+		if( isStruct( source ) && !isObject( source ) && isStruct( target ) && !isObject( target ) ) {
+			// Loop over and process each key
+			for( var key in source ) {
+				var value = source[ key ];
+				if( isSimpleValue( value ) ) {
+					target[ key ] = value;
+				} else if( isStruct( value ) ) {
+					target[ key ] = target[ key ] ?: {};
+					mergeData( target[ key ], value )
+				} else if( isArray( value ) ) {
+					target[ key ] = target[ key ] ?: [];
+					mergeData( target[ key ], value )
+				}
+			}
+		// If it's an array...
+		} else if( isArray( source ) && isArray( target ) ) {
+			var i=0;
+			for( var value in source ) {
+				if( !isNull( value ) ) {
+					// For arrays, just append them into the target without overwriting existing items
+					target.append( value );
+				}
+			}
+		}
+		return target;
+
 	}
 
 }

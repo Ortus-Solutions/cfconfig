@@ -48,10 +48,10 @@ component accessors=true singleton {
 	/**
 	* Find the matching config provider based on the format name and version you want to interact with
 	*
-	* @format Name of format such as 'adobe', 'luceeWeb', or 'luceeServer'
+	* @format Name of format such as 'adobe', 'luceeWeb', or 'luceeServer', or 'boxlang'
 	* @versionName The version of the format you want to interact with. 11 is turned into 11.0.0
 	*
-	* @returns A concerete Config class such as JSONConfig, Adobe11, or Lucee5Server.
+	* @returns A concerete Config class such as JSONConfig, Adobe11, or Lucee5Server, or BoxLang1.
 	* @throws cfconfigNoProviderFound if a provider isn't found that matches the format and version provided
 	*/
 	function determineProvider( required string format, required string version ) {
@@ -82,7 +82,7 @@ component accessors=true singleton {
 	/**
 	* Find the config provider for the given format with the highest version.
 	*
-	* @format Name of format such as 'adobe', 'luceeWeb', or 'luceeServer'
+	* @format Name of format such as 'adobe', 'luceeWeb', or 'luceeServer', or 'boxlang'
 	*
 	* @returns A concerete Config class such as JSONConfig, Adobe11, or Lucee5Server.
 	* @throws cfconfigNoProviderFound if a provider isn't found that matches the format and version provided
@@ -136,6 +136,20 @@ component accessors=true singleton {
 
 		// If this is a directory and it exists
 		if( directoryExists( CFHomePath ) ) {
+
+			// Check for BoxLang Server
+			if( fileExists( CFHomePath & '/boxlang.json' ) ) {
+				result.format = 'boxlang';
+				result.version = 1;
+				// look for a version.properties files up one directory and read the `version` property from it
+				var boxlangVersionFile = expandPath( CFHomePath & '/../version.properties' )
+				if( fileExists( boxlangVersionFile ) ) {					
+					var pf = wirebox.getInstance( 'propertyFile@propertyFile' );
+					pf.load( dotenvFile );
+					result.version = pf.get( 'version', 1 );
+				}
+				return result;
+			}
 
 			// Check for Adobe server
 			if( fileExists( CFHomePath & '/lib/cfusion.jar' ) OR fileExists( CFHomePath & '/lib/neo-runtime.xml' ) ) {
