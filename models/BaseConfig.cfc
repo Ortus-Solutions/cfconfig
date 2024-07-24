@@ -1676,7 +1676,7 @@ component accessors="true" {
 					}
 					if( !exists ) {
 						target[ prop ].append( item );
-					} else {
+					} else if( isStruct( item ) ) {
 						// Merge the item into the existing one
 						mergeMemento( item, target[ prop ][ exists ] );
 					}
