@@ -78,6 +78,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData.delete( 'customTagMappings' );
 		}
 
+		// Convert whitespaceManagement to cfmlWriter using translate functions
+		if( configData.keyExists( 'cfmlWriter' ) ) {
+			configData[ 'whitespaceManagement' ] = translateWhitespaceFromLucee( configData.cfmlWriter );
+			configData.delete( 'cfmlWriter' );
+		}
+
 		// Convert salt to adminSalt
 		if( configData.keyExists( 'salt' ) ) {
 			configData[ 'adminSalt' ] = configData.salt;
@@ -212,6 +218,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( configData.keyExists( 'CFMappings' ) ) {
 			configData[ 'mappings' ] = configData.CFMappings;
 			configData.delete( 'CFMappings' );
+		}
+
+		// convert cfmlWriter to whitespaceManagement using translate functions
+		if( configData.keyExists( 'whitespaceManagement' ) ) {
+			configData[ 'cfmlWriter' ] = translateWhitespaceToLucee( configData.whitespaceManagement );
+			configData.delete( 'whitespaceManagement' );
 		}
 
 		// convert ComponentPaths to componentMappings
@@ -372,6 +384,39 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return 'EHCache';
 			default :
 				return '';
+		}
+
+	}
+
+	private function translateWhitespaceToLucee( required string whitespaceManagement ) {
+
+		switch( whitespaceManagement ) {
+			case 'off' :
+			case 'regular' :
+				return 'regular';
+			case 'simple' :
+			case 'white-space' :
+				return 'white-space';
+			case 'smart' :
+			case 'white-space-pref' :
+				return 'white-space-pref';
+			default :
+				return 'regular';
+		}
+
+	}
+
+	private function translateWhitespaceFromLucee( required string whitespaceManagement ) {
+
+		switch( whitespaceManagement ) {
+			case 'regular' :
+				return 'off';
+			case 'white-space' :
+				return 'simple';
+			case 'white-space-pref' :
+				return 'smart';
+			default :
+				return 'off';
 		}
 
 	}
