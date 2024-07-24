@@ -102,10 +102,21 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData.datasources.delete( 'preserveSingleQuote' );
 		}
 
+		// again, but psq this time
+		if( configData.keyExists( 'datasources' ) && configData.datasources.keyExists( 'psq' ) ) {
+			configData[ 'datasourcePreserveSingleQuotes' ] = configData.datasources.psq;
+			configData.datasources.delete( 'psq' );
+		}psq
+
 		// loop over datasources, is password exists, decrypt it
 		if( configData.keyExists( 'datasources' ) ) {
 			for( var datasourceName in configData.datasources ) {
 				var datasource = configData.datasources[ datasourceName ];
+				// delete any non-struct values
+				if( !isStruct( datasource ) ) {
+					systemOutput( 'Deleting datasource ' & datasourceName & ' because it is not a struct', 1 );
+					configData.datasources.delete( datasourceName );
+				}
 				if( datasource.keyExists( 'password' ) && left( datasource.password, 10 ) == 'encrypted:' ) {
 					datasource[ 'password' ] = passwordManager.decryptDataSource( replaceNoCase( datasource.password, 'encrypted:', '' ) );
 				}
