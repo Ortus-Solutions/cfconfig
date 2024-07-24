@@ -121,7 +121,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( configData.keyExists( 'CustomTagPaths' ) ) {
 			// BoxLang uses a different key for customTagsDirectory
 			configData[ 'customTagsDirectory' ] = configData.CustomTagPaths
-				.filter( ( mappingStruct) => mappingStruct.keyExists( 'physical' ) )	
+				.filter( ( mappingStruct) => mappingStruct.keyExists( 'physical' ) )
 				.map( ( mappingStruct ) => mappingStruct.physical );
 			configData.delete( 'CustomTagPaths' );
 		}
@@ -144,8 +144,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// merge with existing data
 		if( fileExists( configFilePath ) ) {
 			existingData = readJSONC( configFilePath );
-			mergeData( existingData, configData )
+			mergeMemento( configData, existingData )
+		} else {
+			existingData = configData;
 		}
+		
+		// Make sure this never makes it to the hard drive
+		structDelete( existingData, 'adminPassword' );
 		fileWrite( configFilePath, JSONPrettyPrint.formatJson( serializeJSON( existingData ) ) );
 
 		return this;

@@ -1807,7 +1807,7 @@ component accessors="true" {
 		configDataStr = reReplace(configDataStr, "/\*.*?\*/", "", "all");
 		
 		try {
-		var configData = deserializeJSON(configDataStr);
+			var configData = deserializeJSON(configDataStr);
 		} catch (any e) {
 			SystemOutput( configDataStr, 1 );
 			SystemOutput( 'The config file #configFilePath# is not valid JSON, or the comments weren''t removed properly.', 1 );
@@ -1816,39 +1816,5 @@ component accessors="true" {
 		return configData;
 	}
 
-
-	/**
-	* Merges data from source into target
-	*/
-	function mergeData( any target, any source ) {
-
-		// If it's a struct...
-		if( isStruct( source ) && !isObject( source ) && isStruct( target ) && !isObject( target ) ) {
-			// Loop over and process each key
-			for( var key in source ) {
-				var value = source[ key ];
-				if( isSimpleValue( value ) ) {
-					target[ key ] = value;
-				} else if( isStruct( value ) ) {
-					target[ key ] = target[ key ] ?: {};
-					mergeData( target[ key ], value )
-				} else if( isArray( value ) ) {
-					target[ key ] = target[ key ] ?: [];
-					mergeData( target[ key ], value )
-				}
-			}
-		// If it's an array...
-		} else if( isArray( source ) && isArray( target ) ) {
-			var i=0;
-			for( var value in source ) {
-				if( !isNull( value ) ) {
-					// For arrays, just append them into the target without overwriting existing items
-					target.append( value );
-				}
-			}
-		}
-		return target;
-
-	}
 
 }
