@@ -314,7 +314,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			existingData = readJSONC( configFilePath );
 		} else {
 			// Load template data
-			existingData = readJSONC( expandPath( '/cfconfig-services/resources/lucee6/.CFConfig-base.json' ) );
+			existingData = readJSONC( expandPath( '/cfconfig-services/resources/lucee6/CFConfig-base.json' ) );
 		}
 		mergeMemento( configData, existingData )
 		// Make sure this never makes it to the hard drive
