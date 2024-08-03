@@ -78,6 +78,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData.delete( 'customTagMappings' );
 		}
 
+		// convert customTagDeepSearch to customTagSearchSubdirectories
+		if( configData.keyExists( 'customTagDeepSearch' ) ) {
+			configData[ 'customTagSearchSubdirectories' ] = configData.customTagDeepSearch;
+			configData.delete( 'customTagDeepSearch' );
+		}
+
 		// Convert whitespaceManagement to cfmlWriter using translate functions
 		if( configData.keyExists( 'cfmlWriter' ) ) {
 			configData[ 'whitespaceManagement' ] = translateWhitespaceFromLucee( configData.cfmlWriter );
@@ -243,6 +249,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( configData.keyExists( 'customTagPaths' ) ) {
 			configData[ 'customTagMappings' ] = configData.customTagPaths;
 			configData.delete( 'customTagPaths' );
+		}
+
+		// convert customTagSearchSubdirectories to customTagDeepSearch
+		if( configData.keyExists( 'customTagSearchSubdirectories' ) ) {
+			configData[ 'customTagDeepSearch' ] = configData.customTagSearchSubdirectories;
+			configData.delete( 'customTagSearchSubdirectories' );
 		}
 
 		// Convert adminSalt to salt
