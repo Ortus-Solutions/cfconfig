@@ -1608,7 +1608,7 @@ component accessors="true" {
 		}
 		// Force keys to be alphabetizes for consistent serialization
 		memento = convertStructToSorted( memento );
-
+		
 		// This could be an empty struct if nothing has been set.
 		return memento;
 	}
@@ -1645,6 +1645,9 @@ component accessors="true" {
 			'customTagMappings' : 'physical',
 			'extensionProviders' : '',
 			'logFilesDisabled' : '',
+			'javaLibraryPaths' : '',
+			'customTagsDirectory' : '',
+			'modulesDirectory' : '',
 			'eventGatewayInstances' : 'gatewayId',
 			'eventGatewayConfigurations' : 'type',
 			'componentMappings' : 'virtual',

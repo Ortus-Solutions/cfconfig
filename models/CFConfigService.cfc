@@ -145,7 +145,7 @@ component accessors=true singleton {
 				var boxlangVersionFile = expandPath( CFHomePath & '/../version.properties' )
 				if( fileExists( boxlangVersionFile ) ) {					
 					var pf = wirebox.getInstance( 'propertyFile@propertyFile' );
-					pf.load( dotenvFile );
+					pf.load( boxlangVersionFile );
 					result.version = pf.get( 'version', 1 );
 				}
 				return result;

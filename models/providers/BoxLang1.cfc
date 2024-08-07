@@ -37,7 +37,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 
 		var configFilePath = getCFHomePath() & '/boxlang.json';
-		configData = readJSONC( configFilePath );
+		var configData = readJSONC( configFilePath );
 
 		// Escape any BoxLang system settings like ${user-dir} that CommandBox shouldn't bother with
 		configData = escapeDeepSystemSettings( configData );
@@ -77,7 +77,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData[ 'thisLocale' ] = configData.locale;
 			configData.delete( 'locale' );
 		}
-		
 		
 		setMemento( configData );
 		return this;
