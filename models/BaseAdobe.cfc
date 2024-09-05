@@ -335,6 +335,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( thisConfig[ 11 ].componentCacheEnabled ) ) { setComponentCacheEnabled( thisConfig[ 11 ].componentCacheEnabled ); }
 		if( !isNull( thisConfig[ 11 ].enableInternalQueryCache ) ) { setQueryInternalCacheEnabled( thisConfig[ 11 ].enableInternalQueryCache ); }
 
+		if( !isNull( thisConfig[ 11 ].serverCacheType ) ) { setServerCacheType( thisConfig[ 11 ].serverCacheType ); }
+		if( !isNull( thisConfig[ 11 ].redisCacheStorageHost ) ) { setRedisCacheStorageHost( thisConfig[ 11 ].redisCacheStorageHost ); }
+		if( !isNull( thisConfig[ 11 ].redisCacheStoragePort ) ) { setRedisCacheStoragePort( thisConfig[ 11 ].redisCacheStoragePort ); }
+		if( !isNull( thisConfig[ 11 ].redisCacheStoragePassword ) ) { setRedisCacheStoragePassword( thisConfig[ 11 ].redisCacheStoragePassword ); }
+		if( !isNull( thisConfig[ 11 ].redisCacheStorageIsSSL ) ) { setRedisCacheStorageIsSSL( thisConfig[ 11 ].redisCacheStorageIsSSL ); }
+
 		setMailDefaultEncoding( thisConfig[ 12 ].defaultMailCharset );
 
 		setCFFormScriptDirectory( thisConfig[ 14 ].CFFormScriptSrc );
@@ -1152,23 +1158,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getComponentCacheEnabled() ) ) { thisConfig[ 11 ].componentCacheEnabled = ( getComponentCacheEnabled() ? true : false ); }
 		if( !isNull( getQueryInternalCacheEnabled() ) ) { thisConfig[ 11 ].enableInternalQueryCache = ( getQueryInternalCacheEnabled() ? true : false ); }
 
-		if( !isNull( getServerCacheType() ) ) { 
-			switch( getServerCacheType() ) {
-				case 'jcs' :
-					thisConfig[ 11 ].serverCacheType = 1; 
-					break;
-				case 'redis' :
-					thisConfig[ 11 ].serverCacheType = 2; 
-					break;
-				case 'memcached' :
-					thisConfig[ 11 ].serverCacheType = 3; 
-					break;
-				default :
-					//EHCache
-					thisConfig[ 11 ].serverCacheType = 0; 
-			}
-		}
-
+		if( !isNull( getServerCacheType() ) ) { thisConfig[ 11 ].serverCacheType = ( getServerCacheType()+0 ); }
 		if( !isNull( getRedisCacheStorageHost() ) ) { thisConfig[ 11 ].redisCacheStorageHost = ( getRedisCacheStorageHost() ); }
 		if( !isNull( getRedisCacheStoragePort() ) ) { thisConfig[ 11 ].redisCacheStoragePort = ( getRedisCacheStoragePort()+0 ); }
 		if( !isNull( getRedisCacheStoragePassword() ) ) { thisConfig[ 11 ].redisCacheStoragePassword = ( getRedisCacheStoragePassword() ); }
