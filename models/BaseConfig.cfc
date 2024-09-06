@@ -70,6 +70,21 @@ component accessors="true" {
 
 	property name='baseComponent' type='string' _isCFConfig=true;
 
+	// central cache settings - ACF
+	property name='serverCacheType' type='numeric';
+	property name='ACFServerCacheType' type='string' _isCFConfig=true;
+	// EHcache (0), jcs (1), Redis (2), memcached (3)
+	property name='redisCacheStorageHost' type='string' _isCFConfig=true;
+	// Redis host
+	property name='redisCacheStoragePort' type='numeric' _isCFConfig=true;
+	// Redis port
+	property name='redisCacheStoragePassword' type='string' _isCFConfig=true;
+	// Redis password
+	property name='redisCacheStorageIsSSL' type='boolean' _isCFConfig=true;
+	// true/false
+	
+	
+
 	// Charts can be cached either in memory or to disk. In memory caching is faster, but more memory intensive. (0 = memory cache, 1 = disk cache)
 	property name='chartCacheType' type='numeric' _isCFConfig=true;
 	// Time-to-Live of each chart in seconds
