@@ -335,22 +335,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( thisConfig[ 11 ].componentCacheEnabled ) ) { setComponentCacheEnabled( thisConfig[ 11 ].componentCacheEnabled ); }
 		if( !isNull( thisConfig[ 11 ].enableInternalQueryCache ) ) { setQueryInternalCacheEnabled( thisConfig[ 11 ].enableInternalQueryCache ); }
 		
-		if( !isNull( thisConfig[ 11 ].ACFServerCacheType ) ) { 
-			setACFServerCacheType( thisConfig[ 11 ].ACFServerCacheType ); 
-			switch( thisConfig[ 11 ].ACFServerCacheType ) {
-				case 'jcs' :
-					setServerCacheType( 1 ); 
-					break;
-				case 'redis' :
-					setServerCacheType( 2 ); 
-				break;
-				case 'memcached' :
-					setServerCacheType( 3 ); 
-				break;
-				default :
-					//EHCache
-					setServerCacheType( 0 ); 
-			}
+		if( !isNull( thisConfig[ 11 ].serverCacheType ) ) { 
+			setServerCacheType( translateCacheTypeFromAdobe( thisConfig[ 11 ].serverCacheType ) );
 		}
 		
 		if( !isNull( thisConfig[ 11 ].redisCacheStorageHost ) ) { setRedisCacheStorageHost( thisConfig[ 11 ].redisCacheStorageHost ); }
@@ -1175,22 +1161,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getComponentCacheEnabled() ) ) { thisConfig[ 11 ].componentCacheEnabled = ( getComponentCacheEnabled() ? true : false ); }
 		if( !isNull( getQueryInternalCacheEnabled() ) ) { thisConfig[ 11 ].enableInternalQueryCache = ( getQueryInternalCacheEnabled() ? true : false ); }
 
-		if( !isNull( getACFServerCacheType() ) ) { 
-			thisConfig[ 11 ].ACFServerCacheType = getACFServerCacheType(); 
-			switch( getACFServerCacheType() ) {
-				case 'jcs' :
-					thisConfig[ 11 ].serverCacheType = 1; 
-				break;
-				case 'redis' :
-					thisConfig[ 11 ].serverCacheType = 2; 
-					break;
-				case 'memcached' :
-					thisConfig[ 11 ].serverCacheType = 3; 
-					break;
-				default :
-					//EHCache
-					thisConfig[ 11 ].serverCacheType = 0; 
-			}
+		if( !isNull( getServerCacheType() ) ) { 
+			thisConfig[ 11 ][ 'serverCacheType' ] = translateCacheTypeToAdobe( getServerCacheType() );
 		}
 
 		if( !isNull( getRedisCacheStorageHost() ) ) { thisConfig[ 11 ].redisCacheStorageHost = ( getRedisCacheStorageHost() ); }
@@ -2388,5 +2360,38 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 
 	}
+
+	private function translateCacheTypeToAdobe( required string serverCacheType ) {
+
+		switch( serverCacheType ) {
+			case 'jcs' :
+				return 1; 
+			case 'redis' :
+				return 2; 
+			case 'memcached' :
+				return 3;
+			default :
+				//EHCache
+				return 0; 
+		}
+
+	}
+
+	private function translateCacheTypeFromAdobe( required number serverCacheType ) {
+
+		switch( serverCacheType ) {
+			case 1 :
+				return 'jcs'; 
+			case 2 :
+				return 'redis'; 
+			case 3 :
+				return 'memcached'; 
+			default :
+				// 0
+				return 'EHCache'; 
+		}	
+
+	}
+
 
 }
