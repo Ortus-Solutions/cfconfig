@@ -71,8 +71,9 @@ component accessors="true" {
 	property name='baseComponent' type='string' _isCFConfig=true;
 
 	// central cache settings - ACF
-	property name='serverCacheType' type='numeric' _isCFConfig=true;
-	// EHcache, jcs, Redis, memcached
+	property name='serverCacheType' type='numeric';
+	property name='ACFServerCacheType' type='string' _isCFConfig=true;
+	// EHcache (0), jcs (1), Redis (2), memcached (3)
 	property name='redisCacheStorageHost' type='string' _isCFConfig=true;
 	// Redis host
 	property name='redisCacheStoragePort' type='numeric' _isCFConfig=true;
