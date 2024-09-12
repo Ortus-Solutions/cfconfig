@@ -1333,10 +1333,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function writeScheduler( boolean pauseTasks=false ) {
 
-		if( isNull( getScheduledTasks() ) ) {
-			return;
-		}
-
 		var passwordManager = getAdobePasswordManager();
 		var configFilePath = getCFHomePath().listAppend( getSchedulerConfigPath(), '/' );
 
@@ -1436,8 +1432,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getSchedulerLoggingEnabled() ) ) { thisConfig[ 2 ] = !!getSchedulerLoggingEnabled(); }
 		if( !isNull( getSchedulerClusterDatasource() ) ) { thisConfig[ 3 ] = getSchedulerClusterDatasource(); }
 		if( !isNull( getSchedulerLogFileExtensions() ) && getSchedulerLogFileExtensions().len() ) { thisConfig[ 4 ] = getSchedulerLogFileExtensions(); }
-
-
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
 	}
