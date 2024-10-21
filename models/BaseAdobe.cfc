@@ -1050,8 +1050,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isNull( SAMLServiceProvider.logoutResponseSigned ) ) { currentSAMLServiceProvider[ 'logoutResponseSigned' ] = !!SAMLServiceProvider.logoutResponseSigned }
 				if( !isNull( SAMLServiceProvider.signKeystoreAlias ) ) { currentSAMLServiceProvider[ 'signKeystoreAlias' ] = SAMLServiceProvider.signKeystoreAlias }
 				if( !isNull( SAMLServiceProvider.signKeystorePassword ) ) { 
-					// for backwards compatibility (where an encrypted password dependent on the server's seed was provided), first see if we cannot decrypt the value
-					currentSAMLServiceProvider[ 'signKeystorePassword' ] = passwordManager.decryptMailServer( SAMLServiceProvider.signKeystorePassword ).left(16) == "ERROR DECRYPTING" ? passwordManager.encryptMailServer( SAMLServiceProvider.signKeystorePassword ) : SAMLServiceProvider.signKeystorePassword;
+					// for backwards compatibility (where an encrypted password dependent on the server's seed was provided), assume an encrypted password is provided if the lenght is greter than 40
+					currentSAMLServiceProvider[ 'signKeystorePassword' ] = len(SAMLServiceProvider.signKeystorePassword) > 40 ? SAMLServiceProvider.signKeystorePassword : passwordManager.encryptMailServer( SAMLServiceProvider.signKeystorePassword );
 				}
 				if( !isNull( SAMLServiceProvider.signKeystorePath ) ) { currentSAMLServiceProvider[ 'signKeystorePath' ] = SAMLServiceProvider.signKeystorePath }
 				if( !isNull( SAMLServiceProvider.signMetadata ) ) { currentSAMLServiceProvider[ 'signMetadata' ] = !!SAMLServiceProvider.signMetadata }
