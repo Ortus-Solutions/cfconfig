@@ -210,6 +210,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 
 	private function readSAML() {
+		var passwordManager = getAdobePasswordManager();
 		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSAMLPath(), '/' ) );
 
 		if( !isNull( thisConfig.IdentityProvidersMap ) ) {
@@ -250,7 +251,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isNull( thisServiceProvider.entityId ) ) { params.entityId = thisServiceProvider.entityId }
 				if( !isNull( thisServiceProvider.logoutResponseSigned ) ) { params.logoutResponseSigned = thisServiceProvider.logoutResponseSigned }
 				if( !isNull( thisServiceProvider.signKeystoreAlias ) ) { params.signKeystoreAlias = thisServiceProvider.signKeystoreAlias }
-				if( !isNull( thisServiceProvider.signKeystorePassword ) ) { params.signKeystorePassword = thisServiceProvider.signKeystorePassword }
+				if( !isNull( thisServiceProvider.signKeystorePassword ) ) { params.signKeystorePassword = passwordManager.decryptMailServer( thisServiceProvider.signKeystorePassword ) }
 				if( !isNull( thisServiceProvider.signKeystorePath ) ) { params.signKeystorePath = thisServiceProvider.signKeystorePath }
 				if( !isNull( thisServiceProvider.signMetadata ) ) { params.signMetadata = thisServiceProvider.signMetadata }
 				if( !isNull( thisServiceProvider.signRequests ) ) { params.signRequests = thisServiceProvider.signRequests }
@@ -999,6 +1000,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 
 	private function writeSAML() {
+		var passwordManager = getAdobePasswordManager();
 		var configFilePath = getCFHomePath().listAppend( getSAMLPath(), '/' );
 
 		// If the target config file exists, read it in
@@ -1047,7 +1049,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isNull( SAMLServiceProvider.entityId ) ) { currentSAMLServiceProvider[ 'entityId' ] = SAMLServiceProvider.entityId }
 				if( !isNull( SAMLServiceProvider.logoutResponseSigned ) ) { currentSAMLServiceProvider[ 'logoutResponseSigned' ] = !!SAMLServiceProvider.logoutResponseSigned }
 				if( !isNull( SAMLServiceProvider.signKeystoreAlias ) ) { currentSAMLServiceProvider[ 'signKeystoreAlias' ] = SAMLServiceProvider.signKeystoreAlias }
-				if( !isNull( SAMLServiceProvider.signKeystorePassword ) ) { currentSAMLServiceProvider[ 'signKeystorePassword' ] = SAMLServiceProvider.signKeystorePassword }
+				if( !isNull( SAMLServiceProvider.signKeystorePassword ) ) { 
+					// for backwards compatibility (where an encrypted password dependent on the server's seed was provided), assume an encrypted password is provided if the length is greater than 40
+					currentSAMLServiceProvider[ 'signKeystorePassword' ] = len(SAMLServiceProvider.signKeystorePassword) > 40 ? SAMLServiceProvider.signKeystorePassword : passwordManager.encryptMailServer( SAMLServiceProvider.signKeystorePassword );
+				}
 				if( !isNull( SAMLServiceProvider.signKeystorePath ) ) { currentSAMLServiceProvider[ 'signKeystorePath' ] = SAMLServiceProvider.signKeystorePath }
 				if( !isNull( SAMLServiceProvider.signMetadata ) ) { currentSAMLServiceProvider[ 'signMetadata' ] = !!SAMLServiceProvider.signMetadata }
 				if( !isNull( SAMLServiceProvider.signRequests ) ) { currentSAMLServiceProvider[ 'signRequests' ] = !!SAMLServiceProvider.signRequests }
