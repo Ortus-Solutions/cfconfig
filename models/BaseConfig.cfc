@@ -659,6 +659,12 @@ component accessors="true" {
 	// Adobe-only - Security > SP Configuration
 	property name='SAMLServiceProviders' type='struct' _isCFConfig=true;
 
+	// BoxLang experimental features flags
+	// Choose the compiler to use for the runtime. Valid values are: "java", "asm"
+	property name='experimentalCompiler' type='string' _isCFConfig=true;
+	// Enable experimental AST capture. If enabled, it will generate AST JSON data under the project's /grapher/data folder
+	property name='experimentalASTCapture' type='boolean' _isCFConfig=true;
+
 	/**
 	* Constructor
 	*/

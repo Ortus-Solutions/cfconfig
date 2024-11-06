@@ -77,6 +77,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData[ 'thisLocale' ] = configData.locale;
 			configData.delete( 'locale' );
 		}
+
+		// Check if 'experimental' struct exists and map its properties
+		if ( configData.keyExists( 'experimental' )) {
+			// Loop over each experimental setting and create cfconfig properties
+			for ( var setting in configData.experimental ) {
+				configData[ 'experimental' & setting ] = configData.experimental[ setting ];
+			}
+			// Remove original struct to avoid redundancy
+			configData.delete( 'experimental' );
+		}
 		
 		setMemento( configData );
 		return this;
@@ -146,6 +156,22 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			mergeMemento( configData, existingData )
 		} else {
 			existingData = configData;
+		}
+
+		// Collect 'experimental' settings and re-group them into a struct
+		var experimentalSettings = {};
+		for ( var key in configData ) {
+			if ( left( key, 11 ) == 'experimental' ) {
+				// Strip the 'experimental' prefix
+				var settingName = right( key, len( key ) - 11 );
+				experimentalSettings[ settingName ] = configData[ key ];
+				// Remove from configData to avoid duplication
+				configData.delete( key );
+			}
+		}
+
+		if ( !structIsEmpty( experimentalSettings ) ) {
+			configData[ 'experimental' ] = experimentalSettings;
 		}
 		
 		// Make sure this never makes it to the hard drive
