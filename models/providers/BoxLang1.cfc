@@ -78,13 +78,18 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData.delete( 'locale' );
 		}
 
-		// Check if 'experimental' struct exists and map its properties
+		// Check if 'experimental' struct exists and map specific properties
 		if ( configData.keyExists( 'experimental' )) {
-			// Loop over each experimental setting and create cfconfig properties
-			for ( var setting in configData.experimental ) {
-				configData[ 'experimental' & setting ] = configData.experimental[ setting ];
+			// Map experimental.compiler to experimentalCompiler
+			if ( configData.experimental.keyExists( 'compiler' )) {
+				configData[ 'experimentalCompiler' ] = configData.experimental[ 'compiler' ];
 			}
-			// Remove original struct to avoid redundancy
+			// Map experimental.ASTCapture to experimentalASTCapture
+			if ( configData.experimental.keyExists( 'ASTCapture' ) ) {
+				configData['experimentalASTCapture'] = configData.experimental[ 'ASTCapture' ];
+			}
+
+			// Remove the experimental struct from configData to avoid redundancy
 			configData.delete( 'experimental' );
 		}
 		
@@ -158,18 +163,20 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			existingData = configData;
 		}
 
-		// Collect 'experimental' settings and re-group them into a struct
+		// Collect specific experimental settings into a struct
 		var experimentalSettings = {};
-		for ( var key in configData ) {
-			if ( left( key, 11 ) == 'experimental' ) {
-				// Strip the 'experimental' prefix
-				var settingName = right( key, len( key ) - 11 );
-				experimentalSettings[ settingName ] = configData[ key ];
-				// Remove from configData to avoid duplication
-				configData.delete( key );
-			}
+		if ( configData.keyExists( 'experimentalCompiler' ) ) {
+			experimentalSettings[ 'compiler' ] = configData[ 'experimentalCompiler' ];
+			// Remove to avoid duplication
+			configData.delete( 'experimentalCompiler' ); 
+		}
+		if (configData.keyExists( 'experimentalASTCapture' )) {
+			experimentalSettings[ 'ASTCapture' ] = configData[ 'experimentalASTCapture' ];
+			// Remove to avoid duplication
+			configData.delete( 'experimentalASTCapture' ); 
 		}
 
+		// Add experimental struct back if it has settings
 		if ( !structIsEmpty( experimentalSettings ) ) {
 			configData[ 'experimental' ] = experimentalSettings;
 		}
