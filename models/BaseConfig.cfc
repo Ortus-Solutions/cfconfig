@@ -1068,6 +1068,7 @@ component accessors="true" {
 	* @requestExclusive Exclusive connections for request
 	* @bundleName OSGI bundle name to load the class from
 	* @bundleVersion OSGI bundle version to load the class from
+	* @timezone Timezone for this datasource, used for datetime value coercion
 	*
 	* logActivity notes
 	* ;SpyAttributes=(log=(file)C:/foobar.txt; linelimit=80;logTName=yes;timestamp=yes)</
@@ -1125,7 +1126,8 @@ component accessors="true" {
 			string description,
 			boolean requestExclusive,
 			string bundleName,
-			string bundleVersion
+			string bundleVersion,
+			string timezone
 		) {
 		var ds = {};
 		if( !isNull( database ) ) { ds[ 'database' ] = database; };
@@ -1182,6 +1184,7 @@ component accessors="true" {
 		if( !isNull( requestExclusive ) ) { ds[ 'requestExclusive' ] = requestExclusive; };
 		if( !isNull( bundleName ) ) { ds[ 'bundleName' ] = bundleName; };
 		if( !isNull( bundleVersion ) ) { ds[ 'bundleVersion' ] = bundleVersion; };
+		if( !isNull( timezone ) ) { ds[ 'timezone' ] = timezone; };
 
 		var thisDatasources = getDataSources() ?: {};
 		thisDatasources[ arguments.name ] = ds;
