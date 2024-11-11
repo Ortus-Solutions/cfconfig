@@ -78,6 +78,29 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData.delete( 'locale' );
 		}
 
+		// Convert validTemplateExtensions to compileExtForCFInclude
+		if( configData.keyExists( 'validTemplateExtensions' ) ) {
+			configData[ 'compileExtForCFInclude' ] = configData.validTemplateExtensions;
+			configData.delete( 'validTemplateExtensions' );
+		}
+
+		// Convert logDirectory to logsDirectory
+		if( configData.keyExists( 'logDirectory' ) ) {
+			configData[ 'logsDirectory' ] = configData.logDirectory;
+			configData.delete( 'logDirectory' );
+		}
+		// Convert debuggingEnabled to debugMode
+		if( configData.keyExists( 'debuggingEnabled' ) ) {
+			configData[ 'debugMode' ] = configData.debuggingEnabled;
+			configData.delete( 'debuggingEnabled' );
+		}
+
+		// Convert disallowedFileOperationExtensions to blockedExtForFileUpload
+		if( configData.keyExists( 'disallowedFileOperationExtensions' ) ) {
+			configData[ 'blockedExtForFileUpload' ] = arrayToList( configData.disallowedFileOperationExtensions );
+			configData.delete( 'disallowedFileOperationExtensions' );
+		}
+
 		// Check if 'experimental' struct exists and map specific properties
 		if ( configData.keyExists( 'experimental' )) {
 			// Map experimental.compiler to experimentalCompiler
@@ -152,6 +175,42 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData.delete( 'thisLocale' );
 		}
 
+		// Convert compileExtForCFInclude to validTemplateExtensions
+		if( configData.keyExists( 'compileExtForCFInclude' ) ) {
+			configData[ 'validTemplateExtensions' ] = configData.compileExtForCFInclude;
+			configData.delete( 'compileExtForCFInclude' );
+		}
+		
+		// Convert logDirectory to logsDirectory
+		if( configData.keyExists( 'logDirectory' ) ) {
+			configData[ 'logsDirectory' ] = configData.logDirectory;
+			configData.delete( 'logDirectory' );
+		}
+
+		// Convert debuggingEnabled to debugMode
+		if( configData.keyExists( 'debuggingEnabled' ) ) {
+			configData[ 'debugMode' ] = configData.debuggingEnabled;
+			configData.delete( 'debuggingEnabled' );
+		}
+
+		// Convert blockedExtForFileUpload to disallowedFileOperationExtensions
+		if( configData.keyExists( 'blockedExtForFileUpload' ) ) {
+			configData[ 'disallowedFileOperationExtensions' ] = listToArray( configData.blockedExtForFileUpload );
+			configData.delete( 'blockedExtForFileUpload' );
+		}
+
+		// Check for experimental settings
+		if ( configData.keyExists( 'experimentalCompiler' ) ) {
+			configData[ 'experimental' ] [ 'compiler' ] = configData[ 'experimentalCompiler' ];
+			// Remove to avoid duplication
+			configData.delete( 'experimentalCompiler' ); 
+		}
+		if (configData.keyExists( 'experimentalASTCapture' )) {
+			configData[ 'experimental' ] [ 'ASTCapture' ] = configData[ 'experimentalASTCapture' ];
+			// Remove to avoid duplication
+			configData.delete( 'experimentalASTCapture' ); 
+		}
+
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
 		var existingData = {};
@@ -161,24 +220,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			mergeMemento( configData, existingData )
 		} else {
 			existingData = configData;
-		}
-
-		// Collect specific experimental settings into a struct
-		var experimentalSettings = {};
-		if ( configData.keyExists( 'experimentalCompiler' ) ) {
-			experimentalSettings[ 'compiler' ] = configData[ 'experimentalCompiler' ];
-			// Remove to avoid duplication
-			configData.delete( 'experimentalCompiler' ); 
-		}
-		if (configData.keyExists( 'experimentalASTCapture' )) {
-			experimentalSettings[ 'ASTCapture' ] = configData[ 'experimentalASTCapture' ];
-			// Remove to avoid duplication
-			configData.delete( 'experimentalASTCapture' ); 
-		}
-
-		// Add experimental struct back if it has settings
-		if ( !structIsEmpty( experimentalSettings ) ) {
-			configData[ 'experimental' ] = experimentalSettings;
 		}
 		
 		// Make sure this never makes it to the hard drive
