@@ -80,19 +80,25 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		// Convert validTemplateExtensions to compileExtForCFInclude
 		if( configData.keyExists( 'validTemplateExtensions' ) ) {
-			configData[ 'compileExtForCFInclude' ] = configData.validTemplateExtensions;
+			configData[ 'compileExtForCFInclude' ] = arrayToList( configData.validTemplateExtensions );
 			configData.delete( 'validTemplateExtensions' );
 		}
 
-		// Convert logDirectory to logsDirectory
-		if( configData.keyExists( 'logDirectory' ) ) {
-			configData[ 'logsDirectory' ] = configData.logDirectory;
-			configData.delete( 'logDirectory' );
+		// Convert logsDirectory to logDirectory
+		if( configData.keyExists( 'logsDirectory' ) ) {
+			configData[ 'logDirectory' ] = configData.logsDirectory;
+			configData.delete( 'logsDirectory' );
 		}
-		// Convert debuggingEnabled to debugMode
-		if( configData.keyExists( 'debuggingEnabled' ) ) {
-			configData[ 'debugMode' ] = configData.debuggingEnabled;
-			configData.delete( 'debuggingEnabled' );
+		// Convert debugMode to debuggingEnabled
+		if( configData.keyExists( 'debugMode' ) ) {
+			configData[ 'debuggingEnabled' ] = configData.debugMode;
+			configData.delete( 'debugMode' );
+		}
+
+		// Convert whitespaceCompressionEnabled to whitespaceManagement
+		if( configData.keyExists( 'whitespaceCompressionEnabled' ) ) {
+			configData[ 'whitespaceManagement' ] = translateWhitespaceToBoxLang( configData.whitespaceCompressionEnabled );
+			configData.delete( 'whitespaceCompressionEnabled' );
 		}
 
 		// Convert disallowedFileOperationExtensions to blockedExtForFileUpload
@@ -177,7 +183,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		// Convert compileExtForCFInclude to validTemplateExtensions
 		if( configData.keyExists( 'compileExtForCFInclude' ) ) {
-			configData[ 'validTemplateExtensions' ] = configData.compileExtForCFInclude;
+			configData[ 'validTemplateExtensions' ] = listToArray( configData.compileExtForCFInclude );
 			configData.delete( 'compileExtForCFInclude' );
 		}
 		
@@ -191,6 +197,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( configData.keyExists( 'debuggingEnabled' ) ) {
 			configData[ 'debugMode' ] = configData.debuggingEnabled;
 			configData.delete( 'debuggingEnabled' );
+		}
+
+		// Convert whitespaceCompressionEnabled to whitespaceCompressionEnabled
+		if( configData.keyExists( 'whitespaceManagement' ) ) {
+			configData[ 'whitespaceCompressionEnabled' ] = translateWhitespaceFromBoxLang( configData.whitespaceManagement );
+			configData.delete( 'whitespaceManagement' );
 		}
 
 		// Convert blockedExtForFileUpload to disallowedFileOperationExtensions
@@ -227,6 +239,38 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		fileWrite( configFilePath, JSONPrettyPrint.formatJson( serializeJSON( existingData ) ) );
 
 		return this;
+	}
+
+	/**
+	 * I translate the whitespace management setting from the CFConfig format to the BoxLang format
+	 * 
+	 * @whitespaceManagement The whitespace management setting from the CFConfig format
+	 */
+	private function translateWhitespaceToBoxLang( required string whitespaceManagement ) {
+		switch( whitespaceManagement ) {
+			case 'off' :
+			case 'regular' :
+				return false;
+			case 'simple' :
+			case 'white-space' :
+				return true;
+			case 'smart' :
+			case 'white-space-pref' :
+				return true;
+			default :
+				return false;
+		}
+	}
+
+	private function translateWhitespaceFromBoxLang( required string whitespaceManagement ) {
+		switch( whitespaceManagement ) {
+			case false :
+				return 'off';
+			case true :
+				return 'smart';
+			default :
+				return 'off';
+		}
 	}
 
 }

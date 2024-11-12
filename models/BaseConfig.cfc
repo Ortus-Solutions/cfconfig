@@ -668,12 +668,10 @@ component accessors="true" {
 	property name='validClassExtensions' type='array' _isCFConfig=true;
 	// Where all generated classes will be placed
 	property name='classGenerationDirectory' type='string' _isCFConfig=true;
-	// Enable whitespace compression in output.  Only in use by the web runtimes currently
-	property name='whitespaceCompressionEnabled' type='boolean' _isCFConfig=true;
 	// By default BoxLang uses high-precision mathematics via BigDecimal operations
 	property name='useHighPrecisionMath' type='boolean' _isCFConfig=true;
 	// If true, you can call implicit accessors/mutators on object properties. By default it is enabled
-	property name='invokeImplicitAccessor' type='array' _isCFConfig=true;
+	property name='invokeImplicitAccessor' type='boolean' _isCFConfig=true;
 	// You can assign a global default datasource to be used in BoxLang
 	property name='defaultDatasource' type='string' _isCFConfig=true;
 	// The default return format for class invocations via web runtimes
@@ -1703,9 +1701,8 @@ component accessors="true" {
 			'extensions' : 'id',
 			'cacheClasses' : 'class',
 			'validClassExtensions' : '',
-			'validTemplateExtensions' : '',
-			'invokeImplicitAccessor' : '',
-			'disallowedFileOperationExtensions' : '',
+			'validTemplateExtensions' : '', // break this out, or externalize the mapping information from it
+			'disallowedFileOperationExtensions' : ''
 		};
 
 		for( var prop in memento ) {
