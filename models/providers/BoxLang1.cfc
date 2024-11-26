@@ -77,6 +77,50 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData[ 'thisLocale' ] = configData.locale;
 			configData.delete( 'locale' );
 		}
+
+		// Convert validTemplateExtensions to compileExtForCFInclude
+		if( configData.keyExists( 'validTemplateExtensions' ) ) {
+			configData[ 'compileExtForCFInclude' ] = arrayToList( configData.validTemplateExtensions );
+			configData.delete( 'validTemplateExtensions' );
+		}
+
+		// Convert logsDirectory to logDirectory
+		if( configData.keyExists( 'logsDirectory' ) ) {
+			configData[ 'logDirectory' ] = configData.logsDirectory;
+			configData.delete( 'logsDirectory' );
+		}
+		// Convert debugMode to debuggingEnabled
+		if( configData.keyExists( 'debugMode' ) ) {
+			configData[ 'debuggingEnabled' ] = configData.debugMode;
+			configData.delete( 'debugMode' );
+		}
+
+		// Convert whitespaceCompressionEnabled to whitespaceManagement
+		if( configData.keyExists( 'whitespaceCompressionEnabled' ) ) {
+			configData[ 'whitespaceManagement' ] = translateWhitespaceToBoxLang( configData.whitespaceCompressionEnabled );
+			configData.delete( 'whitespaceCompressionEnabled' );
+		}
+
+		// Convert disallowedFileOperationExtensions to blockedExtForFileUpload
+		if( configData.keyExists( 'disallowedFileOperationExtensions' ) ) {
+			configData[ 'blockedExtForFileUpload' ] = arrayToList( configData.disallowedFileOperationExtensions );
+			configData.delete( 'disallowedFileOperationExtensions' );
+		}
+
+		// Check if 'experimental' struct exists and map specific properties
+		if ( configData.keyExists( 'experimental' )) {
+			// Map experimental.compiler to experimentalCompiler
+			if ( configData.experimental.keyExists( 'compiler' )) {
+				configData[ 'experimentalCompiler' ] = configData.experimental[ 'compiler' ];
+			}
+			// Map experimental.ASTCapture to experimentalASTCapture
+			if ( configData.experimental.keyExists( 'ASTCapture' ) ) {
+				configData['experimentalASTCapture'] = configData.experimental[ 'ASTCapture' ];
+			}
+
+			// Remove the experimental struct from configData to avoid redundancy
+			configData.delete( 'experimental' );
+		}
 		
 		setMemento( configData );
 		return this;
@@ -137,6 +181,48 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData.delete( 'thisLocale' );
 		}
 
+		// Convert compileExtForCFInclude to validTemplateExtensions
+		if( configData.keyExists( 'compileExtForCFInclude' ) ) {
+			configData[ 'validTemplateExtensions' ] = listToArray( configData.compileExtForCFInclude );
+			configData.delete( 'compileExtForCFInclude' );
+		}
+		
+		// Convert logDirectory to logsDirectory
+		if( configData.keyExists( 'logDirectory' ) ) {
+			configData[ 'logsDirectory' ] = configData.logDirectory;
+			configData.delete( 'logDirectory' );
+		}
+
+		// Convert debuggingEnabled to debugMode
+		if( configData.keyExists( 'debuggingEnabled' ) ) {
+			configData[ 'debugMode' ] = configData.debuggingEnabled;
+			configData.delete( 'debuggingEnabled' );
+		}
+
+		// Convert whitespaceCompressionEnabled to whitespaceCompressionEnabled
+		if( configData.keyExists( 'whitespaceManagement' ) ) {
+			configData[ 'whitespaceCompressionEnabled' ] = translateWhitespaceFromBoxLang( configData.whitespaceManagement );
+			configData.delete( 'whitespaceManagement' );
+		}
+
+		// Convert blockedExtForFileUpload to disallowedFileOperationExtensions
+		if( configData.keyExists( 'blockedExtForFileUpload' ) ) {
+			configData[ 'disallowedFileOperationExtensions' ] = listToArray( configData.blockedExtForFileUpload );
+			configData.delete( 'blockedExtForFileUpload' );
+		}
+
+		// Check for experimental settings
+		if ( configData.keyExists( 'experimentalCompiler' ) ) {
+			configData[ 'experimental' ] [ 'compiler' ] = configData[ 'experimentalCompiler' ];
+			// Remove to avoid duplication
+			configData.delete( 'experimentalCompiler' ); 
+		}
+		if (configData.keyExists( 'experimentalASTCapture' )) {
+			configData[ 'experimental' ] [ 'ASTCapture' ] = configData[ 'experimentalASTCapture' ];
+			// Remove to avoid duplication
+			configData.delete( 'experimentalASTCapture' ); 
+		}
+
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
 		var existingData = {};
@@ -153,6 +239,38 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		fileWrite( configFilePath, JSONPrettyPrint.formatJson( serializeJSON( existingData ) ) );
 
 		return this;
+	}
+
+	/**
+	 * I translate the whitespace management setting from the CFConfig format to the BoxLang format
+	 * 
+	 * @whitespaceManagement The whitespace management setting from the CFConfig format
+	 */
+	private function translateWhitespaceToBoxLang( required string whitespaceManagement ) {
+		switch( whitespaceManagement ) {
+			case 'off' :
+			case 'regular' :
+				return false;
+			case 'simple' :
+			case 'white-space' :
+				return true;
+			case 'smart' :
+			case 'white-space-pref' :
+				return true;
+			default :
+				return false;
+		}
+	}
+
+	private function translateWhitespaceFromBoxLang( required string whitespaceManagement ) {
+		switch( whitespaceManagement ) {
+			case false :
+				return 'off';
+			case true :
+				return 'smart';
+			default :
+				return 'off';
+		}
 	}
 
 }

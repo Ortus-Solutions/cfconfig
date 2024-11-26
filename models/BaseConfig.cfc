@@ -659,6 +659,34 @@ component accessors="true" {
 	// Adobe-only - Security > SP Configuration
 	property name='SAMLServiceProviders' type='struct' _isCFConfig=true;
 
+	// BoxLang settings
+	// Choose the compiler to use for the runtime. Valid values are: "java", "asm"
+	property name='experimentalCompiler' type='string' _isCFConfig=true;
+	// Enable experimental AST capture. If enabled, it will generate AST JSON data under the project's /grapher/data folder
+	property name='experimentalASTCapture' type='boolean' _isCFConfig=true;
+	// Extensions BoxLang will process as classes
+	property name='validClassExtensions' type='array' _isCFConfig=true;
+	// Where all generated classes will be placed
+	property name='classGenerationDirectory' type='string' _isCFConfig=true;
+	// By default BoxLang uses high-precision mathematics via BigDecimal operations
+	property name='useHighPrecisionMath' type='boolean' _isCFConfig=true;
+	// If true, you can call implicit accessors/mutators on object properties. By default it is enabled
+	property name='invokeImplicitAccessor' type='boolean' _isCFConfig=true;
+	// You can assign a global default datasource to be used in BoxLang
+	property name='defaultDatasource' type='string' _isCFConfig=true;
+	// The default return format for class invocations via web runtimes
+	property name='defaultRemoteMethodReturnFormat' type='string' _isCFConfig=true;
+	// A list of regex patterns that will match class paths, and if matched, execution will be disallowed
+	property name='disallowedImports' type='array' _isCFConfig=true;
+	// A list of BIF names that will be disallowed from execution
+	property name='disallowedBifs' type='array' _isCFConfig=true;
+	// A list of Component names that will be disallowed from execution
+	property name='disallowedComponents' type='array' _isCFConfig=true;
+	// An explicit whitelist of file extensions that are allowed to be uploaded - overrides any values in the disallowedWriteExtensions
+	property name='allowedFileOperationExtensions' type='array' _isCFConfig=true;
+	// The BoxLang module settings
+	property name='modules' type='struct' _isCFConfig=true;
+
 	/**
 	* Constructor
 	*/
@@ -1671,7 +1699,10 @@ component accessors="true" {
 			'dumpWriters' : 'name',
 			'resourceProviders' : 'scheme',
 			'extensions' : 'id',
-			'cacheClasses' : 'class'
+			'cacheClasses' : 'class',
+			'validClassExtensions' : '',
+			'validTemplateExtensions' : '', // break this out, or externalize the mapping information from it
+			'disallowedFileOperationExtensions' : ''
 		};
 
 		for( var prop in memento ) {
