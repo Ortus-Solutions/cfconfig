@@ -686,6 +686,8 @@ component accessors="true" {
 	property name='allowedFileOperationExtensions' type='array' _isCFConfig=true;
 	// The BoxLang module settings
 	property name='modules' type='struct' _isCFConfig=true;
+	// The BoxLang logging settings
+	property name='logging' type='struct' _isCFConfig=true;
 
 	/**
 	* Constructor
