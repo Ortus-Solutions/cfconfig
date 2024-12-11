@@ -289,16 +289,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	 * @param {string} fileSize - The file size string, e.g., "100MB", "2GB", "500KB".
 	 * @return {numeric} - The file size in KB.
 	 */
-	private function convertFileSizeToKB(fileSize) {
-		// return fileSize;
+	private function convertFileSizeToKB( fileSize ) {
 		// Validate input
-		if (!len(fileSize) or !refind("^\d+(KB|MB|GB)$", fileSize)) {
-			throw("InvalidFormat: #fileSize#", "File size (#fileSize#) must be in the format: <number><unit> (e.g., 100MB, 2GB, 500KB)");
+		if (!len( fileSize ) or !refind( "^\d+(KB|MB|GB)$", fileSize ) ) {
+			throw( "InvalidFormat: #fileSize#", "File size must be in the format: <number><unit> (e.g., 100MB, 2GB, 500KB)" );
 		}
 	
 		// Extract number and unit
-		var size = val(reReplace(fileSize, "[^\d]", "", "ALL"));
-		var unit = uCase(reReplace(fileSize, "\d", "", "ALL"));
+		var size = val( reReplace( fileSize, "[^\d]", "", "ALL" ) );
+		var unit = uCase( reReplace( fileSize, "\d", "", "ALL" ) );
 	
 		// Conversion factors
 		var conversionFactors = {
@@ -308,11 +307,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		};
 	
 		// Calculate file size in KB
-		if (!structKeyExists(conversionFactors, unit)) {
-			throw("InvalidUnit", "Unsupported unit: " & unit);
+		if ( !structKeyExists( conversionFactors, unit ) ) {
+			throw( "InvalidUnit", "Unsupported unit: " & unit );
 		}
 	
-		return size * conversionFactors[unit];
+		return size * conversionFactors[ unit ];
 	}
 
 	/**
@@ -320,8 +319,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	 * @param {numeric} fileSizeKB - The file size in KB
 	 * @return {numeric} - The file size in MB
 	 */
-	function convertFileSizeKBToMB(fileSizeKB) {
-		if (!isNumeric(fileSizeKB) or fileSizeKB lt 0) {
+	function convertFileSizeKBToMB( fileSizeKB ) {
+		if ( !isNumeric( fileSizeKB ) or fileSizeKB lt 0 ) {
 			throw("InvalidValue", "File size in KB must be a non-negative number.");
 		}
 	
