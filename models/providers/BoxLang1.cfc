@@ -84,11 +84,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData.delete( 'validTemplateExtensions' );
 		}
 
-		// Convert logsDirectory to logDirectory
-		if( configData.keyExists( 'logsDirectory' ) ) {
-			configData[ 'logDirectory' ] = configData.logsDirectory;
-			configData.delete( 'logsDirectory' );
-		}
 		// Convert debugMode to debuggingEnabled
 		if( configData.keyExists( 'debugMode' ) ) {
 			configData[ 'debuggingEnabled' ] = configData.debugMode;
@@ -105,6 +100,17 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( configData.keyExists( 'disallowedFileOperationExtensions' ) ) {
 			configData[ 'blockedExtForFileUpload' ] = arrayToList( configData.disallowedFileOperationExtensions );
 			configData.delete( 'disallowedFileOperationExtensions' );
+		}
+
+		if ( configData.keyExists( 'logging' )) {
+			// Convert logsDirectory to logDirectory
+			if( configData.logging.keyExists( 'logsDirectory' ) ) {
+				configData[ 'logDirectory' ] = configData.logging.logsDirectory;
+			}
+			// Convert maxFileSize to logMaxFileSize
+			if( configData.logging.keyExists( 'maxFileSize' ) ) {
+				configData[ 'logMaxFileSize' ] = convertFileSizeToKB( configData.logging.maxFileSize );
+			}
 		}
 
 		// Check if 'experimental' struct exists and map specific properties
@@ -186,12 +192,6 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData[ 'validTemplateExtensions' ] = listToArray( configData.compileExtForCFInclude );
 			configData.delete( 'compileExtForCFInclude' );
 		}
-		
-		// Convert logDirectory to logsDirectory
-		if( configData.keyExists( 'logDirectory' ) ) {
-			configData[ 'logsDirectory' ] = configData.logDirectory;
-			configData.delete( 'logDirectory' );
-		}
 
 		// Convert debuggingEnabled to debugMode
 		if( configData.keyExists( 'debuggingEnabled' ) ) {
@@ -209,6 +209,17 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( configData.keyExists( 'blockedExtForFileUpload' ) ) {
 			configData[ 'disallowedFileOperationExtensions' ] = listToArray( configData.blockedExtForFileUpload );
 			configData.delete( 'blockedExtForFileUpload' );
+		}
+
+		// Convert logDirectory to logging.logsDirectory
+		if( configData.keyExists( 'logDirectory' ) ) {
+			configData[ 'logging' ] [ 'logsDirectory' ] = configData[ 'logDirectory' ];
+			configData.delete( 'logDirectory' );
+		}
+		// Convert logMaxFileSize to maxFileSize
+		if( configData.keyExists( 'logMaxFileSize' ) ) {
+			configData[ 'logging' ] [ 'maxFileSize' ] = convertFileSizeKBToMB( configData.logMaxFileSize );
+			configData.delete( 'logMaxFileSize' );
 		}
 
 		// Check for experimental settings
@@ -271,6 +282,49 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			default :
 				return 'off';
 		}
+	}
+
+	/**
+	 * Converts a file size string (e.g., "100MB") to KB.
+	 * @param {string} fileSize - The file size string, e.g., "100MB", "2GB", "500KB".
+	 * @return {numeric} - The file size in KB.
+	 */
+	private function convertFileSizeToKB( fileSize ) {
+		// Validate input
+		if (!len( fileSize ) or !refind( "^\d+(KB|MB|GB)$", fileSize ) ) {
+			throw( "InvalidFormat: #fileSize#", "File size must be in the format: <number><unit> (e.g., 100MB, 2GB, 500KB)" );
+		}
+	
+		// Extract number and unit
+		var size = val( reReplace( fileSize, "[^\d]", "", "ALL" ) );
+		var unit = uCase( reReplace( fileSize, "\d", "", "ALL" ) );
+	
+		// Conversion factors
+		var conversionFactors = {
+			"KB": 1,
+			"MB": 1024,
+			"GB": 1024 * 1024
+		};
+	
+		// Calculate file size in KB
+		if ( !structKeyExists( conversionFactors, unit ) ) {
+			throw( "InvalidUnit", "Unsupported unit: " & unit );
+		}
+	
+		return size * conversionFactors[ unit ];
+	}
+
+	/**
+	 * Converts file size from KB to MB which is the default format in BoxLang
+	 * @param {numeric} fileSizeKB - The file size in KB
+	 * @return {string} - The file size in MB
+	 */
+	function convertFileSizeKBToMB( fileSizeKB ) {
+		if ( !isNumeric( fileSizeKB ) or fileSizeKB lt 0 ) {
+			throw( "InvalidValue", "File size in KB must be a non-negative number." );
+		}
+	
+		return round(fileSizeKB / 1024) & "MB";
 	}
 
 }
