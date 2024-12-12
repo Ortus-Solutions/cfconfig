@@ -317,11 +317,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	/**
 	 * Converts file size from KB to MB which is the default format in BoxLang
 	 * @param {numeric} fileSizeKB - The file size in KB
-	 * @return {numeric} - The file size in MB
+	 * @return {string} - The file size in MB
 	 */
 	function convertFileSizeKBToMB( fileSizeKB ) {
 		if ( !isNumeric( fileSizeKB ) or fileSizeKB lt 0 ) {
-			throw("InvalidValue", "File size in KB must be a non-negative number.");
+			throw( "InvalidValue", "File size in KB must be a non-negative number." );
 		}
 	
 		return round(fileSizeKB / 1024) & "MB";
