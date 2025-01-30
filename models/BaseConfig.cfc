@@ -1739,7 +1739,8 @@ component accessors="true" {
 			'validClassExtensions' : '',
 			'validTemplateExtensions' : '', // break this out, or externalize the mapping information from it
 			'classPaths' : '',
-			'disallowedFileOperationExtensions' : ''
+			'disallowedFileOperationExtensions' : '',
+			'scheduledTasks' : 'name'
 		};
 
 		for( var prop in memento ) {
