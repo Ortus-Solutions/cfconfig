@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<PIDef>
+    <VdkField name="VdkVgwKey" vdkField="VdkVgwKey"/>
+    <BucketSetDef name="CF_TREE_CATEGORY" vdkField="CF_TREE_CATEGORY" type="Tree" Separator="/" defaultValue=""></BucketSetDef>
+    <BucketSetDef name="CF_ENUM_CATEGORY" vdkField="CF_ENUM_CATEGORY" type="String" Delimiter="," defaultValue=""></BucketSetDef>
+</PIDef>
