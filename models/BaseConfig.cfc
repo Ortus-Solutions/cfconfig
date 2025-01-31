@@ -710,8 +710,6 @@ component accessors="true" {
 	// Activate the status printer on load to print out the logging configuration
 	// Turn on to debug LogBack and BoxLang logging configurations
 	property name='loggingStatusPrinterOnLoad' type='boolean' _isCFConfig=true;
-	// A collection of pre-defined loggers and their configurations
-	property name='loggingLoggers' type='struct' _isCFConfig=true;
 	// A list of regex patterns that will match class paths, and if matched, execution will be disallowed
 	property name='securityDisallowedImports' type='array' _isCFConfig=true;
 	// A list of BIF names that will be disallowed from execution
