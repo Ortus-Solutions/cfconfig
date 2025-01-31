@@ -92,7 +92,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		// Convert whitespaceCompressionEnabled to whitespaceManagement
 		if( configData.keyExists( 'whitespaceCompressionEnabled' ) ) {
-			configData[ 'whitespaceManagement' ] = translateWhitespaceToBoxLang( configData.whitespaceCompressionEnabled );
+			configData[ 'whitespaceManagement' ] = translateWhitespaceFromBoxLang( configData.whitespaceCompressionEnabled );
 			configData.delete( 'whitespaceCompressionEnabled' );
 		}
 
@@ -100,6 +100,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( configData.keyExists( 'disallowedFileOperationExtensions' ) ) {
 			configData[ 'blockedExtForFileUpload' ] = arrayToList( configData.disallowedFileOperationExtensions );
 			configData.delete( 'disallowedFileOperationExtensions' );
+		}
+
+		// Convert classPaths to componentPaths
+		if( configData.keyExists( 'classPaths' ) ) {
+			configData[ 'componentPaths' ] = classPathsToComponentPaths( configData.classPaths );
+			configData.delete( 'classPaths' );
 		}
 
 		if ( configData.keyExists( 'logging' )) {
@@ -110,6 +116,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			// Convert maxFileSize to logMaxFileSize
 			if( configData.logging.keyExists( 'maxFileSize' ) ) {
 				configData[ 'logMaxFileSize' ] = convertFileSizeToKB( configData.logging.maxFileSize );
+			}
+			// Convert logging.loggers to loggers (root level)
+			if( configData.logging.keyExists( 'loggers' ) ) {
+				configData[ 'loggers' ] = configData.logging.loggers;
 			}
 		}
 
@@ -201,7 +211,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		// Convert whitespaceCompressionEnabled to whitespaceCompressionEnabled
 		if( configData.keyExists( 'whitespaceManagement' ) ) {
-			configData[ 'whitespaceCompressionEnabled' ] = translateWhitespaceFromBoxLang( configData.whitespaceManagement );
+			configData[ 'whitespaceCompressionEnabled' ] = translateWhitespaceToBoxLang( configData.whitespaceManagement );
 			configData.delete( 'whitespaceManagement' );
 		}
 
@@ -211,15 +221,27 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData.delete( 'blockedExtForFileUpload' );
 		}
 
+		// Convert componentPaths to classPaths
+		if( configData.keyExists( 'componentPaths' ) ) {
+			configData[ 'classPaths' ] = componentPathsToClassPaths( configData.componentPaths );
+			configData.delete( 'componentPaths' );
+		}
+
 		// Convert logDirectory to logging.logsDirectory
 		if( configData.keyExists( 'logDirectory' ) ) {
 			configData[ 'logging' ] [ 'logsDirectory' ] = configData[ 'logDirectory' ];
 			configData.delete( 'logDirectory' );
 		}
-		// Convert logMaxFileSize to maxFileSize
+		// Convert logMaxFileSize to logging.maxFileSize
 		if( configData.keyExists( 'logMaxFileSize' ) ) {
 			configData[ 'logging' ] [ 'maxFileSize' ] = convertFileSizeKBToMB( configData.logMaxFileSize );
 			configData.delete( 'logMaxFileSize' );
+		}
+
+		// Convert loggers to logging.loggers
+		if( configData.keyExists( 'loggers' ) ) {
+			configData[ 'logging' ] [ 'loggers' ] = configData.loggers;
+			configData.delete( 'loggers' );
 		}
 
 		// Check for experimental settings
@@ -273,6 +295,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 	}
 
+	/**
+	 * I translate the whitespace management setting from the BoxLang format to the CFConfig format
+	 * 
+	 * @whitespaceManagement The whitespace management setting from the BoxLang format
+	 */
 	private function translateWhitespaceFromBoxLang( required string whitespaceManagement ) {
 		switch( whitespaceManagement ) {
 			case false :
@@ -326,5 +353,25 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	
 		return round(fileSizeKB / 1024) & "MB";
 	}
+
+	// Convert from componentPaths (struct) to classPaths (array)
+    function componentPathsToClassPaths(componentPaths) {
+        var classPaths = [];
+        for (var key in componentPaths) {
+            arrayAppend(classPaths, componentPaths[key]);
+        }
+        return classPaths;
+    }
+
+    // Convert from classPaths (array) to componentPaths (struct)
+    function classPathsToComponentPaths(classPaths) {
+        var componentPaths = {};
+        for (var i = 1; i <= arrayLen(classPaths); i++) {
+            var path = classPaths[i];
+            var name = listLast(path, '/'); // Use the last part of the path as the name
+            componentPaths[name] = path;
+        }
+        return componentPaths;
+    }
 
 }

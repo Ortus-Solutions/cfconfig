@@ -686,6 +686,40 @@ component accessors="true" {
 	property name='allowedFileOperationExtensions' type='array' _isCFConfig=true;
 	// The BoxLang module settings
 	property name='modules' type='struct' _isCFConfig=true;
+	// The BoxLang modules directory array
+	property name='modulesDirectory' type='array' _isCFConfig=true;
+	// The Boxlang executors struct
+	property name='executors' type='struct' _isCFConfig=true;
+	// A collection of directories we will class load all Java *.jar files from
+	property name='javaLibraryPaths' type='array' _isCFConfig=true;
+	// The maximum number of days to keep log files before rotation
+	// Default is 90 days or 3 months
+	// Set to 0 to never rotate
+	property name='loggingMaxLogDays' type='numeric' _isCFConfig=true;
+	// The total cap size of all log files before rotation
+	// You can use the following suffixes: KB, MB, GB
+	// Default is 5GB
+	property name='loggingTotalCapSize' type='string' _isCFConfig=true;
+	// The root logger level
+	// Valid values are in order of severity: ERROR, WARN, INFO, DEBUG, TRACE, OFF
+	// If the runtime is in Debug mode, this will be set to DEBUG
+	property name='loggingRootLevel' type='string' _isCFConfig=true;
+	// Default Encoder for file appenders.
+	// The available options are "text" and "json"
+	property name='loggingDefaultEncoder' type='string' _isCFConfig=true;
+	// Activate the status printer on load to print out the logging configuration
+	// Turn on to debug LogBack and BoxLang logging configurations
+	property name='loggingStatusPrinterOnLoad' type='boolean' _isCFConfig=true;
+	// A list of regex patterns that will match class paths, and if matched, execution will be disallowed
+	property name='securityDisallowedImports' type='array' _isCFConfig=true;
+	// A list of BIF names that will be disallowed from execution
+	property name='securityDisallowedBifs' type='array' _isCFConfig=true;
+	// A list of Component names that will be disallowed from execution
+	property name='securityDisallowedComponents' type='array' _isCFConfig=true;
+	// An explicit whitelist of file extensions that are allowed to be uploaded - overrides any values in the disallowedWriteExtensions
+	property name='securityAllowedFileOperationExtensions' type='array' _isCFConfig=true;
+	// The list of file extensions that are not allowed to be uploaded. Also enforced by file relocation operations ( e.g. copy/move )
+	property name='securitydisallowedFileOperationExtensions' type='array' _isCFConfig=true;
 
 	/**
 	* Constructor
@@ -1702,8 +1736,9 @@ component accessors="true" {
 			'cacheClasses' : 'class',
 			'validClassExtensions' : '',
 			'validTemplateExtensions' : '', // break this out, or externalize the mapping information from it
+			'classPaths' : '',
 			'disallowedFileOperationExtensions' : '',
-			'scheduledTasks' : 'name',
+			'scheduledTasks' : 'name'
 		};
 
 		for( var prop in memento ) {
