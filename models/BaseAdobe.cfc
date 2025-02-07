@@ -284,6 +284,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		if( !isNull( thisConfig[ 1 ] ) ) { setWhitespaceManagement( translateWhitespaceFromAdobe( thisConfig[ 1 ] ) ); }
 		if( !isNull( thisConfig[ 5 ].logging ) ) { setLogCORBACalls( thisConfig[ 5 ].logging ); }
+
+		// cheap workaroud for 2025 which has removed the 6th item in the array
+		if( val( getVersion().listFirst('.').listFirst('-') ) >= 2025 ) {
+			// inject an empty struct at the 6th position
+			thisConfig.insertAt( 6, {} );
+		}
+
 		setSessionManagement( thisConfig[ 7 ].session.enable );
 		setSessionTimeout( thisConfig[ 7 ].session.timeout );
 		setSessionMaximumTimeout( thisConfig[ 7 ].session.maximum_timeout );
@@ -314,7 +321,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		// Request Tuning
 		setMaxTemplateRequests( thisConfig[ 10 ][ 'requestLimit' ] );
-		setmaxFlashRemotingRequests( thisConfig[ 10 ][ 'flashRemotingLimit' ] );
+		if( !isNull( thisConfig[ 10 ][ 'flashRemotingLimit' ] ) ) { setmaxFlashRemotingRequests( thisConfig[ 10 ][ 'flashRemotingLimit' ] ); }
 		setMaxWebServiceRequests( thisConfig[ 10 ][ 'webserviceLimit' ] );
 		setMaxCFCFunctionRequests( thisConfig[ 10 ][ 'CFCLimit' ] );
 		setMaxReportRequests( thisConfig[ 17 ][ 'numSimultaneousReports' ] );
@@ -384,11 +391,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			setDisallowUnamedAppScope( thisConfig[ 16 ].dumpunnamedappscope );
 		}
 
-		setFlashRemotingEnable( thisConfig[ 16 ].enableFlashRemoting );
-		setFlexDataServicesEnable( thisConfig[ 16 ].enableFlexDataServices );
-		setRMISSLEnable( thisConfig[ 16 ].enableRmiSSL );
-		setRMISSLKeystore( thisConfig[ 16 ].RmiSSLKeystore );
-		if( thisConfig[ 16 ].RmiSSLKeystorePassword.len() ) {
+		if( !isNull( thisConfig[ 16 ].enableFlashRemoting ) ) { setFlashRemotingEnable( thisConfig[ 16 ].enableFlashRemoting ); }
+		if( !isNull( thisConfig[ 16 ].enableFlexDataServices ) ) { setFlexDataServicesEnable( thisConfig[ 16 ].enableFlexDataServices ); }
+		if( !isNull( thisConfig[ 16 ].enableRmiSSL ) ) { setRMISSLEnable( thisConfig[ 16 ].enableRmiSSL ); }
+		if( !isNull( thisConfig[ 16 ].RmiSSLKeystore ) ) { setRMISSLKeystore( thisConfig[ 16 ].RmiSSLKeystore ); }
+		if(  !isNull( thisConfig[ 16 ].RmiSSLKeystorePassword )  && thisConfig[ 16 ].RmiSSLKeystorePassword.len() ) {
 			setRMISSLKeystorePassword( passwordManager.decryptMailServer( thisConfig[ 16 ].RmiSSLKeystorePassword ) );
 		}
 
@@ -1081,6 +1088,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		} else {
 			var thisConfig = readWDDXConfigFile( getRuntimeConfigTemplate() );
 		}
+		
+		// cheap workaroud for 2025 which has removed the 6th item in the array
+		var isCF2025Plus = val( getVersion().listFirst('.').listFirst('-') ) >= 2025;
+		if( isCF2025Plus ) {
+			// inject an empty struct at the 6th position
+			thisConfig.insertAt( 6, {} );
+		}
 
 		// Only save custom tag paths if defined.
 		// i.e., an empty array means delete everything, not having a value at all means don't touch it.
@@ -1277,9 +1291,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		if( !isNull( getSessionCookieDisableUpdate() ) ) { thisConfig[ 18 ][ 'throttle-threshold' ] = getThrottleThreshold()+0; }
 		if( !isNull( getTotalThrottleMemory() ) ) { thisConfig[ 18 ][ 'total-throttle-memory' ] = getTotalThrottleMemory()+0; }
-
-
-
+		
+		if( isCF2025Plus ) {
+			// remove unused array 6th position
+			thisConfig.deleteAt( 6 );
+		}
 		writeWDDXConfigFile( thisConfig, configFilePath );
 
 	}
@@ -1333,6 +1349,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			thisConfig[ 3 ] = thisConfig[ 3 ] ?: {};
 			thisConfig[ 4 ][ 'REMOTE_INSPECTION_ENABLED' ] = !!getWeinreRemoteInspectionEnabled();
 		}
+
 		writeWDDXConfigFile( thisConfig, configFilePath );
 	}
 
