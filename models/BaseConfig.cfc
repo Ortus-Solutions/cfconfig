@@ -1704,6 +1704,7 @@ component accessors="true" {
 			'validTemplateExtensions' : '', // break this out, or externalize the mapping information from it
 			'disallowedFileOperationExtensions' : '',
 			'scheduledTasks' : 'name',
+			'cfcPaths' : ''
 		};
 
 		for( var prop in memento ) {
