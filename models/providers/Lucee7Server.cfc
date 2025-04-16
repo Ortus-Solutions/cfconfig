@@ -5,8 +5,8 @@
 ********************************************************************************
 * @author Brad Wood
 *
-* I represent the behavior of reading and writing CF engine config in the format compatible with a Lucee 6.x web context
-* I extend the BaseConfig class, which represents the data itself.
+* I represent the behavior of reading and writing CF engine config in the format compatible with a Lucee 7.x server context
+* I extend the Lucee6Server class, which is when the JSON format started. 
 */
 component accessors=true extends='cfconfig-services.models.providers.Lucee6Server' {
 
@@ -14,13 +14,10 @@ component accessors=true extends='cfconfig-services.models.providers.Lucee6Serve
 	* Constructor
 	*/
 	function init() {
-		// Call super first, then override
 		super.init();
 
-		// This is where said config file is stored inside the server home
-		setConfigRelativePathWithinServerHome( '/' );
-		setFormat( 'luceeWeb' );
-		setVersion( '6' );
+		setFormat( 'luceeServer' );
+		setVersion( '7-snapshot' );
 
 		return this;
 	}

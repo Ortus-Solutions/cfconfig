@@ -5,7 +5,7 @@
 ********************************************************************************
 * @author Brad Wood
 *
-* I represent the behavior of reading and writing CF engine config in the format compatible with a Lucee 5.x server context
+* I represent the behavior of reading and writing CF engine config in the format compatible with a Lucee 6.x server context
 * I extend the BaseConfig class, which represents the data itself.
 */
 component accessors=true extends='cfconfig-services.models.BaseConfig' {
