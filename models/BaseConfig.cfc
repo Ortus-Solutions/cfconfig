@@ -686,6 +686,20 @@ component accessors="true" {
 	property name='allowedFileOperationExtensions' type='array' _isCFConfig=true;
 	// The BoxLang module settings
 	property name='modules' type='struct' _isCFConfig=true;
+	/*
+	* paths should be semi-colon seperated. 
+	* To Allow a file: {path-of-file}; To Allow a directory & files in it: {path-to-directory}/*; 
+	* To Allow a directory & sub-directories: {path-to-directory}/**; 
+	* To Block a file: !{path-of-file}; 
+	* To Block a directory & sub-directories: !{path-to-directory}/**; 
+	* Precedence decreases from left to right. 
+	* Suppose directory A has directory B & C inside it.
+	* To Allow B & Block C: !A/C/*;A/**;
+	*/
+	// Paths where pre-compiled bytecode can be executed from. (Adobe only)
+	property name='pathFilterBytecodeExecutionPaths' type='string' _isCFConfig=true;
+	// Paths where scheduled tasks can write log files to. (Adobe only)
+	property name='pathFilterSchedulerExecutionPaths' type='string' _isCFConfig=true;
 
 	/**
 	* Constructor

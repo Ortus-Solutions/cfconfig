@@ -80,6 +80,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	property name='SAMLPath' type='string';
 	property name='SAMLTemplate' type='string';
 
+	property name="pathFilterConfigPath" type="string";
+	property name="pathFilterConfigTemplate" type="string";
 
 	property name='AdminRDSLoginRequiredBoolean' type='boolean' default="false" ;
 	property name='supportsMultiCloud' type='boolean' default=false;
@@ -114,6 +116,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setCloudConfigPath( '/lib/neo-cloud-config.xml' );
 		setSAMLPath( '/lib/neo-saml.xml' );
 		setCloudCredPath( '/lib/neo-cloudcredential.xml' );
+		setPathFilterConfigPath( '/lib/pathfilter.json' );
 
 
 		// CF 10+ stors as a string.  CF9 will override this.
@@ -168,6 +171,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		readUpdate();
 		readDocument();
 		readGraph();
+		readPathFilter();
 
 		if( getSupportsMultiCloud() ) {
 			readCloudCred();
@@ -893,6 +897,17 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	}
 
+	private function readPathFilter() {
+		var pathFilterConfigFile = getCFHomePath().listAppend( getPathFilterConfigPath(), '/' );
+		if( !fileExists( pathFilterConfigFile ) ) {
+			return;
+		}
+		var pathFilterJSON = readJSONC( pathFilterConfigFile );
+		
+		if( !isNull( pathFilterJSON.bytecodeexecutionpaths ) ) { setPathFilterBytecodeExecutionPaths( pathFilterJSON.bytecodeexecutionpaths ); }
+		if( !isNull( pathFilterJSON.schedulerexecutionpaths ) ) { setPathFilterSchedulerExecutionPaths( pathFilterJSON.schedulerexecutionpaths ); }
+	}
+
 	/**
 	* I write out config from a base JSON format
 	*
@@ -933,6 +948,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		writeUpdate();
 		writeDocument();
 		writeGraph();
+		writePathFilter();
 
 		if( getSupportsMultiCloud() ) {
 			writeCloudCred();
@@ -2142,6 +2158,25 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		writeWDDXConfigFile( thisConfig, configFilePath );
 
+	}
+
+	private function writePathFilter() {		
+		var pathFilterConfigFile = getCFHomePath().listAppend( getPathFilterConfigPath(), '/' );
+		
+		// If the target config file exists, read it in
+		if( fileExists( pathFilterConfigFile ) ) {
+			var pathFilterJSON = readJSONC( pathFilterConfigFile );
+		// Otherwise, start from an empty base template
+		} else if( !isNull( getPathFilterConfigTemplate() ) ) {
+			var pathFilterJSON = readJSONC( getPathFilterConfigTemplate() );
+		} else {
+			return;
+		}
+
+		if( !isNull( getPathFilterBytecodeExecutionPaths() ) ) { pathFilterJSON[ 'bytecodeexecutionpaths' ] = getPathFilterBytecodeExecutionPaths() }
+		if( !isNull( getPathFilterSchedulerExecutionPaths() ) ) { pathFilterJSON[ 'schedulerexecutionpaths' ] = getPathFilterSchedulerExecutionPaths() }
+
+		fileWrite( pathFilterConfigFile, JSONPrettyPrint.formatJson( serializeJSON( pathFilterJSON ) ) );
 	}
 
 	private function ensureSeedProperties( required string seedPropertiesPath ) {

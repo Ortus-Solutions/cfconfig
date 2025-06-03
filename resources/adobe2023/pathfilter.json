@@ -1,0 +1,7 @@
+{
+    "comments": "paths should be semi-colon seperated. To Allow a file: {path-of-file}; To Allow a directory & files in it: {path-to-directory}/*; To Allow a directory & sub-directories: {path-to-directory}/**; To Block a file: !{path-of-file}; To Block a directory & sub-directories: !{path-to-directory}/**; Precedence decreases from left to right. Suppose directory A has directory B & C inside it.To Allow B & Block C: !A/C/*;A/**;",
+        
+    "bytecodeexecutionpaths": "",
+        
+    "schedulerexecutionpaths": ""
+}

@@ -37,6 +37,7 @@ component accessors=true extends='cfconfig-services.models.BaseAdobe' {
 		setCloudConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2021/neo-cloud-config.xml' ) );
 		setCloudCredTemplate( expandPath( '/cfconfig-services/resources/adobe2021/neo-cloudcredential.xml' ) );
 		setSAMLTemplate( expandPath( '/cfconfig-services/resources/adobe2021/neo-saml.xml' ) );
+		setPathFilterConfigTemplate( expandPath( '/cfconfig-services/resources/adobe2021/pathfilter.json' ) );
 		setSupportsMultiCloud( true );
 
 		setVersion( '2021' );
