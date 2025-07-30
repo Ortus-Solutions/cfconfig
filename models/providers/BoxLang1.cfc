@@ -92,7 +92,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		// Convert whitespaceCompressionEnabled to whitespaceManagement
 		if( configData.keyExists( 'whitespaceCompressionEnabled' ) ) {
-			configData[ 'whitespaceManagement' ] = translateWhitespaceToBoxLang( configData.whitespaceCompressionEnabled );
+			configData[ 'whitespaceManagement' ] = translateWhitespaceFromBoxLang( configData.whitespaceCompressionEnabled );
 			configData.delete( 'whitespaceCompressionEnabled' );
 		}
 
@@ -201,7 +201,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		// Convert whitespaceCompressionEnabled to whitespaceCompressionEnabled
 		if( configData.keyExists( 'whitespaceManagement' ) ) {
-			configData[ 'whitespaceCompressionEnabled' ] = translateWhitespaceFromBoxLang( configData.whitespaceManagement );
+			configData[ 'whitespaceCompressionEnabled' ] = translateWhitespaceToBoxLang( configData.whitespaceManagement );
 			configData.delete( 'whitespaceManagement' );
 		}
 
