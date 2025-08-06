@@ -139,9 +139,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( configData.keyExists( 'cache' ) ) {
 			arrayEach( getCacheTypes(),
 				function( cacheType ){
-					if( configData.cache.keyExists( arguments.cacheType ) ) {
-						configData[ "cacheDefault" & arguments.ct ] = configData.cache[ arguments.cacheType ];
-						configData.delete( arguments.cacheType );
+					var cacheKey = "default" & arguments.cacheType;
+					if( configData.cache.keyExists( cacheKey ) ) {
+						configData[ "cacheDefault" & arguments.cacheType ] = configData.cache[ cacheKey ];
+						configData.delete( cacheKey );
 					}
 				}
 			);
@@ -302,7 +303,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// cacheDefaults, Lucee 6 moved them under cache
 		arrayEach( getCacheTypes(),
 			function( cacheType ){
-				var cacheKey = 'cache' & arguments.cacheType;
+				var cacheKey = 'cacheDefault' & arguments.cacheType;
 				if( configData.keyExists( cacheKey ) ) {
 					if( !configData.keyExists( 'cache' ) ){
 						configData[ 'cache' ] = {};
