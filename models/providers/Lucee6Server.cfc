@@ -135,10 +135,17 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			}
 		}
 
-		// Convert defaultObject to cacheDefaultObject
-		if( configData.keyExists( 'defaultObject' ) ) {
-			configData[ 'cacheDefaultObject' ] = configData.defaultObject;
-			configData.delete( 'defaultObject' );
+		// cacheDefaults, Lucee 6 moved them under cache
+		if( configData.keyExists( 'cache' ) ) {
+			arrayEach( getCacheTypes(),
+				function( cacheType ){
+					if( configData.cache.keyExists( arguments.cacheType ) ) {
+						configData[ "cacheDefault" & arguments.ct ] = configData.cache[ arguments.cacheType ];
+						configData.delete( arguments.cacheType );
+					}
+				}
+			);
+			configData.delete( 'cache' );
 		}
 
 		// if caches exist, loop over and turn custom (if it exists as a string) to a struct
@@ -292,11 +299,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData.delete( 'datasourcePreserveSingleQuotes' );
 		}
 
-		// cacheDefaultObject -> defaultObject
-		if( configData.keyExists( 'cacheDefaultObject' ) ) {
-			configData[ 'defaultObject' ] = configData.cacheDefaultObject;
-			configData.delete( 'cacheDefaultObject' );
-		}
+		// cacheDefaults, Lucee 6 moved them under cache
+		arrayEach( getCacheTypes(),
+			function( cacheType ){
+				var cacheKey = 'cache' & arguments.cacheType;
+				if( configData.keyExists( cacheKey ) ) {
+					if( !configData.keyExists( 'cache' ) ){
+						configData[ 'cache' ] = {};
+					}
+					configData.cache[ "default" & arguments.cacheType ] = configData[ cacheKey ];
+					configData.delete( cacheKey );
+				}
+			}
+		);
 
 		// if caches exist, loop over and turn custom (if it exists as a struct) to a string
 		if( configData.keyExists( 'caches' ) ) {
@@ -431,6 +446,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return 'off';
 		}
 
+	}
+
+	private function getCacheTypes (){
+		return [ "Template", "Object", "Query", "Resource", "Function", "Include", "Http", "File", "Webservice" ];
 	}
 
 }
