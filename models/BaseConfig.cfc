@@ -1706,6 +1706,7 @@ component accessors="true" {
 			'logFilesDisabled' : '',
 			'javaLibraryPaths' : '',
 			'customTagsDirectory' : '',
+			'customComponentsDirectory' : '',
 			'modulesDirectory' : '',
 			'eventGatewayInstances' : 'gatewayId',
 			'eventGatewayConfigurations' : 'type',
