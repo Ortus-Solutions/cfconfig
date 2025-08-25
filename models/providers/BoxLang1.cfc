@@ -55,15 +55,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData.delete( 'mappings' );
 		}
 
-		// Convert customTagsDirectory to CustomTagPaths  and each mapping becomes a struct of data
-		if( configData.keyExists( 'customTagsDirectory' ) ) {
+		// Convert customComponentsDirectory to CustomTagPaths  and each mapping becomes a struct of data
+		if( configData.keyExists( 'customComponentsDirectory' ) ) {
 			// BoxLang uses a different key for mappings
-			configData.CustomTagPaths = configData.customTagsDirectory.map( function( physical ) {
+			configData.CustomTagPaths = configData.customComponentsDirectory.map( function( physical ) {
 				return {
 					'physical' : physical
 				};
 			} );
-			configData.delete( 'customTagsDirectory' );
+			configData.delete( 'customComponentsDirectory' );
 		}
 
 		// Convert timezone to thisTimezone
@@ -166,10 +166,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData.delete( 'CFMappings' );
 		}
 
-		// Convert CustomTagPaths to customTagsDirectory and each mapping struct becomes a string
+		// Convert CustomTagPaths to customComponentsDirectory and each mapping struct becomes a string
 		if( configData.keyExists( 'CustomTagPaths' ) ) {
-			// BoxLang uses a different key for customTagsDirectory
-			configData[ 'customTagsDirectory' ] = configData.CustomTagPaths
+			// BoxLang uses a different key for customComponentsDirectory
+			configData[ 'customComponentsDirectory' ] = configData.CustomTagPaths
 				.filter( ( mappingStruct) => mappingStruct.keyExists( 'physical' ) )
 				.map( ( mappingStruct ) => mappingStruct.physical );
 			configData.delete( 'CustomTagPaths' );
