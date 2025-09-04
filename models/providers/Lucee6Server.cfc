@@ -118,7 +118,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( configData.keyExists( 'datasources' ) && configData.datasources.keyExists( 'psq' ) ) {
 			configData[ 'datasourcePreserveSingleQuotes' ] = configData.datasources.psq;
 			configData.datasources.delete( 'psq' );
-		}psq
+		}
 
 		// loop over datasources, is password exists, decrypt it
 		if( configData.keyExists( 'datasources' ) ) {
@@ -128,6 +128,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isStruct( datasource ) ) {
 					systemOutput( 'Deleting datasource ' & datasourceName & ' because it is not a struct', 1 );
 					configData.datasources.delete( datasourceName );
+				}
+				if( datasource.keyExists( 'type' ) ) {
+					datasource[ 'dbdriver' ] = datasource.type;
 				}
 				if( datasource.keyExists( 'password' ) && left( datasource.password, 10 ) == 'encrypted:' ) {
 					datasource[ 'password' ] = passwordManager.decryptDataSource( replaceNoCase( datasource.password, 'encrypted:', '' ) );
@@ -289,6 +292,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				var datasource = configData.datasources[ datasourceName ];
 				if( datasource.keyExists( 'password' ) ) {
 					datasource[ 'password' ] = 'encrypted:' & passwordManager.encryptDataSource( datasource.password );
+				}
+				if( datasource.keyExists( 'dbdriver' ) ) {
+					datasource[ 'type' ] = datasource.dbdriver;
 				}
 			}
 		}
