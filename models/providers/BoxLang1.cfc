@@ -127,6 +127,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			// Remove the experimental struct from configData to avoid redundancy
 			configData.delete( 'experimental' );
 		}
+
+		// handle trusted cache, but the opposite of below
+		if( configData.keyExists( 'trustedCache' ) ) {
+			if( configData.trustedCache ) {
+				configData[ 'inspectTemplate' ] = 'never';
+			} else {
+				configData[ 'inspectTemplate' ] = 'always';
+			}
+			configData.delete( 'trustedCache' );
+		}
 		
 		setMemento( configData );
 		return this;
@@ -232,6 +242,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData[ 'experimental' ] [ 'ASTCapture' ] = configData[ 'experimentalASTCapture' ];
 			// Remove to avoid duplication
 			configData.delete( 'experimentalASTCapture' ); 
+		}
+
+		// One of the strings "never", "once", "always"
+		if( configData.keyExists( 'inspectTemplate') ) {
+			if( configData.inspectTemplate eq 'never' ) {
+				configData[ 'trustedCache' ] = true;
+			} else {
+				configData[ 'trustedCache' ] = false;
+			}
+			configData.delete( 'inspectTemplate' );
 		}
 
 		// Ensure the parent directories exist
