@@ -353,7 +353,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		if( !isNull( thisConfig[ 11 ].redisCacheStorageHost ) ) { setRedisCacheStorageHost( thisConfig[ 11 ].redisCacheStorageHost ); }
 		if( !isNull( thisConfig[ 11 ].redisCacheStoragePort ) ) { setRedisCacheStoragePort( thisConfig[ 11 ].redisCacheStoragePort ); }
-		if( !isNull( thisConfig[ 11 ].redisCacheStoragePassword ) ) { setRedisCacheStoragePassword( thisConfig[ 11 ].redisCacheStoragePassword ); }
+		if( !isNull( thisConfig[ 11 ].redisCacheStoragePassword ) && thisConfig[ 11 ].redisCacheStoragePassword.len() ) {
+			setRedisCacheStoragePassword( passwordManager.decryptMailServer( thisConfig[ 11 ].redisCacheStoragePassword ) );
+		}
 		if( !isNull( thisConfig[ 11 ].redisCacheStorageIsSSL ) ) { setRedisCacheStorageIsSSL( thisConfig[ 11 ].redisCacheStorageIsSSL ); }
 
 		setMailDefaultEncoding( thisConfig[ 12 ].defaultMailCharset );
@@ -1202,7 +1204,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		if( !isNull( getRedisCacheStorageHost() ) ) { thisConfig[ 11 ].redisCacheStorageHost = ( getRedisCacheStorageHost() ); }
 		if( !isNull( getRedisCacheStoragePort() ) ) { thisConfig[ 11 ].redisCacheStoragePort = ( getRedisCacheStoragePort()+0 ); }
-		if( !isNull( getRedisCacheStoragePassword() ) ) { thisConfig[ 11 ].redisCacheStoragePassword = ( getRedisCacheStoragePassword() ); }
+
+		if( !isNull( getRedisCacheStoragePassword() ) ) {
+			var password = getRedisCacheStoragePassword();
+			// Check if the password looks like a cipher, for backwards compat 
+			// Older versions of CFConfig didn't decrypt this, so it may be in the JSON file as a cipher already
+			// These checks assume a base64 encoded cipher from the DESede algorithm, adjust if it's too assuming.
+			if( len(password) MOD 4 EQ 0 AND reFindNoCase("^[A-Za-z0-9+/]*={0,2}$", password) AND len(password) GTE 12 ) {
+				thisConfig[ 11 ].redisCacheStoragePassword = password;
+			} else {
+				thisConfig[ 11 ].redisCacheStoragePassword = passwordManager.encryptMailServer( password );
+			}
+		}
+
 		if( !isNull( getRedisCacheStorageIsSSL() ) ) { thisConfig[ 11 ].redisCacheStorageIsSSL = ( getRedisCacheStorageIsSSL() ? true : false ); }
 
 		if( !isNull( getInspectTemplate() ) ) {
