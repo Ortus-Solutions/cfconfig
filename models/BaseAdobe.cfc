@@ -15,6 +15,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	// Depdendency Injections
 	// ----------------------------------------------------------------------------------------
 	property name='DSNUtil' inject='BaseAdobeDSNMapper@cfconfig-services';
+	property name='moduleSettings' inject='box:moduleSettings:cfconfig-services';
 
 	property name='runtimeConfigPath' type='string';
 	property name='runtimeConfigTemplate' type='string';
@@ -1193,53 +1194,53 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getLogSlowRequestsThreshold() ) ) { thisConfig[ 10 ][ 'slowRequestTimeLimit' ] = getLogSlowRequestsThreshold()+0; }
 
 
-		if( !isNull( getTemplateCacheSize() ) ) { thisConfig[ 11 ].templateCacheSize = getTemplateCacheSize()+0; }
-		if( !isNull( getSaveClassFiles() ) ) { thisConfig[ 11 ].saveClassFiles = ( getSaveClassFiles() ? true : false ); }
-		if( !isNull( getComponentCacheEnabled() ) ) { thisConfig[ 11 ].componentCacheEnabled = ( getComponentCacheEnabled() ? true : false ); }
-		if( !isNull( getQueryInternalCacheEnabled() ) ) { thisConfig[ 11 ].enableInternalQueryCache = ( getQueryInternalCacheEnabled() ? true : false ); }
+		if( !isNull( getTemplateCacheSize() ) ) { thisConfig[ 11 ][ 'templateCacheSize' ] = getTemplateCacheSize()+0; }
+		if( !isNull( getSaveClassFiles() ) ) { thisConfig[ 11 ][ 'saveClassFiles' ] = ( getSaveClassFiles() ? true : false ); }
+		if( !isNull( getComponentCacheEnabled() ) ) { thisConfig[ 11 ][ 'componentCacheEnabled' ] = ( getComponentCacheEnabled() ? true : false ); }
+		if( !isNull( getQueryInternalCacheEnabled() ) ) { thisConfig[ 11 ][ 'enableInternalQueryCache' ] = ( getQueryInternalCacheEnabled() ? true : false ); }
 
 		if( !isNull( getServerCacheType() ) ) { 
 			thisConfig[ 11 ][ 'serverCacheType' ] = translateCacheTypeToAdobe( getServerCacheType() );
 		}
 
-		if( !isNull( getRedisCacheStorageHost() ) ) { thisConfig[ 11 ].redisCacheStorageHost = ( getRedisCacheStorageHost() ); }
-		if( !isNull( getRedisCacheStoragePort() ) ) { thisConfig[ 11 ].redisCacheStoragePort = ( getRedisCacheStoragePort()+0 ); }
+		if( !isNull( getRedisCacheStorageHost() ) ) { thisConfig[ 11 ][ 'redisCacheStorageHost' ] = ( getRedisCacheStorageHost() ); }
+		if( !isNull( getRedisCacheStoragePort() ) ) { thisConfig[ 11 ][ 'redisCacheStoragePort' ] = ( getRedisCacheStoragePort()+0 ); }
 
 		if( !isNull( getRedisCacheStoragePassword() ) ) {
 			var password = getRedisCacheStoragePassword();
 			// Check if the password looks like a cipher, for backwards compat 
 			// Older versions of CFConfig didn't decrypt this, so it may be in the JSON file as a cipher already
 			// These checks assume a base64 encoded cipher from the DESede algorithm, adjust if it's too assuming.
-			if( len(password) MOD 4 EQ 0 AND reFindNoCase("^[A-Za-z0-9+/]*={0,2}$", password) AND len(password) GTE 12 ) {
-				thisConfig[ 11 ].redisCacheStoragePassword = password;
+			if( !moduleSettings.redisCachePasswordAlwaysPlainText && len(password) MOD 4 == 0 && reFindNoCase("^[A-Za-z0-9+/]*={0,2}$", password) && len(password) GTE 12 ) {
+				thisConfig[ 11 ][ 'redisCacheStoragePassword' ] = password;
 			} else {
-				thisConfig[ 11 ].redisCacheStoragePassword = passwordManager.encryptMailServer( password );
+				thisConfig[ 11 ][ 'redisCacheStoragePassword' ] = passwordManager.encryptMailServer( password );
 			}
 		}
 
-		if( !isNull( getRedisCacheStorageIsSSL() ) ) { thisConfig[ 11 ].redisCacheStorageIsSSL = ( getRedisCacheStorageIsSSL() ? true : false ); }
+		if( !isNull( getRedisCacheStorageIsSSL() ) ) { thisConfig[ 11 ][ 'redisCacheStorageIsSSL' ] = ( getRedisCacheStorageIsSSL() ? true : false ); }
 
 		if( !isNull( getInspectTemplate() ) ) {
 
 			switch( getInspectTemplate() ) {
 				case 'never' :
-					thisConfig[ 11 ].trustedCacheEnabled = true;
-					thisConfig[ 11 ].inRequestTemplateCacheEnabled = true;
+					thisConfig[ 11 ][ 'trustedCacheEnabled' ] = true;
+					thisConfig[ 11 ][ 'inRequestTemplateCacheEnabled' ] = true;
 					break;
 				case 'once' :
-					thisConfig[ 11 ].trustedCacheEnabled = false;
-					thisConfig[ 11 ].inRequestTemplateCacheEnabled = true;
+					thisConfig[ 11 ][ 'trustedCacheEnabled' ] = false;
+					thisConfig[ 11 ][ 'inRequestTemplateCacheEnabled' ] = true;
 					break;
 				case 'always' :
-					thisConfig[ 11 ].trustedCacheEnabled = false;
-					thisConfig[ 11 ].inRequestTemplateCacheEnabled = false;
+					thisConfig[ 11 ][ 'trustedCacheEnabled' ] = false;
+					thisConfig[ 11 ][ 'inRequestTemplateCacheEnabled' ] = false;
 			}
 
 		}
 
-		if( !isNull( getMailDefaultEncoding() ) ) { thisConfig[ 12 ].defaultMailCharset = getMailDefaultEncoding(); }
+		if( !isNull( getMailDefaultEncoding() ) ) { thisConfig[ 12 ][ 'defaultMailCharset' ] = getMailDefaultEncoding(); }
 
-		if( !isNull( getCFFormScriptDirectory() ) ) { thisConfig[ 14 ].CFFormScriptSrc = getCFFormScriptDirectory(); }
+		if( !isNull( getCFFormScriptDirectory() ) ) { thisConfig[ 14 ][ 'CFFormScriptSrc' ] = getCFFormScriptDirectory(); }
 
 		if( !isNull( getScriptProtect() ) ) {
 

@@ -17,7 +17,7 @@ component {
 
 	function configure() {
 		settings = {
-			
+			"redisCachePasswordAlwaysPlainText" : false
 		};
 	}
 }
