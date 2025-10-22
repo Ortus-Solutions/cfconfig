@@ -260,10 +260,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// merge with existing data
 		if( fileExists( configFilePath ) ) {
 			existingData = readJSONC( configFilePath );
-			mergeMemento( configData, existingData )
 		} else {
-			existingData = configData;
+			existingData = readJSONC( expandPath( '/cfconfig-services/resources/boxlang1/boxlang.json' ) );
 		}
+		mergeMemento( configData, existingData );
 		
 		// Make sure this never makes it to the hard drive
 		structDelete( existingData, 'adminPassword' );

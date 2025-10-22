@@ -64,7 +64,7 @@ component accessors=true {
 				return ';';	
 			case 'Firebird' :
 			default :
-				return '';
+				return '&';
 		}
 		
 	}
