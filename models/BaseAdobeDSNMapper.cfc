@@ -51,20 +51,19 @@ component accessors=true {
 		switch( dbdriver ) {
 			case 'MySQL' :
 			case 'PostgreSQL' :
+			case 'Oracle' :
+			case 'Firebird' :
+			case 'Sybase' :
 				return '&';
 			case 'MSSQL' :
 			case 'MSSQL2' : // jTDS driver
-			case 'Oracle' :
 			case 'DB2' :
-			case 'Sybase' :
-			case 'ODBC' :			
-			case 'HSQLDB' :			
+			case 'HSQLDB' :
 			case 'H2Server' :
 			case 'H2' :
-				return ';';	
-			case 'Firebird' :
+			case 'ODBC' :
 			default :
-				return '&';
+				return ';';
 		}
 		
 	}

@@ -85,7 +85,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 
 		// Convert debugMode to debuggingEnabled
-		if( configData.keyExists( 'debugMode' ) ) {
+		if( configData.keyExists( 'debugMode' ) ) { 
 			configData[ 'debuggingEnabled' ] = configData.debugMode;
 			configData.delete( 'debugMode' );
 		}
@@ -174,6 +174,25 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				.filter( (virtual, mappingStruct) => mappingStruct.keyExists( 'physical' ) )	
 				.map( ( virtual, mappingStruct ) => mappingStruct.physical );
 			configData.delete( 'CFMappings' );
+		}
+
+		// massage datasources if they exist
+		if( configData.keyExists( 'datasources' ) ) {
+			configData.datasources =  configData.datasources.map( ( name, ds ) => {
+
+				ds.dbdriver = guessDBDriver( ds.dbdriver ?: '', ds.dsn ?: '', ds.bundleName ?: '', ds.class ?: '' );
+				ds.class = translateClassToBoxLang( ds.dbdriver, ds.class ?: '' );
+				// Do this prior to URL translation
+				ds.custom = ensureCustomIsStruct( ds.custom ?: '' );
+				// custom will always be a struct
+				ds.dsn = translateDatasourceURLToBoxLang( ds );
+				// Lucee stores Oracle driver type in driverType, but BoxLang will be expecting it in protocol
+				if( ds.keyExists( 'drivertype' ) ) {
+					ds.protocol  = ds.drivertype;
+					ds.delete( 'drivertype' );
+				}
+				return ds;
+			} );
 		}
 
 		// Convert CustomTagPaths to customComponentsDirectory and each mapping struct becomes a string
@@ -339,12 +358,188 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	 * @param {numeric} fileSizeKB - The file size in KB
 	 * @return {string} - The file size in MB
 	 */
-	function convertFileSizeKBToMB( fileSizeKB ) {
+	private function convertFileSizeKBToMB( fileSizeKB ) {
 		if ( !isNumeric( fileSizeKB ) or fileSizeKB lt 0 ) {
 			throw( "InvalidValue", "File size in KB must be a non-negative number." );
 		}
 	
 		return round(fileSizeKB / 1024) & "MB";
+	}
+
+	private function guessDBDriver( required string dbdriver, required string dsn, required string bundleName, required string className ) {
+		if( len( dbdriver ) ) {
+			return dbdriver;
+		}
+
+		// If no class, use the JDBC URL
+		if( !len( className ) ) {
+			className = dsn;
+		}
+
+		// If still no class, use the bundle name
+		if( !len(className)  ) {
+			className = bundleName;
+		}
+
+		// Try to guess based on DSN
+		if( findNoCase( 'mysql', className ) ) {
+			return 'MySQL';
+		} else if( findNoCase( 'postgresql', className ) ) {
+			return 'PostgreSql';
+		} else if( findNoCase( 'sqlserver', className ) or findNoCase( 'mssql', className ) ) {
+			return 'MSSQL';
+		} else if( findNoCase( 'oracle', className ) ) {
+			return 'Oracle';
+		} else if( findNoCase( 'h2', className ) ) {
+			return 'H2';
+		} else {
+			return "Other";
+		}
+
+	}
+
+	/**
+	 * Translate common JDBC class names to BoxLang short names
+	 * 
+	 * @dbdriver The database driver type.  This WILL have a value, even if guessed.
+	 * @className The JDBC class name to translate (may be empty)
+	 */
+	private function translateClassToBoxLang( required dbdriver, required string className ) {
+
+		switch( dbdriver ) {
+			case 'MSSQL' :
+				return 'com.microsoft.sqlserver.jdbc.SQLServerDriver';
+			case 'JTDS' :
+				// We don't actually have a JTDS module yet
+				return 'com.microsoft.sqlserver.jdbc.SQLServerDriver';
+				//return 'net.sourceforge.jtds.jdbc.Driver';
+			case 'Oracle' :
+				return 'oracle.jdbc.driver.OracleDriver';
+			case 'MySQL' :
+				return 'com.mysql.jdbc.Driver';
+			case 'H2' :
+				return 'org.h2.Driver';
+			case 'PostgreSQL' :
+				return 'org.postgresql.Driver';
+			default :
+				return arguments.className;
+		}
+	}
+
+
+
+	private function translateDatasourceURLToBoxLang( required struct ds ) {
+
+		switch( ds.dbdriver ) {
+			case 'MySQL' :
+				addQueryStringToCustom( ds );
+				return 'jdbc:mysql://{host}:{port}/{database}';
+			case 'Oracle' :
+				addQueryStringToCustom( ds );
+				if( len( ds.SID ?: '' ) ) {
+					return 'jdbc:oracle:{protocol}:@{host}:{port}:#ds.SID#';
+				} else if( len( ds.serviceName ?: '' ) ) {
+					return 'jdbc:oracle:{protocol}:@{host}:{port}/#ds.serviceName#';
+				} else {
+					return 'jdbc:oracle:{protocol}:@{host}:{port}:{database}';
+				}
+			case 'PostgreSql' :
+				addQueryStringToCustom( ds );
+				return 'jdbc:postgresql://{host}:{port}/{database}';
+			case 'MSSQL' :
+				addQueryStringToCustom( ds );
+				return 'jdbc:sqlserver://{host}:{port}';
+			case 'JTDS' :
+				addQueryStringToCustom( ds );
+				return 'jdbc:jtds:sqlserver://{host}:{port}/{database}';
+			case 'H2' :
+				addQueryStringToCustom( ds );
+				return 'jdbc:h2:{path}{database};MODE={mode}';
+			default :
+				return ds.dsn ?: '';
+		}
+
+	}
+
+	private function addQueryStringToCustom( required struct ds ) {
+		// If there are any custom parameters, we need to add them to the custom struct
+		if( len( ds.dsn ?: '' ) ) {
+			var delimiter = customURLDelimiter( ds.dbdriver );
+			var start = customURLStart( ds.dbdriver );
+			if( not ds.dsn contains start ) {
+				// No custom parameters
+				return;
+			}
+			var queryString = mid( ds.dsn, find( start, ds.dsn ) + 1 );
+			if( len( queryString ) ) {
+				var parts = listToArray( queryString, delimiter );
+				for( var part in parts ) {
+					var key = listFirst( part, '=' );
+					var value = listLen( part, '=' ) > 1 ? listRest( part, '=' ) : '';
+					// Add to custom struct
+					ds.custom[ URLDecode( key ) ] = URLDecode( value );
+				}
+			}
+		}
+	}
+
+	private function ensureCustomIsStruct( any custom ) {
+		if( isStruct( custom ) ) {
+			return custom;
+		} else {
+			var thisStruct = [:];
+			for( var item in arguments.custom.listToArray( '&' ) ) {
+				// Turn foo=bar&baz=bum&poof= into { foo : 'bar', baz : 'bum', poof : '' }
+				// Any "=" or "&" in the key values will be URL encoded.
+				thisStruct[ URLDecode( listFirst( item, '=' ) ) ] = ( listLen( item, '=' ) ?  URLDecode( listRest( item, '=' ) ) : '' );
+			}
+			return thisStruct;
+		}
+	}
+
+	string function customURLDelimiter( string dbdriver ) {
+		
+		switch( dbdriver ) {
+			case 'MySQL' :
+			case 'PostgreSQL' :
+			case 'Oracle' :
+			case 'Firebird' :
+			case 'Sybase' :
+				return '&';
+			case 'MSSQL' :
+			case 'MSSQL2' : // jTDS driver
+			case 'DB2' :
+			case 'HSQLDB' :
+			case 'H2Server' :
+			case 'H2' :
+			case 'ODBC' :
+			default :
+				return ';';
+		}
+		
+	}
+
+	string function customURLStart( string dbdriver ) {
+		
+		switch( dbdriver ) {
+			case 'MSSQL' :
+			case 'MSSQL2' : // jTDS driver
+			case 'H2Server' :
+			case 'H2' :
+			case 'HSQLDB' :
+			case 'ODBC' :
+				return ';';
+			case 'DB2' :
+				return ':';
+			case 'MySQL' :
+			case 'PostgreSQL' :
+			case 'Oracle' :
+			case 'Firebird' :
+			case 'Sybase' :
+			default :
+				return '?';
+		}
+		
 	}
 
 }
