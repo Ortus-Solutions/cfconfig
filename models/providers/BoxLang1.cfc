@@ -448,7 +448,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return 'jdbc:postgresql://{host}:{port}/{database}';
 			case 'MSSQL' :
 				addQueryStringToCustom( ds );
-				if( ds.host ?: '' contains '\' ) {
+				var thisHost = ds.host ?: '';
+				if( thisHost contains '\' ) {
 					// Instance name is included in the host, omit port
 					return 'jdbc:sqlserver://{host}';
 				} else {
