@@ -137,6 +137,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			}
 			configData.delete( 'trustedCache' );
 		}
+
+		// serverCFCEenabled maps to modules.compat-cfml.settings.serverStartEnabled
+		if( !isNull( configData.modules['compat-cfml'].settings.serverStartEnabled ) ) {
+			configData[ 'serverCFCEenabled' ] = configData.modules['compat-cfml'].settings.serverStartEnabled;
+		}
+
+		// serverCFC maps to modules.compat-cfml.settings.serverStartPath
+		if( !isNull( configData.modules['compat-cfml'].settings.serverStartPath ) ) {
+			configData[ 'serverCFC' ] = configData.modules['compat-cfml'].settings.serverStartPath;
+		}
 		
 		setMemento( configData );
 		return this;
@@ -271,6 +281,18 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				configData[ 'trustedCache' ] = false;
 			}
 			configData.delete( 'inspectTemplate' );
+		}
+
+		// serverCFCEenabled maps to modules.compat-cfml.settings.serverStartEnabled
+		if( configData.keyExists( 'serverCFCEenabled') ) {
+			configData[ 'modules' ][ 'compat-cfml' ][ 'settings' ][ 'serverStartEnabled' ] = configData[ 'serverCFCEenabled' ];
+			configData.delete( 'serverCFCEenabled' );
+		}
+
+		// serverCFC maps to modules.compat-cfml.settings.serverStartPath
+		if( configData.keyExists( 'serverCFC') ) {
+			configData[ 'modules' ][ 'compat-cfml' ][ 'settings' ][ 'serverStartPath' ] = configData[ 'serverCFC' ];
+			configData.delete( 'serverCFC' );
 		}
 
 		// Ensure the parent directories exist
