@@ -458,6 +458,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return 'jdbc:mysql://{host}:{port}/{database}';
 			case 'Oracle' :
 				addQueryStringToCustom( ds );
+				ds.protocol = ds.protocol ?: 'thin';
 				if( len( ds.SID ?: '' ) ) {
 					return 'jdbc:oracle:{protocol}:@{host}:{port}:#ds.SID#';
 				} else if( len( ds.serviceName ?: '' ) ) {
