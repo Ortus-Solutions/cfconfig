@@ -1,4 +1,7 @@
 {
+    "app":{
+        "cfengine":"lucee@6"
+    },
     "name":"cfconfig",
     "web":{
         "host":"cfconfig.local"

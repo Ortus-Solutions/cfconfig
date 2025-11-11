@@ -135,6 +135,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( datasource.keyExists( 'password' ) && left( datasource.password, 10 ) == 'encrypted:' ) {
 					datasource[ 'password' ] = passwordManager.decryptDataSource( replaceNoCase( datasource.password, 'encrypted:', '' ) );
 				}
+				
+				// Lucee 6 started storing this here, but it doesn't belong in custom as it's not a JDBC URL param
+				if ( datasource.keyExists( 'custom' ) && isStruct( datasource.custom ) ) {
+					var customStruct = datasource.custom;
+					if( !isNull( customStruct[ 'driverType' ] ) ) {
+						datasource[ 'driverType' ] = customStruct[ 'driverType' ];
+						customStruct.delete( 'driverType' );
+					}
+				}
 			}
 		}
 
