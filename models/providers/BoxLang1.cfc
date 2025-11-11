@@ -198,7 +198,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				ds.dsn = translateDatasourceURLToBoxLang( ds );
 				// Lucee stores Oracle driver type in driverType, but BoxLang will be expecting it in protocol
 				if( ds.keyExists( 'drivertype' ) ) {
-					ds.protocol  = ds.drivertype;
+					ds['protocol']  = ds.drivertype;
 					ds.delete( 'drivertype' );
 				}
 				return ds;
@@ -458,7 +458,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return 'jdbc:mysql://{host}:{port}/{database}';
 			case 'Oracle' :
 				addQueryStringToCustom( ds );
-				ds.protocol = ds.protocol ?: 'thin';
+				ds['protocol'] = ds.protocol ?: 'thin';
 				if( len( ds.SID ?: '' ) ) {
 					return 'jdbc:oracle:{protocol}:@{host}:{port}:#ds.SID#';
 				} else if( len( ds.serviceName ?: '' ) ) {
