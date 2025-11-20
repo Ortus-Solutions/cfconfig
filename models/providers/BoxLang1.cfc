@@ -148,6 +148,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData[ 'serverCFC' ] = configData.modules['compat-cfml'].settings.serverStartPath;
 		}
 		
+		// nullSupport maps to modules.compat-cfml.settings.nullEqualsEmptyString and modules.compat-cfml.settings.nullIsUndefined
+		if( !isNull( configData.modules['compat-cfml'].settings.nullEqualsEmptyString ) || !isNull( configData.modules['compat-cfml'].settings.nullIsUndefined ) ) {
+			// Either one being true means nullSupport is true
+			configData[ 'nullSupport' ] = (configData.modules['compat-cfml'].settings.nullEqualsEmptyString ?: false) || (configData.modules['compat-cfml'].settings.nullIsUndefined ?: false);
+		}
+
+		
 		setMemento( configData );
 		return this;
 	}
@@ -293,6 +300,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( configData.keyExists( 'serverCFC') ) {
 			configData[ 'modules' ][ 'compat-cfml' ][ 'settings' ][ 'serverStartPath' ] = configData[ 'serverCFC' ];
 			configData.delete( 'serverCFC' );
+		}
+
+		// nullSupport maps to modules.compat-cfml.settings.nullEqualsEmptyString and modules.compat-cfml.settings.nullIsUndefined
+		if( configData.keyExists( 'nullSupport') ) {
+			configData[ 'modules' ][ 'compat-cfml' ][ 'settings' ][ 'nullEqualsEmptyString' ] = configData[ 'nullSupport' ];
+			configData[ 'modules' ][ 'compat-cfml' ][ 'settings' ][ 'nullIsUndefined' ] = configData[ 'nullSupport' ];
+			configData.delete( 'nullSupport' );
 		}
 
 		// Ensure the parent directories exist
@@ -460,7 +474,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				addQueryStringToCustom( ds );
 				ds['protocol'] = ds.protocol ?: 'thin';
 				if( len( ds.SID ?: '' ) ) {
-					return 'jdbc:oracle:{protocol}:@{host}:{port}:#ds.SID#';
+					return 'jdbc:oracle:{protocol}:@{host}:{port}:{SID}';
 				} else if( len( ds.serviceName ?: '' ) ) {
 					return 'jdbc:oracle:{protocol}:@{host}:{port}/#ds.serviceName#';
 				} else {
