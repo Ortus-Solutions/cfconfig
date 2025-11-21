@@ -151,9 +151,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// nullSupport maps to modules.compat-cfml.settings.nullEqualsEmptyString and modules.compat-cfml.settings.nullIsUndefined
 		if( !isNull( configData.modules['compat-cfml'].settings.nullEqualsEmptyString ) || !isNull( configData.modules['compat-cfml'].settings.nullIsUndefined ) ) {
 			// Either one being true means nullSupport is true
-			configData[ 'nullSupport' ] = !(configData.modules['compat-cfml'].settings.nullEqualsEmptyString ?: false) || (configData.modules['compat-cfml'].settings.nullIsUndefined ?: false);
+			configData[ 'nullSupport' ] = !((configData.modules['compat-cfml'].settings.nullEqualsEmptyString ?: false) || (configData.modules['compat-cfml'].settings.nullIsUndefined ?: false));
 		}
-
 		
 		setMemento( configData );
 		return this;
