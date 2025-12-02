@@ -361,6 +361,20 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			}
 		}
 
+		if (  configData.keyExists( 'eventGatewaysLucee' ) ) {
+			var gatewaysStruct = {};
+			for ( var gatewayName in configData.eventGatewaysLucee ) {
+				var gw = configData.eventGatewaysLucee[ gatewayName ];
+				var newGateway = {};
+				for (var key in gw) {
+					newGateway[key] = gw[key];
+				}
+				gatewaysStruct[ gatewayName ] = newGateway;
+			}
+			configData.gateways = gatewaysStruct;
+			structDelete( configData, "eventGatewaysLucee" );
+		}
+
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( configFilePath ), createPath=true, ignoreExists=true );
 		var existingData = {};
@@ -372,6 +386,25 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			existingData = readJSONC( expandPath( '/cfconfig-services/resources/lucee6/CFConfig-base.json' ) );
 		}
 		mergeMemento( configData, existingData )
+		//scheduledTasks for Lucee 6 export
+		if ( structKeyExists( existingData, "scheduledTasks" ) && !isArray( existingData.scheduledTasks ) ) {
+			var tasksArray = [];
+			for ( var taskName in existingData.scheduledTasks ) {
+				var task = existingData.scheduledTasks[ taskName ];
+				var newTask = duplicate(task);
+				newTask["name"] = task["task"] ?: taskName;
+				newTask["startDate"] = isNull(task["startDate"]) ? "" : "{d '" & dateFormat( task["startDate"], "yyyy-mm-dd" ) & "'}";
+				newTask["startTime"] = isNull(task["startTime"]) ? "" : "{t '" & timeFormat( task["startTime"], "HH:mm:ss" ) & "'}";
+				newTask["port"] = isNull(task["port"]) ? -1 : task["port"];
+				newTask["interval"] = task["interval"] ?: "3600";
+				newTask["timeout"] = int( task["requestTimeOut"] ?: task["timeout"] ?: 0 );
+				["resolveUrl","publish","hidden","readonly","autoDelete","unique","paused"].each(function(boolField){
+					if (!structKeyExists(newTask, boolField)) newTask[boolField] = false;
+				});
+				tasksArray.append(newTask);
+			}
+			existingData.scheduledTasks = tasksArray;
+		}
 		// Make sure this never makes it to the hard drive
 		structDelete( existingData, 'adminPassword' );
 

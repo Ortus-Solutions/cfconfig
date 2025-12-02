@@ -89,6 +89,32 @@ component extends="tests.BaseTest" appMapping="/tests" {
 
 			});
 
+			it( "should export scheduledTasks as array and gateways as struct (CFCONFIG-64)", function() {
+				var Lucee6ServerConfig = getInstance( 'Lucee6Server@cfconfig-services' );
+				var testConfig = {
+					eventGatewaysLucee: {
+						"eventTest": {
+							CFCPath: "local/test"
+						}
+					},
+					scheduledTasks: {
+						"task": {
+							interval: "daily",
+							task: "task"
+						}
+					}
+				};
+				Lucee6ServerConfig.setMemento( testConfig );
+				Lucee6ServerConfig.write( expandPath( '/tests/resources/tmp' ) );
+
+				var output = deserializeJSON( fileRead( expandPath( '/tests/resources/tmp/context/.CFConfig.json' ) ) );
+				expect( isArray( output.scheduledTasks ) ).toBeTrue();
+				expect( arrayLen( output.scheduledTasks ) ).toBe( 1 );
+				expect( output.scheduledTasks[1].name ).toBe( "task" );
+				expect( isStruct( output.gateways ) ).toBeTrue();
+				expect( output.gateways[ "eventTest" ].cfcPath ).toBe( "local/test" );
+			});
+	
 		});
 
 	}
