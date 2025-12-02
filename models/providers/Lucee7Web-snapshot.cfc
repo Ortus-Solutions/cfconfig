@@ -20,7 +20,7 @@ component accessors=true extends='cfconfig-services.models.providers.Lucee7Serve
 		// This is where said config file is stored inside the server home
 		setConfigRelativePathWithinServerHome( '/' );
 		setFormat( 'luceeWeb' );
-		setVersion( '7' );
+		setVersion( '7-snapshot' );
 
 		return this;
 	}

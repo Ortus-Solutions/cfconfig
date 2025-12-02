@@ -17,7 +17,7 @@ component accessors=true extends='cfconfig-services.models.providers.Lucee6Serve
 		super.init();
 
 		setFormat( 'luceeServer' );
-		setVersion( '7' );
+		setVersion( '7-snapshot' );
 
 		return this;
 	}
