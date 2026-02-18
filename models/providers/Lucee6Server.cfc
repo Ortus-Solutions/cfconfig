@@ -304,6 +304,29 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				}
 				if( datasource.keyExists( 'dbdriver' ) ) {
 					datasource[ 'type' ] = datasource.dbdriver;
+					
+					switch( translateDatasourceDriverToLucee( datasource.dbdriver ) ) {
+						case 'MySQL' :
+							datasource[ 'dsn' ] = 'jdbc:mysql://{host}:{port}/{database}';
+						case 'Oracle' :
+							if( len( datasource.SID ) ) {
+								datasource[ 'dsn' ] = 'jdbc:oracle:{drivertype}:@{host}:{port}:#datasource.SID#';
+							} else if( len( datasource.serviceName ) ) {
+								datasource[ 'dsn' ] = 'jdbc:oracle:{drivertype}:@{host}:{port}/#datasource.serviceName#';
+							} else {
+								datasource[ 'dsn' ] = 'jdbc:oracle:{drivertype}:@{host}:{port}:{database}';
+							}
+						case 'PostgreSql' :
+							datasource[ 'dsn' ] = 'jdbc:postgresql://{host}:{port}/{database}';
+						case 'MSSQL' :
+							datasource[ 'dsn' ] = 'jdbc:sqlserver://{host}:{port}';
+						case 'JTDS' :
+							datasource[ 'dsn' ] = 'jdbc:jtds:sqlserver://{host}:{port}/{database}';
+						case 'H2' :
+							datasource[ 'dsn' ] = 'jdbc:h2:{path}{database};MODE={mode}';
+						default :
+							datasource[ 'dsn' ] = '';
+					}
 				}
 			}
 		}
@@ -415,6 +438,19 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	function calculateConfigFilePath() {
 		return getCFHomePath() & getConfigRelativePathWithinServerHome() & '.CFConfig.json';
+	}
+
+	private function translateDatasourceDriverToLucee( required string driverName ) {
+
+		if( listFindNoCase( 'MSSQL,PostgreSQL,Oracle,MySQL,DB2Firebird,H2,H2Server,HSQLDB,ODBC,Sybase', arguments.driverName ) ) {
+			return arguments.driverName;
+		} else if (arguments.driverName == 'MSSQL2') {
+			return 'JTDS';
+		} else {
+			// Adobe stores arbitrary text here
+			return 'Other';
+		}
+
 	}
 
 	// Turn custom values into struct
