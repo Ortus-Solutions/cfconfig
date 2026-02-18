@@ -304,7 +304,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				}
 				if( datasource.keyExists( 'dbdriver' ) ) {
 					datasource[ 'type' ] = datasource.dbdriver;
-					
+
 					switch( translateDatasourceDriverToLucee( datasource.dbdriver ) ) {
 						case 'MySQL' :
 							datasource[ 'dsn' ] = 'jdbc:mysql://{host}:{port}/{database}';
@@ -319,7 +319,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 						case 'PostgreSql' :
 							datasource[ 'dsn' ] = 'jdbc:postgresql://{host}:{port}/{database}';
 						case 'MSSQL' :
-							datasource[ 'dsn' ] = 'jdbc:sqlserver://{host}:{port}';
+							datasource[ 'dsn' ] = 'jdbc:sqlserver://{host}:{port}:databaseName={database}';
 						case 'JTDS' :
 							datasource[ 'dsn' ] = 'jdbc:jtds:sqlserver://{host}:{port}/{database}';
 						case 'H2' :
