@@ -43,8 +43,8 @@ CFConfig covers most of the common settings you'll find in Adobe and Lucee serve
 
 The current list of supported engines is:
 
-* **Adobe ColdFusion 9, 10, 11, 2016, 2018, 2021, 2023**
-* **Lucee 4, 5, 6**
+* **Adobe ColdFusion 9, 10, 11, 2016, 2018, 2021, 2023, 2025**
+* **Lucee 4, 5, 6, 7**
 * **Railo 4**
 * **BoxLang 1**
 
@@ -68,6 +68,7 @@ Not all the data it stores applies to every engine though.  The `BaseConfig.cfc`
 * **Lucee5Web.cfc** - Lucee 5.x web context
 * **Lucee6Server.cfc** - Lucee 6.x server context
 * **Lucee6Web.cfc** - Lucee 6.x web context
+* **Lucee7Server.cfc** - Lucee 7.x server context
 * **Railo4Server.cfc** - Railo 4.x server context
 * **Railo4Web.cfc** - Railo 4.x web context
 * **Adobe9.cfc** - Adobe ColdFusion 9
@@ -77,6 +78,7 @@ Not all the data it stores applies to every engine though.  The `BaseConfig.cfc`
 * **Adobe2018.cfc** - Adobe Coldfusion 2018
 * **Adobe2021.cfc** - Adobe Coldfusion 2021
 * **Adobe2023.cfc** - Adobe Coldfusion 2023
+* **Adobe2025.cfc** - Adobe Coldfusion 2025
 * **BoxLang1.cfc** - BoxLang 1.0.0
 
 ## Usage
