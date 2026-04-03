@@ -32,7 +32,7 @@ Uses for this library include but are not limited to:
 
 * Export config from a server as a backup
 * Import config to a server to speed/automate setup
-* Copy config from one server to another.  Servers could be different engines-- i.e. copy config from Adobe CF11 to Lucee 5.
+* Copy config from one server to another.  Servers could be different engines-- i.e. copy config from Adobe CF2025 to Lucee 7
 * Merge config from multiple servers together. Ex: combine several Lucee web contexts into a single config (mappings, datasources, etc)
 * Facilitate the external management of any server's settings (such as CLI tools to read or set settings)
 * Compare configuration between two sources
@@ -43,10 +43,10 @@ CFConfig covers most of the common settings you'll find in Adobe and Lucee serve
 
 The current list of supported engines is:
 
-* **Adobe ColdFusion 9, 10, 11, 2016, 2018, 2021, 2023, 2025**
-* **Lucee 4, 5, 6, 7**
-* **Railo 4**
+* **Adobe ColdFusion 2025, 2023, 2021, 2018, 2016, 11, 10, 9**
 * **BoxLang 1**
+* **Lucee 7, 6, 5, 4**
+* **Railo 4**
 
 If you find a setting or feature which is not supported, please send a pull request or add a ticket so we can track it.
 
@@ -62,24 +62,24 @@ Not all the data it stores applies to every engine though.  The `BaseConfig.cfc`
 ### Engine-specific mappers
 
 * **JSONConfig.cfc** - Engine-agnostic JSON format
-* **Lucee4Server.cfc** - Lucee 4.x server context
-* **Lucee4Web.cfc** - Lucee 4.x web context
-* **Lucee5Server.cfc** - Lucee 5.x server context
-* **Lucee5Web.cfc** - Lucee 5.x web context
+* **Adobe2025.cfc** - Adobe Coldfusion 2025
+* **Adobe2023.cfc** - Adobe Coldfusion 2023
+* **Adobe2021.cfc** - Adobe Coldfusion 2021
+* **Adobe2018.cfc** - Adobe Coldfusion 2018
+* **Adobe2016.cfc** - Adobe Coldfusion 2016
+* **Adobe11.cfc** - Adobe ColdFusion 11
+* **Adobe10.cfc** - Adobe ColdFusion 10
+* **Adobe9.cfc** - Adobe ColdFusion 9
+* **BoxLang1.cfc** - BoxLang 1.0.0
+* **Lucee7Server.cfc** - Lucee 7.x server context
 * **Lucee6Server.cfc** - Lucee 6.x server context
 * **Lucee6Web.cfc** - Lucee 6.x web context
-* **Lucee7Server.cfc** - Lucee 7.x server context
+* **Lucee5Server.cfc** - Lucee 5.x server context
+* **Lucee5Web.cfc** - Lucee 5.x web context
+* **Lucee4Server.cfc** - Lucee 4.x server context
+* **Lucee4Web.cfc** - Lucee 4.x web context
 * **Railo4Server.cfc** - Railo 4.x server context
 * **Railo4Web.cfc** - Railo 4.x web context
-* **Adobe9.cfc** - Adobe ColdFusion 9
-* **Adobe10.cfc** - Adobe ColdFusion 10
-* **Adobe11.cfc** - Adobe ColdFusion 11
-* **Adobe2016.cfc** - Adobe Coldfusion 2016
-* **Adobe2018.cfc** - Adobe Coldfusion 2018
-* **Adobe2021.cfc** - Adobe Coldfusion 2021
-* **Adobe2023.cfc** - Adobe Coldfusion 2023
-* **Adobe2025.cfc** - Adobe Coldfusion 2025
-* **BoxLang1.cfc** - BoxLang 1.0.0
 
 ## Usage
 
@@ -109,21 +109,21 @@ JSONConfig = new path.to.JSONConfig()
 	.read( 'test.json' );
 ```
 
-**Read an existing Lucee 4 server configuration file**
+**Read an existing Lucee 6 server configuration file**
 ```
-lucee4ServerConfig = new path.to.Lucee4ServerConfig()
+lucee6ServerConfig = new path.to.Lucee6ServerConfig()
 	.setCFHomePath( expandPath( '/path/to/lucee-server' ) )
 	.read();
 
-writeDump( lucee4ServerConfig.getMemento() );
+writeDump( lucee6ServerConfig.getMemento() );
 ```
 
-**Read an existing JSON config file and load into a Lucee 5 web context**
+**Read an existing JSON config file and load into a Lucee 6 web context**
 ```
 JSONConfig = new path.to.JSONConfig()
 	.read( expandPath( '.CFConfig.json' ) );
 
-new path.to.Lucee4WebConfig()
+new path.to.Lucee6WebConfig()
 	.setMemento( JSONConfig.getMemento() )
 	.write( expandPath( 'WEB-INF/lucee/' ) );
 ```
@@ -132,28 +132,26 @@ new path.to.Lucee4WebConfig()
 
 The `JSONConfig` will read/write to a JSON file called `.CFConfig.json` by default in the home directory you specify.  You can alternatively specify a full path to a JSON file to change the name.
 
-The Lucee 4 and Lucee 5 *web* components expect the `CFHomePath` to be the folder containing the `lucee-web.xml.cfm` file.
+The Lucee 4, 5, and 6 *web* components expect the `CFHomePath` to be the folder containing the `lucee-web.xml.cfm` file.
 An example would be:
 ```
 <webroot>/WEB-INF/lucee/
 ```
 
-The Lucee 4 and Lucee 5 *server* components expect the `CFHomePath` to be the `lucee-server` folder containing the `/context/lucee-server.xml` file.
+The Lucee 4, 5, 6, and 7 *server* components expect the `CFHomePath` to be the `lucee-server` folder containing the `/context/lucee-server.xml` file.
 An example would be:
 ```
 /opt/lucee/lib/lucee-server/
 ```
 
-The Adobe components expect the `CFHomePath` to be the `cfusion` folder that contains the `lib/neo-runtime.xml` file.
+The Adobe components expect the `CFHomePath` to be the `cfusion` folder (or a sibling "instance" folder name) that contains the `lib/neo-runtime.xml` file.
 An example would be:
 ```
-C:/ColdFusion11/cfusion/
+C:/ColdFusion2025/cfusion/
 ```
 
 BoxLang servers expect the `CFHomePath` to be the `config` folder containing the `boxlang.json` file.
 Ex: C:/users/brad/.boxlang/config/
-
-The code in this library has only been tested on Lucee and likely doesn't work on Adobe ColdFusion.  If anyone wants to make it compatible, feel free to try by beware of tons of use of the Elvis operator, reliance on sorted JSON structs, and some specific WDDX behavior.
 
 ## Extending this module/service
 
