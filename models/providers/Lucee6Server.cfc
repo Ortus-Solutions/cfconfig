@@ -308,22 +308,28 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 					switch( translateDatasourceDriverToLucee( datasource.dbdriver ) ) {
 						case 'MySQL' :
 							datasource[ 'dsn' ] = 'jdbc:mysql://{host}:{port}/{database}';
+							break;
 						case 'Oracle' :
-							if( len( datasource.SID ) ) {
+							if( len( datasource.SID ?: '' ) ) {
 								datasource[ 'dsn' ] = 'jdbc:oracle:{drivertype}:@{host}:{port}:#datasource.SID#';
-							} else if( len( datasource.serviceName ) ) {
+							} else if( len( datasource.serviceName ?: '' ) ) {
 								datasource[ 'dsn' ] = 'jdbc:oracle:{drivertype}:@{host}:{port}/#datasource.serviceName#';
 							} else {
 								datasource[ 'dsn' ] = 'jdbc:oracle:{drivertype}:@{host}:{port}:{database}';
 							}
+							break;
 						case 'PostgreSql' :
 							datasource[ 'dsn' ] = 'jdbc:postgresql://{host}:{port}/{database}';
+							break;
 						case 'MSSQL' :
 							datasource[ 'dsn' ] = 'jdbc:sqlserver://{host}:{port}:databaseName={database}';
+							break;
 						case 'JTDS' :
 							datasource[ 'dsn' ] = 'jdbc:jtds:sqlserver://{host}:{port}/{database}';
+							break;
 						case 'H2' :
 							datasource[ 'dsn' ] = 'jdbc:h2:{path}{database};MODE={mode}';
+							break;
 						default :
 							datasource[ 'dsn' ] = '';
 					}

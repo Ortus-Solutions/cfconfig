@@ -89,6 +89,92 @@ component extends="tests.BaseTest" appMapping="/tests" {
 
 			});
 
+			it( "should write correct DSN for each datasource driver without switch fall-through", function() {
+				var Lucee6ServerConfig = getInstance( 'Lucee6Server@cfconfig-services' );
+				var testConfig = {
+					datasources: {
+						"testMySQL": {
+							dbdriver: "MySQL",
+							host: "127.0.0.1",
+							port: "3306",
+							database: "mydb",
+							username: "root",
+							password: "pass",
+							class: "com.mysql.cj.jdbc.Driver"
+						},
+						"testOracle": {
+							dbdriver: "Oracle",
+							host: "127.0.0.1",
+							port: "1521",
+							database: "orcl",
+							username: "sys",
+							password: "pass",
+							class: "oracle.jdbc.OracleDriver",
+							SID: "ORCL"
+						},
+						"testOracleServiceName": {
+							dbdriver: "Oracle",
+							host: "127.0.0.1",
+							port: "1521",
+							database: "orcl",
+							username: "sys",
+							password: "pass",
+							class: "oracle.jdbc.OracleDriver",
+							SID: "",
+							serviceName: "myservice"
+						},
+						"testPostgreSQL": {
+							dbdriver: "PostgreSQL",
+							host: "127.0.0.1",
+							port: "5432",
+							database: "pgdb",
+							username: "postgres",
+							password: "pass",
+							class: "org.postgresql.Driver"
+						},
+						"testMSSQL": {
+							dbdriver: "MSSQL",
+							host: "127.0.0.1",
+							port: "1433",
+							database: "msdb",
+							username: "sa",
+							password: "pass",
+							class: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+						},
+						"testMSSQL2": {
+							dbdriver: "MSSQL2",
+							host: "127.0.0.1",
+							port: "1433",
+							database: "msdb",
+							username: "sa",
+							password: "pass",
+							class: "net.sourceforge.jtds.jdbc.Driver"
+						},
+						"testH2": {
+							dbdriver: "H2",
+							host: "127.0.0.1",
+							port: "9092",
+							database: "h2db",
+							username: "sa",
+							password: "",
+							class: "org.h2.Driver"
+						}
+					}
+				};
+				Lucee6ServerConfig.setMemento( testConfig );
+				Lucee6ServerConfig.write( expandPath( '/tests/resources/tmp' ) );
+
+				var output = deserializeJSON( fileRead( expandPath( '/tests/resources/tmp/context/.CFConfig.json' ) ) );
+
+				expect( output.datasources[ "testMySQL" ].dsn ).toBe( "jdbc:mysql://{host}:{port}/{database}" );
+				expect( output.datasources[ "testOracle" ].dsn ).toBe( "jdbc:oracle:{drivertype}:@{host}:{port}:ORCL" );
+				expect( output.datasources[ "testOracleServiceName" ].dsn ).toBe( "jdbc:oracle:{drivertype}:@{host}:{port}/myservice" );
+				expect( output.datasources[ "testPostgreSQL" ].dsn ).toBe( "jdbc:postgresql://{host}:{port}/{database}" );
+				expect( output.datasources[ "testMSSQL" ].dsn ).toBe( "jdbc:sqlserver://{host}:{port}:databaseName={database}" );
+				expect( output.datasources[ "testMSSQL2" ].dsn ).toBe( "jdbc:jtds:sqlserver://{host}:{port}/{database}" );
+				expect( output.datasources[ "testH2" ].dsn ).toBe( "jdbc:h2:{path}{database};MODE={mode}" );
+			});
+
 			it( "should export scheduledTasks as array and gateways as struct (CFCONFIG-64)", function() {
 				var Lucee6ServerConfig = getInstance( 'Lucee6Server@cfconfig-services' );
 				var testConfig = {
