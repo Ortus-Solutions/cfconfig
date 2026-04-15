@@ -331,7 +331,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 							datasource[ 'dsn' ] = 'jdbc:h2:{path}{database};MODE={mode}';
 							break;
 						default :
-							datasource[ 'dsn' ] = '';
+							datasource[ 'dsn' ] = datasource[ 'dsn' ] ?: '';
 							break;
 					}
 				}
