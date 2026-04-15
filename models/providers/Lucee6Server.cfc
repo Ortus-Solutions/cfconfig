@@ -322,7 +322,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 							datasource[ 'dsn' ] = 'jdbc:postgresql://{host}:{port}/{database}';
 							break;
 						case 'MSSQL' :
-							datasource[ 'dsn' ] = 'jdbc:sqlserver://{host}:{port}:databaseName={database}';
+							datasource[ 'dsn' ] = 'jdbc:sqlserver://{host}:{port};databaseName={database}';
 							break;
 						case 'JTDS' :
 							datasource[ 'dsn' ] = 'jdbc:jtds:sqlserver://{host}:{port}/{database}';
