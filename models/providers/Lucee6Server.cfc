@@ -332,6 +332,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 							break;
 						default :
 							datasource[ 'dsn' ] = '';
+							break;
 					}
 				}
 			}
