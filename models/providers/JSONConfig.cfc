@@ -38,7 +38,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		// If the path doesn't end with .json and doesn't point to a JSON file, assume it's just the directory
 		if( right( thisCFHomePath, 5 ) != '.json' && !( fileExists( thisCFHomePath ) && isJSON( fileRead( thisCFHomePath ) ) ) ) {
-			thisCFHomePath = thisCFHomePath.listAppend( '.CFConfig.json', '/' );
+			thisCFHomePath = appendPath( thisCFHomePath, '.CFConfig.json' );
 		}		
 		
 		if( !fileExists( thisCFHomePath ) ) {
@@ -83,7 +83,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		
 		// If the path doesn't end with .json and doesn't point to a JSON file, assume it's just the directory
 		if( right( thisCFHomePath, 5 ) != '.json' && !( fileExists( thisCFHomePath ) && isJSON( fileRead( thisCFHomePath ) ) ) ) {
-			thisCFHomePath = thisCFHomePath.listAppend( '.CFConfig.json', '/' );
+			thisCFHomePath = appendPath( thisCFHomePath, '.CFConfig.json' );
 		}
 		
 		var thisConfigRaw = serializeJSON( getMemento() );
@@ -91,6 +91,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		directoryCreate( path=getDirectoryFromPath( thisCFHomePath ), createPath=true, ignoreExists=true );
 		fileWrite( thisCFHomePath, JSONPrettyPrint.formatJson( thisConfigRaw ) );
 		return this;
+	}
+
+	private string function appendPath( required string basePath, required string relativePath ) {
+		return reReplace( arguments.basePath, '[\\/]+$', '', 'all' ) & '/' & reReplace( arguments.relativePath, '^[\\/]+', '', 'all' );
 	}
 		
 }

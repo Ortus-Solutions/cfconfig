@@ -129,11 +129,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		return this;
 	}
 
+    private string function getCFHomeConfigPath( required string configPath ) {
+		return reReplace( getCFHomePath(), '[\\/]+$', '', 'all' ) & '/' & reReplace( arguments.configPath, '^[\\/]+', '', 'all' );
+	}
+
 	// This is not a singleton since it holds state regarding the encryption seeds, so create it fresh each time as a transient.
 	private function getAdobePasswordManager() {
 
 		var passwordManager = wirebox.getInstance( 'PasswordManager@adobe-password-util' );
-		var pathToPasswordFile = getCFHomePath().listAppend( getSeedPropertiesPath(), '/' );
+        var pathToPasswordFile = getCFHomeConfigPath( getSeedPropertiesPath() );
 
 		if(FileExists(pathToPasswordFile)){
 			passwordManager.setSeedProperties( pathToPasswordFile );
@@ -185,7 +189,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function readCloudCred() {
 		var passwordManager = getAdobePasswordManager();
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getCloudCredPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getCloudCredPath() ) );
 
 		for( var name in thisConfig ) {
 			var thisCloudCred = thisConfig[ name ];
@@ -205,7 +209,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function readCloudConfig() {
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getCloudConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getCloudConfigPath() ) );
 
 		for( var name in thisConfig ) {
 			addCloudService( name=name, config=thisConfig[ name ] );
@@ -216,7 +220,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function readSAML() {
 		var passwordManager = getAdobePasswordManager();
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSAMLPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getSAMLPath() ) );
 
 		if( !isNull( thisConfig.IdentityProvidersMap ) ) {
 			for( var name in thisConfig.IdentityProvidersMap ) {
@@ -274,7 +278,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function readRuntime() {
 		var passwordManager = getAdobePasswordManager();
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getRuntimeConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getRuntimeConfigPath() ) );
 
 		// Special Adobe Custom Tag path we don't want to remove
 		var ignoredCustomTagPaths = [ '##server.coldfusion.rootdir##/CustomTags', '#getCFHomePath()#/CustomTags' ];
@@ -347,11 +351,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setSaveClassFiles(  thisConfig[ 11 ].saveClassFiles  );
 		if( !isNull( thisConfig[ 11 ].componentCacheEnabled ) ) { setComponentCacheEnabled( thisConfig[ 11 ].componentCacheEnabled ); }
 		if( !isNull( thisConfig[ 11 ].enableInternalQueryCache ) ) { setQueryInternalCacheEnabled( thisConfig[ 11 ].enableInternalQueryCache ); }
-		
-		if( !isNull( thisConfig[ 11 ].serverCacheType ) ) { 
+
+		if( !isNull( thisConfig[ 11 ].serverCacheType ) ) {
 			setServerCacheType( translateCacheTypeFromAdobe( thisConfig[ 11 ].serverCacheType ) );
 		}
-		
+
 		if( !isNull( thisConfig[ 11 ].redisCacheStorageHost ) ) { setRedisCacheStorageHost( thisConfig[ 11 ].redisCacheStorageHost ); }
 		if( !isNull( thisConfig[ 11 ].redisCacheStoragePort ) ) { setRedisCacheStoragePort( thisConfig[ 11 ].redisCacheStoragePort ); }
 		if( !isNull( thisConfig[ 11 ].redisCacheStoragePassword ) && thisConfig[ 11 ].redisCacheStoragePassword.len() ) {
@@ -475,7 +479,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function readDebug() {
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDebugConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getDebugConfigPath() ) );
 
 		if( !isNull( thisConfig[ 1 ].robust_enabled ) ) { setRobustExceptionEnabled( thisConfig[ 1 ].robust_enabled ); }
 		if( !isNull( thisConfig[ 1 ].ajax_enabled ) ) { setAjaxDebugWindowEnabled( thisConfig[ 1 ].ajax_enabled ); }
@@ -512,7 +516,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function readScheduler() {
 		var passwordManager = getAdobePasswordManager();
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSchedulerConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getSchedulerConfigPath() ) );
 
 		if( isStruct( thisConfig[ 1 ] ) ) {
 			for( var thisTaskID in thisConfig[ 1 ] ) {
@@ -590,7 +594,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function readEventGateway() {
-		var thisConfig=readWDDXConfigFile(getCFHomePath().listAppend(getEventGatewayConfigPath(), '/'));
+		var thisConfig=readWDDXConfigFile(getCFHomeConfigPath(getEventGatewayConfigPath()));
 
 		setEventGatewayEnabled(thisConfig[ 'GLOBAL' ][ 'ENABLEEVENTGATEWAYSERVICE' ]);
 		setEventGatewayMaxQueueSize(thisConfig[ 'GLOBAL' ][ 'MAXQUEUESIZE' ]);
@@ -626,13 +630,13 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function readWebsocket() {
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getWebsocketConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getWebsocketConfigPath() ) );
 
 		if( !isNull( thisConfig[ 'startWebSocketService' ] ) ) { setWebsocketEnabled( thisConfig[ 'startWebSocketService' ] ); }
 	}
 
 	private function readJetty() {
-		var thisConfig = readXMLConfigFile( getCFHomePath().listAppend( getJettyConfigPath(), '/' ) );
+		var thisConfig = readXMLConfigFile( getCFHomeConfigPath( getJettyConfigPath() ) );
 
 		var hostSearch = XMLSearch( thisConfig, "//Call[@name='addConnector']/Arg/New/Set[@name='host']" );
 		var portSearch = XMLSearch( thisConfig, "//Call[@name='addConnector']/Arg/New/Set[@name='port']" );
@@ -647,7 +651,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function readDotNet() {
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDotNetConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getDotNetConfigPath() ) );
 
 		if( !isNull( thisConfig[ 'port' ] ) ) { setDotNetPort( thisConfig[ 'port' ] ); }
 		if( !isNull( thisConfig[ 'dotnetport' ] ) ) { setDotNetClientPort( thisConfig[ 'dotnetport' ] ); }
@@ -657,7 +661,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 
 	private function readClientStore() {
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getClientStoreConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getClientStoreConfigPath() ) );
 
 		if( isStruct( thisConfig[ 2 ] ) ) {
 			for( var storageLocationName in thisConfig[ 1 ] ) {
@@ -684,7 +688,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function readSecurity() {
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getSecurityConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getSecurityConfigPath() ) );
 
 		if( !isNull( thisConfig[ 'secureprofile.enabled' ] ) ) { setSecureProfileEnabled( thisConfig[ 'secureprofile.enabled' ] ); }
 		if( !isNull( thisConfig[ 'rds.enabled' ] ) ) { setAdminRDSEnabled( thisConfig[ 'rds.enabled' ] ); }
@@ -701,7 +705,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function readWatch() {
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getWatchConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getWatchConfigPath() ) );
 
 		setWatchConfigFilesForChangesEnabled( thisConfig[ 'watch.watchEnabled' ] );
 		setWatchConfigFilesForChangesInterval( thisConfig[ 'watch.interval' ] );
@@ -710,7 +714,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function readMail() {
 		var passwordManager = getAdobePasswordManager();
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getMailConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getMailConfigPath() ) );
 
 		if( !isNull( thisConfig.spoolEnable ) ) { setMailSpoolEnable( thisConfig.spoolEnable ); }
 		if( !isNull( thisConfig.schedule ) ) { setMailSpoolInterval( thisConfig.schedule ); }
@@ -742,7 +746,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function readDatasource() {
 		var passwordManager = getAdobePasswordManager();
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDatasourceConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getDatasourceConfigPath() ) );
 		var datasources = thisConfig[ 1 ];
 
 		for( var datasource in datasources ) {
@@ -811,10 +815,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	function readAuth() {
-		if( !fileExists( getCFHomePath().listAppend( getPasswordPropertiesPath(), '/' ) ) ) {
+		if( !fileExists( getCFHomeConfigPath( getPasswordPropertiesPath() ) ) ) {
 			return;
 		}
-		var propertyFile = wirebox.getInstance( 'propertyFile@propertyFile' ).load( getCFHomePath().listAppend( getPasswordPropertiesPath(), '/' ) );
+		var propertyFile = wirebox.getInstance( 'propertyFile@propertyFile' ).load( getCFHomeConfigPath( getPasswordPropertiesPath() ) );
 
 		if( !propertyFile.get( 'encrypted', false ) ) {
 			setAdminPassword( propertyFile.password );
@@ -827,17 +831,17 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 
 	function readLicense() {
-		if( !fileExists( getCFHomePath().listAppend( getLicensePropertiesPath(), '/' ) ) ) {
+		if( !fileExists( getCFHomeConfigPath( getLicensePropertiesPath() ) ) ) {
 			return;
 		}
-		var propertyFile = wirebox.getInstance( 'propertyFile@propertyFile' ).load( getCFHomePath().listAppend( getLicensePropertiesPath(), '/' ) );
+		var propertyFile = wirebox.getInstance( 'propertyFile@propertyFile' ).load( getCFHomeConfigPath( getLicensePropertiesPath() ) );
 
 		if( len( propertyFile.get( 'sn', '' ) ) ) { setLicense( propertyFile.get( 'sn', '' ) ); }
 		if( len( propertyFile.get( 'previous_sn', '' ) ) ) { setPreviousLicense( propertyFile.get( 'previous_sn', '' ) ); }
 	}
 
 	private function readLogging() {
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getLoggingConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getLoggingConfigPath() ) );
 
 		if( !isNull( thisConfig[ 1 ] ) && isArray( thisConfig[ 1 ] ) ) {
 			setLogFilesDisabled( thisConfig[ 1 ] );
@@ -852,7 +856,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function readUpdate() {
-		var thisConfig = readXMLConfigFile( getCFHomePath().listAppend( getUpdateConfigPath(), '/' ) ).settings;
+		var thisConfig = readXMLConfigFile( getCFHomeConfigPath( getUpdateConfigPath() ) ).settings;
 
 		if( !isNull( thisConfig.update.url.XMLText ) ) { setUpdateSiteURL( thisConfig.update.url.XMLText ); }
 
@@ -871,7 +875,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function readDocument() {
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getDocumentConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getDocumentConfigPath() ) );
 		var PDFServices = thisConfig[ 4 ] ?: {};
 
 		for( var PDFServiceName in PDFServices ) {
@@ -891,7 +895,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function readGraph() {
-		var thisConfig = readWDDXConfigFile( getCFHomePath().listAppend( getGraphConfigPath(), '/' ) );
+		var thisConfig = readWDDXConfigFile( getCFHomeConfigPath( getGraphConfigPath() ) );
 
 		if( !isNull( thisConfig[1].CacheType ) ) { setChartCacheType( thisConfig[1].CacheType ); }
 		if( !isNull( thisConfig[1].TimeToLive ) ) { setChartCacheTTL( thisConfig[1].TimeToLive ); }
@@ -901,12 +905,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function readPathFilter() {
-		var pathFilterConfigFile = getCFHomePath().listAppend( getPathFilterConfigPath(), '/' );
+		var pathFilterConfigFile = getCFHomeConfigPath( getPathFilterConfigPath() );
 		if( !fileExists( pathFilterConfigFile ) ) {
 			return;
 		}
 		var pathFilterJSON = readJSONC( pathFilterConfigFile );
-		
+
 		if( !isNull( pathFilterJSON.bytecodeexecutionpaths ) ) { setPathFilterBytecodeExecutionPaths( pathFilterJSON.bytecodeexecutionpaths ); }
 		if( !isNull( pathFilterJSON.schedulerexecutionpaths ) ) { setPathFilterSchedulerExecutionPaths( pathFilterJSON.schedulerexecutionpaths ); }
 	}
@@ -931,7 +935,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			throw 'No CF home specified to write to';
 		}
 
-		ensureSeedProperties( getCFHomePath().listAppend( getSeedPropertiesPath(), '/' ) );
+		ensureSeedProperties( getCFHomeConfigPath( getSeedPropertiesPath() ) );
 
 		writeRuntime();
 		writeClientStore();
@@ -969,7 +973,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		}
 
 		var passwordManager = getAdobePasswordManager();
-		var configFilePath = getCFHomePath().listAppend( getCloudCredPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getCloudCredPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1005,7 +1009,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			return;
 		}
 
-		var configFilePath = getCFHomePath().listAppend( getCloudConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getCloudConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1027,7 +1031,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function writeSAML() {
 		var passwordManager = getAdobePasswordManager();
-		var configFilePath = getCFHomePath().listAppend( getSAMLPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getSAMLPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1075,7 +1079,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				if( !isNull( SAMLServiceProvider.entityId ) ) { currentSAMLServiceProvider[ 'entityId' ] = SAMLServiceProvider.entityId }
 				if( !isNull( SAMLServiceProvider.logoutResponseSigned ) ) { currentSAMLServiceProvider[ 'logoutResponseSigned' ] = !!SAMLServiceProvider.logoutResponseSigned }
 				if( !isNull( SAMLServiceProvider.signKeystoreAlias ) ) { currentSAMLServiceProvider[ 'signKeystoreAlias' ] = SAMLServiceProvider.signKeystoreAlias }
-				if( !isNull( SAMLServiceProvider.signKeystorePassword ) ) { 
+				if( !isNull( SAMLServiceProvider.signKeystorePassword ) ) {
 					// for backwards compatibility (where an encrypted password dependent on the server's seed was provided), assume an encrypted password is provided if the length is greater than 40
 					currentSAMLServiceProvider[ 'signKeystorePassword' ] = len(SAMLServiceProvider.signKeystorePassword) > 40 ? SAMLServiceProvider.signKeystorePassword : passwordManager.encryptMailServer( SAMLServiceProvider.signKeystorePassword );
 				}
@@ -1098,7 +1102,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	private function writeRuntime() {
 		var passwordManager = getAdobePasswordManager();
-		var configFilePath = getCFHomePath().listAppend( getRuntimeConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getRuntimeConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1107,7 +1111,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		} else {
 			var thisConfig = readWDDXConfigFile( getRuntimeConfigTemplate() );
 		}
-		
+
 		// cheap workaroud for 2025 which has removed the 6th item in the array
 		var isCF2025Plus = val( getVersion().listFirst('.').listFirst('-') ) >= 2025;
 		if( isCF2025Plus ) {
@@ -1199,7 +1203,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( !isNull( getComponentCacheEnabled() ) ) { thisConfig[ 11 ][ 'componentCacheEnabled' ] = ( getComponentCacheEnabled() ? true : false ); }
 		if( !isNull( getQueryInternalCacheEnabled() ) ) { thisConfig[ 11 ][ 'enableInternalQueryCache' ] = ( getQueryInternalCacheEnabled() ? true : false ); }
 
-		if( !isNull( getServerCacheType() ) ) { 
+		if( !isNull( getServerCacheType() ) ) {
 			thisConfig[ 11 ][ 'serverCacheType' ] = translateCacheTypeToAdobe( getServerCacheType() );
 		}
 
@@ -1208,7 +1212,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		if( !isNull( getRedisCacheStoragePassword() ) ) {
 			var password = getRedisCacheStoragePassword();
-			// Check if the password looks like a cipher, for backwards compat 
+			// Check if the password looks like a cipher, for backwards compat
 			// Older versions of CFConfig didn't decrypt this, so it may be in the JSON file as a cipher already
 			// These checks assume a base64 encoded cipher from the DESede algorithm, adjust if it's too assuming.
 			if( !moduleSettings.redisCachePasswordAlwaysPlainText && len(password) MOD 4 == 0 && reFindNoCase("^[A-Za-z0-9+/]*={0,2}$", password) && len(password) GTE 12 ) {
@@ -1322,7 +1326,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		if( !isNull( getSessionCookieDisableUpdate() ) ) { thisConfig[ 18 ][ 'throttle-threshold' ] = getThrottleThreshold()+0; }
 		if( !isNull( getTotalThrottleMemory() ) ) { thisConfig[ 18 ][ 'total-throttle-memory' ] = getTotalThrottleMemory()+0; }
-		
+
 		if( isCF2025Plus ) {
 			// remove unused array 6th position
 			thisConfig.deleteAt( 6 );
@@ -1332,7 +1336,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeDebug() {
-		var configFilePath = getCFHomePath().listAppend( getDebugConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getDebugConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1387,7 +1391,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	private function writeScheduler( boolean pauseTasks=false ) {
 
 		var passwordManager = getAdobePasswordManager();
-		var configFilePath = getCFHomePath().listAppend( getSchedulerConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getSchedulerConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1490,7 +1494,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeEventGateway() {
-		var configFilePath = getCFHomePath().listAppend( getEventGatewayConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getEventGatewayConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1534,7 +1538,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeWebsocket() {
-		var configFilePath = getCFHomePath().listAppend( getWebsocketConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getWebsocketConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1550,7 +1554,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeJetty() {
-		var configFilePath = getCFHomePath().listAppend( getJettyConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getJettyConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1577,7 +1581,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeDotNet() {
-		var configFilePath = getCFHomePath().listAppend( getDotNetConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getDotNetConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1599,7 +1603,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 
 	private function writeClientStore() {
-		var configFilePath = getCFHomePath().listAppend( getClientStoreConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getClientStoreConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1660,7 +1664,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeSecurity() {
-		var configFilePath = getCFHomePath().listAppend( getSecurityConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getSecurityConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1698,7 +1702,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeWatch() {
-		var configFilePath = getCFHomePath().listAppend( getWatchConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getWatchConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -1717,7 +1721,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeMail() {
-		var configFilePath = getCFHomePath().listAppend( getMailConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getMailConfigPath() );
 		var passwordManager = getAdobePasswordManager();
 
 		// If the target config file exists, read it in
@@ -1759,7 +1763,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeDatasource() {
-		var configFilePath = getCFHomePath().listAppend( getDatasourceConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getDatasourceConfigPath() );
 		var passwordManager = getAdobePasswordManager();
 
 		// If the target config file exists, read it in
@@ -1951,7 +1955,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeAuth() {
-		var configFilePath = getCFHomePath().listAppend( getPasswordPropertiesPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getPasswordPropertiesPath() );
 
 		var propertyFile = wirebox.getInstance( 'propertyFile@propertyFile' );
 
@@ -1991,7 +1995,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeLicense() {
-		var configFilePath = getCFHomePath().listAppend( getLicensePropertiesPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getLicensePropertiesPath() );
 
 		var propertyFile = wirebox.getInstance( 'propertyFile@propertyFile' );
 
@@ -2010,7 +2014,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeLogging() {
-		var configFilePath = getCFHomePath().listAppend( getLoggingConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getLoggingConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -2035,7 +2039,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeUpdate() {
-		var configFilePath = getCFHomePath().listAppend( getUpdateConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getUpdateConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -2111,7 +2115,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeDocument() {
-		var configFilePath = getCFHomePath().listAppend( getDocumentConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getDocumentConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -2156,7 +2160,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	}
 
 	private function writeGraph() {
-		var configFilePath = getCFHomePath().listAppend( getGraphConfigPath(), '/' );
+		var configFilePath = getCFHomeConfigPath( getGraphConfigPath() );
 
 		// If the target config file exists, read it in
 		if( fileExists( configFilePath ) ) {
@@ -2175,9 +2179,9 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 	}
 
-	private function writePathFilter() {		
-		var pathFilterConfigFile = getCFHomePath().listAppend( getPathFilterConfigPath(), '/' );
-		
+	private function writePathFilter() {
+		var pathFilterConfigFile = getCFHomeConfigPath( getPathFilterConfigPath() );
+
 		// If the target config file exists, read it in
 		if( fileExists( pathFilterConfigFile ) ) {
 			var pathFilterJSON = readJSONC( pathFilterConfigFile );
@@ -2431,14 +2435,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		switch( serverCacheType ) {
 			case 'jcs' :
-				return 1; 
+				return 1;
 			case 'redis' :
-				return 2; 
+				return 2;
 			case 'memcached' :
 				return 3;
 			default :
 				//EHCache
-				return 0; 
+				return 0;
 		}
 
 	}
@@ -2447,15 +2451,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		switch( serverCacheType ) {
 			case 1 :
-				return 'jcs'; 
+				return 'jcs';
 			case 2 :
-				return 'redis'; 
+				return 'redis';
 			case 3 :
-				return 'memcached'; 
+				return 'memcached';
 			default :
 				// 0
-				return 'EHCache'; 
-		}	
+				return 'EHCache';
+		}
 
 	}
 

@@ -7,7 +7,7 @@
     "slug":"cfconfig-services",
     "shortDescription":"A library to read/write/store CF engine configs.  This project is just the service layer, not the CLI component.",
     "type":"modules",
-    "keywords":"ColdFusion,Lucee,Railo,CFML,config",
+    "keywords":"ColdFusion,Lucee,Railo,CFML,config,BoxLang",
     "projectURL":"https://github.com/Ortus-Solutions/cfconfig",
     "dependencies":{
         "lucee-password-util":"^1.0.0",
@@ -37,7 +37,7 @@
         "testbox":"testbox/"
     },
     "devDependencies":{
-        "coldbox":"^4.3.0+188",
-        "testbox":"^3.1.0"
+        "coldbox":"^8",
+        "testbox":"*"
     }
 }
