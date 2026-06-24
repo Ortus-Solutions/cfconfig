@@ -4,21 +4,21 @@
 * www.ortussolutions.com
 ********************************************************************************
 * @author Brad Wood
-* 
+*
 * I represent the behavior of reading and writing CF engine config in JSON format
 * I extend the BaseConfig class, which represents the data itself.
 */
 component accessors=true extends='cfconfig-services.models.BaseConfig' {
-	
+
 	/**
 	* Constructor
 	*/
-	function init() {		
+	function init() {
 		super.init();
-		
+
 		setFormat( 'JSON' );
 		setVersion( '*' );
-		
+
 		return this;
 	}
 
@@ -31,28 +31,28 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// Override what's set if a path is passed in
 		setCFHomePath( arguments.CFHomePath ?: getCFHomePath() );
 		var thisCFHomePath = getCFHomePath();
-		
+
 		if( !len( thisCFHomePath ) ) {
 			throw 'No CF home specified to read from';
 		}
-		
+
 		// If the path doesn't end with .json and doesn't point to a JSON file, assume it's just the directory
 		if( right( thisCFHomePath, 5 ) != '.json' && !( fileExists( thisCFHomePath ) && isJSON( fileRead( thisCFHomePath ) ) ) ) {
 			thisCFHomePath = appendPath( thisCFHomePath, '.CFConfig.json' );
-		}		
-		
+		}
+
 		if( !fileExists( thisCFHomePath ) ) {
 			throw "CF home doesn't exist [#thisCFHomePath#]";
 		}
-		
+
 		var thisConfigRaw = fileRead( thisCFHomePath );
-		
+
 		if( !isJSON( thisConfigRaw ) ) {
 			throw "Config file doesn't contain JSON [#thisCFHomePath#]";
 		}
-		
+
 		var thisConfig = deserializeJSON( thisConfigRaw );
-		
+
 		// Auto-fix mispelled names
 		if( thisConfig.keyExists( 'sessionMangement' ) && !thisConfig.keyExists( 'sessionManagement' ) ) {
 			thisConfig.sessionManagement = thisConfig.sessionMangement;
@@ -62,7 +62,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			thisConfig.applicationManagement = thisConfig.applicationMangement;
 			thisConfig.delete( 'applicationMangement' );
 		}
-		
+
 		setMemento( thisConfig );
 		return this;
 	}
@@ -76,16 +76,16 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		// Override what's set if a path is passed in
 		setCFHomePath( arguments.CFHomePath ?: getCFHomePath() );
 		var thisCFHomePath = getCFHomePath();
-		
+
 		if( !len( thisCFHomePath ) ) {
 			throw 'No CF home specified to write to';
 		}
-		
+
 		// If the path doesn't end with .json and doesn't point to a JSON file, assume it's just the directory
 		if( right( thisCFHomePath, 5 ) != '.json' && !( fileExists( thisCFHomePath ) && isJSON( fileRead( thisCFHomePath ) ) ) ) {
 			thisCFHomePath = appendPath( thisCFHomePath, '.CFConfig.json' );
 		}
-		
+
 		var thisConfigRaw = serializeJSON( getMemento() );
 		// Ensure the parent directories exist
 		directoryCreate( path=getDirectoryFromPath( thisCFHomePath ), createPath=true, ignoreExists=true );
@@ -96,5 +96,5 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 	private string function appendPath( required string basePath, required string relativePath ) {
 		return reReplace( arguments.basePath, '[\\/]+$', '', 'all' ) & '/' & reReplace( arguments.relativePath, '^[\\/]+', '', 'all' );
 	}
-		
+
 }
