@@ -338,6 +338,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 				return false;
 			case 'simple' :
 			case 'white-space' :
+			case 'on' :
 				return true;
 			case 'smart' :
 			case 'white-space-pref' :
