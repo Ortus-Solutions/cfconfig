@@ -1436,6 +1436,8 @@ component accessors="true" {
 	* @layoutArguments args for the layout
 	* @layoutClass A full class path to a Layout class
 	* @level log level
+	* @encoder The encoder to use for this logger.  The available options are "text" and "json" (BoxLang Only)
+	* @additive Additive logging: true means that this logger will inherit the appenders from the root logger.  (BoxLang Only)
 	*/
 	function addLogger(
 		required string name,
@@ -1445,7 +1447,9 @@ component accessors="true" {
 		string layout,
 		struct layoutArguments,
 		string layoutClass,
-		string level
+		string level,
+		string encoder,
+		boolean additive
 	) {
 
 		var logger = {};
@@ -1456,6 +1460,8 @@ component accessors="true" {
 		if( !isNull( layoutArguments ) ) { logger[ 'layoutArguments' ] = layoutArguments; };
 		if( !isNull( layoutClass ) ) { logger[ 'layoutClass' ] = layoutClass; };
 		if( !isNull( level ) ) { logger[ 'level' ] = level; };
+		if( !isNull( encoder ) ) { logger[ 'encoder' ] = encoder; };
+		if( !isNull( additive ) ) { logger[ 'additive' ] = additive; };
 
 		var thisLoggers = getLoggers() ?: {};
 		thisLoggers[ arguments.name ] = logger;
@@ -1716,6 +1722,8 @@ component accessors="true" {
 			'extensions' : 'id',
 			'cacheClasses' : 'class',
 			'validClassExtensions' : '',
+			// logging categories
+			'categories' : '',
 			'validTemplateExtensions' : '', // break this out, or externalize the mapping information from it
 			'disallowedFileOperationExtensions' : '',
 			'scheduledTasks' : 'name',
@@ -1728,7 +1736,7 @@ component accessors="true" {
 				target[ prop ] = setting;
 			} else if( isStruct( setting ) ) {
 				target[ prop ] = target[ prop ] ?: {};
-				structAppend( target[ prop ], setting, true );
+				mergeMemento( setting, target[ prop ] );
 			} else if( isArray( setting ) ) {
 				target[ prop ] = target[ prop ] ?: [];
 				if( !arrayMap.keyExists( prop ) ) {
@@ -1859,7 +1867,13 @@ component accessors="true" {
 	*/
 	function escapeSystemSettings( required string text ) {
 		// escape all system settings
-		return reReplaceNoCase( text, '(\$\{.*?})', '\\1', 'all' );
+		if( server.keyExists( 'boxlang') ) {
+			// This matches Adobe and is more correct as the \ literal needs escaped
+			return reReplaceNoCase( text, '(\$\{.*?})', '\\\1', 'all' );
+		} else {
+			// Luceee doesn't allow the \ literal to esacpe the backreference
+			return reReplaceNoCase( text, '(\$\{.*?})', '\\1', 'all' );
+		}
 	}
 
 	any function readJSONC( string configFilePath ) {

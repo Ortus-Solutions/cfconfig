@@ -111,6 +111,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			if( configData.logging.keyExists( 'maxFileSize' ) ) {
 				configData[ 'logMaxFileSize' ] = convertFileSizeToKB( configData.logging.maxFileSize );
 			}
+			// move loggers to top level
+			if( configData.logging.keyExists( 'loggers' ) ) {
+				configData[ 'loggers' ] = configData.logging.loggers;
+			}
 		}
 
 		// Check if 'experimental' struct exists and map specific properties
@@ -265,6 +269,11 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( configData.keyExists( 'logMaxFileSize' ) ) {
 			configData[ 'logging' ] [ 'maxFileSize' ] = convertFileSizeKBToMB( configData.logMaxFileSize );
 			configData.delete( 'logMaxFileSize' );
+		}
+		// move loggers to logging struct
+		if( configData.keyExists( 'loggers' ) ) {
+			configData[ 'logging' ] [ 'loggers' ] = configData[ 'loggers' ];
+			configData.delete( 'loggers' );
 		}
 
 		// Check for experimental settings
