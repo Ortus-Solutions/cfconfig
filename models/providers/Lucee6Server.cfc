@@ -108,6 +108,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData.delete( 'locale' );
 		}
 
+		// Convert TypeChecking to UDFTypeChecking
+		if( configData.keyExists( 'TypeChecking' ) ) {
+			configData[ 'UDFTypeChecking' ] = configData.TypeChecking;
+			configData.delete( 'TypeChecking' );
+		}
+
 		// Convert preserveSingleQuote to datasourcePreserveSingleQuotes
 		if( configData.keyExists( 'datasources' ) && configData.datasources.keyExists( 'preserveSingleQuote' ) ) {
 			configData[ 'datasourcePreserveSingleQuotes' ] = configData.datasources.preserveSingleQuote;
@@ -293,6 +299,12 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		if( configData.keyExists( 'thisLocale' ) ) {
 			configData[ 'locale' ] = configData.thisLocale;
 			configData.delete( 'thisLocale' );
+		}
+
+		// Convert UDFTypeChecking to TypeChecking
+		if( configData.keyExists( 'UDFTypeChecking' ) ) {
+			configData[ 'TypeChecking' ] = configData.UDFTypeChecking;
+			configData.delete( 'UDFTypeChecking' );
 		}
 
 		// loop over datasources, is password exists, encrypt it
