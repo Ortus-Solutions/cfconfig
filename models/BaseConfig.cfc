@@ -1757,6 +1757,13 @@ component accessors="true" {
 					// Both arrays have values — check type compatibility
 					if( isSimpleValue( setting[1] ) && isSimpleValue( target[ prop ][1] ) ) {
 						var uniqueKey = '';
+					} else if( isStruct( setting[1] ) && isStruct( target[ prop ][1] ) ) {
+						// Both sides are arrays of structs with no schema to merge by —
+						// take the source in its entirety, overwriting the target.
+						// Fix this to allow proper merging, by configuring a mapping key above.
+						// This behavior may not be ideal, but at least it doesn't blow up.
+						target[ prop ] = duplicate( setting );
+						continue;
 					} else {
 						throw( message='Array config type [#prop#] not mapped for merging and types are incompatible.  Please report this as a bug.', type='cfconfigException' );
 					}
