@@ -153,6 +153,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			}
 		}
 
+		normalizeAppenderArgumentsToStruct( configData );
+
 		// cacheDefaults, Lucee 6 moved them under cache
 		if( configData.keyExists( 'cache' ) ) {
 			arrayEach( getCacheTypes(),
@@ -234,6 +236,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 
 		var configFilePath = calculateConfigFilePath();
 		var configData = getMemento();
+		
+		normalizeAppenderArgumentsToStruct( configData );
 
 
 		// We have plain text password and a salt
@@ -350,6 +354,8 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			}
 		}
 
+		normalizeAppenderArgumentsForWrite( configData );
+
 		// datasourcePreserveSingleQuotes
 		if( configData.keyExists( 'datasourcePreserveSingleQuotes' ) ) {
 			configData[ 'datasources' ] = configData.datasources ?: {};
@@ -427,7 +433,10 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			// Load template data
 			existingData = readJSONC( expandPath( '/cfconfig-services/resources/lucee6/CFConfig-base.json' ) );
 		}
+
+		normalizeAppenderArgumentsToStruct( existingData );
 		mergeMemento( configData, existingData )
+		
 		//scheduledTasks for Lucee 6 export
 		if ( structKeyExists( existingData, "scheduledTasks" ) && !isArray( existingData.scheduledTasks ) ) {
 			var tasksArray = [];
@@ -453,6 +462,32 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		fileWrite( configFilePath, JSONPrettyPrint.formatJson( serializeJSON( existingData ) ) );
 
 		return this;
+	}
+
+	// Lucee 6 will force a string.  6.1 started allowing a struct, but 6.0 didn't.  So we will force a string for 6.x
+	// Lucee 7 will override this and force struct
+	function normalizeAppenderArgumentsForWrite( required struct configData ) {
+		// loop over loggers, if the appenderArguments is a css encoded string, make it a struct
+		if( configData.keyExists( 'loggers' ) ) {
+			for( var loggerName in configData.loggers ) {
+				var logger = configData.loggers[ loggerName ];
+				if ( logger.keyExists( 'appenderArguments' ) && isStruct( logger.appenderArguments ) ) {
+					logger.appenderArguments = translateStructToCSSCodedPairs( logger.appenderArguments );
+				}
+			}
+		}
+	}
+	
+	function normalizeAppenderArgumentsToStruct( required struct configData ) {
+		// loop over loggers, if the appenderArguments is a css encoded string, make it a struct
+		if( configData.keyExists( 'loggers' ) ) {
+			for( var loggerName in configData.loggers ) {
+				var logger = configData.loggers[ loggerName ];
+				if ( logger.keyExists( 'appenderArguments' ) && isSimpleValue( logger.appenderArguments ) ) {
+					logger.appenderArguments = translateCSSCodedPairsToStruct( logger.appenderArguments );
+				}
+			}
+		}
 	}
 
 	function calculateConfigFilePath() {
@@ -491,6 +526,34 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			customAsString = customAsString.listAppend( '#URLEncode( key )#=#URLEncode( arguments.custom[ key ] )#', '&' );
 		}
 		return customAsString;
+	}
+
+	// Turn custom values into struct
+	private function translateCSSCodedPairsToStruct( required string custom ) {
+		var thisStruct = [:];
+		for( var item in arguments.custom.listToArray( ';' ) ) {
+			// Turn foo:bar;baz:bum;poof: into { foo : 'bar', baz : 'bum', poof : '' }
+			// Any ":" or ";" in the key values will be URL encoded.
+			thisStruct[ URLDecode( listFirst( item, ':' ) ) ] = ( listLen( item, ':' ) ?  URLDecode( listRest( item, ':' ) ) : '' );
+		}
+		return thisStruct;
+	}
+
+	// Turn custom values into string
+	private function translateStructToCSSCodedPairs( required struct custom ) {
+		var customAsString = '';
+		// turn { foo : 'bar', baz : 'bum' } into foo:bar;baz:bum
+		for( var key in arguments.custom ) {
+			customAsString = customAsString.listAppend( '#limitedURLEncode( key )#:#limitedURLEncode( arguments.custom[ key ] )#', ';' );
+		}
+		return customAsString;
+	}
+
+	/**
+	 * Only encodes : and ; chars
+	 */
+	function limitedURLEncode( string input )  {
+		return input.replace( ':', '%3A', "all" ).replace( ';', '%3B', "all" );
 	}
 
 	private function translateCacheTypeToClass( required string type ) {

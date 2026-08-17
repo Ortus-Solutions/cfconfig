@@ -1740,9 +1740,29 @@ component accessors="true" {
 			} else if( isArray( setting ) ) {
 				target[ prop ] = target[ prop ] ?: [];
 				if( !arrayMap.keyExists( prop ) ) {
-					throw( message='Array config type [#prop#] not mapped for merging.  Please report this as a bug.', type='cfconfigException' );
+					// Smart default for unmapped array types
+					var sourceLen = setting.len();
+					var targetLen = target[ prop ].len();
+					if( sourceLen == 0 && targetLen == 0 ) {
+						// Both empty, nothing to do
+						continue;
+					} else if( sourceLen == 0 ) {
+						// Source empty, keep target as-is
+						continue;
+					} else if( targetLen == 0 ) {
+						// Target empty, use source directly
+						target[ prop ] = duplicate( setting );
+						continue;
+					}
+					// Both arrays have values — check type compatibility
+					if( isSimpleValue( setting[1] ) && isSimpleValue( target[ prop ][1] ) ) {
+						var uniqueKey = '';
+					} else {
+						throw( message='Array config type [#prop#] not mapped for merging and types are incompatible.  Please report this as a bug.', type='cfconfigException' );
+					}
+				} else {
+					var uniqueKey = arrayMap[ prop ];
 				}
-				var uniqueKey = arrayMap[ prop ];
 				for( var item in setting ) {
 					if( uniqueKey == '' ) {
 						// Lucee returns the index, not a boolean
