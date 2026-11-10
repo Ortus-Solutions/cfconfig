@@ -2,6 +2,7 @@
 .project
 .settings/org.eclipse.core.resources.prefs
 .idea
+.vscode/settings.json
 
 /modules
 /coldbox
@@ -39,3 +40,4 @@ settings.xml
 # Scratch output from the specs (tmp keeps its own .gitignore)
 /tests/resources/tmp/*
 !/tests/resources/tmp/.gitignore
+
