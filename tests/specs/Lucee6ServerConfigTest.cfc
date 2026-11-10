@@ -40,10 +40,24 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				}
 			});
 
+			// A stock Lucee install has no cache connections, and EHCache isn't bundled since Lucee 7,
+			// so these specs build their own caches with the core RamCache.
 			it( "can read default cache configs (CFCONFIG-68)", function() {
 
+				directoryCreate( expandPath( '/tests/resources/tmp/context' ), true, true );
+				fileWrite( expandPath( '/tests/resources/tmp/context/.CFConfig.json' ), serializeJSON( {
+					"caches" : {
+						"default-object" : { "class" : "lucee.runtime.cache.ram.RamCache", "storage" : false, "custom" : "timeToIdleSeconds=0&timeToLiveSeconds=0" },
+						"default-query" : { "class" : "lucee.runtime.cache.ram.RamCache", "storage" : false, "custom" : "timeToIdleSeconds=0&timeToLiveSeconds=0" }
+					},
+					"cache" : {
+						"defaultObject" : "default-object",
+						"defaultQuery" : "default-query"
+					}
+				} ) );
+
 				var Lucee6ServerConfig = getInstance( 'Lucee6Server@cfconfig-services' )
-					.read( expandPath( '/tests/resources/lucee6/serverHome/lucee-server' ) );
+					.read( expandPath( '/tests/resources/tmp' ) );
 
 				expect( Lucee6ServerConfig.getMemento() ).toBeStruct();
 
@@ -52,23 +66,29 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				expect( config ).toHaveKey( "caches" );
 				expect( config.caches ).toHaveKey( "default-object" );
 				expect( config.caches ).toHaveKey( "default-query" );
+				expect( config.caches[ "default-object" ].type ).toBe( "RAM" );
+				expect( config.caches[ "default-object" ].custom ).toBeStruct();
 
 				expect( config ).toHaveKey( "cacheDefaultObject" );
 				expect( config ).toHaveKey( "cacheDefaultQuery" );
+				expect( config.cacheDefaultObject ).toBe( "default-object" );
+				expect( config.cacheDefaultQuery ).toBe( "default-query" );
 
 			});
 
 			it( "can write default cache configs (CFCONFIG-68)", function() {
 
 				var Lucee6ServerConfig = getInstance( 'Lucee6Server@cfconfig-services' )
-					.read( expandPath( '/tests/resources/lucee6/serverHome/lucee-server' ) );
+					.setMemento( {
+						"caches" : {
+							"default-object" : { "type" : "RAM", "storage" : false, "custom" : { "timeToIdleSeconds" : 0, "timeToLiveSeconds" : 0 } },
+							"default-query" : { "type" : "RAM", "storage" : false, "custom" : { "timeToIdleSeconds" : 0, "timeToLiveSeconds" : 0 } }
+						},
+						"cacheDefaultObject" : "default-object",
+						"cacheDefaultQuery" : "default-query"
+					} );
 
-				var config = Lucee6ServerConfig.getMemento();
-
-				expect( config ).toHaveKey( "cacheDefaultObject" );
-				expect( config ).toHaveKey( "cacheDefaultQuery" );
-
-				// Write it back out.
+				// Write it out.
 				Lucee6ServerConfig.write( expandPath( '/tests/resources/tmp' ) );
 
 				expect( fileExists( '/tests/resources/tmp/context/.CFConfig.json' ) ).toBeTrue();
@@ -79,6 +99,7 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				expect( config ).toHaveKey( "caches" );
 				expect( config.caches ).toHaveKey( "default-object" );
 				expect( config.caches ).toHaveKey( "default-query" );
+				expect( config.caches[ "default-object" ].class ).toBe( "lucee.runtime.cache.ram.RamCache" );
 
 				expect( config ).toHaveKey( "cache" );
 				expect( config.cache ).toHaveKey( "defaultObject" );
@@ -170,7 +191,7 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				expect( output.datasources[ "testOracle" ].dsn ).toBe( "jdbc:oracle:{drivertype}:@{host}:{port}:ORCL" );
 				expect( output.datasources[ "testOracleServiceName" ].dsn ).toBe( "jdbc:oracle:{drivertype}:@{host}:{port}/myservice" );
 				expect( output.datasources[ "testPostgreSQL" ].dsn ).toBe( "jdbc:postgresql://{host}:{port}/{database}" );
-				expect( output.datasources[ "testMSSQL" ].dsn ).toBe( "jdbc:sqlserver://{host}:{port}:databaseName={database}" );
+				expect( output.datasources[ "testMSSQL" ].dsn ).toBe( "jdbc:sqlserver://{host}:{port};databaseName={database}" );
 				expect( output.datasources[ "testMSSQL2" ].dsn ).toBe( "jdbc:jtds:sqlserver://{host}:{port}/{database}" );
 				expect( output.datasources[ "testH2" ].dsn ).toBe( "jdbc:h2:{path}{database};MODE={mode}" );
 			});
