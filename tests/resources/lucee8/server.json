@@ -1,0 +1,7 @@
+{
+    "app":{
+        "cfengine2":"lucee@8",
+        "serverHomeDirectory":"serverHome"
+    },
+    "name":"cfconfiglucee8"
+}
