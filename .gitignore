@@ -11,4 +11,31 @@ settings.xml
 
 
 
+# Test fixtures: ignore everything under tests/resources except the files the specs read.
+# Directories must be re-included first, or git won't look inside them for the exceptions below.
 /tests/resources/**
+!/tests/resources/**/
+
+# CommandBox server definitions used to spin up each engine
+!/tests/resources/**/server.json
+
+# Lucee / Railo
+!/tests/resources/**/lucee-server.xml
+!/tests/resources/**/lucee-web.xml.cfm
+!/tests/resources/**/railo-server.xml
+!/tests/resources/**/railo-web.xml.cfm
+!/tests/resources/**/.CFConfig.json
+!/tests/resources/**/.cfconfig.json
+!/tests/resources/.CFConfig2.json
+
+# Adobe
+!/tests/resources/**/lib/neo*.xml
+!/tests/resources/**/lib/jetty.xml
+!/tests/resources/**/lib/seed.properties
+!/tests/resources/**/lib/license.properties
+!/tests/resources/**/lib/password.properties
+!/tests/resources/**/bin/cf-init.sh
+
+# Scratch output from the specs (tmp keeps its own .gitignore)
+/tests/resources/tmp/*
+!/tests/resources/tmp/.gitignore
