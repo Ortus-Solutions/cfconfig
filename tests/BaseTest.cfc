@@ -10,7 +10,8 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/tests" {
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
-		structDelete( application, getColdboxAppKey() );
+		// ColdBox 8 removed getColdboxAppKey(); the virtual test app always uses "cbController"
+		structDelete( application, 'cbController' );
 		super.beforeAll();
 		//ApplicationStop();
 		if( directoryExists( '/tests/resources/tmp' ) ) {
@@ -19,6 +20,12 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/tests" {
 			fileWrite( '/tests/resources/tmp/.gitignore', '*#chr( 10 )#!/.gitignore' );	
 		}
 		controller.getModuleService().registerAndActivateModule( 'cfconfig', 'root' );
+		// The module folder is "cfconfig" here, but in CommandBox it's installed as "cfconfig-services".
+		// Alias it so box:moduleSettings:cfconfig-services injections resolve in the tests.
+		var modules = controller.getSetting( 'modules' );
+		if( !modules.keyExists( 'cfconfig-services' ) ) {
+			modules[ 'cfconfig-services' ] = modules[ 'cfconfig' ];
+		}
 	}
 	
 }
