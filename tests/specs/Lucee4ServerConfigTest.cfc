@@ -31,12 +31,13 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			
 			it( "can write watchConfigFilesForChangesEnabled", function() {
 				
+				// Write to tmp, not back over the fixture
 				var Lucee4ServerConfig = getInstance( 'Lucee4Server@cfconfig-services' )
 					.read( expandPath( '/tests/resources/lucee4/ServerHome/Lucee-Server' ) )
 					.setWatchConfigFilesForChangesEnabled( true )
-					.write();
-					
-				expect( XMLParse( fileRead( '/tests/resources/lucee4/ServerHome/Lucee-Server/context/Lucee-Server.xml' ) ).XMLRoot.XMLAttributes[ 'check-for-changes' ] ).toBeTrue();
+					.write( expandPath( '/tests/resources/tmp' ) );
+
+				expect( XMLParse( fileRead( '/tests/resources/tmp/context/Lucee-Server.xml' ) ).XMLRoot.XMLAttributes[ 'check-for-changes' ] ).toBeTrue();
 			});
 		
 		});
