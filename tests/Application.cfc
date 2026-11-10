@@ -14,4 +14,10 @@ component{
 	this.mappings[ '/root/cfconfig' ] = expandPath( getDirectoryFromPath( getCurrentTemplatePath() )  & '../');
 	this.mappings[ '/root' ] = expandPath( getDirectoryFromPath( getCurrentTemplatePath() ) & '../../' );
 	this.mappings[ '/tests' ] = getDirectoryFromPath( getCurrentTemplatePath() );
+	// Lucee 6.2+ disallows DOCTYPE declarations by default, which makes isXML() fail on Adobe's jetty.xml
+	this.xmlFeatures = {
+		secure : false,
+		disallowDoctypeDecl : false,
+		externalGeneralEntities : false
+	};
 }
