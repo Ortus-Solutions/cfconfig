@@ -1,0 +1,18 @@
+{
+  "modules": {
+    "mail": {
+      "settings": {
+        "defaultEncoding": "UTF-8",
+        "spoolEnable": true,
+        "spoolInterval": 30,
+        "connectionTimeout": 60
+      }
+    },
+    "compat-cfml": {
+      "settings": {
+        "nullEqualsEmptyString": false,
+        "nullIsUndefined": false
+      }
+    }
+  }
+}

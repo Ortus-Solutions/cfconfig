@@ -19,6 +19,21 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 		setFormat( 'boxlang' );
 		setVersion( '1' );
 
+		variables.mailSettingsMap = {
+			'mailServers' : 'mailServers',
+			'mailDefaultEncoding' : 'defaultEncoding',
+			'mailSpoolEnable' : 'spoolEnable',
+			'mailSpoolInterval' : 'spoolInterval',
+			'mailConnectionTimeout' : 'connectionTimeout',
+			'mailSignMesssage' : 'signMesssage',
+			'mailSignKeystore' : 'signKeystore',
+			'mailSignKeystorePassword' : 'signKeystorePassword',
+			'mailSignKeyAlias' : 'signKeyAlias',
+			'mailSignKeyPassword' : 'signKeyPassword',
+			'mailLogEnabled' : 'logEnabled',
+			'mailLogSeverity' : 'logSeverity'
+		};
+
 		return this;
 	}
 
@@ -158,6 +173,15 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData[ 'nullSupport' ] = !((configData.modules['compat-cfml'].settings.nullEqualsEmptyString ?: false) || (configData.modules['compat-cfml'].settings.nullIsUndefined ?: false));
 		}
 		
+		// Translate BoxLang mail module settings back into CFConfig names.
+		for( var cfconfigKey in variables.mailSettingsMap ) {
+			var moduleKey = variables.mailSettingsMap[ cfconfigKey ];
+			if( !isNull( configData.modules.mail.settings[ moduleKey ] ) ) {
+				configData[ cfconfigKey ] = configData.modules.mail.settings[ moduleKey ];
+				configData.modules.mail.settings.delete( moduleKey );
+			}
+		}
+
 		setMemento( configData );
 		return this;
 	}
@@ -315,6 +339,14 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			configData[ 'modules' ][ 'compat-cfml' ][ 'settings' ][ 'nullEqualsEmptyString' ] = !configData[ 'nullSupport' ];
 			configData[ 'modules' ][ 'compat-cfml' ][ 'settings' ][ 'nullIsUndefined' ] = !configData[ 'nullSupport' ];
 			configData.delete( 'nullSupport' );
+		}
+
+		// Translate CFConfig mail settings into BoxLang mail module settings.
+		for( var cfconfigKey in variables.mailSettingsMap ) {
+			if( configData.keyExists( cfconfigKey ) ) {
+				configData[ 'modules' ][ 'mail' ][ 'settings' ][ variables.mailSettingsMap[ cfconfigKey ] ] = configData[ cfconfigKey ];
+				configData.delete( cfconfigKey );
+			}
 		}
 
 		// Ensure the pare!nt directories exist

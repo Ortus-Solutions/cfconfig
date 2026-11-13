@@ -1,0 +1,9 @@
+{
+  "modules": {
+    "compat-cfml": {
+      "settings": {
+        "nullEqualsEmptyString": false
+      }
+    }
+  }
+}
