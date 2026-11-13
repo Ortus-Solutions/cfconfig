@@ -178,6 +178,7 @@ component accessors=true extends='cfconfig-services.models.BaseConfig' {
 			var moduleKey = variables.mailSettingsMap[ cfconfigKey ];
 			if( !isNull( configData.modules.mail.settings[ moduleKey ] ) ) {
 				configData[ cfconfigKey ] = configData.modules.mail.settings[ moduleKey ];
+				configData.modules.mail.settings.delete( moduleKey );
 			}
 		}
 
