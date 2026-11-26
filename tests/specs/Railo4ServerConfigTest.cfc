@@ -31,12 +31,13 @@ component extends="tests.BaseTest" appMapping="/tests" {
 			
 			it( "can write watchConfigFilesForChangesEnabled", function() {
 				
+				// Write to tmp, not back over the fixture
 				var Railo4ServerConfig = getInstance( 'Railo4Server@cfconfig-services' )
 					.read( expandPath( '/tests/resources/railo4/serverHome/Railo-Server' ) )
 					.setWatchConfigFilesForChangesEnabled( true )
-					.write();
-					
-				expect( XMLParse( fileRead( '/tests/resources/railo4/serverHome/Railo-Server/context/Railo-Server.xml' ) ).XMLRoot.XMLAttributes[ 'check-for-changes' ] ).toBeTrue();
+					.write( expandPath( '/tests/resources/tmp' ) );
+
+				expect( XMLParse( fileRead( '/tests/resources/tmp/context/Railo-Server.xml' ) ).XMLRoot.XMLAttributes[ 'check-for-changes' ] ).toBeTrue();
 			});
 			it( "can export to JSON", function(){
 				var configService = getInstance( 'CFConfigService@cfconfig-services' );
@@ -57,12 +58,15 @@ component extends="tests.BaseTest" appMapping="/tests" {
 				var configService = getInstance( 'CFConfigService@cfconfig-services' );
 					configService.transfer(
 					from		= '/tests/resources/.CFConfig.json',
-					to			= '/tests/resources/railo4/serverHome/railo-server/',
+					// Import into tmp, not over the railo4 fixture
+					to			= '/tests/resources/tmp/railo4/',
 					fromFormat	= 'JSON',
 					toFormat	= 'railoServer',
 					toVersion	= '4'
-				 );	
-				
+				 );
+
+				expect( fileExists( '/tests/resources/tmp/railo4/context/railo-server.xml' ) ).toBeTrue();
+				expect( isXML( fileRead( '/tests/resources/tmp/railo4/context/railo-server.xml' ) ) ).toBeTrue();
 			});
 		
 		});

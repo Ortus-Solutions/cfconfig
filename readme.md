@@ -71,6 +71,7 @@ Not all the data it stores applies to every engine though.  The `BaseConfig.cfc`
 * **Adobe10.cfc** - Adobe ColdFusion 10
 * **Adobe9.cfc** - Adobe ColdFusion 9
 * **BoxLang1.cfc** - BoxLang 1.0.0
+* **Lucee8Server.cfc** - Lucee 8.x server context (Lucee 8 has no web context)
 * **Lucee7Server.cfc** - Lucee 7.x server context
 * **Lucee6Server.cfc** - Lucee 6.x server context
 * **Lucee6Web.cfc** - Lucee 6.x web context
